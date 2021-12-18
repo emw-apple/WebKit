@@ -1919,6 +1919,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D247B7314689C4700E78B76 /* WTF.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Debug;
 		};
@@ -1926,6 +1930,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D247B7314689C4700E78B76 /* WTF.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Release;
 		};
@@ -1940,6 +1948,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5D247B7314689C4700E78B76 /* WTF.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Production;
 		};

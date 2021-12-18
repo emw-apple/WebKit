@@ -183,6 +183,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C60FE3314E5F3CD006CD77D /* WebInspectorUIFramework.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Production;
 		};
@@ -204,6 +208,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C60FE3314E5F3CD006CD77D /* WebInspectorUIFramework.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Debug;
 		};
@@ -211,6 +219,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C60FE3314E5F3CD006CD77D /* WebInspectorUIFramework.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Release;
 		};

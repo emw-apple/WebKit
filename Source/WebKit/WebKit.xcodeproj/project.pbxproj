@@ -15928,6 +15928,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BCB86F4B116AAACD00CE20B7 /* WebKit.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Release;
 		};
@@ -16153,6 +16157,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BCB86F4B116AAACD00CE20B7 /* WebKit.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Production;
 		};

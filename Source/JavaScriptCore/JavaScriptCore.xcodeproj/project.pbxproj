@@ -12419,6 +12419,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C9051430BA9E8A70081E9D0 /* JavaScriptCore.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Debug;
 		};
@@ -12426,6 +12430,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C9051430BA9E8A70081E9D0 /* JavaScriptCore.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Release;
 		};
@@ -12434,6 +12442,10 @@
 			baseConfigurationReference = 1C9051430BA9E8A70081E9D0 /* JavaScriptCore.xcconfig */;
 			buildSettings = {
 				BUILD_VARIANTS = normal;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Production;
 		};
@@ -12878,6 +12890,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C9051430BA9E8A70081E9D0 /* JavaScriptCore.xcconfig */;
 			buildSettings = {
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(WK_WEBKITADDITIONS_LDFLAGS_HAVE_INTERNAL_SDK_$(HAVE_INTERNAL_SDK))",
+				);
 			};
 			name = Profiling;
 		};

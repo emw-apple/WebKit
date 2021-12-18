@@ -32,7 +32,7 @@
 
 namespace PAL {
 
-class SystemSleepListenerMac : public SystemSleepListener, public CanMakeWeakPtr<SystemSleepListenerMac> {
+class SystemSleepListenerMac : public SystemSleepListener, public WTF::CanMakeWeakPtr<SystemSleepListenerMac> {
     WTF_MAKE_FAST_ALLOCATED;
 protected:
     SystemSleepListenerMac(Client&);
