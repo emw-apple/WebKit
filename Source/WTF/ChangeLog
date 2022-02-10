@@ -1,17 +1,16 @@
 2022-02-06  Elliott Williams  <emw@apple.com>
 
-        Reland native Xcode build phases for "Copy WTF Headers"
+        Reland native Xcode build phases for "Copy WTF Headers", again
         https://bugs.webkit.org/show_bug.cgi?id=235744
 
         Reviewed by NOBODY (OOPS!).
 
-        Changes since revert of r289256:
+        Changes since revert of r289490:
 
-        ICU headers, which are only needed for non-internal builds, are tracked in WTF.xcodeproj and
-        copied to /usr/local/include/unicode when building with the public SDK.
+        Some WTF headers were never tracked in WTF.xcodeproj, causing builds to fail (but only after
+        a build directory was cleaned and stale headers removed). 
 
-        * Configurations/WTF.xcconfig: Skip coping ICU headers when USE_INTERNAL_SDK=YES.
-        * WTF.xcodeproj/project.pbxproj: Add ICU header directory and copy files phase.
+        * WTF.xcodeproj/project.pbxproj: Add file references for missing headers.
 
 2022-02-10  David Kilzer  <ddkilzer@apple.com>
 
