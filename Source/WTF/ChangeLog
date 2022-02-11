@@ -17,6 +17,8 @@
         Adds SignedPtr.h to WTF's Headers phase. It was added recently and missed integration in
         r289256.
 
+        Sets INSTALLHDRS_COPY_PHASE so that nested header directories are copied during installhdrs.
+
         * Configurations/WTF.xcconfig:
         * WTF.xcodeproj/project.pbxproj:
 
