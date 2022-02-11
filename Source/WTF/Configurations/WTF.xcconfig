@@ -33,10 +33,9 @@ EXCLUDED_SOURCE_FILE_NAMES_[sdk=embedded*] = MachExceptions.defs;
 EXCLUDED_SOURCE_FILE_NAMES_YES = icu/unicode/*;
 
 INSTALLHDRS_COPY_PHASE = YES;
-// The native "Headers" phase reads from here:
+// In engineering builds, the native "Headers" path is implicitly relative to build products:
 PRIVATE_HEADERS_FOLDER_PATH = $(WTF_INSTALL_PATH_PREFIX)/usr/local/include/wtf;
-// ...whereas Copy Files phases for nested header directories must use their own absolute-path-based variable.
-// rdar://88771729 (Adopt Xcode's relative path macro to simplify copying deeply nested headers)
+// ...whereas the Copy Files phases for nested header directories need an absolute path.
 WTF_HEADERS_FOLDER_PATH = $(WTF_HEADERS_FOLDER_PATH_$(DEPLOYMENT_LOCATION));
 WTF_HEADERS_FOLDER_PATH_NO = $(BUILT_PRODUCTS_DIR)/$(PRIVATE_HEADERS_FOLDER_PATH);
 WTF_HEADERS_FOLDER_PATH_YES = $(PRIVATE_HEADERS_FOLDER_PATH);
