@@ -159,6 +159,7 @@
 		CD5497AC15857D0300B5BC30 /* MediaTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD5497AA15857D0300B5BC30 /* MediaTime.cpp */; };
 		CEA072AA236FFBF70018839C /* CrashReporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CEA072A9236FFBF70018839C /* CrashReporter.cpp */; };
 		DCEE22011CEA7551000C2396 /* BlockObjCExceptions.mm in Sources */ = {isa = PBXBuildFile; fileRef = DCEE21FD1CEA7551000C2396 /* BlockObjCExceptions.mm */; };
+		DD03059327B5DA0D00344002 /* SignedPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = 862A8D32278DE74A0014120C /* SignedPtr.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DD3DC85E27A4BF8E007E5B61 /* WeakHashSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B67F3F12228D5310030DE9C /* WeakHashSet.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DD3DC85F27A4BF8E007E5B61 /* HashMap.h in Headers */ = {isa = PBXBuildFile; fileRef = A8A472B6151A825A004123FF /* HashMap.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DD3DC86027A4BF8E007E5B61 /* Observer.h in Headers */ = {isa = PBXBuildFile; fileRef = CD48A87024C8A21600F5800C /* Observer.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -790,8 +791,8 @@
 		DD3DC99E27A4BFC3007E5B61 /* Headers <wtf/cf> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/cf";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/cf";
+			dstSubfolderSpec = 0;
 			files = (
 				DD3DC99F27A4C01E007E5B61 /* CFURLExtras.h in Headers <wtf/cf> */,
 				DD3DC9A027A4C01E007E5B61 /* SpanCF.h in Headers <wtf/cf> */,
@@ -803,8 +804,8 @@
 		DD3DC9A227A4C02F007E5B61 /* Headers <wtf/cocoa> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/cocoa";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/cocoa";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9A327A4C04A007E5B61 /* CrashReporter.h in Headers <wtf/cocoa> */,
 				DD3DC9A427A4C04A007E5B61 /* Entitlements.h in Headers <wtf/cocoa> */,
@@ -822,8 +823,8 @@
 		DD3DC9AC27A4C282007E5B61 /* Headers <wtf/darwin> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/darwin";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/darwin";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9AD27A4C293007E5B61 /* WeakLinking.h in Headers <wtf/darwin> */,
 			);
@@ -833,8 +834,8 @@
 		DD3DC9AE27A4C296007E5B61 /* Headers <wtf/dtoa> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/dtoa";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/dtoa";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9AF27A4C2C1007E5B61 /* bignum-dtoa.h in Headers <wtf/dtoa> */,
 				DD3DC9B027A4C2C1007E5B61 /* bignum.h in Headers <wtf/dtoa> */,
@@ -853,8 +854,8 @@
 		DD3DC9B927A4C2CA007E5B61 /* Headers <wtf/ios> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/ios";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/ios";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9BA27A4C431007E5B61 /* WebCoreThread.h in Headers <wtf/ios> */,
 			);
@@ -864,8 +865,8 @@
 		DD3DC9BB27A4C43E007E5B61 /* Headers <wtf/persistence> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/persistence";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/persistence";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9BC27A4C450007E5B61 /* PersistentCoder.h in Headers <wtf/persistence> */,
 				DD3DC9BD27A4C450007E5B61 /* PersistentCoders.h in Headers <wtf/persistence> */,
@@ -878,8 +879,8 @@
 		DD3DC9C327A4C4F6007E5B61 /* Headers <wtf/text> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/text";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/text";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9C427A4C50E007E5B61 /* ASCIIFastPath.h in Headers <wtf/text> */,
 				DD3DC9C527A4C50E007E5B61 /* ASCIILiteral.h in Headers <wtf/text> */,
@@ -927,8 +928,8 @@
 		DD3DC9EA27A4C513007E5B61 /* Headers <wtf/text/cf> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/text/cf";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/text/cf";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9EB27A4C52A007E5B61 /* StringConcatenateCF.h in Headers <wtf/text/cf> */,
 				DD3DC9EC27A4C52A007E5B61 /* TextBreakIteratorCF.h in Headers <wtf/text/cf> */,
@@ -939,8 +940,8 @@
 		DD3DC9ED27A4C52F007E5B61 /* Headers <wtf/text/icu> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/text/icu";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/text/icu";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9EE27A4C541007E5B61 /* TextBreakIteratorICU.h in Headers <wtf/text/icu> */,
 				DD3DC9EF27A4C541007E5B61 /* UTextProvider.h in Headers <wtf/text/icu> */,
@@ -953,8 +954,8 @@
 		DD3DC9F227A4C551007E5B61 /* Headers <wtf/threads> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/threads";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/threads";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9F327A4C567007E5B61 /* BinarySemaphore.h in Headers <wtf/threads> */,
 				DD3DC9F427A4C567007E5B61 /* Signals.h in Headers <wtf/threads> */,
@@ -965,8 +966,8 @@
 		DD3DC9F527A4C56C007E5B61 /* Headers <wtf/unicode/icu> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/unicode/icu";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/unicode/icu";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9F627A4C591007E5B61 /* ICUHelpers.h in Headers <wtf/unicode/icu> */,
 			);
@@ -976,8 +977,8 @@
 		DD3DC9F727A4C598007E5B61 /* Headers <wtf/unicode> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/unicode";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/unicode";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DC9F827A4C5AE007E5B61 /* CharacterNames.h in Headers <wtf/unicode> */,
 				DD3DC9F927A4C5AE007E5B61 /* Collator.h in Headers <wtf/unicode> */,
@@ -989,8 +990,8 @@
 		DD3DCA0727A4E17E007E5B61 /* Headers <wtf/Scripts> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/Scripts";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/Scripts";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DCA0827A4E197007E5B61 /* generate-unified-source-bundles.rb in Headers <wtf/Scripts> */,
 				DD3DCA0927A4E197007E5B61 /* GeneratePreferences.rb in Headers <wtf/Scripts> */,
@@ -1001,8 +1002,8 @@
 		DD3DCA0A27A4E19A007E5B61 /* Headers <wtf/Scripts/Preferences> */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(PRIVATE_HEADERS_FOLDER_PATH)/Scripts/Preferences";
-			dstSubfolderSpec = 16;
+			dstPath = "$(WTF_HEADERS_FOLDER_PATH)/Scripts/Preferences";
+			dstSubFolderSpec = 0;
 			files = (
 				DD3DCA0D27A4E1BA007E5B61 /* WebPreferences.yaml in Headers <wtf/Scripts/Preferences> */,
 				DD3DCA0B27A4E1BA007E5B61 /* WebPreferencesDebug.yaml in Headers <wtf/Scripts/Preferences> */,
@@ -1016,7 +1017,7 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(ICU_HEADERS_FOLDER_PATH)";
-			dstSubfolderSpec = 16;
+			dstSubFolderSpec = 0;
 			files = (
 				DDD8BC1627B347F700C109E0 /* alphaindex.h in ICU Headers <unicode> */,
 				DDD8BBA727B347F700C109E0 /* appendable.h in ICU Headers <unicode> */,
@@ -1212,7 +1213,7 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 16;
+			dstSubFolderSpec = 0;
 			files = (
 				DDE99319278D08DC00F60D26 /* libWebKitAdditions.a in Product Dependencies */,
 			);
@@ -3276,6 +3277,7 @@
 				DD3DC88627A4BF8E007E5B61 /* SetForScope.h in Headers */,
 				DD3DC8BB27A4BF8E007E5B61 /* SHA1.h in Headers */,
 				DD3DC88B27A4BF8E007E5B61 /* SharedTask.h in Headers */,
+				DD03059327B5DA0D00344002 /* SignedPtr.h in Headers */,
 				DD3DC8F727A4BF8E007E5B61 /* SimpleStats.h in Headers */,
 				DD3DC97627A4BF8E007E5B61 /* SingleRootGraph.h in Headers */,
 				DD3DC89627A4BF8E007E5B61 /* SinglyLinkedList.h in Headers */,

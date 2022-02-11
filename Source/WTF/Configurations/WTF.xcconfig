@@ -32,7 +32,17 @@ EXCLUDED_SOURCE_FILE_NAMES = $(inherited) $(EXCLUDED_SOURCE_FILE_NAMES_$(USE_INT
 EXCLUDED_SOURCE_FILE_NAMES_[sdk=embedded*] = MachExceptions.defs;
 EXCLUDED_SOURCE_FILE_NAMES_YES = icu/unicode/*;
 
-PRIVATE_HEADERS_FOLDER_PATH = $(WTF_INSTALL_PATH_PREFIX)usr/local/include/wtf;
-ICU_HEADERS_FOLDER_PATH = $(WTF_INSTALL_PATH_PREFIX)usr/local/include/unicode;
+INSTALLHDRS_COPY_PHASE = YES;
+// The native "Headers" phase reads from here:
+PRIVATE_HEADERS_FOLDER_PATH = $(WTF_INSTALL_PATH_PREFIX)/usr/local/include/wtf;
+// ...whereas Copy Files phases for nested header directories must use their own absolute-path-based variable.
+// rdar://88771729 (Adopt Xcode's relative path macro to simplify copying deeply nested headers)
+WTF_HEADERS_FOLDER_PATH = $(WTF_HEADERS_FOLDER_PATH_$(DEPLOYMENT_LOCATION));
+WTF_HEADERS_FOLDER_PATH_NO = $(BUILT_PRODUCTS_DIR)/$(PRIVATE_HEADERS_FOLDER_PATH);
+WTF_HEADERS_FOLDER_PATH_YES = $(PRIVATE_HEADERS_FOLDER_PATH);
+
+ICU_HEADERS_FOLDER_PATH = $(ICUICU_HEADERS_FOLDER_PATH_$(DEPLOYMENT_LOCATION));
+ICU_HEADERS_FOLDER_PATH_NO = $(BUILT_PRODUCTS_DIR)/usr/local/include/unicode;
+ICU_HEADERS_FOLDER_PATH_YES = $(WTF_INSTALL_PATH_PREFIX)/usr/local/include/unicode;
 
 SYSTEM_FRAMEWORK_SEARCH_PATHS = $(inherited) $(SDKROOT)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks
