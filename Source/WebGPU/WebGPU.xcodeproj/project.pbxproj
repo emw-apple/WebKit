@@ -46,6 +46,7 @@
 		338BB2D227B6B63F00E066AB /* SourceSpan.h in Headers */ = {isa = PBXBuildFile; fileRef = 338BB2D127B6B63F00E066AB /* SourceSpan.h */; };
 		338BB2D427B6B66C00E066AB /* Lexer.h in Headers */ = {isa = PBXBuildFile; fileRef = 338BB2D327B6B66C00E066AB /* Lexer.h */; };
 		338BB2D627B6B68700E066AB /* Lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 338BB2D527B6B68700E066AB /* Lexer.cpp */; };
+		DD20DE7327BDCE940093D175 /* libWTF.a in Product Dependencies */ = {isa = PBXBuildFile; fileRef = 1CEBD8292716CAE700A5254D /* libWTF.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,20 @@
 			remoteInfo = WGSL;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DD20DE7227BDCE860093D175 /* Product Dependencies */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				DD20DE7327BDCE940093D175 /* libWTF.a in Product Dependencies */,
+			);
+			name = "Product Dependencies";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1C023D3C27449070001DB734 /* WGSLUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WGSLUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -379,6 +394,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1CEBD7F32716B2CC00A5254D /* Build configuration list for PBXNativeTarget "WGSL" */;
 			buildPhases = (
+				DD20DE7227BDCE860093D175 /* Product Dependencies */,
 				1CEBD7EE2716B2CC00A5254D /* Headers */,
 				1CEBD7EF2716B2CC00A5254D /* Sources */,
 				1CEBD7F02716B2CC00A5254D /* Frameworks */,
