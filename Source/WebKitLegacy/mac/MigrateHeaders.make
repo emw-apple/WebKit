@@ -36,9 +36,31 @@ ifeq ($(USE_LLVM_TARGET_TRIPLES_FOR_CLANG),YES)
     TARGET_TRIPLE_FLAGS = -target $(WK_CURRENT_ARCH)-$(LLVM_TARGET_TRIPLE_VENDOR)-$(LLVM_TARGET_TRIPLE_OS_VERSION)$(LLVM_TARGET_TRIPLE_SUFFIX)
 endif
 
+# The HEADERS this Makefile uses depends on enabled features. To get feature information into Make:
+# - Preprocess an empty file through clang, and record the feature macros that were defined.
+# - Create a Make-like file of feature macros which sets them all to "YES". Include that file and use it
+#   for conditional logic.
+# - Emit a depfile from clang to track which platform headers were used to evaluate active features.
+#   Set the target name in this file to "MigrateHeaders.make", so that it's really declaring that
+#   *this Makefile* depends on those platform headers. Include the depfile.
+# - Now, `make all` will rerun when any feature flag changes, and extract-dependencies-from-makefile will emit
+#   the platform headers as dependencies to this script phase.
+
+DEPFILE = $(TARGET_TEMP_DIR)/MigrateHeaders-cc.d
+DEPFILE_FLAGS = -MMD -MF $(DEPFILE) -MT MigrateHeaders.make 
+FEATURES_FILE =  $(TARGET_TEMP_DIR)/MigrateHeaders-features.d
+
 FRAMEWORK_FLAGS := $(shell echo $(BUILT_PRODUCTS_DIR) $(FRAMEWORK_SEARCH_PATHS) $(SYSTEM_FRAMEWORK_SEARCH_PATHS) | $(PERL) -e 'print "-F " . join(" -F ", split(" ", <>));')
 HEADER_FLAGS := $(shell echo $(BUILT_PRODUCTS_DIR) $(HEADER_SEARCH_PATHS) $(SYSTEM_HEADER_SEARCH_PATHS) | $(PERL) -e 'print "-I" . join(" -I", split(" ", <>));')
-FEATURE_AND_PLATFORM_DEFINES := $(shell $(CC) -std=c++2a -x c++ -E -P -dM $(SDK_FLAGS) $(TARGET_TRIPLE_FLAGS) $(FRAMEWORK_FLAGS) $(HEADER_FLAGS) -include "wtf/Platform.h" /dev/null | $(PERL) -ne "print if s/\#define ((HAVE_|USE_|ENABLE_|WTF_PLATFORM_)\w+) 1/\1/")
+
+include $(DEPFILE)
+include $(FEATURES_FILE)
+
+DERIVED_MAKEFILES = $(DEPFILE) $(FEATURES_FILE)
+DERIVED_MAKEFILES_PATTERNS = $(subst .d,%d,$(DERIVED_MAKEFILES))
+
+$(DERIVED_MAKEFILES_PATTERNS) :
+	$(CC) -std=c++2a -x c++ -E -P -dM $(DEPFILE_FLAGS) $(SDK_FLAGS) $(TARGET_TRIPLE_FLAGS) $(FRAMEWORK_FLAGS) $(HEADER_FLAGS) -include "wtf/Platform.h" /dev/null | $(PERL) -ne "print if s/\#define ((HAVE_|USE_|ENABLE_|WTF_PLATFORM_)\w+) 1/\1 = YES/" > $(FEATURES_FILE)
 
 # --------
 
@@ -70,13 +92,13 @@ HEADERS += \
 #
 endif
 
-ifeq ($(findstring ENABLE_IOS_TOUCH_EVENTS, $(FEATURE_AND_PLATFORM_DEFINES)), ENABLE_IOS_TOUCH_EVENTS)
+ifeq ($(ENABLE_IOS_TOUCH_EVENTS), YES)
 HEADERS += \
     $(PRIVATE_HEADERS_DIR)/WebEventRegion.h
 endif
 
-.PHONY : migrate_headers
-migrate_headers : $(HEADERS)
+.PHONY : all
+all : $(HEADERS)
 
 WEBCORE_HEADER_REPLACE_RULES = -e 's/<WebCore\//<WebKitLegacy\//' -e "s/(^ *)WEBCORE_EXPORT /\1/"
 WEBCORE_HEADER_MIGRATE_CMD = sed -E $(WEBCORE_HEADER_REPLACE_RULES) $< > $@; touch $(PRIVATE_HEADERS_DIR)
@@ -87,20 +109,12 @@ $(PRIVATE_HEADERS_DIR)/% : % MigrateHeaders.make
 ifneq ($(WK_PLATFORM_NAME), macosx)
 
 REEXPORT_FILE = $(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols_$(WK_CURRENT_ARCH).exp
-REEXPORT_FILE_TIMESTAMP = $(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols.timestamp
 
-.PHONY : reexport_headers
-reexport_headers : $(REEXPORT_FILE)
+all : $(ARCHS:%=$(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols_%.exp)
 
 TAPI_PATH := $(strip $(shell xcrun --find tapi 2>/dev/null))
 
-$(REEXPORT_FILE) : $(HEADERS)
-	$(TAPI_PATH) reexport -target $(WK_CURRENT_ARCH)-$(LLVM_TARGET_TRIPLE_VENDOR)-$(LLVM_TARGET_TRIPLE_OS_VERSION)$(LLVM_TARGET_TRIPLE_SUFFIX) -isysroot $(SDK_DIR) $(HEADER_FLAGS) $(FRAMEWORK_FLAGS) $^ -o $@
-	touch $(REEXPORT_FILE_TIMESTAMP)
-
-else
-
-.PHONY : reexport_headers
-reexport_headers :
+$(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols_%.exp : $(HEADERS)
+	$(TAPI_PATH) reexport -target $*-$(LLVM_TARGET_TRIPLE_VENDOR)-$(LLVM_TARGET_TRIPLE_OS_VERSION)$(LLVM_TARGET_TRIPLE_SUFFIX) -isysroot $(SDK_DIR) $(HEADER_FLAGS) $(FRAMEWORK_FLAGS) $^ -o $@
 
 endif

@@ -37,8 +37,8 @@ from __future__ import print_function
 
 import argparse
 import re
+import shlex
 import sys
-
 
 class Parser(object):
 
@@ -51,6 +51,7 @@ class Parser(object):
     def __init__(self):
         self.targets = {}
         self.prereqs = {}
+        self.graph = {}
 
     def nextLine(self, input):
         while True:
@@ -66,6 +67,17 @@ class Parser(object):
     def addPrereq(self, prereq):
         if prereq != 'all' and prereq != 'force':
             self.prereqs[prereq] = 1
+            
+    def addEdge(self, target, prereq):
+        if {target, prereq} & {'all', 'force'}:
+            return
+        prereqs = self.graph.setdefault(target, set())
+        prereqs.add(prereq)
+        
+    def addNode(self, target):
+        if target in ('all', 'force'):
+            return
+        self.graph.setdefault(target, set())
 
     def doParse(self, input):
 
@@ -76,16 +88,19 @@ class Parser(object):
             if m:
                 self.addTarget(m.group(2))
                 self.addPrereq(m.group(1))
+                self.addEdge(m.group(2), m.group(1))
                 continue
 
             m = Parser.reMustRemakeTarget.search(line)
             if m:
                 self.addTarget(m.group(1))
+                self.addNode(m.group(1))
                 continue
 
             m = Parser.reWasConsideredAlready.search(line)
             if m:
                 self.addTarget(m.group(1))
+                self.addNode(m.group(1))
                 continue
 
             m = Parser.rePruningFile.search(line)
@@ -108,6 +123,22 @@ class Parser(object):
         with open(outputsFile, 'w') as toFile:
             [ print("{}".format(f), file = toFile) for f in sorted(self.targets.keys()) ]
 
+    def printDepfile(self, depfile):
+        assert sorted(self.graph.keys()) == sorted(self.targets.keys())
+        # Use >=, not ==: The flat inputs and outputs mode discards intermediate dependencies
+        # targets. The depfile mode doesn't, because it's not messy to write intermediate files to a
+        # temporary location, and it allows devs to change intermediate files manually and still build.
+        assert {p for ps in self.graph.values() for p in ps} >= self.prereqs.keys(), \
+            "{} not a superset of {}".format(self.graph.values(), self.prereqs.keys())
+        with open(depfile, 'w') as depfile:
+            for target, prereqs in sorted(self.graph.items()):
+                depfile.write(shlex.quote(target))
+                depfile.write(':')
+                for prereq in sorted(prereqs):
+                    depfile.write(' \\\n    ')
+                    depfile.write(shlex.quote(prereq))
+                depfile.write('\n')
+
 
 def parseArgs():
     parser = argparse.ArgumentParser()
@@ -115,16 +146,17 @@ def parseArgs():
     parser.add_argument(
         '--input',
         metavar='<xcfilelist>',
-        type=str,
-        required = True,
         help='path to the xcfilelist holding input files')
 
     parser.add_argument(
         '--output',
         metavar='<xcfilelist>',
-        type=str,
-        required = True,
         help='path to the xcfilelist holding output/generated files')
+
+    parser.add_argument(
+        '--depfile',
+        help='path to write a clang-style dependencies list to'
+    )
 
     return parser.parse_args()
 
@@ -133,9 +165,16 @@ def main():
     args = parseArgs()
     parser = Parser()
 
+    if not (args.input or args.output or args.depfile):
+        parser.error("No output paths specified")
+
     parser.doParse(sys.stdin)
-    parser.printInputs(args.input)
-    parser.printOutputs(args.output)
+    if args.input:
+        parser.printInputs(args.input)
+    if args.output:
+        parser.printOutputs(args.output)
+    if args.depfile:
+        parser.printDepfile(args.depfile)
 
 
 if __name__ == '__main__':

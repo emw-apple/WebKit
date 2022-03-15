@@ -22,6 +22,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 #
+set -e
 
 mkdir -p "${TARGET_BUILD_DIR}/${PRIVATE_HEADERS_FOLDER_PATH}"
 mkdir -p "${TARGET_BUILD_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}"
@@ -35,8 +36,5 @@ fi
 if [ "${ACTION}" = "analyze" -o "${ACTION}" = "build" -o "${ACTION}" = "install" -o "${ACTION}" = "installhdrs" -o "${ACTION}" = "installapi" ]; then
     ln -sfh "${WEBCORE_PRIVATE_HEADERS_DIR}" "${BUILT_PRODUCTS_DIR}/DerivedSources/WebKitLegacy/WebCorePrivateHeaders"
 
-    make -C mac -f "MigrateHeaders.make" -j `/usr/sbin/sysctl -n hw.activecpu` SDKROOT="${SDKROOT}" migrate_headers
-    for WK_CURRENT_ARCH in ${ARCHS}; do
-        make -C mac -f "MigrateHeaders.make" -j `/usr/sbin/sysctl -n hw.activecpu` SDKROOT="${SDKROOT}" WK_CURRENT_ARCH=${WK_CURRENT_ARCH} reexport_headers
-    done
+    make -C mac -f "MigrateHeaders.make" -j `/usr/sbin/sysctl -n hw.activecpu` -d all SDKROOT="${SDKROOT}" | "${SRCROOT}/../../Tools/Scripts/extract-dependencies-from-makefile" --depfile="${DERIVED_FILES_DIR}/MigrateHeaders.d"
 fi

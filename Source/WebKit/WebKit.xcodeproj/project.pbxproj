@@ -14850,6 +14850,7 @@
 		1A6280C81919956B006AD9F9 /* Migrate WebKitLegacy Headers */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
+			dependencyFile = "$(DERIVED_FILES_DIR)/MigrateHeaders.d";
 			files = (
 			);
 			inputPaths = (
@@ -14859,7 +14860,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${ACTION}\" = \"analyze\" -o \"${ACTION}\" = \"build\" -o \"${ACTION}\" = \"install\" -o \"${ACTION}\" = \"installhdrs\" -o \"${ACTION}\" = \"installapi\" ]; then\n    mkdir -p \"${BUILT_PRODUCTS_DIR}/DerivedSources/WebKit\"\n    ln -sfh \"${WEBKIT_LEGACY_PRIVATE_HEADERS_DIR}\" \"${BUILT_PRODUCTS_DIR}/DerivedSources/WebKit/WebKitLegacyPrivateHeaders\"\n    export WEBKIT_LEGACY_PRIVATE_HEADERS_DIR=\"${BUILT_PRODUCTS_DIR}/DerivedSources/WebKit/WebKitLegacyPrivateHeaders\"\n    make -C mac -f \"MigrateHeadersFromWebKitLegacy.make\" -j `/usr/sbin/sysctl -n hw.activecpu`\nfi\n";
+			shellScript = "set -e\nif [ \"${ACTION}\" = \"analyze\" -o \"${ACTION}\" = \"build\" -o \"${ACTION}\" = \"install\" -o \"${ACTION}\" = \"installhdrs\" -o \"${ACTION}\" = \"installapi\" ]; then\n    mkdir -p \"${BUILT_PRODUCTS_DIR}/DerivedSources/WebKit\"\n    ln -sfh \"${WEBKIT_LEGACY_PRIVATE_HEADERS_DIR}\" \"${BUILT_PRODUCTS_DIR}/DerivedSources/WebKit/WebKitLegacyPrivateHeaders\"\n    export WEBKIT_LEGACY_PRIVATE_HEADERS_DIR=\"${BUILT_PRODUCTS_DIR}/DerivedSources/WebKit/WebKitLegacyPrivateHeaders\"\n    make -C mac -f \"MigrateHeadersFromWebKitLegacy.make\" -j `/usr/sbin/sysctl -n hw.activecpu` -d | \"${SRCROOT}/../../Tools/Scripts/extract-dependencies-from-makefile\" --depfile=\"${DERIVED_FILES_DIR}/MigrateHeaders.d\"\nfi\n";
 		};
 		1AD98ECF191D867300CAA6DF /* Postprocess WKFoundation.h */ = {
 			isa = PBXShellScriptBuildPhase;
