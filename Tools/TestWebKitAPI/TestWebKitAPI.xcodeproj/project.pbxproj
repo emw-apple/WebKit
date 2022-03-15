@@ -977,6 +977,7 @@
 		CEBCA13A1E3A807A00C73293 /* page-without-csp.html in Copy Resources */ = {isa = PBXBuildFile; fileRef = CEBCA1371E3A803400C73293 /* page-without-csp.html */; };
 		CEBCA13B1E3A807A00C73293 /* page-without-csp-iframe.html in Copy Resources */ = {isa = PBXBuildFile; fileRef = CEBCA1361E3A803400C73293 /* page-without-csp-iframe.html */; };
 		CEDA12412437C9FB00C28A9E /* editable-region-composited-and-non-composited-overlap.html in Copy Resources */ = {isa = PBXBuildFile; fileRef = CEDA12402437C9EA00C28A9E /* editable-region-composited-and-non-composited-overlap.html */; };
+		DD00682E27E141FD00C41EDD /* WebKit.framework in Product Dependencies */ = {isa = PBXBuildFile; fileRef = C081224813FC1B0300DC39AE /* WebKit.framework */; };
 		DD0EDF8D2798A6AD005152AD /* libgtest.a in Product Dependencies */ = {isa = PBXBuildFile; fileRef = F3FC3EE213678B7300126A65 /* libgtest.a */; };
 		DDD2187627A21750002B7025 /* WebKit.framework in Product Dependencies */ = {isa = PBXBuildFile; fileRef = C081224813FC1B0300DC39AE /* WebKit.framework */; };
 		DF6580942722168900B3F1C1 /* ASN1Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF6580922722168900B3F1C1 /* ASN1Utilities.cpp */; };
@@ -1671,6 +1672,17 @@
 				2ED88824277125AB00DB7E99 /* WKInspectorExtensionEvaluateScriptOnPageInnerFrame.html in Copy Resources */,
 			);
 			name = "Copy Resources";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD00682D27E141E400C41EDD /* Product Dependencies */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				DD00682E27E141FD00C41EDD /* WebKit.framework in Product Dependencies */,
+			);
+			name = "Product Dependencies";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		DD0EDF8C2798A69E005152AD /* Product Dependencies */ = {
@@ -5239,6 +5251,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BC575986126E74AF006F0F12 /* Build configuration list for PBXNativeTarget "InjectedBundleTestWebKitAPI" */;
 			buildPhases = (
+				DD00682D27E141E400C41EDD /* Product Dependencies */,
 				BC57597C126E74AF006F0F12 /* Resources */,
 				BC57597D126E74AF006F0F12 /* Sources */,
 				BC57597E126E74AF006F0F12 /* Frameworks */,

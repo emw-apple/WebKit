@@ -29,3 +29,7 @@ FRAMEWORK_AND_LIBRARY_LDFLAGS[sdk=embedded*] = -lobjc -framework UIKit;
 FRAMEWORK_AND_LIBRARY_LDFLAGS[sdk=macosx*] = -framework JavaScriptCore -framework WebKit -framework CoreGraphics -framework Cocoa;
 
 OTHER_LDFLAGS = $(inherited) $(FRAMEWORK_AND_LIBRARY_LDFLAGS);
+
+EXCLUDED_SOURCE_FILE_NAMES = $(inherited) $(EXCLUDED_PRODUCT_DEPENDENCY_NAMES_$(WK_WHICH_BUILD_SYSTEM));
+EXCLUDED_PRODUCT_DEPENDENCY_NAMES_legacy = libWTF.a libWebKitAdditions.a;
+

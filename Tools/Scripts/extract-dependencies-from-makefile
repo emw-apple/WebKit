@@ -37,6 +37,7 @@ from __future__ import print_function
 
 import argparse
 import re
+import os
 import shlex
 import sys
 
@@ -71,12 +72,15 @@ class Parser(object):
     def addEdge(self, target, prereq):
         if {target, prereq} & {'all', 'force'}:
             return
+        target = os.path.realpath(target)
+        prereq = os.path.realpath(prereq)
         prereqs = self.graph.setdefault(target, set())
         prereqs.add(prereq)
         
     def addNode(self, target):
         if target in ('all', 'force'):
             return
+        target = os.path.realpath(target)
         self.graph.setdefault(target, set())
 
     def doParse(self, input):
@@ -114,6 +118,8 @@ class Parser(object):
 
         for key in self.targets.keys():
             self.prereqs.pop(key, None)
+        for prereqs in self.graph.values():
+            prereqs.difference_update(self.graph.keys())
 
     def printInputs(self, inputsFile):
         with open(inputsFile, 'w') as toFile:
@@ -124,12 +130,6 @@ class Parser(object):
             [ print("{}".format(f), file = toFile) for f in sorted(self.targets.keys()) ]
 
     def printDepfile(self, depfile):
-        assert sorted(self.graph.keys()) == sorted(self.targets.keys())
-        # Use >=, not ==: The flat inputs and outputs mode discards intermediate dependencies
-        # targets. The depfile mode doesn't, because it's not messy to write intermediate files to a
-        # temporary location, and it allows devs to change intermediate files manually and still build.
-        assert {p for ps in self.graph.values() for p in ps} >= self.prereqs.keys(), \
-            "{} not a superset of {}".format(self.graph.values(), self.prereqs.keys())
         with open(depfile, 'w') as depfile:
             for target, prereqs in sorted(self.graph.items()):
                 depfile.write(shlex.quote(target))
