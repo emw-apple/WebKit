@@ -25,8 +25,8 @@
 #
 set -e
 
-mkdir -p "${TARGET_BUILD_DIR}/WebKitLegacy.framework/${BUNDLE_PRIVATE_HEADERS_FOLDER_PATH}"
-mkdir -p "${TARGET_BUILD_DIR}/WebKitLegacy.framework/${BUNDLE_PUBLIC_HEADERS_FOLDER_PATH}"
+mkdir -p "${TARGET_BUILD_DIR}/WebKitLegacy.framework/${WK_FRAMEWORK_VERSION_PREFIX}PrivateHeaders"
+mkdir -p "${TARGET_BUILD_DIR}/WebKitLegacy.framework/${WK_FRAMEWORK_VERSION_PREFIX}Headers"
 mkdir -p "${BUILT_PRODUCTS_DIR}/DerivedSources/WebKitLegacy"
 
 # If we didn't build WebCore, use the production copy of the headers

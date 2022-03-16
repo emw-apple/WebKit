@@ -69,7 +69,7 @@ $(DERIVED_MAKEFILES_PATTERNS) : $(PROJECT_DIR)/mac/MigrateHeaders.make
 
 VPATH = DOM $(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/WebCorePrivateHeaders
 
-PRIVATE_HEADERS_DIR = $(BUILT_PRODUCTS_DIR)/WebKitLegacy.framework/$(BUNDLE_PRIVATE_HEADERS_FOLDER_PATH)
+PRIVATE_HEADERS_DIR = $(BUILT_PRODUCTS_DIR)/WebKitLegacy.framework/$(WK_FRAMEWORK_VERSION_PREFIX)PrivateHeaders
 
 HEADERS = \
     $(PRIVATE_HEADERS_DIR)/WebKitAvailability.h \
