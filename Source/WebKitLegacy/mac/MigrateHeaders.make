@@ -62,7 +62,7 @@ include $(FEATURES)
 DERIVED_MAKEFILES = $(DEPFILE) $(FEATURES)
 DERIVED_MAKEFILES_PATTERNS = $(subst .d,%d,$(DERIVED_MAKEFILES))
 
-$(DERIVED_MAKEFILES_PATTERNS) :
+$(DERIVED_MAKEFILES_PATTERNS) : $(PROJECT_DIR)/mac/MigrateHeaders.make
 	$(CC) -std=c++2a -x c++ -E -P -dM $(DEPFILE_FLAGS) $(SDK_FLAGS) $(TARGET_TRIPLE_FLAGS) $(FRAMEWORK_FLAGS) $(HEADER_FLAGS) -include "wtf/Platform.h" /dev/null | $(PERL) -ne "print if s/\#define ((HAVE_|USE_|ENABLE_|WTF_PLATFORM_)\w+) 1/\1 = YES/" > $(FEATURES)
 
 # --------
@@ -106,7 +106,7 @@ all : $(HEADERS)
 WEBCORE_HEADER_REPLACE_RULES = -e 's/<WebCore\//<WebKitLegacy\//' -e "s/(^ *)WEBCORE_EXPORT /\1/"
 WEBCORE_HEADER_MIGRATE_CMD = sed -E $(WEBCORE_HEADER_REPLACE_RULES) $< > $@; touch $(PRIVATE_HEADERS_DIR)
 
-$(PRIVATE_HEADERS_DIR)/% : % MigrateHeaders.make
+$(PRIVATE_HEADERS_DIR)/% : % $(PROJECT_DIR)/mac/MigrateHeaders.make
 	$(WEBCORE_HEADER_MIGRATE_CMD)
 
 ifneq ($(WK_PLATFORM_NAME), macosx)
@@ -118,7 +118,7 @@ all : $(REEXPORT_FILES)
 
 TAPI_PATH := $(strip $(shell xcrun --find tapi 2>/dev/null))
 
-$(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols_%.exp : $(HEADERS)
-	$(TAPI_PATH) reexport -target $*-$(LLVM_TARGET_TRIPLE_VENDOR)-$(LLVM_TARGET_TRIPLE_OS_VERSION)$(LLVM_TARGET_TRIPLE_SUFFIX) -isysroot $(SDK_DIR) $(HEADER_FLAGS) $(FRAMEWORK_FLAGS) $^ -o $@
+$(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols_%.exp : $(PROJECT_DIR)/mac/MigrateHeaders.make $(HEADERS)
+	$(TAPI_PATH) reexport -target $*-$(LLVM_TARGET_TRIPLE_VENDOR)-$(LLVM_TARGET_TRIPLE_OS_VERSION)$(LLVM_TARGET_TRIPLE_SUFFIX) -isysroot $(SDK_DIR) $(HEADER_FLAGS) $(FRAMEWORK_FLAGS) $(filter-out $<,$^) -o $@
 
 endif

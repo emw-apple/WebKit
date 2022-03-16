@@ -332,21 +332,11 @@ class BaseGenerator(object):
                         "--output", output.name],
                     input=stdout)
 
-            # TODO: Make this generator-specific (there's no need to reference
-            # WebCore, for example, when processing the JavaScriptCore
-            # project).
-
             input_lines = [line for line in self._get_file_lines(input.name) if line != '/dev/null']
-            output_lines = [line for line in self._get_file_lines(output.name) if line != '/dev/null']
-            
-            input_lines = [os.path.realpath(line) for line in input_lines]
-
-            input_lines = self._replacePrefix(input_lines, "WebCore/",                      "$(PROJECT_DIR)/")
-            input_lines = self._replacePrefix(input_lines, "WebKit2PrivateHeaders/",        "$(WEBKIT2_PRIVATE_HEADERS_DIR)/")
+            output_lines = self._get_file_lines(output.name)
 
             input_lines = self._unexpand(input_lines, "PROJECT_DIR")
             input_lines = self._unexpand(input_lines, "WEBCORE_PRIVATE_HEADERS_DIR")
-            input_lines = self._unexpand(input_lines, "WEBKIT2_PRIVATE_HEADERS_DIR")
             input_lines = self._unexpand(input_lines, "WEBKITADDITIONS_HEADERS_FOLDER_PATH")
             input_lines = self._unexpand(input_lines, "BUILT_PRODUCTS_DIR")    # Do this last, since it's a prefix of some other variables and will "intercept" them if executed earlier than them.
 
@@ -863,7 +853,8 @@ class WebKitLegacyGenerator(BaseGenerator):
     @util.LogEntryExit
     def _get_generate_unified_sources_script(self):
         return os.path.join(self._get_project_dir(), "scripts", "generate-unified-sources.sh")
-        
+
+    @util.LogEntryExit
     def _get_migrate_headers_script(self):
         return os.path.join(self._get_project_dir(), "mac", "migrate-headers.sh")
 

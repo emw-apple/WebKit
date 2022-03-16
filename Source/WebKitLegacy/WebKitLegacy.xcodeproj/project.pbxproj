@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -3195,13 +3195,17 @@
 			dependencyFile = "$(DERIVED_FILES_DIR)/MigrateHeaders.d";
 			files = (
 			);
+			inputFileListPaths = (
+				"$(SRCROOT)/MigrateHeaders-input.xcfilelist",
+			);
 			inputPaths = (
 				"$(PROJECT_DIR)/mac/MigrateHeaders.make",
-				"$(WEBCORE_PRIVATE_HEADERS_DIR)",
 			);
 			name = "Migrate Headers";
+			outputFileListPaths = (
+				"$(SRCROOT)/MigrateHeaders-output.xcfilelist",
+			);
 			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols.timestamp",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

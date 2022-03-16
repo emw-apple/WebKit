@@ -13,7 +13,7 @@ $(BUILT_PRODUCTS_DIR)/usr/local/include/wtf/PlatformHave.h
 $(BUILT_PRODUCTS_DIR)/usr/local/include/wtf/PlatformLegacy.h
 $(BUILT_PRODUCTS_DIR)/usr/local/include/wtf/PlatformOS.h
 $(BUILT_PRODUCTS_DIR)/usr/local/include/wtf/PlatformUse.h
-$(PROJECT_DIR)/MigrateHeaders.make
+$(PROJECT_DIR)/mac/MigrateHeaders.make
 $(WEBCORE_PRIVATE_HEADERS_DIR)/AbstractPasteboard.h
 $(WEBCORE_PRIVATE_HEADERS_DIR)/KeyEventCodesIOS.h
 $(WEBCORE_PRIVATE_HEADERS_DIR)/WAKAppKitStubs.h
