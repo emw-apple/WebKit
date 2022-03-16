@@ -37,5 +37,5 @@ fi
 if [ "${ACTION}" = "analyze" -o "${ACTION}" = "build" -o "${ACTION}" = "install" -o "${ACTION}" = "installhdrs" -o "${ACTION}" = "installapi" ]; then
     ln -sfh "${WEBCORE_PRIVATE_HEADERS_DIR}" "${BUILT_PRODUCTS_DIR}/DerivedSources/WebKitLegacy/WebCorePrivateHeaders"
 
-    make -C mac -f "MigrateHeaders.make" -j `/usr/sbin/sysctl -n hw.activecpu` -d all SDKROOT="${SDKROOT}"
+    make -C mac -f "MigrateHeaders.make" -j `/usr/sbin/sysctl -n hw.activecpu` all SDKROOT="${SDKROOT}" "$@"
 fi

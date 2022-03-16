@@ -3198,7 +3198,7 @@
 				"$(SRCROOT)/MigrateHeaders-input.xcfilelist",
 			);
 			inputPaths = (
-				"$(PROJECT_DIR)/mac/MigrateHeaders.make",
+				"$(SRCROOT)/mac/migrate-headers.sh",
 			);
 			name = "Migrate Headers";
 			outputFileListPaths = (
@@ -3208,7 +3208,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "exec \"${SRCROOT}/mac/migrate-headers.sh\"\n";
+			shellScript = "exec \"${SCRIPT_INPUT_FILE_0}\"\n";
 		};
 		3713F018142905B70036387F /* Check For Inappropriate Objective-C Class Names */ = {
 			isa = PBXShellScriptBuildPhase;
