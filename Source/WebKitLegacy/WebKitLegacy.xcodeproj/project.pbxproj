@@ -3674,6 +3674,7 @@
 		};
 		537CF84022EFC4C900C6EBB3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1C904FD20BA9DD0F0081E9D0 /* WebKitLegacy.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3682,6 +3683,7 @@
 		};
 		537CF84122EFC4C900C6EBB3 /* Production */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1C904FD20BA9DD0F0081E9D0 /* WebKitLegacy.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";

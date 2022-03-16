@@ -36,37 +36,40 @@ ifeq ($(USE_LLVM_TARGET_TRIPLES_FOR_CLANG),YES)
     TARGET_TRIPLE_FLAGS = -target $(WK_CURRENT_ARCH)-$(LLVM_TARGET_TRIPLE_VENDOR)-$(LLVM_TARGET_TRIPLE_OS_VERSION)$(LLVM_TARGET_TRIPLE_SUFFIX)
 endif
 
-# The HEADERS this Makefile uses depends on enabled features. To get feature information into Make:
-# - Preprocess an empty file through clang, and record the feature macros that were defined.
-# - Create a Make-like file of feature macros which sets them all to "YES". Include that file and use it
-#   for conditional logic.
-# - Emit a depfile from clang to track which platform headers were used to evaluate active features.
-#   Set the target name in this file to "MigrateHeaders.make", so that it's really declaring that
-#   *this Makefile* depends on those platform headers. Include the depfile.
-# - Now, `make all` will rerun when any feature flag changes, and extract-dependencies-from-makefile will emit
-#   the platform headers as dependencies to this script phase.
+# Which headers are migrated depends on enabled features. To get feature information into Make and
+# ensure that feature changes will cause the script to rerun:
+#
+# 1. Preprocess an empty file through clang, and record the feature macros that were defined.
+# 2. Create a Make-like file of feature macros which sets them all to "YES". Include that file and
+#    use it for conditional logic.
+# 3. Emit a depfile from clang to track which platform headers were used to evaluate active
+#    features. Set the target name in this file to $(FEATURES), since that's the name of the file
+#    which Make includes and which needs to be regenerated when the platform headers change.
 
-DEPFILE = $(TARGET_TEMP_DIR)/MigrateHeaders-cc.d
-DEPFILE_FLAGS = -MMD -MF $(DEPFILE) -MT MigrateHeaders.make 
-FEATURES_FILE =  $(TARGET_TEMP_DIR)/MigrateHeaders-features.d
+sp :=	# used for escaping spaces
+sp +=
+
+DEPFILE = $(subst $(sp),\$(sp),$(TARGET_TEMP_DIR))/MigrateHeaders-cc.d
+DEPFILE_FLAGS = -MMD -MF $(DEPFILE) -MT "$(FEATURES)"
+FEATURES = $(subst $(sp),\$(sp),$(TARGET_TEMP_DIR))/MigrateHeaders-features.d
 
 FRAMEWORK_FLAGS := $(shell echo $(BUILT_PRODUCTS_DIR) $(FRAMEWORK_SEARCH_PATHS) $(SYSTEM_FRAMEWORK_SEARCH_PATHS) | $(PERL) -e 'print "-F " . join(" -F ", split(" ", <>));')
 HEADER_FLAGS := $(shell echo $(BUILT_PRODUCTS_DIR) $(HEADER_SEARCH_PATHS) $(SYSTEM_HEADER_SEARCH_PATHS) | $(PERL) -e 'print "-I" . join(" -I", split(" ", <>));')
 
 include $(DEPFILE)
-include $(FEATURES_FILE)
+include $(FEATURES)
 
-DERIVED_MAKEFILES = $(DEPFILE) $(FEATURES_FILE)
+DERIVED_MAKEFILES = $(DEPFILE) $(FEATURES)
 DERIVED_MAKEFILES_PATTERNS = $(subst .d,%d,$(DERIVED_MAKEFILES))
 
 $(DERIVED_MAKEFILES_PATTERNS) :
-	$(CC) -std=c++2a -x c++ -E -P -dM $(DEPFILE_FLAGS) $(SDK_FLAGS) $(TARGET_TRIPLE_FLAGS) $(FRAMEWORK_FLAGS) $(HEADER_FLAGS) -include "wtf/Platform.h" /dev/null | $(PERL) -ne "print if s/\#define ((HAVE_|USE_|ENABLE_|WTF_PLATFORM_)\w+) 1/\1 = YES/" > $(FEATURES_FILE)
+	$(CC) -std=c++2a -x c++ -E -P -dM $(DEPFILE_FLAGS) $(SDK_FLAGS) $(TARGET_TRIPLE_FLAGS) $(FRAMEWORK_FLAGS) $(HEADER_FLAGS) -include "wtf/Platform.h" /dev/null | $(PERL) -ne "print if s/\#define ((HAVE_|USE_|ENABLE_|WTF_PLATFORM_)\w+) 1/\1 = YES/" > $(FEATURES)
 
 # --------
 
 VPATH = DOM $(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/WebCorePrivateHeaders
 
-PRIVATE_HEADERS_DIR = $(BUILT_PRODUCTS_DIR)/$(PRIVATE_HEADERS_FOLDER_PATH)
+PRIVATE_HEADERS_DIR = $(BUILT_PRODUCTS_DIR)/WebKitLegacy.framework/$(BUNDLE_PRIVATE_HEADERS_FOLDER_PATH)
 
 HEADERS = \
     $(PRIVATE_HEADERS_DIR)/WebKitAvailability.h \
@@ -108,9 +111,10 @@ $(PRIVATE_HEADERS_DIR)/% : % MigrateHeaders.make
 
 ifneq ($(WK_PLATFORM_NAME), macosx)
 
-REEXPORT_FILE = $(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols_$(WK_CURRENT_ARCH).exp
+REEXPORT_NAMES = $(ARCHS:%=ReexportedWebCoreSymbols_%.exp)
+REEXPORT_FILES = $(addprefix $(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/, $(REEXPORT_NAMES))
 
-all : $(ARCHS:%=$(BUILT_PRODUCTS_DIR)/DerivedSources/WebKitLegacy/ReexportedWebCoreSymbols_%.exp)
+all : $(REEXPORT_FILES)
 
 TAPI_PATH := $(strip $(shell xcrun --find tapi 2>/dev/null))
 

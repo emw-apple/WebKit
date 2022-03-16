@@ -94,6 +94,8 @@ class BaseGenerator(object):
         self.added_lines_output_derived = None
         self.added_lines_input_unified = None
         self.added_lines_output_unified = None
+        self.added_lines_input_migrate_headers = None
+        self.added_lines_output_migrate_headers = None
 
         self.cached_build_dirs = None
 
@@ -179,6 +181,7 @@ class BaseGenerator(object):
     @util.LogEntryExit
     def generate(self):
         self._generate_derived()
+        self._generate_migrate_headers()
         self._generate_unified()
 
     # Merge any saved added lines to their ultimate destinations.
@@ -186,6 +189,7 @@ class BaseGenerator(object):
     @util.LogEntryExit
     def merge(self):
         self._merge_derived()
+        self._merge_migrate_headers()
         self._merge_unified()
 
     @util.LogEntryExit
@@ -202,6 +206,8 @@ class BaseGenerator(object):
     def has_action(self):
         return (self.added_lines_input_derived or
                 self.added_lines_output_derived or
+                self.added_lines_input_migrate_headers or
+                self.added_lines_output_migrate_headers or
                 self.added_lines_input_unified or
                 self.added_lines_output_unified)
 
@@ -300,6 +306,61 @@ class BaseGenerator(object):
     def _merge_derived(self):
         self._merge_added_lines(self.added_lines_input_derived, self._get_input_derived_xcfilelist_project_path())
         self._merge_added_lines(self.added_lines_output_derived, self._get_output_derived_xcfilelist_project_path())
+        
+    # Generate .xcfilelist content for the "Migrate Headers" build phase.
+
+    @util.LogEntryExit
+    def _generate_migrate_headers(self):
+        script = self._get_migrate_headers_script()
+        if not script:
+            return
+
+        with tempfile.NamedTemporaryFile(dir=self._get_temp_dir()) as input, \
+                tempfile.NamedTemporaryFile(dir=self._get_temp_dir()) as output:
+            (stdout, stderr) = util.subprocess_run(
+                    [script,
+                        "NO_SUPPLEMENTAL_FILES=1",
+                        "--no-builtin-rules",
+                        "--dry-run",
+                        "--always-make",
+                        "--debug=abvijm",
+                        "all"])
+            stdout = stdout.encode() if isinstance(stdout, str) else stdout
+            (stdout, stderr) = util.subprocess_run(
+                    [self.application.get_extract_dependencies_from_makefile_script(),
+                        "--input", input.name,
+                        "--output", output.name],
+                    input=stdout)
+
+            # TODO: Make this generator-specific (there's no need to reference
+            # WebCore, for example, when processing the JavaScriptCore
+            # project).
+
+            input_lines = [line for line in self._get_file_lines(input.name) if line != '/dev/null']
+            output_lines = [line for line in self._get_file_lines(output.name) if line != '/dev/null']
+            
+            input_lines = [os.path.realpath(line) for line in input_lines]
+
+            input_lines = self._replacePrefix(input_lines, "WebCore/",                      "$(PROJECT_DIR)/")
+            input_lines = self._replacePrefix(input_lines, "WebKit2PrivateHeaders/",        "$(WEBKIT2_PRIVATE_HEADERS_DIR)/")
+
+            input_lines = self._unexpand(input_lines, "PROJECT_DIR")
+            input_lines = self._unexpand(input_lines, "WEBCORE_PRIVATE_HEADERS_DIR")
+            input_lines = self._unexpand(input_lines, "WEBKIT2_PRIVATE_HEADERS_DIR")
+            input_lines = self._unexpand(input_lines, "WEBKITADDITIONS_HEADERS_FOLDER_PATH")
+            input_lines = self._unexpand(input_lines, "BUILT_PRODUCTS_DIR")    # Do this last, since it's a prefix of some other variables and will "intercept" them if executed earlier than them.
+
+            output_lines = self._unexpand(output_lines, "TARGET_TEMP_DIR")
+            output_lines = self._unexpand(output_lines, "BUILT_PRODUCTS_DIR")
+
+            self.added_lines_input_migrate_headers = self._find_added_lines(input_lines, self._get_input_migrate_headers_xcfilelist_project_path())
+            self.added_lines_output_migrate_headers = self._find_added_lines(output_lines, self._get_output_migrate_headers_xcfilelist_project_path())
+
+    @util.LogEntryExit
+    def _merge_migrate_headers(self):
+        self._merge_added_lines(self.added_lines_input_migrate_headers, self._get_input_migrate_headers_xcfilelist_project_path())
+        self._merge_added_lines(self.added_lines_output_migrate_headers, self._get_output_migrate_headers_xcfilelist_project_path())
+
 
     # Generate .xcfilelist content for the "Generate Unified Sources" build
     # phase.
@@ -702,6 +763,14 @@ class BaseGenerator(object):
         return os.path.join(self._get_xcfilelist_dir(), "DerivedSources-output.xcfilelist")
 
     @util.LogEntryExit
+    def _get_input_migrate_headers_xcfilelist_project_path(self):
+        return os.path.join(self._get_xcfilelist_dir(), "MigrateHeaders-input.xcfilelist")
+
+    @util.LogEntryExit
+    def _get_output_migrate_headers_xcfilelist_project_path(self):
+        return os.path.join(self._get_xcfilelist_dir(), "MigrateHeaders-output.xcfilelist")
+
+    @util.LogEntryExit
     def _get_input_unified_xcfilelist_project_path(self):
         return os.path.join(self._get_xcfilelist_dir(), "UnifiedSources-input.xcfilelist")
 
@@ -713,6 +782,10 @@ class BaseGenerator(object):
 
     @util.LogEntryExit
     def _get_generate_derived_sources_script(self):
+        return None
+    
+    @util.LogEntryExit
+    def _get_migrate_headers_script(self):
         return None
 
     @util.LogEntryExit
@@ -790,6 +863,9 @@ class WebKitLegacyGenerator(BaseGenerator):
     @util.LogEntryExit
     def _get_generate_unified_sources_script(self):
         return os.path.join(self._get_project_dir(), "scripts", "generate-unified-sources.sh")
+        
+    def _get_migrate_headers_script(self):
+        return os.path.join(self._get_project_dir(), "mac", "migrate-headers.sh")
 
 
 class DumpRenderTreeGenerator(BaseGenerator):
