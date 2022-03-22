@@ -26,6 +26,8 @@
         instead of renaming it WebKit.h -> WebKitLegacy.h during the build.
         * WebKit.xcodeproj/project.pbxproj: Added 'Migrated Headers' group and build rule.
         Configured headers to always copy using XCBuild. Removed legacy-only header script phases.
+        * WebProcess/WebCoreSupport/ios/WebFrameLoaderClientIOS.mm: This file used unqualified
+        <HEADER.h> imports, which are not supported by Xcode's headermaps. Replaced with "HEADER.h".
         * mac/MigrateHeadersFromWebKitLegacy.make: Removed, logic now lives in
         mingrate-headers-rule.sh.
         * mac/postprocess-framework-headers.sh: Removed.
