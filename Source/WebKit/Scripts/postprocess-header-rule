@@ -44,7 +44,7 @@ process_definitions "${BUILT_PRODUCTS_DIR}/${DEFINITIONS_PATH}" || process_defin
 
 # Determine what postprocessor steps to run based on build settings and the file being
 # processed, then pipe together all the commands we need and write the output file.
-# TODO: rdar://90704735 (Run unifdef more uniformly on all WebKit.framework headers)
+# FIXME: rdar://90704735 (Run unifdef more uniformly on all WebKit.framework headers)
 
 if [[ "${WK_FRAMEWORK_HEADER_POSTPROCESSING_DISABLED}" != "YES" ]]; then
     if [[ "${WK_PLATFORM_NAME}" == "macosx" ]]; then
