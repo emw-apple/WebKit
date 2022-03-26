@@ -1,3 +1,15 @@
+2022-03-25  Elliott Williams  <emw@apple.com>
+
+        [XCBuild] WebKitLegacy's "Migrated headers" script does not emit task information
+        https://bugs.webkit.org/show_bug.cgi?id=238409
+        <rdar://problem/90869551>
+
+        Reviewed by NOBODY (OOPS!).
+
+        * Scripts/check-for-inappropriate-files-in-framework: We were relying on a script to create
+        an (empty) WebKitLegacy.framework/Headers directory. All its headers are private, so this
+        script should check PrivateHeaders/ too.
+
 2022-03-29  Wenson Hsieh  <wenson_hsieh@apple.com>
 
         HTMLAttachmentElement.getAttachmentIdentifier() should propagate attachment data to the client
