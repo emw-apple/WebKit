@@ -3491,7 +3491,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "[ \"${WK_USE_NEW_BUILD_SYSTEM}\" = YES ] && exit 0\nxcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration ${CONFIGURATION} installhdrs OBJROOT=\"${TARGET_TEMP_DIR}/LegacyInstallHeaders-build\" SYMROOT=\"${SYMROOT}\" DSTROOT=\"${DSTROOT}\" SDKROOT=\"${SDKROOT}\" SDK_VARIANT=\"${SDK_VARIANT}\" ARCHS=\"${ARCHS}\" INSTALLHDRS_SCRIPT_PHASE=NO WK_OVERRIDE_FRAMEWORKS_DIR=/ -UseNewBuildSystem=YES\n\n";
+			shellScript = "[ \"${WK_USE_NEW_BUILD_SYSTEM}\" = YES ] && exit 0\nxcodebuild -project \"${PROJECT_FILE_PATH}\" -target \"${TARGET_NAME}\" -configuration ${CONFIGURATION} installhdrs OBJROOT=\"${TARGET_TEMP_DIR}/LegacyInstallHeaders-build\" DERIVED_FILE_DIR=\"${DERIVED_FILE_DIR}\" SYMROOT=\"${SYMROOT}\" DSTROOT=\"${DSTROOT}\" SDKROOT=\"${SDKROOT}\" SDK_VARIANT=\"${SDK_VARIANT}\" ARCHS=\"${ARCHS}\" INSTALLHDRS_SCRIPT_PHASE=NO WK_OVERRIDE_FRAMEWORKS_DIR=/ -UseNewBuildSystem=YES\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
