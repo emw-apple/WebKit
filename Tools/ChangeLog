@@ -7,8 +7,8 @@
         Reviewed by NOBODY (OOPS!).
 
         * Scripts/check-for-inappropriate-files-in-framework: We were relying on a script to create
-        an (empty) WebKitLegacy.framework/Headers directory. All its headers are private, so this
-        script should check PrivateHeaders/ too.
+        an (empty) WebKitLegacy.framework/Headers directory, which was being scanned here.
+        WebKitLegacy is entirely private API, so change it to check PrivateHeaders/.
 
 2022-03-29  Wenson Hsieh  <wenson_hsieh@apple.com>
 
