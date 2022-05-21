@@ -11940,7 +11940,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "if [[ \"${SKIP_INSTALL}\" == \"NO\" && \"${WK_USE_ALTERNATE_FRAMEWORKS_DIR}\" == \"NO\" ]]; then\n    mkdir -p \"${DSTROOT}/usr/local/bin\"\n    cd \"${DSTROOT}/usr/local/bin\"\n    if [ -L jsc ]; then\n        rm -f jsc\n    fi\n    ln -s \"../../..${INSTALL_PATH}/jsc\" jsc\n    exit\nfi\n";
+			shellScript = "if [[ \"${SKIP_INSTALL}\" == \"NO\" && \"${SDK_VARIANT}\" != \"iosmac\" ]]; then\n    mkdir -p \"${DSTROOT}/usr/local/bin\"\n    cd \"${DSTROOT}/usr/local/bin\"\n    if [ -L jsc ]; then\n        rm -f jsc\n    fi\n    ln -s \"../../..${INSTALL_PATH}/jsc\" jsc\n    exit\nfi\n";
 		};
 		5DF7E1CC188E6B87003F9A46 /* Copy jsc into JavaScriptCore.framework */ = {
 			isa = PBXShellScriptBuildPhase;

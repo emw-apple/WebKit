@@ -8,7 +8,7 @@ cd $SRCROOT
 
 if [ -z "${BUILD_SCRIPTS_DIR}" ]; then
     if [ "${DEPLOYMENT_LOCATION}" == "YES" ]; then
-        BUILD_SCRIPTS_DIR="${SDKROOT}${WK_ALTERNATE_WEBKIT_SDK_PATH}/usr/local/include/wtf/Scripts"
+        BUILD_SCRIPTS_DIR="${SDKROOT}${SYSTEM_PREFIX}/usr/local/include/wtf/Scripts"
     else
         BUILD_SCRIPTS_DIR="${BUILT_PRODUCTS_DIR}/usr/local/include/wtf/Scripts"
     fi

@@ -40,9 +40,7 @@ INSTALL_PATH = $(INSTALL_PATH_PREFIX)$(WEBKIT_FRAMEWORKS_DIR);
 // Workaround for "JavaScriptCore is not available when building for watchOS." error (rdar://91668054)
 DISABLE_SDK_METADATA_PARSING[sdk=watch*] = YES
 
-DYLIB_INSTALL_NAME_BASE = $(DYLIB_INSTALL_NAME_BASE_$(WK_USE_ALTERNATE_FRAMEWORKS_DIR));
-DYLIB_INSTALL_NAME_BASE_NO = $(NORMAL_WEBKIT_FRAMEWORKS_DIR);
-DYLIB_INSTALL_NAME_BASE_YES = $(WEBKIT_FRAMEWORKS_DIR);
+DYLIB_INSTALL_NAME_BASE = $(NORMAL_WEBKIT_FRAMEWORKS_DIR);
 
 ALTERNATE_ROOT_PATH = $(NORMAL_WEBKIT_FRAMEWORKS_DIR);
 
@@ -184,7 +182,7 @@ REEXPORTED_FRAMEWORK_NAMES[sdk=macosx*] = $(inherited) WebCore;
 
 // FIXME: Remove -reexport_install_name once rdar://problem/30820233 is fixed.
 OTHER_TAPI_FLAGS = $(OTHER_TAPI_FLAGS_$(WK_COCOA_TOUCH));
-OTHER_TAPI_FLAGS_cocoatouch = $(inherited) -reexport_install_name $(WK_ALTERNATE_WEBKIT_SDK_PATH)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/WebKitLegacy.framework/WebKitLegacy -extra-private-header $(SRCROOT)/Platform/ExtraPrivateSymbolsForTAPI.h -extra-public-header $(SRCROOT)/Platform/ExtraPublicSymbolsForTAPI.h -exclude-private-header $(BUILT_PRODUCTS_DIR)/$(PRIVATE_HEADERS_FOLDER_PATH)/NSURLDownloadSPI.h;
+OTHER_TAPI_FLAGS_cocoatouch = $(inherited) -reexport_install_name $(SYSTEM_PREFIX)$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/WebKitLegacy.framework/WebKitLegacy -extra-private-header $(SRCROOT)/Platform/ExtraPrivateSymbolsForTAPI.h -extra-public-header $(SRCROOT)/Platform/ExtraPublicSymbolsForTAPI.h -exclude-private-header $(BUILT_PRODUCTS_DIR)/$(PRIVATE_HEADERS_FOLDER_PATH)/NSURLDownloadSPI.h;
 
 SECTORDER_FLAGS = $(SECTORDER_FLAGS_$(CONFIGURATION));
 SECTORDER_FLAGS_Production[sdk=iphoneos*] = -Wl,-order_file,$(SDKROOT)/AppleInternal/OrderFiles/WebKit.order;

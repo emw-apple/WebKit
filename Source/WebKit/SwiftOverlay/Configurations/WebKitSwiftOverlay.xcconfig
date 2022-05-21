@@ -49,7 +49,7 @@ INSTALLHDRS_SCRIPT_PHASE = YES;
 
 // The install path is /usr/lib/swift except if we're building using the iosmac
 // SDK variant on macOS, in which case it's /System/iOSSupport/usr/lib/swift.
-INSTALL_PATH = $(WK_ALTERNATE_FRAMEWORKS_DIR)$(SWIFT_OVERLAY_INSTALL_PATH);
+INSTALL_PATH = $(SYSTEM_PREFIX)$(SWIFT_OVERLAY_INSTALL_PATH);
 
 WK_SWIFT_CONCURRENCY_FLAGS = -Xfrontend -enable-experimental-concurrency;
 WK_SWIFT_CONCURRENCY_FLAGS[sdk=macos*11.*] = ;
