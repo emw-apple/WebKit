@@ -44,6 +44,7 @@
 #include <climits>
 #include <cstdio>
 #include <wtf/StdLibExtras.h>
+#include <wtf/SystemTracing.h>
 #include <wtf/text/CString.h>
 
 #if PLATFORM(MAC) && !PLATFORM(IOS_FAMILY)
@@ -150,6 +151,7 @@ WKRetainPtr<WKMutableDictionaryRef> TestInvocation::createTestSettingsDictionary
 
 void TestInvocation::invoke()
 {
+    WTFBeginSignpost(this, "PrepareForTest", "url=%@ pid=%d", m_url.get(), WKPageGetProcessIdentifier(TestController::singleton().mainWebView()->page()));
     TestController::singleton().configureViewForTest(*this);
 
     WKPageSetAddsVisitedLinks(TestController::singleton().mainWebView()->page(), false);
@@ -159,9 +161,10 @@ void TestInvocation::invoke()
     TestController::singleton().setShouldLogHistoryClientCallbacks(shouldLogHistoryClientCallbacks());
 
     WKHTTPCookieStoreSetHTTPCookieAcceptPolicy(WKWebsiteDataStoreGetHTTPCookieStore(TestController::singleton().websiteDataStore()), kWKHTTPCookieAcceptPolicyOnlyFromMainDocumentDomain, nullptr, nullptr);
+    WTFEndSignpost(this, "PrepareForTest");
 
+    WTFBeginSignpost(this, "BeginTest", "url=%@ pid=%d", m_url.get(), WKPageGetProcessIdentifier(TestController::singleton().mainWebView()->page()));
     // FIXME: We should clear out visited links here.
-
     postPageMessage("BeginTest", createTestSettingsDictionary());
 
     m_startedTesting = true;
@@ -171,13 +174,17 @@ void TestInvocation::invoke()
     TestController::singleton().runUntil(m_gotInitialResponse, TestController::noTimeout);
     if (m_error)
         goto end;
+    WTFEndSignpost(this, "BeginTest");
 
+    WTFBeginSignpost(this, "LoadTestURL", "url=%@ pid=%d", m_url.get(), WKPageGetProcessIdentifier(TestController::singleton().mainWebView()->page()));
     WKPageLoadURLWithShouldOpenExternalURLsPolicy(TestController::singleton().mainWebView()->page(), m_url.get(), shouldOpenExternalURLs);
-
+    
     TestController::singleton().runUntil(m_gotFinalMessage, TestController::noTimeout);
     if (m_error)
         goto end;
+    WTFEndSignpost(this, "LoadTestURL");
 
+    WTFBeginSignpost(this, "DumpTestResults", "url=%@ pid=%d", m_url.get(), WKPageGetProcessIdentifier(TestController::singleton().mainWebView()->page()));
     dumpResults();
 
 end:
@@ -185,14 +192,21 @@ end:
     if (m_gotInitialResponse)
         WKInspectorClose(WKPageGetInspector(TestController::singleton().mainWebView()->page()));
 #endif // !PLATFORM(IOS_FAMILY)
-
-    if (TestController::singleton().resetStateToConsistentValues(m_options, TestController::ResetStage::AfterTest))
+    WTFEndSignpost(this, "BeginTest");
+    WTFEndSignpost(this, "LoadTestURL");
+    WTFEndSignpost(this, "DumpTestResults");
+    
+    WTFBeginSignpost(this, "ResetTestControllerState", "%@", m_url.get());
+    if (TestController::singleton().resetStateToConsistentValues(m_options, TestController::ResetStage::AfterTest)) {
+        WTFEndSignpost(this, "ResetTestControllerState");
         return;
-
+    }
+    
     // The process is unresponsive, so let's start a new one.
     TestController::singleton().terminateWebContentProcess();
     // Make sure that we have a process, as invoke() will need one to send bundle messages for the next test.
     TestController::singleton().reattachPageToWebProcess();
+    WTFEndSignpost(this, "ResetTestControllerState");
 }
 
 void TestInvocation::dumpWebProcessUnresponsiveness(const char* errorMessage)

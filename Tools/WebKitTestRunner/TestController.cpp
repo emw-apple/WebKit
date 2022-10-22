@@ -91,6 +91,7 @@
 #include <wtf/RefCounted.h>
 #include <wtf/RunLoop.h>
 #include <wtf/SetForScope.h>
+#include <wtf/SystemTracing.h>
 #include <wtf/UUID.h>
 #include <wtf/UniqueArray.h>
 #include <wtf/UniqueRef.h>
@@ -1641,8 +1642,10 @@ bool TestController::runTest(const char* inputLine)
 
     platformWillRunTest(*m_currentInvocation);
 
+    WTFBeginSignpost(this, "Test Execution", "%s", command.pathOrURL.c_str());
     m_currentInvocation->invoke();
     m_currentInvocation = nullptr;
+    WTFEndSignpost(this, "Test Execution");
 
     return true;
 }

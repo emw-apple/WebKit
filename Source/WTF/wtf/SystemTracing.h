@@ -143,6 +143,14 @@ enum TracePointCode {
     GPUProcessRange = 16000,
     WakeUpAndApplyDisplayListStart,
     WakeUpAndApplyDisplayListEnd,
+    
+    WebKitTestRunnerRange = 16200,
+    LoadTestURLStart,
+    LoadTestURLEnd,
+    DumpTestResultsStart,
+    DumpTestResultsEnd,
+    ResetTestStateStart,
+    ResetTestStateEnd,
 };
 
 #ifdef __cplusplus
