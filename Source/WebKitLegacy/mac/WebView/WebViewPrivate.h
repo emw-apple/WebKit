@@ -188,7 +188,7 @@ typedef enum {
 @property (nonatomic, retain) UIColor *estimatedBackgroundColor;
 @end
 
-#if !TARGET_OS_IPHONE
+#if !TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
 @interface WebController : NSTreeController {
     IBOutlet WebView *webView;
 }

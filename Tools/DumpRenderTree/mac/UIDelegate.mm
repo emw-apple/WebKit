@@ -31,6 +31,7 @@
 
 #import "DumpRenderTree.h"
 #import "DumpRenderTreeDraggingInfo.h"
+#import "DumpRenderTreeWindow.h"
 #import "EventSendingController.h"
 #import "MockWebNotificationProvider.h"
 #import "TestRunner.h"
