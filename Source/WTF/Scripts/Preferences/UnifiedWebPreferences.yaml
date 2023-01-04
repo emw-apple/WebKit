@@ -6581,7 +6581,7 @@ WebMParserEnabled:
 
 WebRTCAV1CodecEnabled:
   type: bool
-  status: unstable
+  status: testable
   humanReadableName: "WebRTC AV1 codec"
   humanReadableDescription: "Enable WebRTC AV1 codec"
   condition: ENABLE(WEB_RTC)
@@ -6679,7 +6679,7 @@ WebRTCH264SimulcastEnabled:
 
 WebRTCH265CodecEnabled:
   type: bool
-  status: internal
+  status: testable
   condition: ENABLE(WEB_RTC)
   humanReadableName: "WebRTC H265 codec"
   humanReadableDescription: "Enable WebRTC H265 codec"
@@ -6802,7 +6802,7 @@ WebRTCVP9Profile0CodecEnabled:
 
 WebRTCVP9Profile2CodecEnabled:
   type: bool
-  status: internal
+  status: testable
   humanReadableName: "WebRTC VP9 profile 2 codec"
   humanReadableDescription: "Enable WebRTC VP9 profile 2 codec"
   condition: ENABLE(WEB_RTC)
