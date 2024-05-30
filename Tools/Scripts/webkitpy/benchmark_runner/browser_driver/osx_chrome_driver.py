@@ -16,7 +16,7 @@ class OSXChromeDriverBase(OSXBrowserDriver):
                          '--no-default-browser-check', '--disable-extensions']
 
     def launch_url(self, url, options, browser_build_path, browser_path):
-        self._launch_process(build_dir=browser_build_path, app_name=self.app_name, url=url, args=self.launch_args_with_url(url))
+        self._launch_process(build_dir=browser_build_path, browser_path=browser_path, app_name=self.app_name, url=url, args=self.launch_args_with_url(url))
 
     def launch_driver(self, url, options, browser_build_path):
         from selenium import webdriver
@@ -110,3 +110,8 @@ class OSXChromiumDriver(OSXChromeDriverBase):
 
     def launch_args_with_url(self, url):
         return super(OSXChromiumDriver, self).launch_args_with_url(url)
+        
+    def restore_env(self):
+        super(OSXChromiumDriver, self).restore_env()
+        os.system('security delete-generic-password -a Chromium -s Chromium\ Safe\ Storage')
+

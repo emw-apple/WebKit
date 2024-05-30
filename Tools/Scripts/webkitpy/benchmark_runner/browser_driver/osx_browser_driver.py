@@ -109,10 +109,18 @@ class OSXBrowserDriver(BrowserDriver):
 
         self._save_screenshot_to_path(diagnose_directory, 'test-failure-screenshot-{}.jpg'.format(int(time.time())))
 
-    def _launch_process(self, build_dir, app_name, url, args, env=None):
-        if not build_dir:
-            build_dir = '/Applications/'
-        app_path = os.path.join(build_dir, app_name)
+    def _launch_process(self, build_dir, app_name, url, args, browser_path=None, env=None):
+        if browser_path and build_dir:
+            raise ValueError("browser_path and build_dir are mutually exclusive")
+        if browser_path:
+            if 'Contents/MacOS' in browser_path:
+                app_path = os.path.dirname(os.path.dirname(os.path.dirname(browser_path)))
+            else:
+                app_path = browser_path
+        else:
+            if not build_dir:
+                build_dir = '/Applications/'
+            app_path = os.path.join(build_dir, app_name)
         if self.browser_args:
             args += self.browser_args
         _log.info('Launching {} with url {}. args:{}'.format(app_path, url, " ".join(args)))

@@ -1,5 +1,5 @@
 {
-    "timeout": 600,
+    "timeout": 180,
     "count": 4,
     "git_repository": {"url": "https://github.com/WebKit/Speedometer.git", "branch": "release/3.0"},
     "webserver_benchmark_patch": "data/patches/webserver/Speedometer3.patch",
