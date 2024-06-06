@@ -66,6 +66,7 @@
 #import "Settings.h"
 #import "SystemSoundManager.h"
 #import "Text.h"
+#import "TextRecognitionResult.h"
 #import "UTIUtilities.h"
 #import "WebContentReader.h"
 #import "markup.h"

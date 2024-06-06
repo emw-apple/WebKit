@@ -35,6 +35,7 @@
 #include "Logging.h"
 #include "RenderBlock.h"
 #include "RenderListMarker.h"
+#include "RenderStyleInlines.h"
 #include "RenderText.h"
 #include "RenderTextFragment.h"
 #include "RenderTreeBuilder.h"

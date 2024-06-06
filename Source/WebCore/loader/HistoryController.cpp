@@ -35,6 +35,7 @@
 #include "BackForwardController.h"
 #include "CachedPage.h"
 #include "Document.h"
+#include "DocumentInlines.h"
 #include "DocumentLoader.h"
 #include "FrameLoader.h"
 #include "FrameLoaderStateMachine.h"

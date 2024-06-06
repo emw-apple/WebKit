@@ -74,6 +74,7 @@
 #include "LocalDOMWindow.h"
 #include "LocalFrameLoaderClient.h"
 #include "LocalFrameView.h"
+#include "Location.h"
 #include "Logging.h"
 #include "Navigator.h"
 #include "NodeList.h"

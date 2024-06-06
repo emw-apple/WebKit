@@ -58,7 +58,9 @@
 
 namespace WebCore {
 
+#if ENABLE(IOS_TOUCH_EVENTS)
 static constexpr Seconds switchHeldDelay = 200_ms;
+#endif
 
 const AtomString& CheckboxInputType::formControlType() const
 {

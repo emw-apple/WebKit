@@ -36,6 +36,8 @@
 #include "RenderElement.h"
 #include "Widget.h"
 
+#include <wtf/CompletionHandler.h>
+
 namespace WebCore {
     
 AccessibilityScrollView::AccessibilityScrollView(ScrollView* view)

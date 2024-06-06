@@ -233,9 +233,6 @@ template<> struct LogArgument<webm::Id> {
 
 namespace WebCore {
 
-// FIXME: Remove this once kCMVideoCodecType_VP9 is added to CMFormatDescription.h
-constexpr CMVideoCodecType kCMVideoCodecType_VP9 { 'vp09' };
-
 constexpr uint32_t k_us_in_seconds = 1000000000;
 
 static bool isWebmParserAvailable()

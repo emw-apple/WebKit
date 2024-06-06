@@ -31,6 +31,8 @@
 #include "CryptoKeyAES.h"
 #include "CryptoUtilitiesCocoa.h"
 
+#include <CommonCrypto/CommonCryptor.h>
+
 namespace WebCore {
 
 ExceptionOr<Vector<uint8_t>> CryptoAlgorithmAESCTR::platformEncrypt(const CryptoAlgorithmAesCtrParams& parameters, const CryptoKeyAES& key, const Vector<uint8_t>& plainText)

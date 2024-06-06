@@ -41,14 +41,6 @@
 namespace WebCore {
 using namespace WebCore::DOMCacheEngine;
 
-static inline CrossThreadRecordsOrError isolatedCopyCrossThreadRecordsOrError(CrossThreadRecordsOrError&& records)
-{
-    if (!records.has_value())
-        return makeUnexpected(records.error());
-
-    return crossThreadCopy(WTFMove(records.value()));
-}
-
 class StoppedCacheStorageConnection final : public CacheStorageConnection {
 public:
     static Ref<CacheStorageConnection> create() { return adoptRef(*new StoppedCacheStorageConnection); }

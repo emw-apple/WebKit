@@ -27,6 +27,7 @@
  */
 
 #include "config.h"
+#include "AXObjectCache.h"
 #include "AccessibilityTableColumn.h"
 
 #include "AccessibilityTable.h"

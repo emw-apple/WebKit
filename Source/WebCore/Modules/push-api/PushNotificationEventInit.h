@@ -28,6 +28,7 @@
 #if ENABLE(DECLARATIVE_WEB_PUSH)
 
 #include "ExtendableEventInit.h"
+#include "Notification.h"
 
 namespace WebCore {
 

@@ -24,6 +24,7 @@
  */
 
 #import "config.h"
+#import "RuntimeApplicationChecks.h"
 #import "TextRecognitionResult.h"
 
 #import "CharacterRange.h"

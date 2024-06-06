@@ -32,6 +32,7 @@
 #import "Logging.h"
 #import "WebCoreNSErrorExtras.h"
 #import <AVFoundation/AVError.h>
+#import <JavaScriptCore/Uint8Array.h>
 #import <wtf/FileSystem.h>
 
 namespace WebCore {

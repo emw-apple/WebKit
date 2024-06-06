@@ -65,10 +65,12 @@
 #include "Pasteboard.h"
 #include "Path2D.h"
 #include "ScriptController.h"
+#include "ScriptSourceCode.h"
 #include "Settings.h"
 #include "SystemSoundManager.h"
 #include "UserGestureIndicator.h"
 #include "WebCorePersistentCoders.h"
+#include <JavaScriptCore/FrameTracers.h>
 #include <JavaScriptCore/ScriptFunctionCall.h>
 #include <JavaScriptCore/Strong.h>
 #include <pal/system/Sound.h>

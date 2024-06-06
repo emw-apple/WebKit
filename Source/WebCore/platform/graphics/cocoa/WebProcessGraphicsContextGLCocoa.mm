@@ -43,8 +43,6 @@
 
 namespace WebCore {
 
-constexpr Seconds frameFinishedTimeout = 5_s;
-
 namespace {
 
 class DisplayBufferFence final : public PlatformCALayerDelegatedContentsFence {

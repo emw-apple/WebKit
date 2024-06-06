@@ -33,6 +33,7 @@
 #import "NSScrollerImpDetails.h"
 #import "PlatformWheelEvent.h"
 #import "ScrollTypesMac.h"
+#import "ScrollingCoordinator.h"
 #import "ScrollerPairMac.h"
 #import "ScrollingTreeScrollingNode.h"
 #import <QuartzCore/CALayer.h>

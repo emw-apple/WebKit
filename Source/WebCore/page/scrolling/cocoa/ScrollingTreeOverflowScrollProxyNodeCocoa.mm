@@ -28,6 +28,7 @@
 
 #if ENABLE(ASYNC_SCROLLING)
 
+#import "Logging.h"
 #import "ScrollingStateOverflowScrollProxyNode.h"
 #import "ScrollingStateTree.h"
 #import "WebCoreCALayerExtras.h"

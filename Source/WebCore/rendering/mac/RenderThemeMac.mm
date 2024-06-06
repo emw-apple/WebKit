@@ -22,6 +22,7 @@
 
 #if PLATFORM(MAC)
 
+#import "AttachmentLayout.h"
 #import "BitmapImage.h"
 #import "CSSValueKeywords.h"
 #import "CSSValueList.h"
@@ -53,6 +54,7 @@
 #import "RenderAttachment.h"
 #import "RenderMedia.h"
 #import "RenderMeter.h"
+#import "RenderProgress.h"
 #import "RenderSlider.h"
 #import "RenderStyleSetters.h"
 #import "RenderView.h"
@@ -1273,6 +1275,34 @@ RetainPtr<NSImage> RenderThemeMac::iconForAttachment(const String& fileName, con
 
     return nil;
 }
+
+// TODO: copied from AttachmentLayout.mm, need to be reconciled
+constexpr CGFloat attachmentIconSize = 48;
+constexpr CGFloat attachmentIconBackgroundPadding = 6;
+constexpr CGFloat attachmentIconBackgroundSize = attachmentIconSize + attachmentIconBackgroundPadding;
+constexpr CGFloat attachmentIconSelectionBorderThickness = 1;
+constexpr CGFloat attachmentIconBackgroundRadius = 3;
+
+constexpr auto attachmentIconBackgroundColor = Color::black.colorWithAlphaByte(30);
+constexpr auto attachmentIconBorderColor = Color::white.colorWithAlphaByte(125);
+
+constexpr CGFloat attachmentTitleBackgroundRadius = 3;
+
+constexpr auto attachmentTitleInactiveBackgroundColor = SRGBA<uint8_t> { 204, 204, 204 };
+
+constexpr CGFloat attachmentProgressBarWidth = 30;
+constexpr CGFloat attachmentProgressBarHeight = 5;
+constexpr CGFloat attachmentProgressBarOffset = -9;
+constexpr CGFloat attachmentProgressBarBorderWidth = 1;
+constexpr auto attachmentProgressBarBackgroundColor = Color::black.colorWithAlphaByte(89);
+constexpr auto attachmentProgressBarFillColor = Color::white;
+constexpr auto attachmentProgressBarBorderColor = Color::black.colorWithAlphaByte(128);
+
+constexpr CGFloat attachmentPlaceholderBorderRadius = 5;
+constexpr auto attachmentPlaceholderBorderColor = Color::black.colorWithAlphaByte(56);
+constexpr CGFloat attachmentPlaceholderBorderWidth = 2;
+constexpr CGFloat attachmentPlaceholderBorderDashLength = 6;
+
 
 static void paintAttachmentIconBackground(const RenderAttachment& attachment, GraphicsContext& context, AttachmentLayout& layout)
 {

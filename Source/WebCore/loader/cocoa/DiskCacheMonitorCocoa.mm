@@ -27,6 +27,7 @@
 #import "DiskCacheMonitorCocoa.h"
 
 #import "CachedResource.h"
+#import "CachedResourceHandle.h"
 #import "MemoryCache.h"
 #import "SharedBuffer.h"
 #import <pal/spi/cf/CFNetworkSPI.h>

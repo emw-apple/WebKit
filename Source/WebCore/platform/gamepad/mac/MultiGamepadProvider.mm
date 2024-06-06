@@ -36,8 +36,6 @@
 
 namespace WebCore {
 
-static size_t numberOfGamepadProviders = 2;
-
 MultiGamepadProvider& MultiGamepadProvider::singleton()
 {
     static NeverDestroyed<MultiGamepadProvider> sharedProvider;

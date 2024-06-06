@@ -24,6 +24,7 @@
  */
 
 #include "config.h"
+#include "RenderBoxModelObjectInlines.h"
 #include "RenderModel.h"
 
 #if ENABLE(MODEL_ELEMENT)

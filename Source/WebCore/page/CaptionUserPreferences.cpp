@@ -109,8 +109,10 @@ void CaptionUserPreferences::setCaptionDisplayMode(CaptionUserPreferences::Capti
 
 Page* CaptionUserPreferences::currentPage() const
 {
-    for (auto& page : m_pageGroup->pages())
-        return &page;
+    auto& pages = m_pageGroup->pages();
+    auto it = pages.begin();
+    if (it != pages.end())
+        return it.get();
     return nullptr;
 }
 

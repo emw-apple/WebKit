@@ -3175,8 +3175,9 @@ static ASCIILiteral compositingReasonToString(CompositingReason reason)
 #if !LOG_DISABLED
 ASCIILiteral RenderLayerCompositor::logOneReasonForCompositing(const RenderLayer& layer)
 {
-    for (auto reason : reasonsForCompositing(layer))
-        return compositingReasonToString(reason);
+    auto reasons = reasonsForCompositing(layer);
+    if (!reasons.isEmpty())
+        return compositingReasonToString(*reasons.begin());
     return ""_s;
 }
 #endif

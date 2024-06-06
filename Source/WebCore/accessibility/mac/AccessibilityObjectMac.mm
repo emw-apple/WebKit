@@ -26,6 +26,7 @@
 #import "config.h"
 #import "AccessibilityObject.h"
 
+#import "AXObjectCache.h"
 #import "AXRemoteFrame.h"
 #import "AccessibilityLabel.h"
 #import "AccessibilityList.h"

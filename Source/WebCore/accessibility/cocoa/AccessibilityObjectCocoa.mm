@@ -30,7 +30,7 @@
 
 #import "AXObjectCache.h"
 #import "TextIterator.h"
-#import "WebAccessibilityObjectWrapperBase.h"
+#import "WebAccessibilityObjectWrapperMac.h"
 #import <wtf/cocoa/TypeCastsCocoa.h>
 
 #if PLATFORM(IOS_FAMILY)

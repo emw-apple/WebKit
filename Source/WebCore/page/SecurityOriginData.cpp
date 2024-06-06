@@ -32,6 +32,7 @@
 #include "LocalFrame.h"
 #include "SecurityOrigin.h"
 #include <wtf/FileSystem.h>
+#include <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/StringConcatenateNumbers.h>
 #include <wtf/text/StringToIntegerConversion.h>

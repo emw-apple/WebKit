@@ -24,7 +24,10 @@
  */
 
 #import "config.h"
+#import "ApplePayButtonCocoa.h"
+#import "ApplePayButtonPart.h"
 #import "ControlFactoryCocoa.h"
+#import "ControlPart.h"
 
 #if PLATFORM(COCOA)
 

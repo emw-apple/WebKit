@@ -32,6 +32,7 @@
 #import <wtf/SortedArrayMap.h>
 #import <wtf/TinyLRUCache.h>
 #import <wtf/cf/TypeCastsCF.h>
+#import <wtf/text/StringHash.h>
 #import <wtf/text/WTFString.h>
 #include <wtf/cocoa/VectorCocoa.h>
 

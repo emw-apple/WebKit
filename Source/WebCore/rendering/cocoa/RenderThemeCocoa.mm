@@ -36,6 +36,7 @@
 #import "ImageBuffer.h"
 #import "Page.h"
 #import "RenderProgress.h"
+#import "RenderStyleSetters.h"
 #import "RenderText.h"
 #import "UserAgentScripts.h"
 #import "UserAgentStyleSheets.h"
@@ -227,25 +228,6 @@ String RenderThemeCocoa::mediaControlsFormattedStringForDuration(const double du
 }
 
 #endif // ENABLE(VIDEO) && ENABLE(MODERN_MEDIA_CONTROLS)
-
-static inline FontSelectionValue cssWeightOfSystemFont(CTFontRef font)
-{
-    auto resultRef = adoptCF(static_cast<CFNumberRef>(CTFontCopyAttribute(font, kCTFontCSSWeightAttribute)));
-    float result = 0;
-    if (resultRef && CFNumberGetValue(resultRef.get(), kCFNumberFloatType, &result))
-        return FontSelectionValue(result);
-
-    auto traits = adoptCF(CTFontCopyTraits(font));
-    resultRef = static_cast<CFNumberRef>(CFDictionaryGetValue(traits.get(), kCTFontWeightTrait));
-    CFNumberGetValue(resultRef.get(), kCFNumberFloatType, &result);
-    // These numbers were experimentally gathered from weights of the system font.
-    static constexpr float weightThresholds[] = { -0.6, -0.365, -0.115, 0.130, 0.235, 0.350, 0.5, 0.7 };
-    for (unsigned i = 0; i < std::size(weightThresholds); ++i) {
-        if (result < weightThresholds[i])
-            return FontSelectionValue((static_cast<int>(i) + 1) * 100);
-    }
-    return FontSelectionValue(900);
-}
 
 #if ENABLE(ATTACHMENT_ELEMENT)
 

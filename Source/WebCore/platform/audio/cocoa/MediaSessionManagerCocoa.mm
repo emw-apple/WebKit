@@ -40,6 +40,7 @@
 #import "SharedBuffer.h"
 #import "VP9UtilitiesCocoa.h"
 #import <pal/SessionID.h>
+#import <pal/cf/AudioToolboxSoftLink.h>
 #import <pal/spi/cocoa/AudioToolboxSPI.h>
 #import <wtf/BlockObjCExceptions.h>
 #import <wtf/Function.h>
