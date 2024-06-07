@@ -1277,7 +1277,6 @@ RetainPtr<NSImage> RenderThemeMac::iconForAttachment(const String& fileName, con
 }
 
 // TODO: copied from AttachmentLayout.mm, need to be reconciled
-constexpr CGFloat attachmentIconSize = 48;
 constexpr CGFloat attachmentIconBackgroundPadding = 6;
 constexpr CGFloat attachmentIconBackgroundSize = attachmentIconSize + attachmentIconBackgroundPadding;
 constexpr CGFloat attachmentIconSelectionBorderThickness = 1;

@@ -40,7 +40,6 @@ namespace WebCore {
 
 #if PLATFORM(MAC)
 
-constexpr CGFloat attachmentIconSize = 48;
 constexpr CGFloat attachmentIconBackgroundPadding = 6;
 constexpr CGFloat attachmentIconBackgroundSize = attachmentIconSize + attachmentIconBackgroundPadding;
 constexpr CGFloat attachmentIconToTitleMargin = 2;
@@ -173,23 +172,6 @@ AttachmentLayout::AttachmentLayout(const RenderAttachment& attachment, Attachmen
 
 #if PLATFORM(IOS_FAMILY)
 
-constexpr CGSize attachmentSize = { 160, 119 };
-
-constexpr CGFloat attachmentBorderRadius = 16;
-constexpr auto attachmentBorderColor = SRGBA<uint8_t> { 204, 204, 204 };
-static CGFloat attachmentBorderThickness = 1;
-
-constexpr auto attachmentProgressColor = SRGBA<uint8_t> { 222, 222, 222 };
-constexpr CGFloat attachmentProgressBorderThickness = 3;
-
-constexpr CGFloat attachmentProgressSize = 36;
-constexpr CGFloat attachmentIconSize = 48;
-
-constexpr CGFloat attachmentItemMargin = 8;
-
-constexpr CGFloat attachmentWrappingTextMaximumWidth = 140;
-constexpr CFIndex attachmentWrappingTextMaximumLineCount = 2;
-
 static BOOL getAttachmentProgress(const RenderAttachment& attachment, float& progress)
 {
     auto& progressString = attachment.attachmentElement().attributeWithoutSynchronization(HTMLNames::progressAttr);
@@ -237,7 +219,7 @@ static CGFloat shortCaptionPointSizeWithContentSizeCategory(CFStringRef contentS
     return [dynamic_objc_cast<NSNumber>((__bridge id)pointSize.get()) floatValue];
 }
 
-static CGFloat attachmentDynamicTypeScaleFactor()
+CGFloat attachmentDynamicTypeScaleFactor()
 {
     CGFloat fixedPointSize = shortCaptionPointSizeWithContentSizeCategory(kCTFontContentSizeCategoryL);
     CGFloat dynamicPointSize = shortCaptionPointSizeWithContentSizeCategory(contentSizeCategory());

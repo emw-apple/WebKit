@@ -127,10 +127,6 @@ namespace WebCore {
 
 using namespace HTMLNames;
 
-#if PLATFORM(IOS_FAMILY)
-static const Seconds scrollFrequency { 1000_s / 60. };
-#endif
-
 DEFINE_DEBUG_ONLY_GLOBAL(WTF::RefCountedLeakCounter, frameCounter, ("Frame"));
 
 static inline float parentPageZoomFactor(LocalFrame* frame)

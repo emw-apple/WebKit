@@ -385,8 +385,6 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 #if PASTEBOARD_SUPPORTS_ITEM_PROVIDERS
 
-static NSString *webIOSPastePboardType = @"iOS rich content paste pasteboard type";
-
 static void registerItemsToPasteboard(NSArray<WebItemProviderRegistrationInfoList *> *itemLists, id <AbstractPasteboard> pasteboard)
 {
 #if PLATFORM(MACCATALYST)

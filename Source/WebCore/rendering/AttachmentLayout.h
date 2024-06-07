@@ -40,6 +40,25 @@ namespace WebCore {
 
 class Image;
 
+constexpr CGSize attachmentSize = { 160, 119 };
+
+constexpr CGFloat attachmentBorderRadius = 16;
+constexpr auto attachmentBorderColor = SRGBA<uint8_t> { 204, 204, 204 };
+static CGFloat attachmentBorderThickness = 1;
+
+constexpr auto attachmentProgressColor = SRGBA<uint8_t> { 222, 222, 222 };
+constexpr CGFloat attachmentProgressBorderThickness = 3;
+
+constexpr CGFloat attachmentProgressSize = 36;
+constexpr CGFloat attachmentIconSize = 48;
+
+constexpr CGFloat attachmentItemMargin = 8;
+
+constexpr CGFloat attachmentWrappingTextMaximumWidth = 140;
+constexpr CFIndex attachmentWrappingTextMaximumLineCount = 2;
+
+CGFloat attachmentDynamicTypeScaleFactor();
+
 enum class AttachmentLayoutStyle : uint8_t { NonSelected, Selected };
 struct AttachmentLayout {
     explicit AttachmentLayout(const RenderAttachment&, AttachmentLayoutStyle style = AttachmentLayoutStyle::NonSelected);

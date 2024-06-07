@@ -26,7 +26,7 @@
 #include "config.h"
 #include "DocumentTouch.h"
 
-#if ENABLE(TOUCH_EVENTS)
+#if !ENABLE(IOS_TOUCH_EVENTS) && ENABLE(TOUCH_EVENTS)
 
 #include "Document.h"
 #include "FrameDestructionObserverInlines.h"

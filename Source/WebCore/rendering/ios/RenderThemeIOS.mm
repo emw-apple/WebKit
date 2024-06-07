@@ -29,6 +29,7 @@
 #if PLATFORM(IOS_FAMILY)
 
 #import "ARKitBadgeSystemImage.h"
+#import "AttachmentLayout.h"
 #import "BitmapImage.h"
 #import "BorderPainter.h"
 #import "CSSPrimitiveValue.h"
@@ -74,6 +75,7 @@
 #import "RenderMenuList.h"
 #import "RenderMeter.h"
 #import "RenderObject.h"
+#import "RenderProgress.h"
 #import "RenderSlider.h"
 #import "RenderStyleSetters.h"
 #import "RenderView.h"
@@ -362,10 +364,6 @@ const int MenuListMinHeight = 15;
 
 const float MenuListBaseHeight = 20;
 const float MenuListBaseFontSize = 11;
-
-const float MenuListArrowWidth = 7;
-const float MenuListArrowHeight = 6;
-const float MenuListButtonPaddingAfter = 19;
 
 LengthBox RenderThemeIOS::popupInternalPaddingBox(const RenderStyle& style) const
 {

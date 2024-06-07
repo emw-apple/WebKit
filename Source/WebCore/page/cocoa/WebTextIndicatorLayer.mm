@@ -45,8 +45,10 @@ constexpr CFTimeInterval fadeOutAnimationDuration = 0.3;
 
 constexpr CGFloat borderWidth = 0;
 constexpr CGFloat cornerRadius = 0;
+#if PLATFORM(MAC)
 constexpr CGFloat dropShadowOffsetX = 0;
 constexpr CGFloat dropShadowOffsetY = 1;
+#endif
 
 constexpr NSString * const textLayerKey = @"TextLayer";
 constexpr NSString * const dropShadowLayerKey = @"DropShadowLayer";

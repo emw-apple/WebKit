@@ -30,14 +30,19 @@
 
 #import "AccessibilityRenderObject.h"
 #import "EventNames.h"
+#import "FontCascade.h"
 #import "HTMLInputElement.h"
 #import "HTMLNames.h"
 #import "LocalFrameView.h"
 #import "RenderObject.h"
+#import "RenderStyleInlines.h"
+#import "Text.h"
 #import "WAKView.h"
 #import "WebAccessibilityObjectWrapperIOS.h"
 #import <wtf/SoftLinking.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+
+SOFT_LINK_PRIVATE_FRAMEWORK(AXRuntime);
 
 SOFT_LINK_CONSTANT(AXRuntime, UIAccessibilityTokenBlockquoteLevel, NSString *);
 #define AccessibilityTokenBlockquoteLevel getUIAccessibilityTokenBlockquoteLevel()

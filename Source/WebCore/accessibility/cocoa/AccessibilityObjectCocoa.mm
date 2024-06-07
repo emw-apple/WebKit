@@ -30,6 +30,7 @@
 
 #import "AXObjectCache.h"
 #import "TextIterator.h"
+#import "WebAccessibilityObjectWrapperIOS.h"
 #import "WebAccessibilityObjectWrapperMac.h"
 #import <wtf/cocoa/TypeCastsCocoa.h>
 

@@ -31,6 +31,7 @@
 #elif ENABLE(TOUCH_EVENTS)
 
 #include "MouseRelatedEvent.h"
+#include "Node.h"
 #include "TouchList.h"
 
 namespace WebCore {

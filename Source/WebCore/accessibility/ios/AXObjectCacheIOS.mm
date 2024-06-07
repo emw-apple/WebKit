@@ -30,6 +30,7 @@
 
 #import "AccessibilityObject.h"
 #import "Chrome.h"
+#import "LocalFrameView.h"
 #import "RenderObject.h"
 #import "WebAccessibilityObjectWrapperIOS.h"
 #import <wtf/RetainPtr.h>

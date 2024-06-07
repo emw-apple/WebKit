@@ -24,6 +24,7 @@
  */
 
 #include "config.h"
+#include "DOMTimer.h"
 #include "DOMTimerHoldingTank.h"
 
 #if ENABLE(CONTENT_CHANGE_OBSERVER)

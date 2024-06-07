@@ -26,7 +26,7 @@
 
 #include "config.h"
 
-#if ENABLE(TOUCH_EVENTS)
+#if !ENABLE(IOS_TOUCH_EVENTS) && ENABLE(TOUCH_EVENTS)
 
 #include "TouchEvent.h"
 
