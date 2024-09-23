@@ -12418,6 +12418,7 @@
 				6577FFC6276AC8D20011AEC8 /* Create Symlink to Alt Root Path */,
 				DD9C4CC52A05D4FB00D52E2E /* Fix up SDKROOT path in TAPI filelists (install only) */,
 				DDA8F1542A15BEEA00BE8D11 /* Work around rdar://109484516 */,
+				DDFD2AD32C93BD6900ACE884 /* Audit SPI use */,
 			);
 			buildRules = (
 				DD559E612BE5BD4700C2D03E /* PBXBuildRule */,
@@ -12825,6 +12826,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ \"${ACTION}\" = \"installhdrs\" ] || [ \"${ACTION}\" = \"installapi\" ]; then\n    exit 0;\nfi\n\nif [ -f ../../Tools/Scripts/check-for-inappropriate-files-in-framework ]; then\n    export PRODUCT_NAME=JavaScriptCore\n    if [ -z \"${WK_FRAMEWORK_VERSION_PREFIX}\" ]; then\n        export SHALLOW_BUNDLE=YES\n    fi\n    ../../Tools/Scripts/check-for-inappropriate-files-in-framework || exit $?\nfi\n";
+		};
+		DDFD2AD32C93BD6900ACE884 /* Audit SPI use */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(WK_WEBKITADDITIONS_HEADERS_FOLDER_PATH)/Scripts/audit-spi-usage",
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Audit SPI use";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(WK_SPI_AUDIT_DIR)/$(EXECUTABLE_NAME).plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -f \"${SCRIPT_INPUT_FILE_0}\" ]\nthen \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_INPUT_FILE_1}\"\nfi > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 		};
 		E1AC2E2C20F7B95800B0897D /* Unlock Keychain */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -3077,6 +3077,7 @@
 				537CF83A22EFBFB100C6EBB3 /* Check .xcfilelists */,
 				650473452789431C00AF78A2 /* Create Symlink to Alt Root Path */,
 				DD00C28C2A37905800CBB4D9 /* Work around rdar://109484516 */,
+				DDFD2AD12C93BCE900ACE884 /* Audit SPI use */,
 			);
 			buildRules = (
 				535E08C322545B4C00DF00CA /* PBXBuildRule */,
@@ -3367,6 +3368,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "rm -f \"${SCRIPT_OUTPUT_FILE_0}\" && \"${SCRIPT_INPUT_FILE_0}\"\n";
+		};
+		DDFD2AD12C93BCE900ACE884 /* Audit SPI use */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(WK_WEBKITADDITIONS_HEADERS_FOLDER_PATH)/Scripts/audit-spi-usage",
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Audit SPI use";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(WK_SPI_AUDIT_DIR)/$(EXECUTABLE_NAME).plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -f \"${SCRIPT_INPUT_FILE_0}\" ]\nthen \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_INPUT_FILE_1}\"\nfi > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
