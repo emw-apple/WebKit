@@ -1,0 +1,2814 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKIndexUnknown"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexInverted"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexVector"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexInvertedVector"
+            }
+          ],
+          "name": "SKIndexType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKDocumentStateNotIndexed"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateIndexed"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateAddPending"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateDeletePending"
+            }
+          ],
+          "name": "SKDocumentIndexState"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKSearchOptionDefault"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionNoRelevanceScores"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionSpaceMeansOR"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionFindSimilar"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SearchKit/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SearchKit.framework/Versions/A/Headers/SKSearch.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKSearchRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchBooleanRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchRequiredRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchPrefixRanked"
+            }
+          ],
+          "name": "SKSearchType"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCreateWithURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCopyURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetSchemeName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetParent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKMinTermLength",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKSubstitutions",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKStopWords",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKProximityIndexing",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKMaximumTerms",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKTermChars",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKStartTermChars",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKEndTermChars",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKLanguageTypes",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCreateWithURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCreateWithMutableData",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithData",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithMutableData",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexFlush",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexSetMaximumBytesBeforeFlush",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumBytesBeforeFlush",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCompact",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetIndexType",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetAnalysisProperties",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexClose",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexAddDocumentWithText",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexAddDocument",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexRemoveDocument",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentProperties",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexSetDocumentProperties",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentState",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentForDocumentID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexRenameDocument",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexMoveDocument",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorCopyNext",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumDocumentID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentTermCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyTermIDArrayForDocumentID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentTermFrequency",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumTermID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTermDocumentCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentIDArrayForTermID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyTermStringForTermID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTermIDForTermString",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKLoadDefaultExtractorPlugIns",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchCancel",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchFindMatches",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyInfoForDocumentIDs",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentRefsForDocumentIDs",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentURLsForDocumentIDs",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupCopyIndexes",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCreateWithQuery",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCreateWithDocuments",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetInfoInRange",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCopyMatchingTerms",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCreateWithString",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetSentenceCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetParagraphCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopySentenceAtIndex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopyParagraphAtIndex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopySentenceSummaryString",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopyParagraphSummaryString",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetSentenceSummaryInfo",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetParagraphSummaryInfo",
+          "unavailable": true
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SKDocumentRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexDocumentIteratorRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexType"
+        },
+        {
+          "access": "public",
+          "name": "SKDocumentIndexState"
+        },
+        {
+          "access": "public",
+          "name": "SKDocumentID"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchOptions"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchGroupRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchResultsRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchType"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchResultsFilterCallBack"
+        },
+        {
+          "access": "public",
+          "name": "SKSummaryRef"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKIndexUnknown"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexInverted"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexVector"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexInvertedVector"
+            }
+          ],
+          "name": "SKIndexType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKDocumentStateNotIndexed"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateIndexed"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateAddPending"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateDeletePending"
+            }
+          ],
+          "name": "SKDocumentIndexState"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKSearchOptionDefault"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionNoRelevanceScores"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionSpaceMeansOR"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionFindSimilar"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SearchKit/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SearchKit.framework/Versions/A/Headers/SKSearch.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKSearchRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchBooleanRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchRequiredRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchPrefixRanked"
+            }
+          ],
+          "name": "SKSearchType"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCreateWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCopyURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetSchemeName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetParent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKMinTermLength"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKSubstitutions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKStopWords"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKProximityIndexing"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKMaximumTerms"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKTermChars"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKStartTermChars"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKEndTermChars"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKLanguageTypes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCreateWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCreateWithMutableData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithMutableData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexFlush"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexSetMaximumBytesBeforeFlush"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumBytesBeforeFlush"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCompact"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetIndexType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetAnalysisProperties"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexClose"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexAddDocumentWithText"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexAddDocument"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexRemoveDocument"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentProperties"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexSetDocumentProperties"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentState"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentForDocumentID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexRenameDocument"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexMoveDocument"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorCopyNext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumDocumentID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentTermCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyTermIDArrayForDocumentID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentTermFrequency"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumTermID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTermDocumentCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentIDArrayForTermID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyTermStringForTermID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTermIDForTermString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKLoadDefaultExtractorPlugIns"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchCancel"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchFindMatches"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyInfoForDocumentIDs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentRefsForDocumentIDs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentURLsForDocumentIDs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupCopyIndexes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCreateWithQuery"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCreateWithDocuments"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetInfoInRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCopyMatchingTerms"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCreateWithString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetSentenceCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetParagraphCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopySentenceAtIndex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopyParagraphAtIndex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopySentenceSummaryString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopyParagraphSummaryString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetSentenceSummaryInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetParagraphSummaryInfo"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SKDocumentRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexDocumentIteratorRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexType"
+        },
+        {
+          "access": "public",
+          "name": "SKDocumentIndexState"
+        },
+        {
+          "access": "public",
+          "name": "SKDocumentID"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchOptions"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchGroupRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchResultsRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchType"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchResultsFilterCallBack"
+        },
+        {
+          "access": "public",
+          "name": "SKSummaryRef"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKIndexUnknown"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexInverted"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexVector"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexInvertedVector"
+            }
+          ],
+          "name": "SKIndexType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKDocumentStateNotIndexed"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateIndexed"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateAddPending"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateDeletePending"
+            }
+          ],
+          "name": "SKDocumentIndexState"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKSearchOptionDefault"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionNoRelevanceScores"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionSpaceMeansOR"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionFindSimilar"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SearchKit/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SearchKit.framework/Versions/A/Headers/SKSearch.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKSearchRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchBooleanRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchRequiredRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchPrefixRanked"
+            }
+          ],
+          "name": "SKSearchType"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCreateWithURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCopyURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetSchemeName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetParent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKMinTermLength",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKSubstitutions",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKStopWords",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKProximityIndexing",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKMaximumTerms",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKTermChars",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKStartTermChars",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKEndTermChars",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKLanguageTypes",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCreateWithURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCreateWithMutableData",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithData",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithMutableData",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexFlush",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexSetMaximumBytesBeforeFlush",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumBytesBeforeFlush",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCompact",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetIndexType",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetAnalysisProperties",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexClose",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexAddDocumentWithText",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexAddDocument",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexRemoveDocument",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentProperties",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexSetDocumentProperties",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentState",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentForDocumentID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexRenameDocument",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexMoveDocument",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorCopyNext",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumDocumentID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentTermCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyTermIDArrayForDocumentID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentTermFrequency",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumTermID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTermDocumentCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentIDArrayForTermID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyTermStringForTermID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTermIDForTermString",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKLoadDefaultExtractorPlugIns",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchCancel",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchFindMatches",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyInfoForDocumentIDs",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentRefsForDocumentIDs",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentURLsForDocumentIDs",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupCopyIndexes",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCreateWithQuery",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCreateWithDocuments",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetInfoInRange",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCopyMatchingTerms",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCreateWithString",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetSentenceCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetParagraphCount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopySentenceAtIndex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopyParagraphAtIndex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopySentenceSummaryString",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopyParagraphSummaryString",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetSentenceSummaryInfo",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetParagraphSummaryInfo",
+          "unavailable": true
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SKDocumentRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexDocumentIteratorRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexType"
+        },
+        {
+          "access": "public",
+          "name": "SKDocumentIndexState"
+        },
+        {
+          "access": "public",
+          "name": "SKDocumentID"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchOptions"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchGroupRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchResultsRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchType"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchResultsFilterCallBack"
+        },
+        {
+          "access": "public",
+          "name": "SKSummaryRef"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKIndexUnknown"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexInverted"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexVector"
+            },
+            {
+              "access": "public",
+              "name": "kSKIndexInvertedVector"
+            }
+          ],
+          "name": "SKIndexType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKDocumentStateNotIndexed"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateIndexed"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateAddPending"
+            },
+            {
+              "access": "public",
+              "name": "kSKDocumentStateDeletePending"
+            }
+          ],
+          "name": "SKDocumentIndexState"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKSearchOptionDefault"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionNoRelevanceScores"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionSpaceMeansOR"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchOptionFindSimilar"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SearchKit/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SearchKit.framework/Versions/A/Headers/SKSearch.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSKSearchRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchBooleanRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchRequiredRanked"
+            },
+            {
+              "access": "public",
+              "name": "kSKSearchPrefixRanked"
+            }
+          ],
+          "name": "SKSearchType"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCreateWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCopyURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetSchemeName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKDocumentGetParent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKMinTermLength"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKSubstitutions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKStopWords"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKProximityIndexing"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKMaximumTerms"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKTermChars"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKStartTermChars"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKEndTermChars"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSKLanguageTypes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCreateWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCreateWithMutableData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexOpenWithMutableData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexFlush"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexSetMaximumBytesBeforeFlush"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumBytesBeforeFlush"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCompact"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetIndexType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetAnalysisProperties"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexClose"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexAddDocumentWithText"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexAddDocument"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexRemoveDocument"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentProperties"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexSetDocumentProperties"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentState"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentForDocumentID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexRenameDocument"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexMoveDocument"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexDocumentIteratorCopyNext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumDocumentID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentTermCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyTermIDArrayForDocumentID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetDocumentTermFrequency"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetMaximumTermID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTermDocumentCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentIDArrayForTermID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyTermStringForTermID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexGetTermIDForTermString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKLoadDefaultExtractorPlugIns"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchCancel"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchFindMatches"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyInfoForDocumentIDs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentRefsForDocumentIDs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKIndexCopyDocumentURLsForDocumentIDs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchGroupCopyIndexes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCreateWithQuery"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCreateWithDocuments"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsGetInfoInRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSearchResultsCopyMatchingTerms"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCreateWithString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetSentenceCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetParagraphCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopySentenceAtIndex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopyParagraphAtIndex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopySentenceSummaryString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryCopyParagraphSummaryString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetSentenceSummaryInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SKSummaryGetParagraphSummaryInfo"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SKDocumentRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexDocumentIteratorRef"
+        },
+        {
+          "access": "public",
+          "name": "SKIndexType"
+        },
+        {
+          "access": "public",
+          "name": "SKDocumentIndexState"
+        },
+        {
+          "access": "public",
+          "name": "SKDocumentID"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchOptions"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchGroupRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchResultsRef"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchType"
+        },
+        {
+          "access": "public",
+          "name": "SKSearchResultsFilterCallBack"
+        },
+        {
+          "access": "public",
+          "name": "SKSummaryRef"
+        }
+      ]
+    }
+  ],
+  "projectName": "SearchKit",
+  "version": "1.0"
+}

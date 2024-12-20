@@ -1,0 +1,398 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_fcopyfile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_free"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_alloc"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_get"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_set"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_preserve_for_intent"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_name_with_flags"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_name_without_flags"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_flags_from_name"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_intent_with_flags"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "copyfile_state_t"
+        },
+        {
+          "access": "public",
+          "name": "copyfile_flags_t"
+        },
+        {
+          "access": "public",
+          "name": "copyfile_callback_t"
+        },
+        {
+          "access": "public",
+          "name": "xattr_operation_intent_t"
+        },
+        {
+          "access": "public",
+          "name": "xattr_flags_t"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_fcopyfile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_free"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_alloc"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_get"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_set"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_preserve_for_intent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_name_with_flags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_name_without_flags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_flags_from_name"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_intent_with_flags"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "copyfile_state_t"
+        },
+        {
+          "access": "public",
+          "name": "copyfile_flags_t"
+        },
+        {
+          "access": "public",
+          "name": "copyfile_callback_t"
+        },
+        {
+          "access": "public",
+          "name": "xattr_operation_intent_t"
+        },
+        {
+          "access": "public",
+          "name": "xattr_flags_t"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_fcopyfile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_free"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_alloc"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_get"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_set"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_preserve_for_intent"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_name_with_flags"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_name_without_flags"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_flags_from_name"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_intent_with_flags"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "copyfile_state_t"
+        },
+        {
+          "access": "public",
+          "name": "copyfile_flags_t"
+        },
+        {
+          "access": "public",
+          "name": "copyfile_callback_t"
+        },
+        {
+          "access": "public",
+          "name": "xattr_operation_intent_t"
+        },
+        {
+          "access": "public",
+          "name": "xattr_flags_t"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_fcopyfile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_free"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_alloc"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_get"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_copyfile_state_set"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_preserve_for_intent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_name_with_flags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_name_without_flags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_flags_from_name"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_xattr_intent_with_flags"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "copyfile_state_t"
+        },
+        {
+          "access": "public",
+          "name": "copyfile_flags_t"
+        },
+        {
+          "access": "public",
+          "name": "copyfile_callback_t"
+        },
+        {
+          "access": "public",
+          "name": "xattr_operation_intent_t"
+        },
+        {
+          "access": "public",
+          "name": "xattr_flags_t"
+        }
+      ]
+    }
+  ],
+  "projectName": "copyfile",
+  "version": "1.0"
+}

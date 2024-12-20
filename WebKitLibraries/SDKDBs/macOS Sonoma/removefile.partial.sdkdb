@@ -1,0 +1,722 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "CHECKINT_NO_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "CHECKINT_OVERFLOW_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "CHECKINT_TYPE_ERROR"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/checkint.h:20:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_RECURSIVE"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_KEEP_PARENT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_7_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_35_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_1_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_3_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_1_PASS_ZERO"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_CROSS_MOUNT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_ALLOW_LONG_PATHS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_CLEAR_PURGEABLE"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:21:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_CONFIRM_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_CONFIRM_CONTEXT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERROR_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERROR_CONTEXT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERRNO"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_STATUS_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_STATUS_CONTEXT"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:45:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_PROCEED"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SKIP"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STOP"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:60:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_alloc"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_free"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_get"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_set"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefileat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_cancel"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "removefile_flags_t"
+        },
+        {
+          "access": "public",
+          "name": "removefile_state_t"
+        },
+        {
+          "access": "public",
+          "name": "removefile_callback_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "CHECKINT_NO_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "CHECKINT_OVERFLOW_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "CHECKINT_TYPE_ERROR"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/checkint.h:20:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_RECURSIVE"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_KEEP_PARENT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_7_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_35_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_1_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_3_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_1_PASS_ZERO"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_CROSS_MOUNT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_ALLOW_LONG_PATHS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_CLEAR_PURGEABLE"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:21:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_CONFIRM_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_CONFIRM_CONTEXT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERROR_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERROR_CONTEXT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERRNO"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_STATUS_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_STATUS_CONTEXT"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:45:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_PROCEED"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SKIP"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STOP"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:60:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_alloc"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_free"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_get"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_set"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefileat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_cancel"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "removefile_flags_t"
+        },
+        {
+          "access": "public",
+          "name": "removefile_state_t"
+        },
+        {
+          "access": "public",
+          "name": "removefile_callback_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "CHECKINT_NO_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "CHECKINT_OVERFLOW_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "CHECKINT_TYPE_ERROR"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/checkint.h:20:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_RECURSIVE"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_KEEP_PARENT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_7_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_35_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_1_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_3_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_1_PASS_ZERO"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_CROSS_MOUNT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_ALLOW_LONG_PATHS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_CLEAR_PURGEABLE"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:21:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_CONFIRM_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_CONFIRM_CONTEXT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERROR_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERROR_CONTEXT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERRNO"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_STATUS_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_STATUS_CONTEXT"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:45:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_PROCEED"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SKIP"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STOP"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:60:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_alloc"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_free"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_get"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_set"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefileat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_cancel"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "removefile_flags_t"
+        },
+        {
+          "access": "public",
+          "name": "removefile_state_t"
+        },
+        {
+          "access": "public",
+          "name": "removefile_callback_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "CHECKINT_NO_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "CHECKINT_OVERFLOW_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "CHECKINT_TYPE_ERROR"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/checkint.h:20:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_RECURSIVE"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_KEEP_PARENT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_7_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_35_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_1_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_3_PASS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SECURE_1_PASS_ZERO"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_CROSS_MOUNT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_ALLOW_LONG_PATHS"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_CLEAR_PURGEABLE"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:21:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_CONFIRM_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_CONFIRM_CONTEXT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERROR_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERROR_CONTEXT"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_ERRNO"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_STATUS_CALLBACK"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STATE_STATUS_CONTEXT"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:45:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "REMOVEFILE_PROCEED"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_SKIP"
+            },
+            {
+              "access": "public",
+              "name": "REMOVEFILE_STOP"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/removefile/install/PublicSDKContentRoot/usr/include/removefile.h:60:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_alloc"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_free"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_get"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_state_set"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefileat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_removefile_cancel"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "removefile_flags_t"
+        },
+        {
+          "access": "public",
+          "name": "removefile_state_t"
+        },
+        {
+          "access": "public",
+          "name": "removefile_callback_t"
+        }
+      ]
+    }
+  ],
+  "projectName": "removefile",
+  "version": "1.0"
+}

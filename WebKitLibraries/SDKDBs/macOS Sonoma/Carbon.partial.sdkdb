@@ -1,0 +1,12 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "target": "x86_64-apple-macos14"
+    },
+    {
+      "target": "arm64e-apple-macos14"
+    }
+  ],
+  "projectName": "Carbon",
+  "version": "1.0"
+}

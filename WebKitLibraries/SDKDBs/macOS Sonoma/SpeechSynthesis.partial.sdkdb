@@ -1,0 +1,2462 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kTextToSpeechSynthType"
+            },
+            {
+              "access": "public",
+              "name": "kTextToSpeechVoiceType"
+            },
+            {
+              "access": "public",
+              "name": "kTextToSpeechVoiceFileType"
+            },
+            {
+              "access": "public",
+              "name": "kTextToSpeechVoiceBundleType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:39:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNoEndingProsody"
+            },
+            {
+              "access": "public",
+              "name": "kNoSpeechInterrupt"
+            },
+            {
+              "access": "public",
+              "name": "kPreflightThenPause"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:46:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kImmediate"
+            },
+            {
+              "access": "public",
+              "name": "kEndOfWord"
+            },
+            {
+              "access": "public",
+              "name": "kEndOfSentence"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:52:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "soStatus"
+            },
+            {
+              "access": "public",
+              "name": "soErrors"
+            },
+            {
+              "access": "public",
+              "name": "soInputMode"
+            },
+            {
+              "access": "public",
+              "name": "soCharacterMode"
+            },
+            {
+              "access": "public",
+              "name": "soNumberMode"
+            },
+            {
+              "access": "public",
+              "name": "soRate"
+            },
+            {
+              "access": "public",
+              "name": "soPitchBase"
+            },
+            {
+              "access": "public",
+              "name": "soPitchMod"
+            },
+            {
+              "access": "public",
+              "name": "soVolume"
+            },
+            {
+              "access": "public",
+              "name": "soSynthType"
+            },
+            {
+              "access": "public",
+              "name": "soRecentSync"
+            },
+            {
+              "access": "public",
+              "name": "soPhonemeSymbols"
+            },
+            {
+              "access": "public",
+              "name": "soCurrentVoice"
+            },
+            {
+              "access": "public",
+              "name": "soCommandDelimiter"
+            },
+            {
+              "access": "public",
+              "name": "soReset"
+            },
+            {
+              "access": "public",
+              "name": "soCurrentA5"
+            },
+            {
+              "access": "public",
+              "name": "soRefCon"
+            },
+            {
+              "access": "public",
+              "name": "soTextDoneCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soSpeechDoneCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soSyncCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soErrorCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soPhonemeCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soWordCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soSynthExtension"
+            },
+            {
+              "access": "public",
+              "name": "soSoundOutput"
+            },
+            {
+              "access": "public",
+              "name": "soOutputToFileWithCFURL"
+            },
+            {
+              "access": "public",
+              "name": "soOutputToExtAudioFile"
+            },
+            {
+              "access": "public",
+              "name": "soOutputToAudioDevice"
+            },
+            {
+              "access": "public",
+              "name": "soPhonemeOptions"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:62:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "modeText"
+            },
+            {
+              "access": "public",
+              "name": "modePhonemes"
+            },
+            {
+              "access": "public",
+              "name": "modeTune"
+            },
+            {
+              "access": "public",
+              "name": "modeNormal"
+            },
+            {
+              "access": "public",
+              "name": "modeLiteral"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:98:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "soVoiceDescription"
+            },
+            {
+              "access": "public",
+              "name": "soVoiceFile"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:107:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSpeechGenerateTune"
+            },
+            {
+              "access": "public",
+              "name": "kSpeechRelativePitch"
+            },
+            {
+              "access": "public",
+              "name": "kSpeechRelativeDuration"
+            },
+            {
+              "access": "public",
+              "name": "kSpeechShowSyllables"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:115:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAudioUnitSubType_SpeechSynthesis"
+            },
+            {
+              "access": "public",
+              "name": "kAudioUnitProperty_Voice"
+            },
+            {
+              "access": "public",
+              "name": "kAudioUnitProperty_SpeechChannel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:125:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNeuter"
+            },
+            {
+              "access": "public",
+              "name": "kMale"
+            },
+            {
+              "access": "public",
+              "name": "kFemale"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:148:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorsProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechInputModeProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCharacterModeProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechNumberModeProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechRateProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPitchBaseProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPitchModProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechVolumeProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthesizerInfoProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechRecentSyncProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeSymbolsProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCurrentVoiceProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCommandDelimiterProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechResetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputToFileURLProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputToExtAudioFileProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputToAudioDeviceProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputToFileDescriptorProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechAudioOutputFormatProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputChannelMapProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechRefConProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechTextDoneCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSpeechDoneCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSyncCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorCFCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechWordCFCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeOptionsProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechAudioUnitProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechAudioGraphProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthExtensionProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModeText"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModePhoneme"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModeTune"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModeNormal"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModeLiteral"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechNoEndingProsody"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechNoSpeechInterrupt"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPreflightThenPause"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusOutputBusy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusOutputPaused"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusNumberOfCharactersLeft"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusPhonemeCode"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorOldest"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorOldestCharacterOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorNewest"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorNewestCharacterOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthesizerInfoIdentifier"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthesizerInfoManufacturer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthesizerInfoVersion"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoOpcode"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoSymbol"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoExample"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoHiliteStart"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoHiliteEnd"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechVoiceCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechVoiceID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCommandPrefix"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCommandSuffix"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryLocaleIdentifier"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryModificationDate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryPronunciations"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryAbbreviations"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryEntrySpelling"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryEntryPhonemes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorCallbackSpokenString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorCallbackCharacterOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechTextDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechSyncUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechErrorUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechPhonemeUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechWordUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechTextDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechSyncUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechErrorUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechPhonemeUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechWordUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechTextDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechSyncUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechErrorUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechPhonemeUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechWordUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechManagerVersion"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_MakeVoiceSpec"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CountVoices"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetIndVoice"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetVoiceDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetVoiceInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechChannel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechChannel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeakString"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeakText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeakBuffer"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_StopSpeech"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_StopSpeechAt"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PauseSpeechAt"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ContinueSpeech"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechBusy"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechBusySystemWide"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetSpeechRate"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetSpeechRate"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetSpeechPitch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetSpeechPitch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetSpeechInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetSpeechInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TextToPhonemes"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_UseDictionary"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeakCFString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_UseSpeechDictionary"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CopyPhonemesFromText"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CopySpeechProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetSpeechProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechSynthesisRegisterModuleURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechSynthesisUnregisterModuleURL"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SpeechChannelRecord"
+        },
+        {
+          "access": "public",
+          "name": "SpeechChannel"
+        },
+        {
+          "access": "public",
+          "name": "VoiceSpec"
+        },
+        {
+          "access": "public",
+          "name": "VoiceSpecPtr"
+        },
+        {
+          "access": "public",
+          "name": "VoiceDescription"
+        },
+        {
+          "access": "public",
+          "name": "VoiceFileInfo"
+        },
+        {
+          "access": "public",
+          "name": "SpeechStatusInfo"
+        },
+        {
+          "access": "public",
+          "name": "SpeechErrorInfo"
+        },
+        {
+          "access": "public",
+          "name": "SpeechVersionInfo"
+        },
+        {
+          "access": "public",
+          "name": "PhonemeInfo"
+        },
+        {
+          "access": "public",
+          "name": "PhonemeDescriptor"
+        },
+        {
+          "access": "public",
+          "name": "SpeechXtndData"
+        },
+        {
+          "access": "public",
+          "name": "DelimiterInfo"
+        },
+        {
+          "access": "public",
+          "name": "SpeechTextDoneProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechDoneProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechSyncProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechErrorProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechPhonemeProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechWordProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechTextDoneUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechDoneUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechSyncUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechErrorUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechPhonemeUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechWordUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechErrorCFProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechWordCFProcPtr"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kTextToSpeechSynthType"
+            },
+            {
+              "access": "public",
+              "name": "kTextToSpeechVoiceType"
+            },
+            {
+              "access": "public",
+              "name": "kTextToSpeechVoiceFileType"
+            },
+            {
+              "access": "public",
+              "name": "kTextToSpeechVoiceBundleType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:39:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNoEndingProsody"
+            },
+            {
+              "access": "public",
+              "name": "kNoSpeechInterrupt"
+            },
+            {
+              "access": "public",
+              "name": "kPreflightThenPause"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:46:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kImmediate"
+            },
+            {
+              "access": "public",
+              "name": "kEndOfWord"
+            },
+            {
+              "access": "public",
+              "name": "kEndOfSentence"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:52:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "soStatus"
+            },
+            {
+              "access": "public",
+              "name": "soErrors"
+            },
+            {
+              "access": "public",
+              "name": "soInputMode"
+            },
+            {
+              "access": "public",
+              "name": "soCharacterMode"
+            },
+            {
+              "access": "public",
+              "name": "soNumberMode"
+            },
+            {
+              "access": "public",
+              "name": "soRate"
+            },
+            {
+              "access": "public",
+              "name": "soPitchBase"
+            },
+            {
+              "access": "public",
+              "name": "soPitchMod"
+            },
+            {
+              "access": "public",
+              "name": "soVolume"
+            },
+            {
+              "access": "public",
+              "name": "soSynthType"
+            },
+            {
+              "access": "public",
+              "name": "soRecentSync"
+            },
+            {
+              "access": "public",
+              "name": "soPhonemeSymbols"
+            },
+            {
+              "access": "public",
+              "name": "soCurrentVoice"
+            },
+            {
+              "access": "public",
+              "name": "soCommandDelimiter"
+            },
+            {
+              "access": "public",
+              "name": "soReset"
+            },
+            {
+              "access": "public",
+              "name": "soCurrentA5"
+            },
+            {
+              "access": "public",
+              "name": "soRefCon"
+            },
+            {
+              "access": "public",
+              "name": "soTextDoneCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soSpeechDoneCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soSyncCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soErrorCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soPhonemeCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soWordCallBack"
+            },
+            {
+              "access": "public",
+              "name": "soSynthExtension"
+            },
+            {
+              "access": "public",
+              "name": "soSoundOutput"
+            },
+            {
+              "access": "public",
+              "name": "soOutputToFileWithCFURL"
+            },
+            {
+              "access": "public",
+              "name": "soOutputToExtAudioFile"
+            },
+            {
+              "access": "public",
+              "name": "soOutputToAudioDevice"
+            },
+            {
+              "access": "public",
+              "name": "soPhonemeOptions"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:62:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "modeText"
+            },
+            {
+              "access": "public",
+              "name": "modePhonemes"
+            },
+            {
+              "access": "public",
+              "name": "modeTune"
+            },
+            {
+              "access": "public",
+              "name": "modeNormal"
+            },
+            {
+              "access": "public",
+              "name": "modeLiteral"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:98:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "soVoiceDescription"
+            },
+            {
+              "access": "public",
+              "name": "soVoiceFile"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:107:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSpeechGenerateTune"
+            },
+            {
+              "access": "public",
+              "name": "kSpeechRelativePitch"
+            },
+            {
+              "access": "public",
+              "name": "kSpeechRelativeDuration"
+            },
+            {
+              "access": "public",
+              "name": "kSpeechShowSyllables"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:115:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAudioUnitSubType_SpeechSynthesis"
+            },
+            {
+              "access": "public",
+              "name": "kAudioUnitProperty_Voice"
+            },
+            {
+              "access": "public",
+              "name": "kAudioUnitProperty_SpeechChannel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:125:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNeuter"
+            },
+            {
+              "access": "public",
+              "name": "kMale"
+            },
+            {
+              "access": "public",
+              "name": "kFemale"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechSynthesis/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/Headers/SpeechSynthesis.h:148:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorsProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechInputModeProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCharacterModeProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechNumberModeProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechRateProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPitchBaseProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPitchModProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechVolumeProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthesizerInfoProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechRecentSyncProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeSymbolsProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCurrentVoiceProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCommandDelimiterProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechResetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputToFileURLProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputToExtAudioFileProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputToAudioDeviceProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputToFileDescriptorProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechAudioOutputFormatProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechOutputChannelMapProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechRefConProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechTextDoneCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSpeechDoneCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSyncCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorCFCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechWordCFCallBack"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeOptionsProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechAudioUnitProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechAudioGraphProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthExtensionProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModeText"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModePhoneme"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModeTune"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModeNormal"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechModeLiteral"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechNoEndingProsody"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechNoSpeechInterrupt"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPreflightThenPause"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusOutputBusy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusOutputPaused"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusNumberOfCharactersLeft"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechStatusPhonemeCode"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorOldest"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorOldestCharacterOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorNewest"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorNewestCharacterOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthesizerInfoIdentifier"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthesizerInfoManufacturer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechSynthesizerInfoVersion"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoOpcode"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoSymbol"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoExample"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoHiliteStart"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechPhonemeInfoHiliteEnd"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechVoiceCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechVoiceID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCommandPrefix"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechCommandSuffix"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryLocaleIdentifier"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryModificationDate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryPronunciations"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryAbbreviations"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryEntrySpelling"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechDictionaryEntryPhonemes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorCallbackSpokenString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSpeechErrorCallbackCharacterOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechTextDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechSyncUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechErrorUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechPhonemeUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechWordUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechTextDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechSyncUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechErrorUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechPhonemeUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechWordUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechTextDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechDoneUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechSyncUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechErrorUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechPhonemeUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSpeechWordUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechManagerVersion"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_MakeVoiceSpec"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CountVoices"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetIndVoice"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetVoiceDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetVoiceInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSpeechChannel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSpeechChannel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeakString"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeakText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeakBuffer"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_StopSpeech"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_StopSpeechAt"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PauseSpeechAt"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ContinueSpeech"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechBusy"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechBusySystemWide"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetSpeechRate"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetSpeechRate"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetSpeechPitch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetSpeechPitch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetSpeechInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetSpeechInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TextToPhonemes"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_UseDictionary"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeakCFString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_UseSpeechDictionary"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CopyPhonemesFromText"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CopySpeechProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetSpeechProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechSynthesisRegisterModuleURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SpeechSynthesisUnregisterModuleURL"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SpeechChannelRecord"
+        },
+        {
+          "access": "public",
+          "name": "SpeechChannel"
+        },
+        {
+          "access": "public",
+          "name": "VoiceSpec"
+        },
+        {
+          "access": "public",
+          "name": "VoiceSpecPtr"
+        },
+        {
+          "access": "public",
+          "name": "VoiceDescription"
+        },
+        {
+          "access": "public",
+          "name": "VoiceFileInfo"
+        },
+        {
+          "access": "public",
+          "name": "SpeechStatusInfo"
+        },
+        {
+          "access": "public",
+          "name": "SpeechErrorInfo"
+        },
+        {
+          "access": "public",
+          "name": "SpeechVersionInfo"
+        },
+        {
+          "access": "public",
+          "name": "PhonemeInfo"
+        },
+        {
+          "access": "public",
+          "name": "PhonemeDescriptor"
+        },
+        {
+          "access": "public",
+          "name": "SpeechXtndData"
+        },
+        {
+          "access": "public",
+          "name": "DelimiterInfo"
+        },
+        {
+          "access": "public",
+          "name": "SpeechTextDoneProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechDoneProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechSyncProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechErrorProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechPhonemeProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechWordProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechTextDoneUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechDoneUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechSyncUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechErrorUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechPhonemeUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechWordUPP"
+        },
+        {
+          "access": "public",
+          "name": "SpeechErrorCFProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SpeechWordCFProcPtr"
+        }
+      ]
+    }
+  ],
+  "projectName": "SpeechSynthesis",
+  "version": "1.0"
+}

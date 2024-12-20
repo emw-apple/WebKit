@@ -1,0 +1,1904 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULineWidthTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineRotationTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineDirectionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineJustificationFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineFlushFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineBaselineValuesTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineLayoutOptionsTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineAscentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineDescentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineLangRegionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineTextLocatorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineTruncationTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineFontFallbacksTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineDecimalTabCharacterTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationOverrideTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineHighlightCGColorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUMaxLineTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineLanguageTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUCGContextTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDBoldfaceTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDItalicTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDUnderlineTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDCondensedTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDExtendedTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUFontTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUSizeTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUColorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULangRegionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUVerticalCharacterTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUImposeWidthTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUBeforeWithStreamShiftTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUAfterWithStreamShiftTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUCrossStreamShiftTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTrackingTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUHangingInhibitFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUKerningInhibitFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDecompositionFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUBaselineClassTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUPriorityJustOverrideTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNoLigatureSplitTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNoCaretAngleTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUSuppressCrossKerningTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNoOpticalAlignmentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUForceHangingTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNoSpecialJustificationTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleTextLocatorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleRenderingOptionsTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUAscentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDescentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULeadingTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUGlyphSelectorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSURGBAlphaColorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUFontMatrixTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleUnderlineCountOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleUnderlineColorOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleStrikeThroughTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleStrikeThroughCountOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleStrikeThroughColorOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDropShadowTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDropShadowBlurOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDropShadowOffsetOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDropShadowColorOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUMaxStyleTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULanguageTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUMaxATSUITagValue"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:180:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUByCharacter"
+            },
+            {
+              "access": "public",
+              "name": "kATSUByTypographicCluster"
+            },
+            {
+              "access": "public",
+              "name": "kATSUByWord"
+            },
+            {
+              "access": "public",
+              "name": "kATSUByCharacterCluster"
+            },
+            {
+              "access": "public",
+              "name": "kATSUByCluster"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:693:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUTruncateNone"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncateStart"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncateEnd"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncateMiddle"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncateSpecificationMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncFeatNoSquishing"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:744:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUStyleSingleLineCount"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDoubleLineCount"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:763:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUStronglyHorizontal"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStronglyVertical"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:779:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUStyleUnequal"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleContains"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleEquals"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleContainedBy"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:796:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUDefaultFontFallbacks"
+            },
+            {
+              "access": "public",
+              "name": "kATSULastResortOnlyFallback"
+            },
+            {
+              "access": "public",
+              "name": "kATSUSequentialFallbacksPreferred"
+            },
+            {
+              "access": "public",
+              "name": "kATSUSequentialFallbacksExclusive"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:815:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULeftTab"
+            },
+            {
+              "access": "public",
+              "name": "kATSUCenterTab"
+            },
+            {
+              "access": "public",
+              "name": "kATSURightTab"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDecimalTab"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNumberTabTypes"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:868:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kGlyphCollectionGID"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeCNS1"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeGB1"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeJapan1"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeJapan2"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeKorea1"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:919:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kInvertHighlighting"
+            },
+            {
+              "access": "public",
+              "name": "kRedrawHighlighting"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1026:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUBackgroundColor"
+            },
+            {
+              "access": "public",
+              "name": "kATSUBackgroundCallback"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1043:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULeftToRightBaseDirection"
+            },
+            {
+              "access": "public",
+              "name": "kATSURightToLeftBaseDirection"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1192:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUInvalidFontID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1217:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUUseLineControlWidth"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1229:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUNoSelector"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1240:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUFromTextBeginning"
+            },
+            {
+              "access": "public",
+              "name": "kATSUToTextEnd"
+            },
+            {
+              "access": "public",
+              "name": "kATSUFromPreviousLayout"
+            },
+            {
+              "access": "public",
+              "name": "kATSUFromFollowingLayout"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1255:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUUseGrafPortPenLoc"
+            },
+            {
+              "access": "public",
+              "name": "kATSUClearAll"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1283:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUDataStreamUnicodeStyledText"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:44:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUFlattenOptionNoOptionsMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:55:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUUnFlattenOptionNoOptionsMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFlatDataUstlVersion0"
+            },
+            {
+              "access": "public",
+              "name": "kATSFlatDataUstlVersion1"
+            },
+            {
+              "access": "public",
+              "name": "kATSFlatDataUstlVersion2"
+            },
+            {
+              "access": "public",
+              "name": "kATSFlatDataUstlCurrentVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:104:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFlattenedFontSpecifierRawNameData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:400:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUDirectDataAdvanceDeltaFixedArray"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataBaselineDeltaFixedArray"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataDeviceDeltaSInt16Array"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataStyleIndexUInt16Array"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataStyleSettingATSUStyleSettingRefArray"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataLayoutRecordATSLayoutRecordVersion1"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataLayoutRecordATSLayoutRecordCurrent"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeDirectAccess.h:46:1)"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ATSUTextLayout"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyle"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontFallbacks"
+        },
+        {
+          "access": "public",
+          "name": "ATSUTextMeasurement"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontID"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontFeatureType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontFeatureSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontVariationAxis"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontVariationValue"
+        },
+        {
+          "access": "public",
+          "name": "ATSUAttributeTag"
+        },
+        {
+          "access": "public",
+          "name": "ATSUAttributeValuePtr"
+        },
+        {
+          "access": "public",
+          "name": "ConstATSUAttributeValuePtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSUAttributeInfo"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCaret"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCursorMovementType"
+        },
+        {
+          "access": "public",
+          "name": "ATSULineTruncation"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyleLineCountType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUVerticalCharacterType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyleComparison"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontFallbackMethod"
+        },
+        {
+          "access": "public",
+          "name": "ATSUTabType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUTab"
+        },
+        {
+          "access": "public",
+          "name": "ATSURGBAlphaColor"
+        },
+        {
+          "access": "public",
+          "name": "GlyphCollection"
+        },
+        {
+          "access": "public",
+          "name": "ATSUGlyphSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSUGlyphInfo"
+        },
+        {
+          "access": "public",
+          "name": "ATSUGlyphInfoArray"
+        },
+        {
+          "access": "public",
+          "name": "ATSUHighlightMethod"
+        },
+        {
+          "access": "public",
+          "name": "ATSUBackgroundDataType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUBackgroundColor"
+        },
+        {
+          "access": "public",
+          "name": "RedrawBackgroundProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "RedrawBackgroundUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSUBackgroundData"
+        },
+        {
+          "access": "public",
+          "name": "ATSUUnhighlightData"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticNewPathProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticNewPathUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticLineProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticLineUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticCurveProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticCurveUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticClosePathProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticClosePathUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicMoveToProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicMoveToUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicLineToProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicLineToUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicCurveToProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicCurveToUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicClosePathProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicClosePathUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFlattenedDataStreamFormat"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFlattenStyleRunOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSUUnFlattenStyleRunOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyleRunInfo"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataMainHeaderBlock"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataTextLayoutDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataTextLayoutHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataLayoutControlsDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataLineInfoData"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataLineInfoHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleRunDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleListStyleDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleListHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleListFeatureData"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleListVariationData"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataFontSpeciferType"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataFontNameDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataFontSpecRawNameData"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataFontSpecRawNameDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSUDirectDataSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyleSettingRef"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULineWidthTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineRotationTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineDirectionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineJustificationFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineFlushFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineBaselineValuesTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineLayoutOptionsTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineAscentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineDescentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineLangRegionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineTextLocatorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineTruncationTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineFontFallbacksTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineDecimalTabCharacterTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationOverrideTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineHighlightCGColorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUMaxLineTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULineLanguageTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUCGContextTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDBoldfaceTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDItalicTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDUnderlineTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDCondensedTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUQDExtendedTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUFontTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUSizeTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUColorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULangRegionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUVerticalCharacterTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUImposeWidthTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUBeforeWithStreamShiftTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUAfterWithStreamShiftTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUCrossStreamShiftTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTrackingTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUHangingInhibitFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUKerningInhibitFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDecompositionFactorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUBaselineClassTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUPriorityJustOverrideTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNoLigatureSplitTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNoCaretAngleTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUSuppressCrossKerningTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNoOpticalAlignmentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUForceHangingTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNoSpecialJustificationTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleTextLocatorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleRenderingOptionsTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUAscentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDescentTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULeadingTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUGlyphSelectorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSURGBAlphaColorTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUFontMatrixTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleUnderlineCountOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleUnderlineColorOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleStrikeThroughTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleStrikeThroughCountOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleStrikeThroughColorOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDropShadowTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDropShadowBlurOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDropShadowOffsetOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDropShadowColorOptionTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUMaxStyleTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSULanguageTag"
+            },
+            {
+              "access": "public",
+              "name": "kATSUMaxATSUITagValue"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:180:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUByCharacter"
+            },
+            {
+              "access": "public",
+              "name": "kATSUByTypographicCluster"
+            },
+            {
+              "access": "public",
+              "name": "kATSUByWord"
+            },
+            {
+              "access": "public",
+              "name": "kATSUByCharacterCluster"
+            },
+            {
+              "access": "public",
+              "name": "kATSUByCluster"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:693:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUTruncateNone"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncateStart"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncateEnd"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncateMiddle"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncateSpecificationMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSUTruncFeatNoSquishing"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:744:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUStyleSingleLineCount"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleDoubleLineCount"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:763:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUStronglyHorizontal"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStronglyVertical"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:779:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUStyleUnequal"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleContains"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleEquals"
+            },
+            {
+              "access": "public",
+              "name": "kATSUStyleContainedBy"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:796:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUDefaultFontFallbacks"
+            },
+            {
+              "access": "public",
+              "name": "kATSULastResortOnlyFallback"
+            },
+            {
+              "access": "public",
+              "name": "kATSUSequentialFallbacksPreferred"
+            },
+            {
+              "access": "public",
+              "name": "kATSUSequentialFallbacksExclusive"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:815:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULeftTab"
+            },
+            {
+              "access": "public",
+              "name": "kATSUCenterTab"
+            },
+            {
+              "access": "public",
+              "name": "kATSURightTab"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDecimalTab"
+            },
+            {
+              "access": "public",
+              "name": "kATSUNumberTabTypes"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:868:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kGlyphCollectionGID"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeCNS1"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeGB1"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeJapan1"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeJapan2"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionAdobeKorea1"
+            },
+            {
+              "access": "public",
+              "name": "kGlyphCollectionUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:919:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kInvertHighlighting"
+            },
+            {
+              "access": "public",
+              "name": "kRedrawHighlighting"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1026:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUBackgroundColor"
+            },
+            {
+              "access": "public",
+              "name": "kATSUBackgroundCallback"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1043:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULeftToRightBaseDirection"
+            },
+            {
+              "access": "public",
+              "name": "kATSURightToLeftBaseDirection"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1192:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUInvalidFontID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1217:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUUseLineControlWidth"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1229:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUNoSelector"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1240:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUFromTextBeginning"
+            },
+            {
+              "access": "public",
+              "name": "kATSUToTextEnd"
+            },
+            {
+              "access": "public",
+              "name": "kATSUFromPreviousLayout"
+            },
+            {
+              "access": "public",
+              "name": "kATSUFromFollowingLayout"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1255:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUUseGrafPortPenLoc"
+            },
+            {
+              "access": "public",
+              "name": "kATSUClearAll"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeTypes.h:1283:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUDataStreamUnicodeStyledText"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:44:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUFlattenOptionNoOptionsMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:55:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUUnFlattenOptionNoOptionsMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFlatDataUstlVersion0"
+            },
+            {
+              "access": "public",
+              "name": "kATSFlatDataUstlVersion1"
+            },
+            {
+              "access": "public",
+              "name": "kATSFlatDataUstlVersion2"
+            },
+            {
+              "access": "public",
+              "name": "kATSFlatDataUstlCurrentVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:104:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFlattenedFontSpecifierRawNameData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeFlattening.h:400:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUDirectDataAdvanceDeltaFixedArray"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataBaselineDeltaFixedArray"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataDeviceDeltaSInt16Array"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataStyleIndexUInt16Array"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataStyleSettingATSUStyleSettingRefArray"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataLayoutRecordATSLayoutRecordVersion1"
+            },
+            {
+              "access": "public",
+              "name": "kATSUDirectDataLayoutRecordATSLayoutRecordCurrent"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATSUI/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATSUI.framework/Versions/A/Headers/ATSUnicodeDirectAccess.h:46:1)"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ATSUTextLayout"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyle"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontFallbacks"
+        },
+        {
+          "access": "public",
+          "name": "ATSUTextMeasurement"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontID"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontFeatureType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontFeatureSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontVariationAxis"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontVariationValue"
+        },
+        {
+          "access": "public",
+          "name": "ATSUAttributeTag"
+        },
+        {
+          "access": "public",
+          "name": "ATSUAttributeValuePtr"
+        },
+        {
+          "access": "public",
+          "name": "ConstATSUAttributeValuePtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSUAttributeInfo"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCaret"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCursorMovementType"
+        },
+        {
+          "access": "public",
+          "name": "ATSULineTruncation"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyleLineCountType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUVerticalCharacterType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyleComparison"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFontFallbackMethod"
+        },
+        {
+          "access": "public",
+          "name": "ATSUTabType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUTab"
+        },
+        {
+          "access": "public",
+          "name": "ATSURGBAlphaColor"
+        },
+        {
+          "access": "public",
+          "name": "GlyphCollection"
+        },
+        {
+          "access": "public",
+          "name": "ATSUGlyphSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSUGlyphInfo"
+        },
+        {
+          "access": "public",
+          "name": "ATSUGlyphInfoArray"
+        },
+        {
+          "access": "public",
+          "name": "ATSUHighlightMethod"
+        },
+        {
+          "access": "public",
+          "name": "ATSUBackgroundDataType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUBackgroundColor"
+        },
+        {
+          "access": "public",
+          "name": "RedrawBackgroundProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "RedrawBackgroundUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSUBackgroundData"
+        },
+        {
+          "access": "public",
+          "name": "ATSUUnhighlightData"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticNewPathProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticNewPathUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticLineProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticLineUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticCurveProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticCurveUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticClosePathProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSQuadraticClosePathUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicMoveToProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicMoveToUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicLineToProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicLineToUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicCurveToProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicCurveToUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicClosePathProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSCubicClosePathUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFlattenedDataStreamFormat"
+        },
+        {
+          "access": "public",
+          "name": "ATSUFlattenStyleRunOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSUUnFlattenStyleRunOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyleRunInfo"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataMainHeaderBlock"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataTextLayoutDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataTextLayoutHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataLayoutControlsDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataLineInfoData"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataLineInfoHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleRunDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleListStyleDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleListHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleListFeatureData"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataStyleListVariationData"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataFontSpeciferType"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataFontNameDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataFontSpecRawNameData"
+        },
+        {
+          "access": "public",
+          "name": "ATSFlatDataFontSpecRawNameDataHeader"
+        },
+        {
+          "access": "public",
+          "name": "ATSUDirectDataSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSUStyleSettingRef"
+        }
+      ]
+    }
+  ],
+  "projectName": "ATSUI",
+  "version": "1.0"
+}

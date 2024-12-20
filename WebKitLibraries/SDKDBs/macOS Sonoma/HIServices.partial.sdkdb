@@ -1,0 +1,6280 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kHIShapeEnumerateInit"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeEnumerateRect"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeEnumerateTerminate"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/HIShape.h:73:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromTop"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromBottom"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromLeft"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromRight"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromTopLeft"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromBottomRight"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/HIShape.h:97:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAlignNone"
+            },
+            {
+              "access": "public",
+              "name": "kAlignVerticalCenter"
+            },
+            {
+              "access": "public",
+              "name": "kAlignTop"
+            },
+            {
+              "access": "public",
+              "name": "kAlignBottom"
+            },
+            {
+              "access": "public",
+              "name": "kAlignHorizontalCenter"
+            },
+            {
+              "access": "public",
+              "name": "kAlignAbsoluteCenter"
+            },
+            {
+              "access": "public",
+              "name": "kAlignCenterTop"
+            },
+            {
+              "access": "public",
+              "name": "kAlignCenterBottom"
+            },
+            {
+              "access": "public",
+              "name": "kAlignLeft"
+            },
+            {
+              "access": "public",
+              "name": "kAlignCenterLeft"
+            },
+            {
+              "access": "public",
+              "name": "kAlignTopLeft"
+            },
+            {
+              "access": "public",
+              "name": "kAlignBottomLeft"
+            },
+            {
+              "access": "public",
+              "name": "kAlignRight"
+            },
+            {
+              "access": "public",
+              "name": "kAlignCenterRight"
+            },
+            {
+              "access": "public",
+              "name": "kAlignTopRight"
+            },
+            {
+              "access": "public",
+              "name": "kAlignBottomRight"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:47:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "atNone"
+            },
+            {
+              "access": "public",
+              "name": "atVerticalCenter"
+            },
+            {
+              "access": "public",
+              "name": "atTop"
+            },
+            {
+              "access": "public",
+              "name": "atBottom"
+            },
+            {
+              "access": "public",
+              "name": "atHorizontalCenter"
+            },
+            {
+              "access": "public",
+              "name": "atAbsoluteCenter"
+            },
+            {
+              "access": "public",
+              "name": "atCenterTop"
+            },
+            {
+              "access": "public",
+              "name": "atCenterBottom"
+            },
+            {
+              "access": "public",
+              "name": "atLeft"
+            },
+            {
+              "access": "public",
+              "name": "atCenterLeft"
+            },
+            {
+              "access": "public",
+              "name": "atTopLeft"
+            },
+            {
+              "access": "public",
+              "name": "atBottomLeft"
+            },
+            {
+              "access": "public",
+              "name": "atRight"
+            },
+            {
+              "access": "public",
+              "name": "atCenterRight"
+            },
+            {
+              "access": "public",
+              "name": "atTopRight"
+            },
+            {
+              "access": "public",
+              "name": "atBottomRight"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:67:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kTransformNone"
+            },
+            {
+              "access": "public",
+              "name": "kTransformDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kTransformOffline"
+            },
+            {
+              "access": "public",
+              "name": "kTransformOpen"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel1"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel2"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel3"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel4"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel5"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel6"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel7"
+            },
+            {
+              "access": "public",
+              "name": "kTransformSelected"
+            },
+            {
+              "access": "public",
+              "name": "kTransformSelectedDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kTransformSelectedOffline"
+            },
+            {
+              "access": "public",
+              "name": "kTransformSelectedOpen"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:88:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "ttNone"
+            },
+            {
+              "access": "public",
+              "name": "ttDisabled"
+            },
+            {
+              "access": "public",
+              "name": "ttOffline"
+            },
+            {
+              "access": "public",
+              "name": "ttOpen"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel1"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel2"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel3"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel4"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel5"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel6"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel7"
+            },
+            {
+              "access": "public",
+              "name": "ttSelected"
+            },
+            {
+              "access": "public",
+              "name": "ttSelectedDisabled"
+            },
+            {
+              "access": "public",
+              "name": "ttSelectedOffline"
+            },
+            {
+              "access": "public",
+              "name": "ttSelectedOpen"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:107:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSelectorLarge1Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorLarge4Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorLarge8Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorLarge32Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorLarge8BitMask"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall1Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall4Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall8Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall32Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall8BitMask"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorMini1Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorMini4Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorMini8Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge1Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge4Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge8Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge32Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge8BitMask"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllLargeData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllSmallData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllMiniData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllHugeData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAll1BitData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAll4BitData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAll8BitData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAll32BitData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllAvailableData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:127:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "svLarge1Bit"
+            },
+            {
+              "access": "public",
+              "name": "svLarge4Bit"
+            },
+            {
+              "access": "public",
+              "name": "svLarge8Bit"
+            },
+            {
+              "access": "public",
+              "name": "svSmall1Bit"
+            },
+            {
+              "access": "public",
+              "name": "svSmall4Bit"
+            },
+            {
+              "access": "public",
+              "name": "svSmall8Bit"
+            },
+            {
+              "access": "public",
+              "name": "svMini1Bit"
+            },
+            {
+              "access": "public",
+              "name": "svMini4Bit"
+            },
+            {
+              "access": "public",
+              "name": "svMini8Bit"
+            },
+            {
+              "access": "public",
+              "name": "svAllLargeData"
+            },
+            {
+              "access": "public",
+              "name": "svAllSmallData"
+            },
+            {
+              "access": "public",
+              "name": "svAllMiniData"
+            },
+            {
+              "access": "public",
+              "name": "svAll1BitData"
+            },
+            {
+              "access": "public",
+              "name": "svAll4BitData"
+            },
+            {
+              "access": "public",
+              "name": "svAll8BitData"
+            },
+            {
+              "access": "public",
+              "name": "svAllAvailableData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:159:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPlotIconRefNormalFlags"
+            },
+            {
+              "access": "public",
+              "name": "kPlotIconRefNoImage"
+            },
+            {
+              "access": "public",
+              "name": "kPlotIconRefNoMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:932:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "icPrefNotFoundErr"
+            },
+            {
+              "access": "public",
+              "name": "icPermErr"
+            },
+            {
+              "access": "public",
+              "name": "icPrefDataErr"
+            },
+            {
+              "access": "public",
+              "name": "icInternalErr"
+            },
+            {
+              "access": "public",
+              "name": "icTruncatedErr"
+            },
+            {
+              "access": "public",
+              "name": "icNoMoreWritersErr"
+            },
+            {
+              "access": "public",
+              "name": "icNothingToOverrideErr"
+            },
+            {
+              "access": "public",
+              "name": "icNoURLErr"
+            },
+            {
+              "access": "public",
+              "name": "icConfigNotFoundErr"
+            },
+            {
+              "access": "public",
+              "name": "icConfigInappropriateErr"
+            },
+            {
+              "access": "public",
+              "name": "icProfileNotFoundErr"
+            },
+            {
+              "access": "public",
+              "name": "icTooManyProfilesErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:73:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion0"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion1"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion2"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion3"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion4"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:92:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICAttrLockedBit"
+            },
+            {
+              "access": "public",
+              "name": "kICAttrVolatileBit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:123:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICAttrNoChange"
+            },
+            {
+              "access": "public",
+              "name": "kICAttrLockedMask"
+            },
+            {
+              "access": "public",
+              "name": "kICAttrVolatileMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:128:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "icNoPerm"
+            },
+            {
+              "access": "public",
+              "name": "icReadOnlyPerm"
+            },
+            {
+              "access": "public",
+              "name": "icReadWritePerm"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:138:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICNilProfileID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:150:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICNoUserInteractionBit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:157:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICNoUserInteractionMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:161:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICFileType"
+            },
+            {
+              "access": "public",
+              "name": "kICCreator"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:165:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kInternetEventClass"
+            },
+            {
+              "access": "public",
+              "name": "kAEGetURL"
+            },
+            {
+              "access": "public",
+              "name": "kAEFetchURL"
+            },
+            {
+              "access": "public",
+              "name": "keyAEAttaching"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:173:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICEditPreferenceEventClass"
+            },
+            {
+              "access": "public",
+              "name": "kICEditPreferenceEvent"
+            },
+            {
+              "access": "public",
+              "name": "keyICEditPreferenceDestination"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:181:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICComponentVersion"
+            },
+            {
+              "access": "public",
+              "name": "kICNumVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:190:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICFileSpecHeaderSize"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:251:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICMapFixedLength"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:278:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICMapBinaryBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapResourceForkBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapDataForkBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapPostBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapNotIncomingBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapNotOutgoingBit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:282:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICMapBinaryMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapResourceForkMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapDataForkMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapPostMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapNotIncomingMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapNotOutgoingMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:291:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICServicesTCPBit"
+            },
+            {
+              "access": "public",
+              "name": "kICServicesUDPBit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:313:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICServicesTCPMask"
+            },
+            {
+              "access": "public",
+              "name": "kICServicesUDPMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:318:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNoProcess"
+            },
+            {
+              "access": "public",
+              "name": "kSystemProcess"
+            },
+            {
+              "access": "public",
+              "name": "kCurrentProcess"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:35:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "launchContinue"
+            },
+            {
+              "access": "public",
+              "name": "launchNoFileFlags"
+            },
+            {
+              "access": "public",
+              "name": "launchUseMinimum"
+            },
+            {
+              "access": "public",
+              "name": "launchDontSwitch"
+            },
+            {
+              "access": "public",
+              "name": "launchAllow24Bit"
+            },
+            {
+              "access": "public",
+              "name": "launchInhibitDaemon"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:45:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "extendedBlock"
+            },
+            {
+              "access": "public",
+              "name": "extendedBlockLen"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:107:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "modeReserved"
+            },
+            {
+              "access": "public",
+              "name": "modeControlPanel"
+            },
+            {
+              "access": "public",
+              "name": "modeLaunchDontSwitch"
+            },
+            {
+              "access": "public",
+              "name": "modeDeskAccessory"
+            },
+            {
+              "access": "public",
+              "name": "modeMultiLaunch"
+            },
+            {
+              "access": "public",
+              "name": "modeNeedSuspendResume"
+            },
+            {
+              "access": "public",
+              "name": "modeCanBackground"
+            },
+            {
+              "access": "public",
+              "name": "modeDoesActivateOnFGSwitch"
+            },
+            {
+              "access": "public",
+              "name": "modeOnlyBackground"
+            },
+            {
+              "access": "public",
+              "name": "modeGetFrontClicks"
+            },
+            {
+              "access": "public",
+              "name": "modeGetAppDiedMsg"
+            },
+            {
+              "access": "public",
+              "name": "mode32BitCompatible"
+            },
+            {
+              "access": "public",
+              "name": "modeHighLevelEventAware"
+            },
+            {
+              "access": "public",
+              "name": "modeLocalAndRemoteHLEvents"
+            },
+            {
+              "access": "public",
+              "name": "modeStationeryAware"
+            },
+            {
+              "access": "public",
+              "name": "modeUseTextEditServices"
+            },
+            {
+              "access": "public",
+              "name": "modeDisplayManagerAware"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:112:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kProcessTransformToForegroundApplication"
+            },
+            {
+              "access": "public",
+              "name": "kProcessTransformToBackgroundApplication"
+            },
+            {
+              "access": "public",
+              "name": "kProcessTransformToUIElementApplication"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:134:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kProcessDictionaryIncludeAllInformationMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:276:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kQuitBeforeNormalTimeMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitAtNormalTimeMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitBeforeFBAsQuitMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitBeforeShellQuitsMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitBeforeTerminatorAppQuitsMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitNeverMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitOptionsMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitNotQuitDuringInstallMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitNotQuitDuringLogoutMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:292:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSetFrontProcessFrontWindowOnly"
+            },
+            {
+              "access": "public",
+              "name": "kSetFrontProcessCausedByUser"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:512:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "initDev"
+            },
+            {
+              "access": "public",
+              "name": "hitDev"
+            },
+            {
+              "access": "public",
+              "name": "closeDev"
+            },
+            {
+              "access": "public",
+              "name": "nulDev"
+            },
+            {
+              "access": "public",
+              "name": "updateDev"
+            },
+            {
+              "access": "public",
+              "name": "activDev"
+            },
+            {
+              "access": "public",
+              "name": "deactivDev"
+            },
+            {
+              "access": "public",
+              "name": "keyEvtDev"
+            },
+            {
+              "access": "public",
+              "name": "macDev"
+            },
+            {
+              "access": "public",
+              "name": "undoDev"
+            },
+            {
+              "access": "public",
+              "name": "cutDev"
+            },
+            {
+              "access": "public",
+              "name": "copyDev"
+            },
+            {
+              "access": "public",
+              "name": "pasteDev"
+            },
+            {
+              "access": "public",
+              "name": "clearDev"
+            },
+            {
+              "access": "public",
+              "name": "cursorDev"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:875:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cdevGenErr"
+            },
+            {
+              "access": "public",
+              "name": "cdevMemErr"
+            },
+            {
+              "access": "public",
+              "name": "cdevResErr"
+            },
+            {
+              "access": "public",
+              "name": "cdevUnset"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:894:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "badPasteboardSyncErr"
+            },
+            {
+              "access": "public",
+              "name": "badPasteboardIndexErr"
+            },
+            {
+              "access": "public",
+              "name": "badPasteboardItemErr"
+            },
+            {
+              "access": "public",
+              "name": "badPasteboardFlavorErr"
+            },
+            {
+              "access": "public",
+              "name": "duplicatePasteboardFlavorErr"
+            },
+            {
+              "access": "public",
+              "name": "notPasteboardOwnerErr"
+            },
+            {
+              "access": "public",
+              "name": "noPasteboardPromiseKeeperErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Pasteboard.h:102:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPasteboardModified"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardClientIsOwner"
+            }
+          ],
+          "name": "PasteboardSyncFlags"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorNoFlags"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorSenderOnly"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorSenderTranslated"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorNotSaved"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorRequestOnly"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorSystemTranslated"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorPromised"
+            }
+          ],
+          "name": "PasteboardFlavorFlags"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPasteboardStandardLocationTrash"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardStandardLocationUnknown"
+            }
+          ],
+          "name": "PasteboardStandardLocation"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "badTranslationRefErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/TranslationServices.h:120:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kTranslationDataTranslation"
+            },
+            {
+              "access": "public",
+              "name": "kTranslationFileTranslation"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/TranslationServices.h:142:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXErrorSuccess"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorFailure"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorIllegalArgument"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorInvalidUIElement"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorInvalidUIElementObserver"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorCannotComplete"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorAttributeUnsupported"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorActionUnsupported"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotificationUnsupported"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotImplemented"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotificationAlreadyRegistered"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotificationNotRegistered"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorAPIDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNoValue"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorParameterizedAttributeUnsupported"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotEnoughPrecision"
+            }
+          ],
+          "name": "AXError"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierNone"
+            },
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierShift"
+            },
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierOption"
+            },
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierControl"
+            },
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierNoCommand"
+            }
+          ],
+          "name": "AXMenuItemModifiers"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXPriorityLow"
+            },
+            {
+              "access": "public",
+              "name": "kAXPriorityMedium"
+            },
+            {
+              "access": "public",
+              "name": "kAXPriorityHigh"
+            }
+          ],
+          "introduced": "10.9",
+          "name": "AXPriority"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXCopyMultipleAttributeOptionStopOnError"
+            }
+          ],
+          "name": "AXCopyMultipleAttributeOptions"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeCGPoint"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeCGSize"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeCGRect"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeCFRange"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeAXError"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeIllegal"
+            }
+          ],
+          "name": "AXValueType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXUnderlineStyleNone"
+            },
+            {
+              "access": "public",
+              "name": "kAXUnderlineStyleSingle"
+            },
+            {
+              "access": "public",
+              "name": "kAXUnderlineStyleThick"
+            },
+            {
+              "access": "public",
+              "name": "kAXUnderlineStyleDouble"
+            }
+          ],
+          "name": "AXUnderlineStyle"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kUAZoomFocusTypeOther"
+            },
+            {
+              "access": "public",
+              "name": "kUAZoomFocusTypeInsertionPoint"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/UniversalAccess.h:71:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateEmpty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateWithQDRgn"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateWithRect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateIntersection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateDifference"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateUnion"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateXor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeIsEmpty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeIsRectangular"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeContainsPoint"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeIntersectsRect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeGetBounds"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeGetAsQDRgn"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeReplacePathInCGContext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeEnumerate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateMutable"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateMutableCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateMutableWithRect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeSetEmpty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeSetWithShape"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeIntersect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeDifference"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeUnion"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeXor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeInset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeUnionWithRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewIconActionUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewIconGetterUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeIconActionUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeIconGetterUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeIconActionUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeIconGetterUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IconRefToIconFamily"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetIconFamilyData"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetIconFamilyData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PlotIconRefInContext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IconRefContainsCGPoint"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IconRefIntersectsCGRect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IconRefToHIShape"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IsIconRefMaskEmpty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetIconRefVariant"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICStart"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICStop"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetVersion"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetConfigName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetSeed"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetPerm"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICBegin"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICFindPrefHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetPrefHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetPrefHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICCountPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetIndPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICDeletePref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICEnd"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetDefaultPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICEditPreferences"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICLaunchURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICParseURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICCreateGURLEvent"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSendGURLEvent"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICMapFilename"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICMapTypeCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICMapEntriesFilename"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICMapEntriesTypeCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICCountMapEntries"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetIndMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICDeleteMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICAddMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetCurrentProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetCurrentProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICCountProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetIndProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetProfileName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetProfileName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICAddProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICDeleteProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LaunchApplication"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetCurrentProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetFrontProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetNextProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetProcessInformation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ProcessInformationCopyDictionary"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetFrontProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetFrontProcessWithOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_WakeUpProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SameProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ExitToShell"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KillProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetProcessBundleLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CopyProcessName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetProcessPID"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetProcessForPID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IsProcessVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ShowHideProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TransformProcessType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardSynchronize"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardClear"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCopyName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardGetItemCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardGetItemIdentifier"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCopyItemFlavors"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardGetItemFlavorFlags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCopyItemFlavorData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardPutItemFlavor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCopyPasteLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardSetPasteLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardSetPromiseKeeper"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardResolvePromises"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationCreateWithSourceArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationPerformForData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationPerformForFile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationPerformForURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationCopySourceType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationCopyDestinationType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationGetTranslationFlags"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXAPIEnabled"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXIsProcessTrustedWithOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXTrustedCheckOptionPrompt"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXIsProcessTrusted"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXMakeProcessTrusted"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyAttributeNames"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyAttributeValue"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementGetAttributeValueCount"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyAttributeValues"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementIsAttributeSettable"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementSetAttributeValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyMultipleAttributeValues"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyParameterizedAttributeNames"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyParameterizedAttributeValue"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyActionNames"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyActionDescription"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementPerformAction"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyElementAtPosition"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCreateApplication"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCreateSystemWide"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementGetPid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementSetMessagingTimeout"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementPostKeyboardEvent"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerGetLength"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerGetBytePtr"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeCreateWithBytes"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeCopyStartMarker"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeCopyEndMarker"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverCreateWithInfoCallback"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverAddNotification"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverRemoveNotification"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverGetRunLoopSource"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXValueGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXValueCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXValueGetType"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXValueGetValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXFontTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXForegroundColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXBackgroundColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXUnderlineColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXStrikethroughColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXUnderlineTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXSuperscriptTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXStrikethroughTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXShadowTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXAttachmentTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXLinkTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXNaturalLanguageTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXReplacementStringTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXMisspelledTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXMarkedMisspelledTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.7",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXAutocorrectedTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXListItemPrefixTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXListItemIndexTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXListItemLevelTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXFontNameKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXFontFamilyKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXVisibleNameKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXFontSizeKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXForegoundColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_UAZoomEnabled"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_UAZoomChangeFocus"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "HIShapeRef"
+        },
+        {
+          "access": "public",
+          "name": "HIMutableShapeRef"
+        },
+        {
+          "access": "public",
+          "name": "HIShapeEnumerateProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "IconAlignmentType"
+        },
+        {
+          "access": "public",
+          "name": "IconTransformType"
+        },
+        {
+          "access": "public",
+          "name": "IconSelectorValue"
+        },
+        {
+          "access": "public",
+          "name": "IconActionProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "IconGetterProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "IconActionUPP"
+        },
+        {
+          "access": "public",
+          "name": "IconGetterUPP"
+        },
+        {
+          "access": "public",
+          "name": "PlotIconRefFlags"
+        },
+        {
+          "access": "public",
+          "name": "ICInstance"
+        },
+        {
+          "access": "public",
+          "name": "ICAttr"
+        },
+        {
+          "access": "public",
+          "name": "ICPerm"
+        },
+        {
+          "access": "public",
+          "name": "ICProfileID"
+        },
+        {
+          "access": "public",
+          "name": "ICProfileIDPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICFontRecord"
+        },
+        {
+          "access": "public",
+          "name": "ICFontRecordPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICFontRecordHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICCharTable"
+        },
+        {
+          "access": "public",
+          "name": "ICCharTablePtr"
+        },
+        {
+          "access": "public",
+          "name": "ICCharTableHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpec"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecList"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecListPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecListHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICFileSpec"
+        },
+        {
+          "access": "public",
+          "name": "ICFileSpecPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICFileSpecHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICMapEntryFlags"
+        },
+        {
+          "access": "public",
+          "name": "ICFixedLength"
+        },
+        {
+          "access": "public",
+          "name": "ICMapEntry"
+        },
+        {
+          "access": "public",
+          "name": "ICMapEntryPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICMapEntryHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICServiceEntryFlags"
+        },
+        {
+          "access": "public",
+          "name": "ICServiceEntry"
+        },
+        {
+          "access": "public",
+          "name": "ICServiceEntryPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICServiceEntryHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICServices"
+        },
+        {
+          "access": "public",
+          "name": "ICServicesPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICServicesHandle"
+        },
+        {
+          "access": "public",
+          "name": "LaunchFlags"
+        },
+        {
+          "access": "public",
+          "name": "AppParameters"
+        },
+        {
+          "access": "public",
+          "name": "AppParametersPtr"
+        },
+        {
+          "access": "public",
+          "name": "LaunchParamBlockRec"
+        },
+        {
+          "access": "public",
+          "name": "LaunchPBPtr"
+        },
+        {
+          "access": "public",
+          "name": "ProcessApplicationTransformState"
+        },
+        {
+          "access": "public",
+          "name": "ProcessInfoRec"
+        },
+        {
+          "access": "public",
+          "name": "ProcessInfoRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "ProcessInfoExtendedRec"
+        },
+        {
+          "access": "public",
+          "name": "ProcessInfoExtendedRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "SizeResourceRec"
+        },
+        {
+          "access": "public",
+          "name": "SizeResourceRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "SizeResourceRecHandle"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardRef"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardItemID"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardSyncFlags"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardFlavorFlags"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardStandardLocation"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardPromiseKeeperProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "TranslationRef"
+        },
+        {
+          "access": "public",
+          "name": "TranslationFlags"
+        },
+        {
+          "access": "public",
+          "name": "AXError"
+        },
+        {
+          "access": "public",
+          "name": "AXMenuItemModifiers"
+        },
+        {
+          "access": "public",
+          "name": "AXPriority"
+        },
+        {
+          "access": "public",
+          "name": "AXUIElementRef"
+        },
+        {
+          "access": "public",
+          "name": "AXCopyMultipleAttributeOptions"
+        },
+        {
+          "access": "public",
+          "name": "AXTextMarkerRef"
+        },
+        {
+          "access": "public",
+          "name": "AXTextMarkerRangeRef"
+        },
+        {
+          "access": "public",
+          "name": "AXObserverRef"
+        },
+        {
+          "access": "public",
+          "name": "AXObserverCallback"
+        },
+        {
+          "access": "public",
+          "name": "AXObserverCallbackWithInfo"
+        },
+        {
+          "access": "public",
+          "name": "AXValueType"
+        },
+        {
+          "access": "public",
+          "name": "AXValueRef"
+        },
+        {
+          "access": "public",
+          "name": "AXUnderlineStyle"
+        },
+        {
+          "access": "public",
+          "name": "UAZoomChangeFocusType"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kHIShapeEnumerateInit"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeEnumerateRect"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeEnumerateTerminate"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/HIShape.h:73:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromTop"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromBottom"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromLeft"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromRight"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromTopLeft"
+            },
+            {
+              "access": "public",
+              "name": "kHIShapeParseFromBottomRight"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/HIShape.h:97:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAlignNone"
+            },
+            {
+              "access": "public",
+              "name": "kAlignVerticalCenter"
+            },
+            {
+              "access": "public",
+              "name": "kAlignTop"
+            },
+            {
+              "access": "public",
+              "name": "kAlignBottom"
+            },
+            {
+              "access": "public",
+              "name": "kAlignHorizontalCenter"
+            },
+            {
+              "access": "public",
+              "name": "kAlignAbsoluteCenter"
+            },
+            {
+              "access": "public",
+              "name": "kAlignCenterTop"
+            },
+            {
+              "access": "public",
+              "name": "kAlignCenterBottom"
+            },
+            {
+              "access": "public",
+              "name": "kAlignLeft"
+            },
+            {
+              "access": "public",
+              "name": "kAlignCenterLeft"
+            },
+            {
+              "access": "public",
+              "name": "kAlignTopLeft"
+            },
+            {
+              "access": "public",
+              "name": "kAlignBottomLeft"
+            },
+            {
+              "access": "public",
+              "name": "kAlignRight"
+            },
+            {
+              "access": "public",
+              "name": "kAlignCenterRight"
+            },
+            {
+              "access": "public",
+              "name": "kAlignTopRight"
+            },
+            {
+              "access": "public",
+              "name": "kAlignBottomRight"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:47:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "atNone"
+            },
+            {
+              "access": "public",
+              "name": "atVerticalCenter"
+            },
+            {
+              "access": "public",
+              "name": "atTop"
+            },
+            {
+              "access": "public",
+              "name": "atBottom"
+            },
+            {
+              "access": "public",
+              "name": "atHorizontalCenter"
+            },
+            {
+              "access": "public",
+              "name": "atAbsoluteCenter"
+            },
+            {
+              "access": "public",
+              "name": "atCenterTop"
+            },
+            {
+              "access": "public",
+              "name": "atCenterBottom"
+            },
+            {
+              "access": "public",
+              "name": "atLeft"
+            },
+            {
+              "access": "public",
+              "name": "atCenterLeft"
+            },
+            {
+              "access": "public",
+              "name": "atTopLeft"
+            },
+            {
+              "access": "public",
+              "name": "atBottomLeft"
+            },
+            {
+              "access": "public",
+              "name": "atRight"
+            },
+            {
+              "access": "public",
+              "name": "atCenterRight"
+            },
+            {
+              "access": "public",
+              "name": "atTopRight"
+            },
+            {
+              "access": "public",
+              "name": "atBottomRight"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:67:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kTransformNone"
+            },
+            {
+              "access": "public",
+              "name": "kTransformDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kTransformOffline"
+            },
+            {
+              "access": "public",
+              "name": "kTransformOpen"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel1"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel2"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel3"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel4"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel5"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel6"
+            },
+            {
+              "access": "public",
+              "name": "kTransformLabel7"
+            },
+            {
+              "access": "public",
+              "name": "kTransformSelected"
+            },
+            {
+              "access": "public",
+              "name": "kTransformSelectedDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kTransformSelectedOffline"
+            },
+            {
+              "access": "public",
+              "name": "kTransformSelectedOpen"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:88:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "ttNone"
+            },
+            {
+              "access": "public",
+              "name": "ttDisabled"
+            },
+            {
+              "access": "public",
+              "name": "ttOffline"
+            },
+            {
+              "access": "public",
+              "name": "ttOpen"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel1"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel2"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel3"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel4"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel5"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel6"
+            },
+            {
+              "access": "public",
+              "name": "ttLabel7"
+            },
+            {
+              "access": "public",
+              "name": "ttSelected"
+            },
+            {
+              "access": "public",
+              "name": "ttSelectedDisabled"
+            },
+            {
+              "access": "public",
+              "name": "ttSelectedOffline"
+            },
+            {
+              "access": "public",
+              "name": "ttSelectedOpen"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:107:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSelectorLarge1Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorLarge4Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorLarge8Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorLarge32Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorLarge8BitMask"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall1Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall4Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall8Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall32Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorSmall8BitMask"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorMini1Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorMini4Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorMini8Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge1Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge4Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge8Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge32Bit"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorHuge8BitMask"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllLargeData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllSmallData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllMiniData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllHugeData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAll1BitData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAll4BitData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAll8BitData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAll32BitData"
+            },
+            {
+              "access": "public",
+              "name": "kSelectorAllAvailableData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:127:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "svLarge1Bit"
+            },
+            {
+              "access": "public",
+              "name": "svLarge4Bit"
+            },
+            {
+              "access": "public",
+              "name": "svLarge8Bit"
+            },
+            {
+              "access": "public",
+              "name": "svSmall1Bit"
+            },
+            {
+              "access": "public",
+              "name": "svSmall4Bit"
+            },
+            {
+              "access": "public",
+              "name": "svSmall8Bit"
+            },
+            {
+              "access": "public",
+              "name": "svMini1Bit"
+            },
+            {
+              "access": "public",
+              "name": "svMini4Bit"
+            },
+            {
+              "access": "public",
+              "name": "svMini8Bit"
+            },
+            {
+              "access": "public",
+              "name": "svAllLargeData"
+            },
+            {
+              "access": "public",
+              "name": "svAllSmallData"
+            },
+            {
+              "access": "public",
+              "name": "svAllMiniData"
+            },
+            {
+              "access": "public",
+              "name": "svAll1BitData"
+            },
+            {
+              "access": "public",
+              "name": "svAll4BitData"
+            },
+            {
+              "access": "public",
+              "name": "svAll8BitData"
+            },
+            {
+              "access": "public",
+              "name": "svAllAvailableData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:159:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPlotIconRefNormalFlags"
+            },
+            {
+              "access": "public",
+              "name": "kPlotIconRefNoImage"
+            },
+            {
+              "access": "public",
+              "name": "kPlotIconRefNoMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Icons.h:932:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "icPrefNotFoundErr"
+            },
+            {
+              "access": "public",
+              "name": "icPermErr"
+            },
+            {
+              "access": "public",
+              "name": "icPrefDataErr"
+            },
+            {
+              "access": "public",
+              "name": "icInternalErr"
+            },
+            {
+              "access": "public",
+              "name": "icTruncatedErr"
+            },
+            {
+              "access": "public",
+              "name": "icNoMoreWritersErr"
+            },
+            {
+              "access": "public",
+              "name": "icNothingToOverrideErr"
+            },
+            {
+              "access": "public",
+              "name": "icNoURLErr"
+            },
+            {
+              "access": "public",
+              "name": "icConfigNotFoundErr"
+            },
+            {
+              "access": "public",
+              "name": "icConfigInappropriateErr"
+            },
+            {
+              "access": "public",
+              "name": "icProfileNotFoundErr"
+            },
+            {
+              "access": "public",
+              "name": "icTooManyProfilesErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:73:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion0"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion1"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion2"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion3"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion4"
+            },
+            {
+              "access": "public",
+              "name": "kICComponentInterfaceVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:92:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICAttrLockedBit"
+            },
+            {
+              "access": "public",
+              "name": "kICAttrVolatileBit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:123:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICAttrNoChange"
+            },
+            {
+              "access": "public",
+              "name": "kICAttrLockedMask"
+            },
+            {
+              "access": "public",
+              "name": "kICAttrVolatileMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:128:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "icNoPerm"
+            },
+            {
+              "access": "public",
+              "name": "icReadOnlyPerm"
+            },
+            {
+              "access": "public",
+              "name": "icReadWritePerm"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:138:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICNilProfileID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:150:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICNoUserInteractionBit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:157:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICNoUserInteractionMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:161:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICFileType"
+            },
+            {
+              "access": "public",
+              "name": "kICCreator"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:165:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kInternetEventClass"
+            },
+            {
+              "access": "public",
+              "name": "kAEGetURL"
+            },
+            {
+              "access": "public",
+              "name": "kAEFetchURL"
+            },
+            {
+              "access": "public",
+              "name": "keyAEAttaching"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:173:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICEditPreferenceEventClass"
+            },
+            {
+              "access": "public",
+              "name": "kICEditPreferenceEvent"
+            },
+            {
+              "access": "public",
+              "name": "keyICEditPreferenceDestination"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:181:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICComponentVersion"
+            },
+            {
+              "access": "public",
+              "name": "kICNumVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:190:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICFileSpecHeaderSize"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:251:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICMapFixedLength"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:278:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICMapBinaryBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapResourceForkBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapDataForkBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapPostBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapNotIncomingBit"
+            },
+            {
+              "access": "public",
+              "name": "kICMapNotOutgoingBit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:282:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICMapBinaryMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapResourceForkMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapDataForkMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapPostMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapNotIncomingMask"
+            },
+            {
+              "access": "public",
+              "name": "kICMapNotOutgoingMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:291:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICServicesTCPBit"
+            },
+            {
+              "access": "public",
+              "name": "kICServicesUDPBit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:313:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kICServicesTCPMask"
+            },
+            {
+              "access": "public",
+              "name": "kICServicesUDPMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/InternetConfig.h:318:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNoProcess"
+            },
+            {
+              "access": "public",
+              "name": "kSystemProcess"
+            },
+            {
+              "access": "public",
+              "name": "kCurrentProcess"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:35:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "launchContinue"
+            },
+            {
+              "access": "public",
+              "name": "launchNoFileFlags"
+            },
+            {
+              "access": "public",
+              "name": "launchUseMinimum"
+            },
+            {
+              "access": "public",
+              "name": "launchDontSwitch"
+            },
+            {
+              "access": "public",
+              "name": "launchAllow24Bit"
+            },
+            {
+              "access": "public",
+              "name": "launchInhibitDaemon"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:45:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "extendedBlock"
+            },
+            {
+              "access": "public",
+              "name": "extendedBlockLen"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:107:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "modeReserved"
+            },
+            {
+              "access": "public",
+              "name": "modeControlPanel"
+            },
+            {
+              "access": "public",
+              "name": "modeLaunchDontSwitch"
+            },
+            {
+              "access": "public",
+              "name": "modeDeskAccessory"
+            },
+            {
+              "access": "public",
+              "name": "modeMultiLaunch"
+            },
+            {
+              "access": "public",
+              "name": "modeNeedSuspendResume"
+            },
+            {
+              "access": "public",
+              "name": "modeCanBackground"
+            },
+            {
+              "access": "public",
+              "name": "modeDoesActivateOnFGSwitch"
+            },
+            {
+              "access": "public",
+              "name": "modeOnlyBackground"
+            },
+            {
+              "access": "public",
+              "name": "modeGetFrontClicks"
+            },
+            {
+              "access": "public",
+              "name": "modeGetAppDiedMsg"
+            },
+            {
+              "access": "public",
+              "name": "mode32BitCompatible"
+            },
+            {
+              "access": "public",
+              "name": "modeHighLevelEventAware"
+            },
+            {
+              "access": "public",
+              "name": "modeLocalAndRemoteHLEvents"
+            },
+            {
+              "access": "public",
+              "name": "modeStationeryAware"
+            },
+            {
+              "access": "public",
+              "name": "modeUseTextEditServices"
+            },
+            {
+              "access": "public",
+              "name": "modeDisplayManagerAware"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:112:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kProcessTransformToForegroundApplication"
+            },
+            {
+              "access": "public",
+              "name": "kProcessTransformToBackgroundApplication"
+            },
+            {
+              "access": "public",
+              "name": "kProcessTransformToUIElementApplication"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:134:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kProcessDictionaryIncludeAllInformationMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:276:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kQuitBeforeNormalTimeMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitAtNormalTimeMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitBeforeFBAsQuitMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitBeforeShellQuitsMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitBeforeTerminatorAppQuitsMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitNeverMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitOptionsMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitNotQuitDuringInstallMask"
+            },
+            {
+              "access": "public",
+              "name": "kQuitNotQuitDuringLogoutMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:292:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSetFrontProcessFrontWindowOnly"
+            },
+            {
+              "access": "public",
+              "name": "kSetFrontProcessCausedByUser"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:512:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "initDev"
+            },
+            {
+              "access": "public",
+              "name": "hitDev"
+            },
+            {
+              "access": "public",
+              "name": "closeDev"
+            },
+            {
+              "access": "public",
+              "name": "nulDev"
+            },
+            {
+              "access": "public",
+              "name": "updateDev"
+            },
+            {
+              "access": "public",
+              "name": "activDev"
+            },
+            {
+              "access": "public",
+              "name": "deactivDev"
+            },
+            {
+              "access": "public",
+              "name": "keyEvtDev"
+            },
+            {
+              "access": "public",
+              "name": "macDev"
+            },
+            {
+              "access": "public",
+              "name": "undoDev"
+            },
+            {
+              "access": "public",
+              "name": "cutDev"
+            },
+            {
+              "access": "public",
+              "name": "copyDev"
+            },
+            {
+              "access": "public",
+              "name": "pasteDev"
+            },
+            {
+              "access": "public",
+              "name": "clearDev"
+            },
+            {
+              "access": "public",
+              "name": "cursorDev"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:875:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cdevGenErr"
+            },
+            {
+              "access": "public",
+              "name": "cdevMemErr"
+            },
+            {
+              "access": "public",
+              "name": "cdevResErr"
+            },
+            {
+              "access": "public",
+              "name": "cdevUnset"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Processes.h:894:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "badPasteboardSyncErr"
+            },
+            {
+              "access": "public",
+              "name": "badPasteboardIndexErr"
+            },
+            {
+              "access": "public",
+              "name": "badPasteboardItemErr"
+            },
+            {
+              "access": "public",
+              "name": "badPasteboardFlavorErr"
+            },
+            {
+              "access": "public",
+              "name": "duplicatePasteboardFlavorErr"
+            },
+            {
+              "access": "public",
+              "name": "notPasteboardOwnerErr"
+            },
+            {
+              "access": "public",
+              "name": "noPasteboardPromiseKeeperErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/Pasteboard.h:102:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPasteboardModified"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardClientIsOwner"
+            }
+          ],
+          "name": "PasteboardSyncFlags"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorNoFlags"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorSenderOnly"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorSenderTranslated"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorNotSaved"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorRequestOnly"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorSystemTranslated"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardFlavorPromised"
+            }
+          ],
+          "name": "PasteboardFlavorFlags"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPasteboardStandardLocationTrash"
+            },
+            {
+              "access": "public",
+              "name": "kPasteboardStandardLocationUnknown"
+            }
+          ],
+          "name": "PasteboardStandardLocation"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "badTranslationRefErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/TranslationServices.h:120:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kTranslationDataTranslation"
+            },
+            {
+              "access": "public",
+              "name": "kTranslationFileTranslation"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/TranslationServices.h:142:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXErrorSuccess"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorFailure"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorIllegalArgument"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorInvalidUIElement"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorInvalidUIElementObserver"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorCannotComplete"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorAttributeUnsupported"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorActionUnsupported"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotificationUnsupported"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotImplemented"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotificationAlreadyRegistered"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotificationNotRegistered"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorAPIDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNoValue"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorParameterizedAttributeUnsupported"
+            },
+            {
+              "access": "public",
+              "name": "kAXErrorNotEnoughPrecision"
+            }
+          ],
+          "name": "AXError"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierNone"
+            },
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierShift"
+            },
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierOption"
+            },
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierControl"
+            },
+            {
+              "access": "public",
+              "name": "kAXMenuItemModifierNoCommand"
+            }
+          ],
+          "name": "AXMenuItemModifiers"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXPriorityLow"
+            },
+            {
+              "access": "public",
+              "name": "kAXPriorityMedium"
+            },
+            {
+              "access": "public",
+              "name": "kAXPriorityHigh"
+            }
+          ],
+          "introduced": "10.9",
+          "name": "AXPriority"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXCopyMultipleAttributeOptionStopOnError"
+            }
+          ],
+          "name": "AXCopyMultipleAttributeOptions"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeCGPoint"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeCGSize"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeCGRect"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeCFRange"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeAXError"
+            },
+            {
+              "access": "public",
+              "introduced": "10.11",
+              "name": "kAXValueTypeIllegal"
+            }
+          ],
+          "name": "AXValueType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAXUnderlineStyleNone"
+            },
+            {
+              "access": "public",
+              "name": "kAXUnderlineStyleSingle"
+            },
+            {
+              "access": "public",
+              "name": "kAXUnderlineStyleThick"
+            },
+            {
+              "access": "public",
+              "name": "kAXUnderlineStyleDouble"
+            }
+          ],
+          "name": "AXUnderlineStyle"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kUAZoomFocusTypeOther"
+            },
+            {
+              "access": "public",
+              "name": "kUAZoomFocusTypeInsertionPoint"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/HIServices/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Headers/UniversalAccess.h:71:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateEmpty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateWithQDRgn"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateWithRect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateIntersection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateDifference"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateUnion"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateXor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeIsEmpty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeIsRectangular"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeContainsPoint"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeIntersectsRect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeGetBounds"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeGetAsQDRgn"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeReplacePathInCGContext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeEnumerate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateMutable"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateMutableCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeCreateMutableWithRect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeSetEmpty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeSetWithShape"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeIntersect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeDifference"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeUnion"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeXor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeInset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_HIShapeUnionWithRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewIconActionUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewIconGetterUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeIconActionUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeIconGetterUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeIconActionUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeIconGetterUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IconRefToIconFamily"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetIconFamilyData"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetIconFamilyData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PlotIconRefInContext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IconRefContainsCGPoint"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IconRefIntersectsCGRect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IconRefToHIShape"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IsIconRefMaskEmpty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetIconRefVariant"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICStart"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICStop"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetVersion"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetConfigName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetSeed"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetPerm"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICBegin"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICFindPrefHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetPrefHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetPrefHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICCountPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetIndPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICDeletePref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICEnd"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetDefaultPref"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICEditPreferences"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICLaunchURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICParseURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICCreateGURLEvent"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSendGURLEvent"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICMapFilename"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICMapTypeCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICMapEntriesFilename"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICMapEntriesTypeCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICCountMapEntries"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetIndMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICDeleteMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICAddMapEntry"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetCurrentProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetCurrentProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICCountProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetIndProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICGetProfileName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICSetProfileName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICAddProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ICDeleteProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LaunchApplication"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetCurrentProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetFrontProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetNextProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetProcessInformation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ProcessInformationCopyDictionary"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetFrontProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetFrontProcessWithOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_WakeUpProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SameProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ExitToShell"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KillProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetProcessBundleLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CopyProcessName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetProcessPID"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetProcessForPID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_IsProcessVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ShowHideProcess"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TransformProcessType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardSynchronize"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardClear"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCopyName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardGetItemCount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardGetItemIdentifier"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCopyItemFlavors"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardGetItemFlavorFlags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCopyItemFlavorData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardPutItemFlavor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardCopyPasteLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardSetPasteLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardSetPromiseKeeper"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PasteboardResolvePromises"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationCreateWithSourceArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationPerformForData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationPerformForFile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationPerformForURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationCopySourceType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationCopyDestinationType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_TranslationGetTranslationFlags"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXAPIEnabled"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXIsProcessTrustedWithOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXTrustedCheckOptionPrompt"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXIsProcessTrusted"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXMakeProcessTrusted"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyAttributeNames"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyAttributeValue"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementGetAttributeValueCount"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyAttributeValues"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementIsAttributeSettable"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementSetAttributeValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyMultipleAttributeValues"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyParameterizedAttributeNames"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyParameterizedAttributeValue"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyActionNames"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyActionDescription"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementPerformAction"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCopyElementAtPosition"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCreateApplication"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementCreateSystemWide"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementGetPid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementSetMessagingTimeout"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXUIElementPostKeyboardEvent"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerGetLength"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerGetBytePtr"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeCreateWithBytes"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeCopyStartMarker"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXTextMarkerRangeCopyEndMarker"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverCreateWithInfoCallback"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverAddNotification"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverRemoveNotification"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXObserverGetRunLoopSource"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXValueGetTypeID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXValueCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXValueGetType"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AXValueGetValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXFontTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXForegroundColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXBackgroundColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXUnderlineColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXStrikethroughColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXUnderlineTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXSuperscriptTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXStrikethroughTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXShadowTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXAttachmentTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXLinkTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXNaturalLanguageTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXReplacementStringTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXMisspelledTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXMarkedMisspelledTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.7",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXAutocorrectedTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXListItemPrefixTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXListItemIndexTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXListItemLevelTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXFontNameKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXFontFamilyKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXVisibleNameKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXFontSizeKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kAXForegoundColorTextAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_UAZoomEnabled"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_UAZoomChangeFocus"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "HIShapeRef"
+        },
+        {
+          "access": "public",
+          "name": "HIMutableShapeRef"
+        },
+        {
+          "access": "public",
+          "name": "HIShapeEnumerateProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "IconAlignmentType"
+        },
+        {
+          "access": "public",
+          "name": "IconTransformType"
+        },
+        {
+          "access": "public",
+          "name": "IconSelectorValue"
+        },
+        {
+          "access": "public",
+          "name": "IconActionProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "IconGetterProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "IconActionUPP"
+        },
+        {
+          "access": "public",
+          "name": "IconGetterUPP"
+        },
+        {
+          "access": "public",
+          "name": "PlotIconRefFlags"
+        },
+        {
+          "access": "public",
+          "name": "ICInstance"
+        },
+        {
+          "access": "public",
+          "name": "ICAttr"
+        },
+        {
+          "access": "public",
+          "name": "ICPerm"
+        },
+        {
+          "access": "public",
+          "name": "ICProfileID"
+        },
+        {
+          "access": "public",
+          "name": "ICProfileIDPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICFontRecord"
+        },
+        {
+          "access": "public",
+          "name": "ICFontRecordPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICFontRecordHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICCharTable"
+        },
+        {
+          "access": "public",
+          "name": "ICCharTablePtr"
+        },
+        {
+          "access": "public",
+          "name": "ICCharTableHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpec"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecList"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecListPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICAppSpecListHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICFileSpec"
+        },
+        {
+          "access": "public",
+          "name": "ICFileSpecPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICFileSpecHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICMapEntryFlags"
+        },
+        {
+          "access": "public",
+          "name": "ICFixedLength"
+        },
+        {
+          "access": "public",
+          "name": "ICMapEntry"
+        },
+        {
+          "access": "public",
+          "name": "ICMapEntryPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICMapEntryHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICServiceEntryFlags"
+        },
+        {
+          "access": "public",
+          "name": "ICServiceEntry"
+        },
+        {
+          "access": "public",
+          "name": "ICServiceEntryPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICServiceEntryHandle"
+        },
+        {
+          "access": "public",
+          "name": "ICServices"
+        },
+        {
+          "access": "public",
+          "name": "ICServicesPtr"
+        },
+        {
+          "access": "public",
+          "name": "ICServicesHandle"
+        },
+        {
+          "access": "public",
+          "name": "LaunchFlags"
+        },
+        {
+          "access": "public",
+          "name": "AppParameters"
+        },
+        {
+          "access": "public",
+          "name": "AppParametersPtr"
+        },
+        {
+          "access": "public",
+          "name": "LaunchParamBlockRec"
+        },
+        {
+          "access": "public",
+          "name": "LaunchPBPtr"
+        },
+        {
+          "access": "public",
+          "name": "ProcessApplicationTransformState"
+        },
+        {
+          "access": "public",
+          "name": "ProcessInfoRec"
+        },
+        {
+          "access": "public",
+          "name": "ProcessInfoRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "ProcessInfoExtendedRec"
+        },
+        {
+          "access": "public",
+          "name": "ProcessInfoExtendedRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "SizeResourceRec"
+        },
+        {
+          "access": "public",
+          "name": "SizeResourceRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "SizeResourceRecHandle"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardRef"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardItemID"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardSyncFlags"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardFlavorFlags"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardStandardLocation"
+        },
+        {
+          "access": "public",
+          "name": "PasteboardPromiseKeeperProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "TranslationRef"
+        },
+        {
+          "access": "public",
+          "name": "TranslationFlags"
+        },
+        {
+          "access": "public",
+          "name": "AXError"
+        },
+        {
+          "access": "public",
+          "name": "AXMenuItemModifiers"
+        },
+        {
+          "access": "public",
+          "name": "AXPriority"
+        },
+        {
+          "access": "public",
+          "name": "AXUIElementRef"
+        },
+        {
+          "access": "public",
+          "name": "AXCopyMultipleAttributeOptions"
+        },
+        {
+          "access": "public",
+          "name": "AXTextMarkerRef"
+        },
+        {
+          "access": "public",
+          "name": "AXTextMarkerRangeRef"
+        },
+        {
+          "access": "public",
+          "name": "AXObserverRef"
+        },
+        {
+          "access": "public",
+          "name": "AXObserverCallback"
+        },
+        {
+          "access": "public",
+          "name": "AXObserverCallbackWithInfo"
+        },
+        {
+          "access": "public",
+          "name": "AXValueType"
+        },
+        {
+          "access": "public",
+          "name": "AXValueRef"
+        },
+        {
+          "access": "public",
+          "name": "AXUnderlineStyle"
+        },
+        {
+          "access": "public",
+          "name": "UAZoomChangeFocusType"
+        }
+      ]
+    }
+  ],
+  "projectName": "HIServices",
+  "version": "1.0"
+}

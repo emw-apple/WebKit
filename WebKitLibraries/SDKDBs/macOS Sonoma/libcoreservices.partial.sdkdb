@@ -1,0 +1,1274 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NSApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDemoApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDeveloperApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAdminApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSLibraryDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDeveloperDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSUserDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDocumentationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDocumentDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSCoreServiceDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAutosavedInformationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDesktopDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSCachesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSApplicationSupportDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDownloadsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSInputMethodsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSMoviesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSMusicDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPicturesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPrinterDescriptionDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSSharedPublicDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPreferencePanesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAllApplicationsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAllLibrariesDirectory"
+            }
+          ],
+          "name": "NSSearchPathDirectory"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NSUserDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSLocalDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSNetworkDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSSystemDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSAllDomainsMask"
+            }
+          ],
+          "name": "NSSearchPathDomainMask"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEMO_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEVELOPER_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ADMIN_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_LIBRARY"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEVELOPER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_USER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOCUMENTATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOCUMENT"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_CORESERVICE"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_AUTOSAVED_INFORMATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DESKTOP"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_CACHES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_APPLICATION_SUPPORT"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOWNLOADS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_INPUT_METHODS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_MOVIES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_MUSIC"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PICTURES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PRINTER_DESCRIPTION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_SHARED_PUBLIC"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PREFERENCE_PANES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ALL_APPLICATIONS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ALL_LIBRARIES"
+            }
+          ],
+          "name": "sysdir_search_path_directory_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_USER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_LOCAL"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_NETWORK"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_SYSTEM"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_ALL"
+            }
+          ],
+          "name": "sysdir_search_path_domain_mask_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NSStartSearchPathEnumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NSGetNextSearchPathEnumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sysdir_start_search_path_enumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sysdir_get_next_search_path_enumeration"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "NSSearchPathDirectory"
+        },
+        {
+          "access": "public",
+          "name": "NSSearchPathDomainMask"
+        },
+        {
+          "access": "public",
+          "name": "NSSearchPathEnumerationState"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_directory_t"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_domain_mask_t"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_enumeration_state"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NSApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDemoApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDeveloperApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAdminApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSLibraryDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDeveloperDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSUserDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDocumentationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDocumentDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSCoreServiceDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAutosavedInformationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDesktopDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSCachesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSApplicationSupportDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDownloadsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSInputMethodsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSMoviesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSMusicDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPicturesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPrinterDescriptionDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSSharedPublicDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPreferencePanesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAllApplicationsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAllLibrariesDirectory"
+            }
+          ],
+          "name": "NSSearchPathDirectory"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NSUserDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSLocalDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSNetworkDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSSystemDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSAllDomainsMask"
+            }
+          ],
+          "name": "NSSearchPathDomainMask"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEMO_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEVELOPER_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ADMIN_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_LIBRARY"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEVELOPER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_USER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOCUMENTATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOCUMENT"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_CORESERVICE"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_AUTOSAVED_INFORMATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DESKTOP"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_CACHES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_APPLICATION_SUPPORT"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOWNLOADS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_INPUT_METHODS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_MOVIES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_MUSIC"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PICTURES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PRINTER_DESCRIPTION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_SHARED_PUBLIC"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PREFERENCE_PANES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ALL_APPLICATIONS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ALL_LIBRARIES"
+            }
+          ],
+          "name": "sysdir_search_path_directory_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_USER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_LOCAL"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_NETWORK"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_SYSTEM"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_ALL"
+            }
+          ],
+          "name": "sysdir_search_path_domain_mask_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NSStartSearchPathEnumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NSGetNextSearchPathEnumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sysdir_start_search_path_enumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sysdir_get_next_search_path_enumeration"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "NSSearchPathDirectory"
+        },
+        {
+          "access": "public",
+          "name": "NSSearchPathDomainMask"
+        },
+        {
+          "access": "public",
+          "name": "NSSearchPathEnumerationState"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_directory_t"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_domain_mask_t"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_enumeration_state"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NSApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDemoApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDeveloperApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAdminApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSLibraryDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDeveloperDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSUserDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDocumentationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDocumentDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSCoreServiceDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAutosavedInformationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDesktopDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSCachesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSApplicationSupportDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDownloadsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSInputMethodsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSMoviesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSMusicDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPicturesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPrinterDescriptionDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSSharedPublicDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPreferencePanesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAllApplicationsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAllLibrariesDirectory"
+            }
+          ],
+          "name": "NSSearchPathDirectory"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NSUserDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSLocalDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSNetworkDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSSystemDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSAllDomainsMask"
+            }
+          ],
+          "name": "NSSearchPathDomainMask"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEMO_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEVELOPER_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ADMIN_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_LIBRARY"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEVELOPER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_USER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOCUMENTATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOCUMENT"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_CORESERVICE"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_AUTOSAVED_INFORMATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DESKTOP"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_CACHES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_APPLICATION_SUPPORT"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOWNLOADS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_INPUT_METHODS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_MOVIES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_MUSIC"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PICTURES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PRINTER_DESCRIPTION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_SHARED_PUBLIC"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PREFERENCE_PANES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ALL_APPLICATIONS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ALL_LIBRARIES"
+            }
+          ],
+          "name": "sysdir_search_path_directory_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_USER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_LOCAL"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_NETWORK"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_SYSTEM"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_ALL"
+            }
+          ],
+          "name": "sysdir_search_path_domain_mask_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NSStartSearchPathEnumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NSGetNextSearchPathEnumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sysdir_start_search_path_enumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sysdir_get_next_search_path_enumeration"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "NSSearchPathDirectory"
+        },
+        {
+          "access": "public",
+          "name": "NSSearchPathDomainMask"
+        },
+        {
+          "access": "public",
+          "name": "NSSearchPathEnumerationState"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_directory_t"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_domain_mask_t"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_enumeration_state"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NSApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDemoApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDeveloperApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAdminApplicationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSLibraryDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDeveloperDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSUserDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDocumentationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDocumentDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSCoreServiceDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAutosavedInformationDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDesktopDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSCachesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSApplicationSupportDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSDownloadsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSInputMethodsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSMoviesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSMusicDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPicturesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPrinterDescriptionDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSSharedPublicDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSPreferencePanesDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAllApplicationsDirectory"
+            },
+            {
+              "access": "public",
+              "name": "NSAllLibrariesDirectory"
+            }
+          ],
+          "name": "NSSearchPathDirectory"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NSUserDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSLocalDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSNetworkDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSSystemDomainMask"
+            },
+            {
+              "access": "public",
+              "name": "NSAllDomainsMask"
+            }
+          ],
+          "name": "NSSearchPathDomainMask"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEMO_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEVELOPER_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ADMIN_APPLICATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_LIBRARY"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DEVELOPER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_USER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOCUMENTATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOCUMENT"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_CORESERVICE"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_AUTOSAVED_INFORMATION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DESKTOP"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_CACHES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_APPLICATION_SUPPORT"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_DOWNLOADS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_INPUT_METHODS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_MOVIES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_MUSIC"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PICTURES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PRINTER_DESCRIPTION"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_SHARED_PUBLIC"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_PREFERENCE_PANES"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ALL_APPLICATIONS"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DIRECTORY_ALL_LIBRARIES"
+            }
+          ],
+          "name": "sysdir_search_path_directory_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_USER"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_LOCAL"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_NETWORK"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_SYSTEM"
+            },
+            {
+              "access": "public",
+              "name": "SYSDIR_DOMAIN_MASK_ALL"
+            }
+          ],
+          "name": "sysdir_search_path_domain_mask_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NSStartSearchPathEnumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NSGetNextSearchPathEnumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sysdir_start_search_path_enumeration"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sysdir_get_next_search_path_enumeration"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "NSSearchPathDirectory"
+        },
+        {
+          "access": "public",
+          "name": "NSSearchPathDomainMask"
+        },
+        {
+          "access": "public",
+          "name": "NSSearchPathEnumerationState"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_directory_t"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_domain_mask_t"
+        },
+        {
+          "access": "public",
+          "name": "sysdir_search_path_enumeration_state"
+        }
+      ]
+    }
+  ],
+  "projectName": "libcoreservices",
+  "version": "1.0"
+}

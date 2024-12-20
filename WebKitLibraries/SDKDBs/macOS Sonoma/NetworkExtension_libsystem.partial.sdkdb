@@ -1,0 +1,230 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NE_SOCKET_ATTRIBUTION_DEVELOPER"
+            },
+            {
+              "access": "public",
+              "name": "NE_SOCKET_ATTRIBUTION_USER"
+            }
+          ],
+          "name": "ne_socket_attribution_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_domains"
+        },
+        {
+          "access": "public",
+          "introduced": "15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_attribution"
+        },
+        {
+          "access": "public",
+          "introduced": "15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_website_attribution"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_is_app_initiated",
+          "unavailable": true
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "15",
+          "name": "ne_socket_attribution_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NE_SOCKET_ATTRIBUTION_DEVELOPER"
+            },
+            {
+              "access": "public",
+              "name": "NE_SOCKET_ATTRIBUTION_USER"
+            }
+          ],
+          "name": "ne_socket_attribution_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_domains"
+        },
+        {
+          "access": "public",
+          "introduced": "12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_attribution"
+        },
+        {
+          "access": "public",
+          "introduced": "12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_website_attribution"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_is_app_initiated",
+          "unavailable": true
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "12",
+          "name": "ne_socket_attribution_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NE_SOCKET_ATTRIBUTION_DEVELOPER"
+            },
+            {
+              "access": "public",
+              "name": "NE_SOCKET_ATTRIBUTION_USER"
+            }
+          ],
+          "name": "ne_socket_attribution_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_domains"
+        },
+        {
+          "access": "public",
+          "introduced": "15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_attribution"
+        },
+        {
+          "access": "public",
+          "introduced": "15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_website_attribution"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_is_app_initiated",
+          "unavailable": true
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "15",
+          "name": "ne_socket_attribution_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "NE_SOCKET_ATTRIBUTION_DEVELOPER"
+            },
+            {
+              "access": "public",
+              "name": "NE_SOCKET_ATTRIBUTION_USER"
+            }
+          ],
+          "name": "ne_socket_attribution_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_domains"
+        },
+        {
+          "access": "public",
+          "introduced": "12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_attribution"
+        },
+        {
+          "access": "public",
+          "introduced": "12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_website_attribution"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ne_socket_set_is_app_initiated",
+          "unavailable": true
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "12",
+          "name": "ne_socket_attribution_t"
+        }
+      ]
+    }
+  ],
+  "projectName": "NetworkExtension_libsystem",
+  "version": "1.0"
+}

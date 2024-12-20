@@ -1,0 +1,1486 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagNone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagUseCFTypes"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagNoDefer"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagWatchRoot"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagIgnoreSelf"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagFileEvents"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagMarkSelf"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagUseExtendedData"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagFullHistory"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateWithDocID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:205:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagNone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagMustScanSubDirs"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagUserDropped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagKernelDropped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagEventIdsWrapped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagHistoryDone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagRootChanged"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagMount"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagUnmount"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemCreated"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemRemoved"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemInodeMetaMod"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemRenamed"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemModified"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemFinderInfoMod"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemChangeOwner"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemXattrMod"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsFile"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsDir"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsSymlink"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagOwnEvent"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsHardlink"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsLastHardlink"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemCloned"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:371:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventIdSinceNow"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:575:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCreateRelativeToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamGetLatestEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamGetDeviceBeingWatched"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCopyPathsBeingWatched"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsGetCurrentEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsCopyUUIDForDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsGetLastEventIdForDeviceBeforeTime"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsPurgeEventsForDeviceUpToEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamRetain"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamScheduleWithRunLoop"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamUnscheduleFromRunLoop"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamSetDispatchQueue"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamInvalidate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamStart"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamFlushAsync"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamFlushSync"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamStop"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamShow"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCopyDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamSetExclusionPaths"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "FSEventStreamCreateFlags"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamEventFlags"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamEventId"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamRef"
+        },
+        {
+          "access": "public",
+          "name": "ConstFSEventStreamRef"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamContext"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamCallback"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagNone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagUseCFTypes"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagNoDefer"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagWatchRoot"
+            },
+            {
+              "access": "public",
+              "introduced": "10.6",
+              "name": "kFSEventStreamCreateFlagIgnoreSelf"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamCreateFlagFileEvents"
+            },
+            {
+              "access": "public",
+              "introduced": "10.9",
+              "name": "kFSEventStreamCreateFlagMarkSelf"
+            },
+            {
+              "access": "public",
+              "introduced": "10.13",
+              "name": "kFSEventStreamCreateFlagUseExtendedData"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "kFSEventStreamCreateFlagFullHistory"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "kFSEventStreamCreateWithDocID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:205:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagNone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagMustScanSubDirs"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagUserDropped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagKernelDropped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagEventIdsWrapped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagHistoryDone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagRootChanged"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagMount"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagUnmount"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemCreated"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemRemoved"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemInodeMetaMod"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemRenamed"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemModified"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemFinderInfoMod"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemChangeOwner"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemXattrMod"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemIsFile"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemIsDir"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemIsSymlink"
+            },
+            {
+              "access": "public",
+              "introduced": "10.9",
+              "name": "kFSEventStreamEventFlagOwnEvent"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "kFSEventStreamEventFlagItemIsHardlink"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "kFSEventStreamEventFlagItemIsLastHardlink"
+            },
+            {
+              "access": "public",
+              "introduced": "10.13",
+              "name": "kFSEventStreamEventFlagItemCloned"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:371:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventIdSinceNow"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:575:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCreateRelativeToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamGetLatestEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamGetDeviceBeingWatched"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCopyPathsBeingWatched"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsGetCurrentEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsCopyUUIDForDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsGetLastEventIdForDeviceBeforeTime"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsPurgeEventsForDeviceUpToEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamRetain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamScheduleWithRunLoop"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamUnscheduleFromRunLoop"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamSetDispatchQueue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamInvalidate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamStart"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamFlushAsync"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamFlushSync"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamStop"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamShow"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCopyDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamSetExclusionPaths"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "FSEventStreamCreateFlags"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamEventFlags"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamEventId"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamRef"
+        },
+        {
+          "access": "public",
+          "name": "ConstFSEventStreamRef"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamContext"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamCallback"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagNone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagUseCFTypes"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagNoDefer"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagWatchRoot"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagIgnoreSelf"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagFileEvents"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagMarkSelf"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagUseExtendedData"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateFlagFullHistory"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamCreateWithDocID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:205:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagNone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagMustScanSubDirs"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagUserDropped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagKernelDropped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagEventIdsWrapped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagHistoryDone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagRootChanged"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagMount"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagUnmount"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemCreated"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemRemoved"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemInodeMetaMod"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemRenamed"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemModified"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemFinderInfoMod"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemChangeOwner"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemXattrMod"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsFile"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsDir"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsSymlink"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagOwnEvent"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsHardlink"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemIsLastHardlink"
+            },
+            {
+              "access": "public",
+              "introduced": "13.1",
+              "name": "kFSEventStreamEventFlagItemCloned"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:371:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventIdSinceNow"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:575:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCreateRelativeToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamGetLatestEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamGetDeviceBeingWatched"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCopyPathsBeingWatched"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsGetCurrentEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsCopyUUIDForDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsGetLastEventIdForDeviceBeforeTime"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsPurgeEventsForDeviceUpToEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamRetain"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamScheduleWithRunLoop"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamUnscheduleFromRunLoop"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamSetDispatchQueue"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamInvalidate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamStart"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamFlushAsync"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamFlushSync"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamStop"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamShow"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCopyDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamSetExclusionPaths"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "FSEventStreamCreateFlags"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamEventFlags"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamEventId"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamRef"
+        },
+        {
+          "access": "public",
+          "name": "ConstFSEventStreamRef"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamContext"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamCallback"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagNone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagUseCFTypes"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagNoDefer"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamCreateFlagWatchRoot"
+            },
+            {
+              "access": "public",
+              "introduced": "10.6",
+              "name": "kFSEventStreamCreateFlagIgnoreSelf"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamCreateFlagFileEvents"
+            },
+            {
+              "access": "public",
+              "introduced": "10.9",
+              "name": "kFSEventStreamCreateFlagMarkSelf"
+            },
+            {
+              "access": "public",
+              "introduced": "10.13",
+              "name": "kFSEventStreamCreateFlagUseExtendedData"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "kFSEventStreamCreateFlagFullHistory"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "kFSEventStreamCreateWithDocID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:205:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagNone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagMustScanSubDirs"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagUserDropped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagKernelDropped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagEventIdsWrapped"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagHistoryDone"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagRootChanged"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagMount"
+            },
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventFlagUnmount"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemCreated"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemRemoved"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemInodeMetaMod"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemRenamed"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemModified"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemFinderInfoMod"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemChangeOwner"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemXattrMod"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemIsFile"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemIsDir"
+            },
+            {
+              "access": "public",
+              "introduced": "10.7",
+              "name": "kFSEventStreamEventFlagItemIsSymlink"
+            },
+            {
+              "access": "public",
+              "introduced": "10.9",
+              "name": "kFSEventStreamEventFlagOwnEvent"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "kFSEventStreamEventFlagItemIsHardlink"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "kFSEventStreamEventFlagItemIsLastHardlink"
+            },
+            {
+              "access": "public",
+              "introduced": "10.13",
+              "name": "kFSEventStreamEventFlagItemCloned"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:371:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFSEventStreamEventIdSinceNow"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/FSEventsFramework/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Headers/FSEvents.h:575:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCreateRelativeToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamGetLatestEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamGetDeviceBeingWatched"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCopyPathsBeingWatched"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsGetCurrentEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsCopyUUIDForDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsGetLastEventIdForDeviceBeforeTime"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventsPurgeEventsForDeviceUpToEventId"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamRetain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamScheduleWithRunLoop"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamUnscheduleFromRunLoop"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamSetDispatchQueue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamInvalidate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamStart"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamFlushAsync"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamFlushSync"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamStop"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamShow"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamCopyDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10.9",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FSEventStreamSetExclusionPaths"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "FSEventStreamCreateFlags"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamEventFlags"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamEventId"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamRef"
+        },
+        {
+          "access": "public",
+          "name": "ConstFSEventStreamRef"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamContext"
+        },
+        {
+          "access": "public",
+          "name": "FSEventStreamCallback"
+        }
+      ]
+    }
+  ],
+  "projectName": "FSEventsFramework",
+  "version": "1.0"
+}

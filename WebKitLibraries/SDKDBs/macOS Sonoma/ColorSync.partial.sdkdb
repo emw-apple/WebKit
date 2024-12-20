@@ -1,0 +1,6198 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSync1BitGamut"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync8BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync16BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync16BitFloat"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitNamedColorIndex"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitFloat"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync10BitInteger"
+            }
+          ],
+          "name": "ColorSyncDataDepth"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNone"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaPremultipliedLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaPremultipliedFirst"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaFirst"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNoneSkipLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNoneSkipFirst"
+            }
+          ],
+          "name": "ColorSyncAlphaInfo"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaInfoMask"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrderMask"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrderDefault"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder16Little"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder32Little"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder16Big"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder32Big"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ColorSync/install/PublicSDKContentRoot/System/Library/Frameworks/ColorSync.framework/Versions/A/Headers/ColorSyncTransform.h:96:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericGrayProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericGrayGamma22Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericCMYKProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayP3Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncAdobeRGB1998Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericLabProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericXYZProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncACESCGLinearProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDCIP3Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncITUR709Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncITUR2020Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncROMMRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16.1",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncWebSafeColorsProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileColorSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfilePCS"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileURL"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileMD5Digest"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileIsValid"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigCmykData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGrayData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigLabData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRgbData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigXYZData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAbstractClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBlueTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBlueColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigMediaBlackPointTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigCopyrightTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigProfileDescriptionTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDeviceModelDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDeviceMfgDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGreenTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGreenColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGamutTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGrayTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigLinkClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDisplayClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigNamedColor2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigNamedColorClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigOutputClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigProfileSequenceDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRedTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRedColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigInputClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigColorSpaceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigTechnologyTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigViewingConditionsTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigViewingCondDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigMediaWhitePointTag"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileComputerDomain",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileUserDomain",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithName"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithDisplayID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateDeviceProfile",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateMutable"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateMutableCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateLink"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileVerify"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsWideGamut"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsMatrixBased"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsPQBased"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsHLGBased"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileEstimateGammaWithDisplayID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileEstimateGamma",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetDisplayTransferFormulaFromVCGT",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateDisplayTransferTablesFromVCGT",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetURL"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileSetHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyDescriptionString"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyTagSignatures"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileContainsTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileSetTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileRemoveTag"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileCacheSeed"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledProfiles"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncWaitForCacheReply",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledProfilesWithOptions",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileInstall",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileUninstall",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformCopyProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformSetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformGetProfileSequence"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformConvert"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntent"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentPerceptual"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentRelative"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentSaturation"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentAbsolute"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentUseProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDeviceToPCS"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformPCSToPCS"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformPCSToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDeviceToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformGamutCheck"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncBlackPointCompensation"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncExtendedRange"
+        },
+        {
+          "access": "public",
+          "introduced": "17",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncHDRDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "17",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPQDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "17",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncHLGDerivative"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPreferredCMM",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConvertQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncBestQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncNormalQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDraftQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConvertUseExtendedRange"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformSrcSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDstSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCodeFragmentType"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCodeFragmentMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformFullConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformSimplifiedConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformParametricConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformProfileSequnce"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionMatrix"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve0"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve1"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve2"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve3"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve4"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversion1DLut"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionGridPoints"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionChannelID"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversion3DLut"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionNDLut"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionInpChan"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionOutChan"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionBPC"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncFixedPointRange"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCreateCodeFragment"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncCameraDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPrinterDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncScannerDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDescription",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDescriptions",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncFactoryProfiles",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncCustomProfiles",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceModeDescription",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceModeDescriptions",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDefaultProfileID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceHostScope",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceUserScope",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileHostScope",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileUserScope",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsFactory",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsDefault",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsCurrent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceRegisteredNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceUnregisteredNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfilesNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayDeviceProfilesNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileRepositoryChangeNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRegistrationUpdateWindowServer",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncRegisterDevice",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncUnregisterDevice",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncDeviceSetCustomProfiles",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncDeviceCopyDeviceInfo",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateDeviceProfiles",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CGDisplayCreateUUIDFromDisplayID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CGDisplayGetDisplayIDFromUUID",
+          "unavailable": true
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ColorSyncProfileRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncMutableProfileRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncMD5"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncProfileIterateCallback"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncTransformRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDataDepth"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncAlphaInfo"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDataLayout"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncCMMRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncCMMIterateCallback",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "name": "CMMInitializeLinkProfileProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMInitializeTransformProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMApplyTransformProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMCreateTransformPropertyProc"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDeviceProfileIterateCallback",
+          "unavailable": true
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSync1BitGamut"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync8BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync16BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync16BitFloat"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitNamedColorIndex"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitFloat"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync10BitInteger"
+            }
+          ],
+          "name": "ColorSyncDataDepth"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNone"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaPremultipliedLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaPremultipliedFirst"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaFirst"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNoneSkipLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNoneSkipFirst"
+            }
+          ],
+          "name": "ColorSyncAlphaInfo"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaInfoMask"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrderMask"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrderDefault"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder16Little"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder32Little"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder16Big"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder32Big"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ColorSync/install/PublicSDKContentRoot/System/Library/Frameworks/ColorSync.framework/Versions/A/Headers/ColorSyncTransform.h:96:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericGrayProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericGrayGamma22Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericCMYKProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayP3Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncAdobeRGB1998Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericLabProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericXYZProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncACESCGLinearProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDCIP3Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncITUR709Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncITUR2020Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncROMMRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "13",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncWebSafeColorsProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileColorSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfilePCS"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileMD5Digest"
+        },
+        {
+          "access": "public",
+          "introduced": "13",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileIsValid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigCmykData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGrayData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigLabData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRgbData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigXYZData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAbstractClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBlueTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBlueColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigMediaBlackPointTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigCopyrightTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigProfileDescriptionTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDeviceModelDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDeviceMfgDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGreenTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGreenColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGamutTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGrayTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigLinkClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDisplayClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigNamedColor2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigNamedColorClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigOutputClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigProfileSequenceDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRedTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRedColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigInputClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigColorSpaceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigTechnologyTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigViewingConditionsTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigViewingCondDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigMediaWhitePointTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileComputerDomain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileUserDomain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithDisplayID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateDeviceProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateMutable"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateMutableCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateLink"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileVerify"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsWideGamut"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsMatrixBased"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsPQBased"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsHLGBased"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileEstimateGammaWithDisplayID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileEstimateGamma"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetDisplayTransferFormulaFromVCGT"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateDisplayTransferTablesFromVCGT"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileSetHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyDescriptionString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyTagSignatures"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileContainsTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileSetTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileRemoveTag"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileCacheSeed"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncWaitForCacheReply"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledProfilesWithOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileInstall"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileUninstall"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformCopyProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformSetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformGetProfileSequence"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformConvert"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentPerceptual"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentRelative"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentSaturation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentAbsolute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentUseProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDeviceToPCS"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformPCSToPCS"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformPCSToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDeviceToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformGamutCheck"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncBlackPointCompensation"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncExtendedRange"
+        },
+        {
+          "access": "public",
+          "introduced": "14",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncHDRDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "14",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPQDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "14",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncHLGDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPreferredCMM"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConvertQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncBestQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncNormalQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDraftQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConvertUseExtendedRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformSrcSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDstSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCodeFragmentType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCodeFragmentMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformFullConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformSimplifiedConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformParametricConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformProfileSequnce"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionMatrix"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve0"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve1"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve2"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve3"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve4"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversion1DLut"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionGridPoints"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionChannelID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversion3DLut"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionNDLut"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionInpChan"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionOutChan"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionBPC"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncFixedPointRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCreateCodeFragment"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMGetBundle"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMCopyLocalizedName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMCopyCMMIdentifier"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledCMMs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kCMMInitializeLinkProfileProcName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kCMMInitializeTransformProcName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kCMMApplyTransformProcName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kCMMCreateTransformPropertyProcName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncCameraDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPrinterDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncScannerDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDescriptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncFactoryProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncCustomProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceModeDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceModeDescriptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDefaultProfileID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceHostScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceUserScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileHostScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileUserScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsFactory"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsDefault"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsCurrent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceRegisteredNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceUnregisteredNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfilesNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayDeviceProfilesNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileRepositoryChangeNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRegistrationUpdateWindowServer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncRegisterDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncUnregisterDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncDeviceSetCustomProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncDeviceCopyDeviceInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateDeviceProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CGDisplayCreateUUIDFromDisplayID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CGDisplayGetDisplayIDFromUUID"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ColorSyncProfileRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncMutableProfileRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncMD5"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncProfileIterateCallback"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncTransformRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDataDepth"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncAlphaInfo"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDataLayout"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncCMMRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "name": "ColorSyncCMMIterateCallback"
+        },
+        {
+          "access": "public",
+          "name": "CMMInitializeLinkProfileProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMInitializeTransformProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMApplyTransformProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMCreateTransformPropertyProc"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "name": "ColorSyncDeviceProfileIterateCallback"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSync1BitGamut"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync8BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync16BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync16BitFloat"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitNamedColorIndex"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitFloat"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync10BitInteger"
+            }
+          ],
+          "name": "ColorSyncDataDepth"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNone"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaPremultipliedLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaPremultipliedFirst"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaFirst"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNoneSkipLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNoneSkipFirst"
+            }
+          ],
+          "name": "ColorSyncAlphaInfo"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaInfoMask"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrderMask"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrderDefault"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder16Little"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder32Little"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder16Big"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder32Big"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ColorSync/install/PublicSDKContentRoot/System/Library/Frameworks/ColorSync.framework/Versions/A/Headers/ColorSyncTransform.h:96:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericGrayProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericGrayGamma22Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericCMYKProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayP3Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncAdobeRGB1998Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericLabProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericXYZProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncACESCGLinearProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDCIP3Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncITUR709Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncITUR2020Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncROMMRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16.1",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncWebSafeColorsProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileColorSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfilePCS"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileURL"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileMD5Digest"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileIsValid"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigCmykData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGrayData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigLabData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRgbData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigXYZData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAbstractClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBlueTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBlueColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigMediaBlackPointTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigCopyrightTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigProfileDescriptionTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDeviceModelDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDeviceMfgDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGreenTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGreenColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGamutTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGrayTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigLinkClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDisplayClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigNamedColor2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigNamedColorClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigOutputClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigProfileSequenceDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRedTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRedColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigInputClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigColorSpaceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigTechnologyTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigViewingConditionsTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigViewingCondDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigMediaWhitePointTag"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileComputerDomain",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileUserDomain",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithName"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithDisplayID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateDeviceProfile",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateMutable"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateMutableCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateLink"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileVerify"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsWideGamut"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsMatrixBased"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsPQBased"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsHLGBased"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileEstimateGammaWithDisplayID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileEstimateGamma",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetDisplayTransferFormulaFromVCGT",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateDisplayTransferTablesFromVCGT",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetURL"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileSetHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyDescriptionString"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyTagSignatures"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileContainsTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileSetTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileRemoveTag"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileCacheSeed"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledProfiles"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncWaitForCacheReply",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledProfilesWithOptions",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileInstall",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileUninstall",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformCopyProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformSetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformGetProfileSequence"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformConvert"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntent"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentPerceptual"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentRelative"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentSaturation"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentAbsolute"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentUseProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformTag"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDeviceToPCS"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformPCSToPCS"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformPCSToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDeviceToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformGamutCheck"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncBlackPointCompensation"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncExtendedRange"
+        },
+        {
+          "access": "public",
+          "introduced": "17",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncHDRDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "17",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPQDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "17",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncHLGDerivative"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPreferredCMM",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConvertQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncBestQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncNormalQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDraftQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConvertUseExtendedRange"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformSrcSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDstSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCodeFragmentType"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCodeFragmentMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformFullConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformSimplifiedConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformParametricConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformProfileSequnce"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionMatrix"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve0"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve1"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve2"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve3"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve4"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversion1DLut"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionGridPoints"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionChannelID"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversion3DLut"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionNDLut"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionInpChan"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionOutChan"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionBPC"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncFixedPointRange"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCreateCodeFragment"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncCameraDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPrinterDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncScannerDeviceClass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDescription",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDescriptions",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncFactoryProfiles",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncCustomProfiles",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceModeDescription",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceModeDescriptions",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDefaultProfileID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceHostScope",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceUserScope",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileHostScope",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileUserScope",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsFactory",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsDefault",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsCurrent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceRegisteredNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceUnregisteredNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfilesNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayDeviceProfilesNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileRepositoryChangeNotification",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRegistrationUpdateWindowServer",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncRegisterDevice",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncUnregisterDevice",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncDeviceSetCustomProfiles",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncDeviceCopyDeviceInfo",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateDeviceProfiles",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CGDisplayCreateUUIDFromDisplayID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CGDisplayGetDisplayIDFromUUID",
+          "unavailable": true
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ColorSyncProfileRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncMutableProfileRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncMD5"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncProfileIterateCallback"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncTransformRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDataDepth"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncAlphaInfo"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDataLayout"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncCMMRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncCMMIterateCallback",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "name": "CMMInitializeLinkProfileProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMInitializeTransformProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMApplyTransformProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMCreateTransformPropertyProc"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDeviceProfileIterateCallback",
+          "unavailable": true
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSync1BitGamut"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync8BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync16BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync16BitFloat"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitInteger"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitNamedColorIndex"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync32BitFloat"
+            },
+            {
+              "access": "public",
+              "name": "kColorSync10BitInteger"
+            }
+          ],
+          "name": "ColorSyncDataDepth"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNone"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaPremultipliedLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaPremultipliedFirst"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaFirst"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNoneSkipLast"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaNoneSkipFirst"
+            }
+          ],
+          "name": "ColorSyncAlphaInfo"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorSyncAlphaInfoMask"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrderMask"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrderDefault"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder16Little"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder32Little"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder16Big"
+            },
+            {
+              "access": "public",
+              "name": "kColorSyncByteOrder32Big"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ColorSync/install/PublicSDKContentRoot/System/Library/Frameworks/ColorSync.framework/Versions/A/Headers/ColorSyncTransform.h:96:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericGrayProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericGrayGamma22Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericCMYKProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayP3Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncAdobeRGB1998Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericLabProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncGenericXYZProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncACESCGLinearProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDCIP3Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncITUR709Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncITUR2020Profile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncROMMRGBProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "13",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncWebSafeColorsProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileColorSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfilePCS"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileMD5Digest"
+        },
+        {
+          "access": "public",
+          "introduced": "13",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileIsValid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAToB2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBToA2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigCmykData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGrayData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigLabData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRgbData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigXYZData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigAbstractClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBlueTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigBlueColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigMediaBlackPointTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigCopyrightTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigProfileDescriptionTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDeviceModelDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDeviceMfgDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGreenTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGreenColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGamutTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigGrayTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigLinkClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigDisplayClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigNamedColor2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigNamedColorClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview0Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview1Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigPreview2Tag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigOutputClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigProfileSequenceDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRedTRCTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigRedColorantTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigInputClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigColorSpaceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigTechnologyTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigViewingConditionsTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigViewingCondDescTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncSigMediaWhitePointTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileComputerDomain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileUserDomain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateWithDisplayID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateDeviceProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateMutable"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateMutableCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateLink"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileVerify"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsWideGamut"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsMatrixBased"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsPQBased"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileIsHLGBased"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileEstimateGammaWithDisplayID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileEstimateGamma"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetDisplayTransferFormulaFromVCGT"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCreateDisplayTransferTablesFromVCGT"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileGetURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileSetHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyDescriptionString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyTagSignatures"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileContainsTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileCopyTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileSetTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileRemoveTag"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileCacheSeed"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncWaitForCacheReply"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledProfilesWithOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileInstall"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncProfileUninstall"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformCopyProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformSetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformGetProfileSequence"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncTransformConvert"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentPerceptual"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentRelative"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentSaturation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentAbsolute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRenderingIntentUseProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformTag"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDeviceToPCS"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformPCSToPCS"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformPCSToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDeviceToDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformGamutCheck"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncBlackPointCompensation"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncExtendedRange"
+        },
+        {
+          "access": "public",
+          "introduced": "14",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncHDRDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "14",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPQDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "14",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncHLGDerivative"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPreferredCMM"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConvertQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncBestQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncNormalQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDraftQuality"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConvertUseExtendedRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCreator"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformSrcSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformDstSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCodeFragmentType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformCodeFragmentMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformFullConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformSimplifiedConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformParametricConversionData"
+        },
+        {
+          "access": "public",
+          "introduced": "11",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncTransformProfileSequnce"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionMatrix"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve0"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve1"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve2"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve3"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionParamCurve4"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversion1DLut"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionGridPoints"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionChannelID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversion3DLut"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionNDLut"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionInpChan"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionOutChan"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncConversionBPC"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncFixedPointRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCreateCodeFragment"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMGetBundle"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMCopyLocalizedName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncCMMCopyCMMIdentifier"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateInstalledCMMs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kCMMInitializeLinkProfileProcName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kCMMInitializeTransformProcName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kCMMApplyTransformProcName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kCMMCreateTransformPropertyProcName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncCameraDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncPrinterDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncScannerDeviceClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDescriptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncFactoryProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncCustomProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceModeDescription"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceModeDescriptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceDefaultProfileID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceHostScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceUserScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileHostScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileUserScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsFactory"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsDefault"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileIsCurrent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfileID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceRegisteredNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceUnregisteredNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDeviceProfilesNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncDisplayDeviceProfilesNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncProfileRepositoryChangeNotification"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kColorSyncRegistrationUpdateWindowServer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncRegisterDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncUnregisterDevice"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncDeviceSetCustomProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncDeviceCopyDeviceInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ColorSyncIterateDeviceProfiles"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CGDisplayCreateUUIDFromDisplayID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CGDisplayGetDisplayIDFromUUID"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ColorSyncProfileRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncMutableProfileRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncMD5"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncProfileIterateCallback"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncTransformRef"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDataDepth"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncAlphaInfo"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncDataLayout"
+        },
+        {
+          "access": "public",
+          "name": "ColorSyncCMMRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "name": "ColorSyncCMMIterateCallback"
+        },
+        {
+          "access": "public",
+          "name": "CMMInitializeLinkProfileProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMInitializeTransformProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMApplyTransformProc"
+        },
+        {
+          "access": "public",
+          "name": "CMMCreateTransformPropertyProc"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "name": "ColorSyncDeviceProfileIterateCallback"
+        }
+      ]
+    }
+  ],
+  "projectName": "ColorSync",
+  "version": "1.0"
+}

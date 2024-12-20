@@ -1,0 +1,1240 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kDefaultColorPickerWidth"
+            },
+            {
+              "access": "public",
+              "name": "kDefaultColorPickerHeight"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/ColorPicker.h:50:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAtSpecifiedOrigin"
+            },
+            {
+              "access": "public",
+              "name": "kDeepestColorScreen"
+            },
+            {
+              "access": "public",
+              "name": "kCenterOnMainScreen"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/ColorPicker.h:56:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorPickerDialogIsMoveable"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerDialogIsModal"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerCanModifyPalette"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerCanAnimatePalette"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerAppIsColorSyncAware"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerInSystemDialog"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerInApplicationDialog"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerInPickerDialog"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerDetachedFromChoices"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerCallColorProcLive"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/ColorPicker.h:63:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kCalibratorNamePrefix"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/CMCalibrator.h:48:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kEventClassFont"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:53:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kHICommandShowHideFontPanel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:66:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kEventFontPanelClosed"
+            },
+            {
+              "access": "public",
+              "name": "kEventFontSelection"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:98:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "typeCTFontDescriptorRef"
+            },
+            {
+              "access": "public",
+              "name": "typeATSUFontID"
+            },
+            {
+              "access": "public",
+              "name": "typeATSUSize"
+            },
+            {
+              "access": "public",
+              "name": "typeFMFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "typeFMFontStyle"
+            },
+            {
+              "access": "public",
+              "name": "typeFMFontSize"
+            },
+            {
+              "access": "public",
+              "name": "typeFontColor"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamCTFontDescriptor"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamATSUFontID"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamATSUFontSize"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamFMFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamFMFontStyle"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamFMFontSize"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamFontColor"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamDictionary"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamViewAttributesDictionary"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:134:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "fontPanelShowErr"
+            },
+            {
+              "access": "public",
+              "name": "fontPanelSelectionStyleErr"
+            },
+            {
+              "access": "public",
+              "name": "fontPanelFontSelectionQDStyleVersionErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:318:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFontSelectionATSUIType"
+            },
+            {
+              "access": "public",
+              "name": "kFontSelectionQDType"
+            },
+            {
+              "access": "public",
+              "name": "kFontSelectionCoreTextType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:329:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFontSelectionQDStyleVersionZero"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:339:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewNColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeNColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeNColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetColor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NPickColor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewCalibrateEventUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewCanCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeCalibrateEventUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeCanCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeCalibrateEventUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeCanCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CMCalibrateDisplay"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelATSUFontIDKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelVariationAxesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelVariationValuesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelFeatureTypesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelFeatureSelectorsKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelAttributesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelAttributeTagsKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelAttributeSizesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelAttributeValuesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelMouseTrackingState"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelBackgroundColorAttributeName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FPIsFontPanelVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FPShowHideFontPanel"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetFontInfoForSelection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCCopyCollectionNames"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCCopyFontDescriptorsInCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCAddCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCRemoveCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCAddFontDescriptorToCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCRemoveFontDescriptorFromCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontFamilyAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontNameAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontFaceAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontSizeAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontVisibleNameAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontCGColorAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCFontDescriptorCreateWithFontAttributes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCFontDescriptorCreateWithName"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "DialogPlacementSpec"
+        },
+        {
+          "access": "public",
+          "name": "NPMColor"
+        },
+        {
+          "access": "public",
+          "name": "NPMColorPtr"
+        },
+        {
+          "access": "public",
+          "name": "Picker"
+        },
+        {
+          "access": "public",
+          "name": "picker"
+        },
+        {
+          "access": "public",
+          "name": "PickerMenuItemInfo"
+        },
+        {
+          "access": "public",
+          "name": "NColorChangedProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "NColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "name": "ColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "name": "UserEventUPP"
+        },
+        {
+          "access": "public",
+          "name": "NColorPickerInfo"
+        },
+        {
+          "access": "public",
+          "name": "CalibrateEventProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CalibrateEventUPP"
+        },
+        {
+          "access": "public",
+          "name": "CalibratorInfo"
+        },
+        {
+          "access": "public",
+          "name": "CanCalibrateProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CalibrateProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CanCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "name": "CalibrateUPP"
+        },
+        {
+          "access": "public",
+          "name": "FontSelectionQDStyle"
+        },
+        {
+          "access": "public",
+          "name": "FontSelectionQDStylePtr"
+        },
+        {
+          "access": "public",
+          "name": "FCFontDescriptorRef"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kDefaultColorPickerWidth"
+            },
+            {
+              "access": "public",
+              "name": "kDefaultColorPickerHeight"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/ColorPicker.h:50:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAtSpecifiedOrigin"
+            },
+            {
+              "access": "public",
+              "name": "kDeepestColorScreen"
+            },
+            {
+              "access": "public",
+              "name": "kCenterOnMainScreen"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/ColorPicker.h:56:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kColorPickerDialogIsMoveable"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerDialogIsModal"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerCanModifyPalette"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerCanAnimatePalette"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerAppIsColorSyncAware"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerInSystemDialog"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerInApplicationDialog"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerInPickerDialog"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerDetachedFromChoices"
+            },
+            {
+              "access": "public",
+              "name": "kColorPickerCallColorProcLive"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/ColorPicker.h:63:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kCalibratorNamePrefix"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/CMCalibrator.h:48:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kEventClassFont"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:53:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kHICommandShowHideFontPanel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:66:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kEventFontPanelClosed"
+            },
+            {
+              "access": "public",
+              "name": "kEventFontSelection"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:98:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "typeCTFontDescriptorRef"
+            },
+            {
+              "access": "public",
+              "name": "typeATSUFontID"
+            },
+            {
+              "access": "public",
+              "name": "typeATSUSize"
+            },
+            {
+              "access": "public",
+              "name": "typeFMFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "typeFMFontStyle"
+            },
+            {
+              "access": "public",
+              "name": "typeFMFontSize"
+            },
+            {
+              "access": "public",
+              "name": "typeFontColor"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamCTFontDescriptor"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamATSUFontID"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamATSUFontSize"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamFMFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamFMFontStyle"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamFMFontSize"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamFontColor"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamDictionary"
+            },
+            {
+              "access": "public",
+              "name": "kEventParamViewAttributesDictionary"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:134:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "fontPanelShowErr"
+            },
+            {
+              "access": "public",
+              "name": "fontPanelSelectionStyleErr"
+            },
+            {
+              "access": "public",
+              "name": "fontPanelFontSelectionQDStyleVersionErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:318:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFontSelectionATSUIType"
+            },
+            {
+              "access": "public",
+              "name": "kFontSelectionQDType"
+            },
+            {
+              "access": "public",
+              "name": "kFontSelectionCoreTextType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:329:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFontSelectionQDStyleVersionZero"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/CommonPanels/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/CommonPanels.framework/Versions/A/Headers/FontPanel.h:339:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewNColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeNColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeNColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_GetColor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NPickColor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewCalibrateEventUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewCanCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeCalibrateEventUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeCanCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeCalibrateEventUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeCanCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_CMCalibrateDisplay"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelATSUFontIDKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelVariationAxesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelVariationValuesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelFeatureTypesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelFeatureSelectorsKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelAttributesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelAttributeTagsKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelAttributeSizesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelAttributeValuesKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelMouseTrackingState"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFontPanelBackgroundColorAttributeName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FPIsFontPanelVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FPShowHideFontPanel"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SetFontInfoForSelection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCCopyCollectionNames"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCCopyFontDescriptorsInCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCAddCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCRemoveCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCAddFontDescriptorToCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCRemoveFontDescriptorFromCollection"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontFamilyAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontNameAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontFaceAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontSizeAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontVisibleNameAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kFCFontCGColorAttribute"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCFontDescriptorCreateWithFontAttributes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_FCFontDescriptorCreateWithName"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "DialogPlacementSpec"
+        },
+        {
+          "access": "public",
+          "name": "NPMColor"
+        },
+        {
+          "access": "public",
+          "name": "NPMColorPtr"
+        },
+        {
+          "access": "public",
+          "name": "Picker"
+        },
+        {
+          "access": "public",
+          "name": "picker"
+        },
+        {
+          "access": "public",
+          "name": "PickerMenuItemInfo"
+        },
+        {
+          "access": "public",
+          "name": "NColorChangedProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "NColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "name": "ColorChangedUPP"
+        },
+        {
+          "access": "public",
+          "name": "UserEventUPP"
+        },
+        {
+          "access": "public",
+          "name": "NColorPickerInfo"
+        },
+        {
+          "access": "public",
+          "name": "CalibrateEventProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CalibrateEventUPP"
+        },
+        {
+          "access": "public",
+          "name": "CalibratorInfo"
+        },
+        {
+          "access": "public",
+          "name": "CanCalibrateProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CalibrateProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CanCalibrateUPP"
+        },
+        {
+          "access": "public",
+          "name": "CalibrateUPP"
+        },
+        {
+          "access": "public",
+          "name": "FontSelectionQDStyle"
+        },
+        {
+          "access": "public",
+          "name": "FontSelectionQDStylePtr"
+        },
+        {
+          "access": "public",
+          "name": "FCFontDescriptorRef"
+        }
+      ]
+    }
+  ],
+  "projectName": "CommonPanels",
+  "version": "1.0"
+}

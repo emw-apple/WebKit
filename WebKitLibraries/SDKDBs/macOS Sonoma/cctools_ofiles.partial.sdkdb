@@ -1,0 +1,1140 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "ARM_RELOC_VANILLA"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_PAIR"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_LOCAL_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_PB_LA_PTR"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_BR24"
+            },
+            {
+              "access": "public",
+              "name": "ARM_THUMB_RELOC_BR22"
+            },
+            {
+              "access": "public",
+              "name": "ARM_THUMB_32BIT_BRANCH"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_HALF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_HALF_SECTDIFF"
+            }
+          ],
+          "name": "reloc_type_arm"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_UNSIGNED"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_SUBTRACTOR"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_BRANCH26"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_GOT_LOAD_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_GOT_LOAD_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_POINTER_TO_GOT"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_TLVP_LOAD_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_TLVP_LOAD_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_ADDEND"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_AUTHENTICATED_POINTER"
+            }
+          ],
+          "name": "reloc_type_arm64"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_VANILLA"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_PAIR"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_PB_LA_PTR"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_LOCAL_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_TLV"
+            }
+          ],
+          "name": "reloc_type_generic"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_UNSIGNED"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_BRANCH"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_GOT_LOAD"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_GOT"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SUBTRACTOR"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_1"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_2"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_4"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_TLV"
+            }
+          ],
+          "name": "reloc_type_x86_64"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetAllArchInfos"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetLocalArchInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetArchInfoFromName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetArchInfoFromCpuType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFreeArchInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFindBestFatArch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFindBestFatArch_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXCombineCpuSubtypes"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromFramework"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_end"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_etext"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_edata"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbyname"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectiondata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsegbyname"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsegmentdata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromheader"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheader"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheaderwithswap"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromheader_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheader_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheaderwithswap_64"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_execute_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_bundle_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_dylib_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_dylinker_header"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_nlist"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NXArchInfo"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "ARM_RELOC_VANILLA"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_PAIR"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_LOCAL_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_PB_LA_PTR"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_BR24"
+            },
+            {
+              "access": "public",
+              "name": "ARM_THUMB_RELOC_BR22"
+            },
+            {
+              "access": "public",
+              "name": "ARM_THUMB_32BIT_BRANCH"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_HALF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_HALF_SECTDIFF"
+            }
+          ],
+          "name": "reloc_type_arm"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_UNSIGNED"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_SUBTRACTOR"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_BRANCH26"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_GOT_LOAD_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_GOT_LOAD_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_POINTER_TO_GOT"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_TLVP_LOAD_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_TLVP_LOAD_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_ADDEND"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_AUTHENTICATED_POINTER"
+            }
+          ],
+          "name": "reloc_type_arm64"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_VANILLA"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_PAIR"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_PB_LA_PTR"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_LOCAL_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_TLV"
+            }
+          ],
+          "name": "reloc_type_generic"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_UNSIGNED"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_BRANCH"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_GOT_LOAD"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_GOT"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SUBTRACTOR"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_1"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_2"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_4"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_TLV"
+            }
+          ],
+          "name": "reloc_type_x86_64"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetAllArchInfos"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetLocalArchInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetArchInfoFromName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetArchInfoFromCpuType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFreeArchInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFindBestFatArch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFindBestFatArch_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXCombineCpuSubtypes"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromFramework"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_end"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_etext"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_edata"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbyname"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectiondata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsegbyname"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsegmentdata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromheader"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheader"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheaderwithswap"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromheader_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheader_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheaderwithswap_64"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_execute_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_bundle_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_dylib_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_dylinker_header"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_nlist"
+        }
+      ],
+      "target": "arm64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NXArchInfo"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "ARM_RELOC_VANILLA"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_PAIR"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_LOCAL_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_PB_LA_PTR"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_BR24"
+            },
+            {
+              "access": "public",
+              "name": "ARM_THUMB_RELOC_BR22"
+            },
+            {
+              "access": "public",
+              "name": "ARM_THUMB_32BIT_BRANCH"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_HALF"
+            },
+            {
+              "access": "public",
+              "name": "ARM_RELOC_HALF_SECTDIFF"
+            }
+          ],
+          "name": "reloc_type_arm"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_UNSIGNED"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_SUBTRACTOR"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_BRANCH26"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_GOT_LOAD_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_GOT_LOAD_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_POINTER_TO_GOT"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_TLVP_LOAD_PAGE21"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_TLVP_LOAD_PAGEOFF12"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_ADDEND"
+            },
+            {
+              "access": "public",
+              "name": "ARM64_RELOC_AUTHENTICATED_POINTER"
+            }
+          ],
+          "name": "reloc_type_arm64"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_VANILLA"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_PAIR"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_PB_LA_PTR"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_LOCAL_SECTDIFF"
+            },
+            {
+              "access": "public",
+              "name": "GENERIC_RELOC_TLV"
+            }
+          ],
+          "name": "reloc_type_generic"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_UNSIGNED"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_BRANCH"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_GOT_LOAD"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_GOT"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SUBTRACTOR"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_1"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_2"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_SIGNED_4"
+            },
+            {
+              "access": "public",
+              "name": "X86_64_RELOC_TLV"
+            }
+          ],
+          "name": "reloc_type_x86_64"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetAllArchInfos"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetLocalArchInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetArchInfoFromName"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXGetArchInfoFromCpuType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFreeArchInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFindBestFatArch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXFindBestFatArch_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NXCombineCpuSubtypes"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromFramework"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_end"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_etext"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_get_edata"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbyname"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectiondata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsegbyname"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsegmentdata"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromheader"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheader"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheaderwithswap"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectdatafromheader_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheader_64"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getsectbynamefromheaderwithswap_64"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_execute_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_bundle_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_dylib_header"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "__mh_dylinker_header"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_nlist"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NXArchInfo"
+        }
+      ]
+    }
+  ],
+  "projectName": "cctools_ofiles",
+  "version": "1.0"
+}

@@ -1,0 +1,106 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DCSGetTermRangeInString"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DCSCopyTextDefinition"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "DCSDictionaryRef"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DCSGetTermRangeInString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DCSCopyTextDefinition"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "DCSDictionaryRef"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DCSGetTermRangeInString"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DCSCopyTextDefinition"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "DCSDictionaryRef"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DCSGetTermRangeInString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DCSCopyTextDefinition"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "DCSDictionaryRef"
+        }
+      ]
+    }
+  ],
+  "projectName": "DictionaryService",
+  "version": "1.0"
+}

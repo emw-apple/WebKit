@@ -1,0 +1,1198 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kLSSharedFileListNoUserInteraction"
+            },
+            {
+              "access": "public",
+              "name": "kLSSharedFileListDoNotMountVolumes"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/016fc32d-3de4-11ee-a2ef-7a03568b17ac/Library/Caches/com.apple.xbs/Binaries/SharedFileList/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SharedFileList.framework/Versions/A/Headers/LSSharedFileList.h:268:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListFavoriteVolumes",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListFavoriteItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentApplicationItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentDocumentItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentServerItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListSessionLoginItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListGlobalLoginItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentItemsMaxAmount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesComputerVisible",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesIDiskVisible",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesNetworkVisible",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemBeforeFirst",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemLast",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemHidden",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListLoginItemHidden",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListSetAuthorization",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListAddObserver",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListRemoveObserver",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListGetSeedValue",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCopyProperty",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListSetProperty",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCopySnapshot",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListInsertItemURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListInsertItemFSRef",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemMove",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemRemove",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListRemoveAllItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemGetID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyIconRef",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyDisplayName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemResolve",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyResolvedURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyProperty",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemSetProperty",
+          "unavailable": true
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "LSSharedFileListRef"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListItemRef"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListResolutionFlags"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListChangedProcPtr"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kLSSharedFileListNoUserInteraction"
+            },
+            {
+              "access": "public",
+              "name": "kLSSharedFileListDoNotMountVolumes"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/016fc32d-3de4-11ee-a2ef-7a03568b17ac/Library/Caches/com.apple.xbs/Binaries/SharedFileList/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SharedFileList.framework/Versions/A/Headers/LSSharedFileList.h:268:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListFavoriteVolumes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListFavoriteItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentApplicationItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentDocumentItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentServerItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListSessionLoginItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListGlobalLoginItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentItemsMaxAmount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesComputerVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesIDiskVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesNetworkVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemBeforeFirst"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemLast"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemHidden"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListLoginItemHidden"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListSetAuthorization"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListAddObserver"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListRemoveObserver"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListGetSeedValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCopyProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListSetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCopySnapshot"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListInsertItemURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListInsertItemFSRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemMove"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemRemove"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListRemoveAllItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemGetID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyIconRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyDisplayName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemResolve"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyResolvedURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemSetProperty"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "LSSharedFileListRef"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListItemRef"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListResolutionFlags"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListChangedProcPtr"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kLSSharedFileListNoUserInteraction"
+            },
+            {
+              "access": "public",
+              "name": "kLSSharedFileListDoNotMountVolumes"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/016fc32d-3de4-11ee-a2ef-7a03568b17ac/Library/Caches/com.apple.xbs/Binaries/SharedFileList/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SharedFileList.framework/Versions/A/Headers/LSSharedFileList.h:268:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListFavoriteVolumes",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListFavoriteItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentApplicationItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentDocumentItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentServerItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListSessionLoginItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListGlobalLoginItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentItemsMaxAmount",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesComputerVisible",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesIDiskVisible",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesNetworkVisible",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemBeforeFirst",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemLast",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemHidden",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListLoginItemHidden",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemGetTypeID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListSetAuthorization",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListAddObserver",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListRemoveObserver",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListGetSeedValue",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCopyProperty",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListSetProperty",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCopySnapshot",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListInsertItemURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListInsertItemFSRef",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemMove",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemRemove",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListRemoveAllItems",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemGetID",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyIconRef",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyDisplayName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemResolve",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyResolvedURL",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyProperty",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemSetProperty",
+          "unavailable": true
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "LSSharedFileListRef"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListItemRef"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListResolutionFlags"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListChangedProcPtr"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kLSSharedFileListNoUserInteraction"
+            },
+            {
+              "access": "public",
+              "name": "kLSSharedFileListDoNotMountVolumes"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/016fc32d-3de4-11ee-a2ef-7a03568b17ac/Library/Caches/com.apple.xbs/Binaries/SharedFileList/install/PublicSDKContentRoot/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SharedFileList.framework/Versions/A/Headers/LSSharedFileList.h:268:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListFavoriteVolumes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListFavoriteItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentApplicationItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentDocumentItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentServerItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListSessionLoginItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListGlobalLoginItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListRecentItemsMaxAmount"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesComputerVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesIDiskVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListVolumesNetworkVisible"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemBeforeFirst"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemLast"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListItemHidden"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kLSSharedFileListLoginItemHidden"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemGetTypeID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListSetAuthorization"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListAddObserver"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListRemoveObserver"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListGetSeedValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCopyProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListSetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListCopySnapshot"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListInsertItemURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListInsertItemFSRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemMove"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemRemove"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListRemoveAllItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemGetID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyIconRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyDisplayName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemResolve"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyResolvedURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemCopyProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_LSSharedFileListItemSetProperty"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "LSSharedFileListRef"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListItemRef"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListResolutionFlags"
+        },
+        {
+          "access": "public",
+          "name": "LSSharedFileListChangedProcPtr"
+        }
+      ]
+    }
+  ],
+  "projectName": "SharedFileList",
+  "version": "1.0"
+}

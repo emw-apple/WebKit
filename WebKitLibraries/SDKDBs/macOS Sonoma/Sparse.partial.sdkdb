@@ -1,0 +1,3386 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseOrdinary"
+            },
+            {
+              "access": "public",
+              "name": "SparseTriangular"
+            },
+            {
+              "access": "public",
+              "name": "SparseUnitTriangular"
+            },
+            {
+              "access": "public",
+              "name": "SparseSymmetric"
+            }
+          ],
+          "name": "SparseKind_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseUpperTriangle"
+            },
+            {
+              "access": "public",
+              "name": "SparseLowerTriangle"
+            }
+          ],
+          "name": "SparseTriangle_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseStatusOK"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationFailed"
+            },
+            {
+              "access": "public",
+              "name": "SparseMatrixIsSingular"
+            },
+            {
+              "access": "public",
+              "name": "SparseInternalError"
+            },
+            {
+              "access": "public",
+              "name": "SparseParameterError"
+            },
+            {
+              "access": "public",
+              "name": "SparseStatusReleased"
+            }
+          ],
+          "name": "SparseStatus_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseFactorizationCholesky"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLT"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTUnpivoted"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTSBK"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTTPP"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationQR"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationCholeskyAtA"
+            }
+          ],
+          "name": "SparseFactorization_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseDefaultControl"
+            }
+          ],
+          "name": "SparseControl_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseOrderDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderUser"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderAMD"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderMetis"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderCOLAMD"
+            }
+          ],
+          "name": "SparseOrder_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseScalingDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseScalingUser"
+            },
+            {
+              "access": "public",
+              "name": "SparseScalingEquilibriationInf"
+            }
+          ],
+          "name": "SparseScaling_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseSubfactorInvalid"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorP"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorS"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorL"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorD"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorPLPS"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorQ"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorR"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorRP"
+            }
+          ],
+          "name": "SparseSubfactor_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparsePreconditionerNone"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerUser"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerDiagonal"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerDiagScaling"
+            }
+          ],
+          "name": "SparsePreconditioner_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseIterativeConverged"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeMaxIterations"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeParameterError"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeIllConditioned"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeInternalError"
+            }
+          ],
+          "name": "SparseIterativeStatus_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseVariantDQGMRES"
+            },
+            {
+              "access": "public",
+              "name": "SparseVariantGMRES"
+            },
+            {
+              "access": "public",
+              "name": "SparseVariantFGMRES"
+            }
+          ],
+          "name": "SparseGMRESVariant_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseLSMRCTDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseLSMRCTFongSaunders"
+            }
+          ],
+          "name": "SparseLSMRConvergenceTest_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "_SparseMethodCG"
+            },
+            {
+              "access": "public",
+              "name": "_SparseMethodGMRES"
+            },
+            {
+              "access": "public",
+              "name": "_SparseMethodLSMR"
+            }
+          ],
+          "name": "_SparseIterativeMethod_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__Z16SparseGetInertia31SparseOpaqueFactorization_FloatPiS0_S0_"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__Z16SparseGetInertia32SparseOpaqueFactorization_DoublePiS0_S0_"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSymbolicFactorSymmetric"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSymbolicFactorQR"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainSymbolic"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueSymbolic"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromSymbolicFactor"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseTrap"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromCoordinate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromOpaque_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseMultiplySubfactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveSubfactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveOpaque_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueNumeric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainNumeric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromNumericFactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetWorkspaceRequired_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetIterativeStateSize_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCreatePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseReleaseOpaquePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSpMV_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromCoordinate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromOpaque_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseMultiplySubfactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveSubfactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveOpaque_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueNumeric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainNumeric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromNumericFactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetWorkspaceRequired_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetIterativeStateSize_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCreatePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseReleaseOpaquePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSpMV_Float"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SparseKind_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseTriangle_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseAttributes_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrixStructure"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrix_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrix_Float"
+        },
+        {
+          "access": "public",
+          "name": "DenseVector_Double"
+        },
+        {
+          "access": "public",
+          "name": "DenseVector_Float"
+        },
+        {
+          "access": "public",
+          "name": "DenseMatrix_Double"
+        },
+        {
+          "access": "public",
+          "name": "DenseMatrix_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseStatus_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseFactorization_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseControl_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOrder_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseScaling_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseSymbolicFactorOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseNumericFactorOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSymbolicFactorization"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueFactorization_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueFactorization_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseSubfactor_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSubfactor_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSubfactor_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparsePreconditioner_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaquePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaquePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseIterativeStatus_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseCGOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseGMRESVariant_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseGMRESOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseLSMRConvergenceTest_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseLSMROptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseIterativeMethod"
+        },
+        {
+          "access": "public",
+          "name": "_SparseIterativeMethod_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseOrdinary"
+            },
+            {
+              "access": "public",
+              "name": "SparseTriangular"
+            },
+            {
+              "access": "public",
+              "name": "SparseUnitTriangular"
+            },
+            {
+              "access": "public",
+              "name": "SparseSymmetric"
+            }
+          ],
+          "name": "SparseKind_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseUpperTriangle"
+            },
+            {
+              "access": "public",
+              "name": "SparseLowerTriangle"
+            }
+          ],
+          "name": "SparseTriangle_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseStatusOK"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationFailed"
+            },
+            {
+              "access": "public",
+              "name": "SparseMatrixIsSingular"
+            },
+            {
+              "access": "public",
+              "name": "SparseInternalError"
+            },
+            {
+              "access": "public",
+              "name": "SparseParameterError"
+            },
+            {
+              "access": "public",
+              "name": "SparseStatusReleased"
+            }
+          ],
+          "name": "SparseStatus_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseFactorizationCholesky"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLT"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTUnpivoted"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTSBK"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTTPP"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationQR"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationCholeskyAtA"
+            }
+          ],
+          "name": "SparseFactorization_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseDefaultControl"
+            }
+          ],
+          "name": "SparseControl_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseOrderDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderUser"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderAMD"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderMetis"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderCOLAMD"
+            }
+          ],
+          "name": "SparseOrder_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseScalingDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseScalingUser"
+            },
+            {
+              "access": "public",
+              "name": "SparseScalingEquilibriationInf"
+            }
+          ],
+          "name": "SparseScaling_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseSubfactorInvalid"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorP"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorS"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorL"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorD"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorPLPS"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorQ"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorR"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorRP"
+            }
+          ],
+          "name": "SparseSubfactor_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparsePreconditionerNone"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerUser"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerDiagonal"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerDiagScaling"
+            }
+          ],
+          "name": "SparsePreconditioner_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseIterativeConverged"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeMaxIterations"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeParameterError"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeIllConditioned"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeInternalError"
+            }
+          ],
+          "name": "SparseIterativeStatus_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseVariantDQGMRES"
+            },
+            {
+              "access": "public",
+              "name": "SparseVariantGMRES"
+            },
+            {
+              "access": "public",
+              "name": "SparseVariantFGMRES"
+            }
+          ],
+          "name": "SparseGMRESVariant_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseLSMRCTDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseLSMRCTFongSaunders"
+            }
+          ],
+          "name": "SparseLSMRConvergenceTest_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "_SparseMethodCG"
+            },
+            {
+              "access": "public",
+              "name": "_SparseMethodGMRES"
+            },
+            {
+              "access": "public",
+              "name": "_SparseMethodLSMR"
+            }
+          ],
+          "name": "_SparseIterativeMethod_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__Z16SparseGetInertia31SparseOpaqueFactorization_FloatPiS0_S0_"
+        },
+        {
+          "access": "public",
+          "introduced": "13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__Z16SparseGetInertia32SparseOpaqueFactorization_DoublePiS0_S0_"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSymbolicFactorSymmetric"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSymbolicFactorQR"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainSymbolic"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueSymbolic"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromSymbolicFactor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseTrap"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromCoordinate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromOpaque_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseMultiplySubfactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveSubfactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveOpaque_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueNumeric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainNumeric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromNumericFactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetWorkspaceRequired_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetIterativeStateSize_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCreatePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseReleaseOpaquePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSpMV_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromCoordinate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromOpaque_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseMultiplySubfactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveSubfactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveOpaque_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueNumeric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainNumeric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromNumericFactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetWorkspaceRequired_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetIterativeStateSize_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCreatePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseReleaseOpaquePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSpMV_Float"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SparseKind_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseTriangle_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseAttributes_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrixStructure"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrix_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrix_Float"
+        },
+        {
+          "access": "public",
+          "name": "DenseVector_Double"
+        },
+        {
+          "access": "public",
+          "name": "DenseVector_Float"
+        },
+        {
+          "access": "public",
+          "name": "DenseMatrix_Double"
+        },
+        {
+          "access": "public",
+          "name": "DenseMatrix_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseStatus_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseFactorization_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseControl_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOrder_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseScaling_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseSymbolicFactorOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseNumericFactorOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSymbolicFactorization"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueFactorization_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueFactorization_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseSubfactor_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSubfactor_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSubfactor_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparsePreconditioner_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaquePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaquePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseIterativeStatus_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseCGOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseGMRESVariant_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseGMRESOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseLSMRConvergenceTest_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseLSMROptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseIterativeMethod"
+        },
+        {
+          "access": "public",
+          "name": "_SparseIterativeMethod_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseOrdinary"
+            },
+            {
+              "access": "public",
+              "name": "SparseTriangular"
+            },
+            {
+              "access": "public",
+              "name": "SparseUnitTriangular"
+            },
+            {
+              "access": "public",
+              "name": "SparseSymmetric"
+            }
+          ],
+          "name": "SparseKind_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseUpperTriangle"
+            },
+            {
+              "access": "public",
+              "name": "SparseLowerTriangle"
+            }
+          ],
+          "name": "SparseTriangle_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseStatusOK"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationFailed"
+            },
+            {
+              "access": "public",
+              "name": "SparseMatrixIsSingular"
+            },
+            {
+              "access": "public",
+              "name": "SparseInternalError"
+            },
+            {
+              "access": "public",
+              "name": "SparseParameterError"
+            },
+            {
+              "access": "public",
+              "name": "SparseStatusReleased"
+            }
+          ],
+          "name": "SparseStatus_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseFactorizationCholesky"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLT"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTUnpivoted"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTSBK"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTTPP"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationQR"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationCholeskyAtA"
+            }
+          ],
+          "name": "SparseFactorization_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseDefaultControl"
+            }
+          ],
+          "name": "SparseControl_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseOrderDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderUser"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderAMD"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderMetis"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderCOLAMD"
+            }
+          ],
+          "name": "SparseOrder_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseScalingDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseScalingUser"
+            },
+            {
+              "access": "public",
+              "name": "SparseScalingEquilibriationInf"
+            }
+          ],
+          "name": "SparseScaling_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseSubfactorInvalid"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorP"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorS"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorL"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorD"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorPLPS"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorQ"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorR"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorRP"
+            }
+          ],
+          "name": "SparseSubfactor_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparsePreconditionerNone"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerUser"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerDiagonal"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerDiagScaling"
+            }
+          ],
+          "name": "SparsePreconditioner_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseIterativeConverged"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeMaxIterations"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeParameterError"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeIllConditioned"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeInternalError"
+            }
+          ],
+          "name": "SparseIterativeStatus_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseVariantDQGMRES"
+            },
+            {
+              "access": "public",
+              "name": "SparseVariantGMRES"
+            },
+            {
+              "access": "public",
+              "name": "SparseVariantFGMRES"
+            }
+          ],
+          "name": "SparseGMRESVariant_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseLSMRCTDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseLSMRCTFongSaunders"
+            }
+          ],
+          "name": "SparseLSMRConvergenceTest_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "_SparseMethodCG"
+            },
+            {
+              "access": "public",
+              "name": "_SparseMethodGMRES"
+            },
+            {
+              "access": "public",
+              "name": "_SparseMethodLSMR"
+            }
+          ],
+          "name": "_SparseIterativeMethod_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__Z16SparseGetInertia31SparseOpaqueFactorization_FloatPiS0_S0_"
+        },
+        {
+          "access": "public",
+          "introduced": "16",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__Z16SparseGetInertia32SparseOpaqueFactorization_DoublePiS0_S0_"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSymbolicFactorSymmetric"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSymbolicFactorQR"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainSymbolic"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueSymbolic"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromSymbolicFactor"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseTrap"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromCoordinate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromOpaque_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseMultiplySubfactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveSubfactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveOpaque_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueNumeric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainNumeric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromNumericFactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetWorkspaceRequired_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetIterativeStateSize_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCreatePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseReleaseOpaquePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSpMV_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromCoordinate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromOpaque_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseMultiplySubfactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveSubfactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveOpaque_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueNumeric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainNumeric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromNumericFactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetWorkspaceRequired_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetIterativeStateSize_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCreatePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseReleaseOpaquePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSpMV_Float"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SparseKind_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseTriangle_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseAttributes_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrixStructure"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrix_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrix_Float"
+        },
+        {
+          "access": "public",
+          "name": "DenseVector_Double"
+        },
+        {
+          "access": "public",
+          "name": "DenseVector_Float"
+        },
+        {
+          "access": "public",
+          "name": "DenseMatrix_Double"
+        },
+        {
+          "access": "public",
+          "name": "DenseMatrix_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseStatus_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseFactorization_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseControl_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOrder_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseScaling_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseSymbolicFactorOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseNumericFactorOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSymbolicFactorization"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueFactorization_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueFactorization_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseSubfactor_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSubfactor_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSubfactor_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparsePreconditioner_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaquePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaquePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseIterativeStatus_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseCGOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseGMRESVariant_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseGMRESOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseLSMRConvergenceTest_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseLSMROptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseIterativeMethod"
+        },
+        {
+          "access": "public",
+          "name": "_SparseIterativeMethod_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseOrdinary"
+            },
+            {
+              "access": "public",
+              "name": "SparseTriangular"
+            },
+            {
+              "access": "public",
+              "name": "SparseUnitTriangular"
+            },
+            {
+              "access": "public",
+              "name": "SparseSymmetric"
+            }
+          ],
+          "name": "SparseKind_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseUpperTriangle"
+            },
+            {
+              "access": "public",
+              "name": "SparseLowerTriangle"
+            }
+          ],
+          "name": "SparseTriangle_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseStatusOK"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationFailed"
+            },
+            {
+              "access": "public",
+              "name": "SparseMatrixIsSingular"
+            },
+            {
+              "access": "public",
+              "name": "SparseInternalError"
+            },
+            {
+              "access": "public",
+              "name": "SparseParameterError"
+            },
+            {
+              "access": "public",
+              "name": "SparseStatusReleased"
+            }
+          ],
+          "name": "SparseStatus_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseFactorizationCholesky"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLT"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTUnpivoted"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTSBK"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationLDLTTPP"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationQR"
+            },
+            {
+              "access": "public",
+              "name": "SparseFactorizationCholeskyAtA"
+            }
+          ],
+          "name": "SparseFactorization_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseDefaultControl"
+            }
+          ],
+          "name": "SparseControl_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseOrderDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderUser"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderAMD"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderMetis"
+            },
+            {
+              "access": "public",
+              "name": "SparseOrderCOLAMD"
+            }
+          ],
+          "name": "SparseOrder_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseScalingDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseScalingUser"
+            },
+            {
+              "access": "public",
+              "name": "SparseScalingEquilibriationInf"
+            }
+          ],
+          "name": "SparseScaling_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseSubfactorInvalid"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorP"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorS"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorL"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorD"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorPLPS"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorQ"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorR"
+            },
+            {
+              "access": "public",
+              "name": "SparseSubfactorRP"
+            }
+          ],
+          "name": "SparseSubfactor_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparsePreconditionerNone"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerUser"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerDiagonal"
+            },
+            {
+              "access": "public",
+              "name": "SparsePreconditionerDiagScaling"
+            }
+          ],
+          "name": "SparsePreconditioner_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseIterativeConverged"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeMaxIterations"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeParameterError"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeIllConditioned"
+            },
+            {
+              "access": "public",
+              "name": "SparseIterativeInternalError"
+            }
+          ],
+          "name": "SparseIterativeStatus_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseVariantDQGMRES"
+            },
+            {
+              "access": "public",
+              "name": "SparseVariantGMRES"
+            },
+            {
+              "access": "public",
+              "name": "SparseVariantFGMRES"
+            }
+          ],
+          "name": "SparseGMRESVariant_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SparseLSMRCTDefault"
+            },
+            {
+              "access": "public",
+              "name": "SparseLSMRCTFongSaunders"
+            }
+          ],
+          "name": "SparseLSMRConvergenceTest_t"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "_SparseMethodCG"
+            },
+            {
+              "access": "public",
+              "name": "_SparseMethodGMRES"
+            },
+            {
+              "access": "public",
+              "name": "_SparseMethodLSMR"
+            }
+          ],
+          "name": "_SparseIterativeMethod_t"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__Z16SparseGetInertia31SparseOpaqueFactorization_FloatPiS0_S0_"
+        },
+        {
+          "access": "public",
+          "introduced": "13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__Z16SparseGetInertia32SparseOpaqueFactorization_DoublePiS0_S0_"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSymbolicFactorSymmetric"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSymbolicFactorQR"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainSymbolic"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueSymbolic"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromSymbolicFactor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseTrap"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromCoordinate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromOpaque_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorSymmetric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorQR_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseMultiplySubfactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveSubfactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveOpaque_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueNumeric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainNumeric_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromNumericFactor_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetWorkspaceRequired_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetIterativeStateSize_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRIterate_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRSolve_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCreatePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseReleaseOpaquePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSpMV_Double"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromCoordinate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseConvertFromOpaque_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseNumericFactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseFactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorSymmetric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRefactorQR_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseMultiplySubfactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveSubfactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSolveOpaque_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseDestroyOpaqueNumeric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseRetainNumeric_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetOptionsFromNumericFactor_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetWorkspaceRequired_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGetIterativeStateSize_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCGSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseGMRESSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRIterate_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseLSMRSolve_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseCreatePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseReleaseOpaquePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "__SparseSpMV_Float"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SparseKind_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseTriangle_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseAttributes_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrixStructure"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrix_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseMatrix_Float"
+        },
+        {
+          "access": "public",
+          "name": "DenseVector_Double"
+        },
+        {
+          "access": "public",
+          "name": "DenseVector_Float"
+        },
+        {
+          "access": "public",
+          "name": "DenseMatrix_Double"
+        },
+        {
+          "access": "public",
+          "name": "DenseMatrix_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseStatus_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseFactorization_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseControl_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOrder_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseScaling_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseSymbolicFactorOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseNumericFactorOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSymbolicFactorization"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueFactorization_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueFactorization_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseSubfactor_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSubfactor_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaqueSubfactor_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparsePreconditioner_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaquePreconditioner_Double"
+        },
+        {
+          "access": "public",
+          "name": "SparseOpaquePreconditioner_Float"
+        },
+        {
+          "access": "public",
+          "name": "SparseIterativeStatus_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseCGOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseGMRESVariant_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseGMRESOptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseLSMRConvergenceTest_t"
+        },
+        {
+          "access": "public",
+          "name": "SparseLSMROptions"
+        },
+        {
+          "access": "public",
+          "name": "SparseIterativeMethod"
+        },
+        {
+          "access": "public",
+          "name": "_SparseIterativeMethod_t"
+        }
+      ]
+    }
+  ],
+  "projectName": "Sparse",
+  "version": "1.0"
+}

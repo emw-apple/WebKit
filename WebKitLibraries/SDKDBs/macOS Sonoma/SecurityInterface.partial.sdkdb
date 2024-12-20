@@ -1,0 +1,1604 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "categories": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "displayView"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setButton:enabled:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "updateView"
+            }
+          ],
+          "interface": "SFAuthorizationPluginView",
+          "name": "SFHostControl"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewDidAuthorize:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewDidDeauthorize:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewShouldDeauthorize:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewCreatedAuthorization:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewReleasedAuthorization:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewDidHide:"
+            }
+          ],
+          "interface": "NSObject",
+          "name": "SFAuthorizationViewDelegate"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "certificatePanelShowHelp:"
+            }
+          ],
+          "interface": "NSObject",
+          "name": "SFCertificatePanelDelegate"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "chooseIdentityPanelShowHelp:"
+            }
+          ],
+          "interface": "NSObject",
+          "name": "SFChooseIdentityPanelDelegate"
+        }
+      ],
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SFButtonTypeCancel"
+            },
+            {
+              "access": "public",
+              "name": "SFButtonTypeOK"
+            },
+            {
+              "access": "public",
+              "name": "SFButtonTypeBack"
+            },
+            {
+              "access": "public",
+              "name": "SFButtonTypeLogin"
+            }
+          ],
+          "name": "SFButtonType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SFViewTypeIdentityAndCredentials"
+            },
+            {
+              "access": "public",
+              "name": "SFViewTypeCredentials"
+            }
+          ],
+          "name": "SFViewType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SFAuthorizationStartupState"
+            },
+            {
+              "access": "public",
+              "name": "SFAuthorizationViewLockedState"
+            },
+            {
+              "access": "public",
+              "name": "SFAuthorizationViewInProgressState"
+            },
+            {
+              "access": "public",
+              "name": "SFAuthorizationViewUnlockedState"
+            }
+          ],
+          "name": "SFAuthorizationViewState"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_SFAuthorizationPluginViewUserNameKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_SFAuthorizationPluginViewUserShortNameKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_SFDisplayViewException"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_SFCertificateViewDisclosureStateDidChange"
+        }
+      ],
+      "interfaces": [
+        {
+          "access": "public",
+          "categories": [
+            "SFHostControl"
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "initWithCallbacks:andEngineRef:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "engineRef"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "callbacks"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "buttonPressed:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "lastError"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "didActivate"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "willActivateWithUser:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "didDeactivate"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "firstKeyView"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "firstResponder"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "lastKeyView"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setEnabled:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "viewForType:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_callbacks"
+            },
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_engineRef"
+            },
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_private"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFAuthorizationPluginView",
+          "super": "NSObject"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setString:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setAuthorizationRights:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationRights"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorization"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "updateStatus:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setAutoupdate:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setAutoupdate:interval:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationState"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setEnabled:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "isEnabled"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setFlags:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setDelegate:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "delegate"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorize:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "deauthorize:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFAuthorizationView"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFAuthorizationView",
+          "super": "NSView"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedCertificatePanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "runModalForTrust:showGroup:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "runModalForCertificates:showGroup:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:showGroup:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:certificates:showGroup:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setPolicies:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "policies"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setDefaultButtonTitle:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setAlternateButtonTitle:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setShowsHelp:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "showsHelp"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setHelpAnchor:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "helpAnchor"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "certificateView"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFCertificatePanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFCertificatePanel",
+          "super": "NSPanel"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedCertificateTrustPanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "runModalForTrust:message:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:message:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setInformativeText:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "informativeText"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFCertificateTrustPanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFCertificateTrustPanel",
+          "super": "SFCertificatePanel"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setCertificate:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "certificate"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setPolicies:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "policies"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setEditableTrust:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "isEditable"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setDisplayTrust:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "isTrustDisplayed"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "saveTrustSettings"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setDisplayDetails:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "detailsDisplayed"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setDetailsDisclosed:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "detailsDisclosed"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setPoliciesDisclosed:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "policiesDisclosed"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFCertificateView"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFCertificateView",
+          "super": "NSVisualEffectView"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedChooseIdentityPanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "runModalForIdentities:message:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:identities:message:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "identity"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setPolicies:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "policies"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setDefaultButtonTitle:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setAlternateButtonTitle:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setShowsHelp:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "showsHelp"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setHelpAnchor:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "helpAnchor"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setInformativeText:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "informativeText"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setDomain:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "domain"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFChooseIdentityPanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFChooseIdentityPanel",
+          "super": "NSPanel"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "protected",
+              "linkage": "exported",
+              "name": "issuerTextField"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFChooseIdentityTableCellView",
+          "properties": [
+            {
+              "access": "public",
+              "getter": "issuerTextField",
+              "name": "issuerTextField",
+              "setter": "setIssuerTextField:"
+            }
+          ],
+          "super": "NSTableCellView"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedKeychainSavePanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "runModalForDirectory:file:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setPassword:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "keychain"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "error"
+            },
+            {
+              "access": "public",
+              "name": "beginSheetForDirectory:file:modalForWindow:modalDelegate:didEndSelector:contextInfo:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFKeychainSavePanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFKeychainSavePanel",
+          "super": "NSSavePanel"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedKeychainSettingsPanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "runModalForSettings:keychain:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:settings:keychain:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFKeychainSettingsPanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFKeychainSettingsPanel",
+          "super": "NSPanel"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SFButtonType"
+        },
+        {
+          "access": "public",
+          "name": "SFViewType"
+        },
+        {
+          "access": "public",
+          "name": "SFAuthorizationViewState"
+        }
+      ]
+    },
+    {
+      "categories": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "displayView"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setButton:enabled:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "updateView"
+            }
+          ],
+          "interface": "SFAuthorizationPluginView",
+          "name": "SFHostControl"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewDidAuthorize:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewDidDeauthorize:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewShouldDeauthorize:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewCreatedAuthorization:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewReleasedAuthorization:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationViewDidHide:"
+            }
+          ],
+          "interface": "NSObject",
+          "name": "SFAuthorizationViewDelegate"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "certificatePanelShowHelp:"
+            }
+          ],
+          "interface": "NSObject",
+          "name": "SFCertificatePanelDelegate"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "chooseIdentityPanelShowHelp:"
+            }
+          ],
+          "interface": "NSObject",
+          "name": "SFChooseIdentityPanelDelegate"
+        }
+      ],
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SFButtonTypeCancel"
+            },
+            {
+              "access": "public",
+              "name": "SFButtonTypeOK"
+            },
+            {
+              "access": "public",
+              "name": "SFButtonTypeBack"
+            },
+            {
+              "access": "public",
+              "name": "SFButtonTypeLogin"
+            }
+          ],
+          "name": "SFButtonType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SFViewTypeIdentityAndCredentials"
+            },
+            {
+              "access": "public",
+              "name": "SFViewTypeCredentials"
+            }
+          ],
+          "name": "SFViewType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "SFAuthorizationStartupState"
+            },
+            {
+              "access": "public",
+              "name": "SFAuthorizationViewLockedState"
+            },
+            {
+              "access": "public",
+              "name": "SFAuthorizationViewInProgressState"
+            },
+            {
+              "access": "public",
+              "name": "SFAuthorizationViewUnlockedState"
+            }
+          ],
+          "name": "SFAuthorizationViewState"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_SFAuthorizationPluginViewUserNameKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_SFAuthorizationPluginViewUserShortNameKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_SFDisplayViewException"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_SFCertificateViewDisclosureStateDidChange"
+        }
+      ],
+      "interfaces": [
+        {
+          "access": "public",
+          "categories": [
+            "SFHostControl"
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "initWithCallbacks:andEngineRef:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "engineRef"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "callbacks"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "buttonPressed:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "lastError"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "didActivate"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "willActivateWithUser:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "didDeactivate"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "firstKeyView"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "firstResponder"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "lastKeyView"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setEnabled:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "viewForType:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_callbacks"
+            },
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_engineRef"
+            },
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_private"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFAuthorizationPluginView",
+          "super": "NSObject"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setString:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setAuthorizationRights:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationRights"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorization"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "updateStatus:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setAutoupdate:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setAutoupdate:interval:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorizationState"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setEnabled:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "isEnabled"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setFlags:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setDelegate:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "delegate"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "authorize:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "deauthorize:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFAuthorizationView"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFAuthorizationView",
+          "super": "NSView"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedCertificatePanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "runModalForTrust:showGroup:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "runModalForCertificates:showGroup:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:showGroup:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:certificates:showGroup:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setPolicies:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "policies"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setDefaultButtonTitle:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setAlternateButtonTitle:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setShowsHelp:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "showsHelp"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setHelpAnchor:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "helpAnchor"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "certificateView"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFCertificatePanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFCertificatePanel",
+          "super": "NSPanel"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedCertificateTrustPanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "runModalForTrust:message:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:trust:message:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setInformativeText:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "informativeText"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFCertificateTrustPanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFCertificateTrustPanel",
+          "super": "SFCertificatePanel"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setCertificate:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "certificate"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setPolicies:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "policies"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setEditableTrust:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "isEditable"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setDisplayTrust:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "isTrustDisplayed"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "saveTrustSettings"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setDisplayDetails:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "detailsDisplayed"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setDetailsDisclosed:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "detailsDisclosed"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setPoliciesDisclosed:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "policiesDisclosed"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFCertificateView"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFCertificateView",
+          "super": "NSVisualEffectView"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedChooseIdentityPanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "runModalForIdentities:message:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:identities:message:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "identity"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setPolicies:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "policies"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setDefaultButtonTitle:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setAlternateButtonTitle:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setShowsHelp:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "showsHelp"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "setHelpAnchor:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.4",
+              "name": "helpAnchor"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setInformativeText:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "informativeText"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "setDomain:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "domain"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFChooseIdentityPanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFChooseIdentityPanel",
+          "super": "NSPanel"
+        },
+        {
+          "access": "public",
+          "introduced": "10.13",
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "protected",
+              "linkage": "exported",
+              "name": "issuerTextField"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFChooseIdentityTableCellView",
+          "properties": [
+            {
+              "access": "public",
+              "getter": "issuerTextField",
+              "name": "issuerTextField",
+              "setter": "setIssuerTextField:"
+            }
+          ],
+          "super": "NSTableCellView"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedKeychainSavePanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "runModalForDirectory:file:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "setPassword:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "keychain"
+            },
+            {
+              "access": "public",
+              "introduced": "10.5",
+              "name": "error"
+            },
+            {
+              "access": "public",
+              "name": "beginSheetForDirectory:file:modalForWindow:modalDelegate:didEndSelector:contextInfo:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFKeychainSavePanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFKeychainSavePanel",
+          "super": "NSSavePanel"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "sharedKeychainSettingsPanel"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "runModalForSettings:keychain:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.3",
+              "name": "beginSheetForWindow:modalDelegate:didEndSelector:contextInfo:settings:keychain:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved_SFKeychainSettingsPanel"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFKeychainSettingsPanel",
+          "super": "NSPanel"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SFButtonType"
+        },
+        {
+          "access": "public",
+          "name": "SFViewType"
+        },
+        {
+          "access": "public",
+          "name": "SFAuthorizationViewState"
+        }
+      ]
+    }
+  ],
+  "projectName": "SecurityInterface",
+  "version": "1.0"
+}

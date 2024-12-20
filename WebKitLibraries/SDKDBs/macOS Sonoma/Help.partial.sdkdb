@@ -1,0 +1,166 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAHInternalErr"
+            },
+            {
+              "access": "public",
+              "name": "kAHInternetConfigPrefErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Help/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/Help.framework/Versions/A/Headers/AppleHelp.h:35:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAHTOCTypeUser"
+            },
+            {
+              "access": "public",
+              "name": "kAHTOCTypeDeveloper"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Help/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/Help.framework/Versions/A/Headers/AppleHelp.h:42:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHSearch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHGotoMainTOC"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHGotoPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHLookupAnchor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHRegisterHelpBook"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHRegisterHelpBookWithURL"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "AHTOCType"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAHInternalErr"
+            },
+            {
+              "access": "public",
+              "name": "kAHInternetConfigPrefErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Help/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/Help.framework/Versions/A/Headers/AppleHelp.h:35:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAHTOCTypeUser"
+            },
+            {
+              "access": "public",
+              "name": "kAHTOCTypeDeveloper"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Help/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/Help.framework/Versions/A/Headers/AppleHelp.h:42:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHSearch"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHGotoMainTOC"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHGotoPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHLookupAnchor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHRegisterHelpBook"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_AHRegisterHelpBookWithURL"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "AHTOCType"
+        }
+      ]
+    }
+  ],
+  "projectName": "Help",
+  "version": "1.0"
+}

@@ -1,0 +1,382 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "categories": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "permitWithRights:flags:environment:authorizedRights:",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "permitWithRight:flags:",
+              "unavailable": true
+            }
+          ],
+          "interface": "SFAuthorization",
+          "name": "SFAuthorizationDeprecated"
+        }
+      ],
+      "interfaces": [
+        {
+          "access": "public",
+          "categories": [
+            "SFAuthorizationDeprecated"
+          ],
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "authorization",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "authorizationWithFlags:rights:environment:",
+              "unavailable": true
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "authorizationRef",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "initWithFlags:rights:environment:",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "init",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "invalidateCredentials",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "obtainWithRight:flags:error:",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "obtainWithRights:flags:environment:authorizedRights:error:",
+              "unavailable": true
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_authorization"
+            },
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFAuthorization",
+          "protocols": [
+            "NSSecureCoding"
+          ],
+          "super": "NSObject"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi"
+    },
+    {
+      "categories": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10",
+              "name": "permitWithRights:flags:environment:authorizedRights:"
+            },
+            {
+              "access": "public",
+              "introduced": "10",
+              "name": "permitWithRight:flags:"
+            }
+          ],
+          "interface": "SFAuthorization",
+          "name": "SFAuthorizationDeprecated"
+        }
+      ],
+      "interfaces": [
+        {
+          "access": "public",
+          "categories": [
+            "SFAuthorizationDeprecated"
+          ],
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "authorization"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "authorizationWithFlags:rights:environment:"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "authorizationRef"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "initWithFlags:rights:environment:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "init"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "invalidateCredentials"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "obtainWithRight:flags:error:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "obtainWithRights:flags:environment:authorizedRights:error:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_authorization"
+            },
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFAuthorization",
+          "protocols": [
+            "NSSecureCoding"
+          ],
+          "super": "NSObject"
+        }
+      ],
+      "target": "x86_64-apple-macos14"
+    },
+    {
+      "categories": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "permitWithRights:flags:environment:authorizedRights:",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "permitWithRight:flags:",
+              "unavailable": true
+            }
+          ],
+          "interface": "SFAuthorization",
+          "name": "SFAuthorizationDeprecated"
+        }
+      ],
+      "interfaces": [
+        {
+          "access": "public",
+          "categories": [
+            "SFAuthorizationDeprecated"
+          ],
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "authorization",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "authorizationWithFlags:rights:environment:",
+              "unavailable": true
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "authorizationRef",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "initWithFlags:rights:environment:",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "init",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "invalidateCredentials",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "obtainWithRight:flags:error:",
+              "unavailable": true
+            },
+            {
+              "access": "public",
+              "name": "obtainWithRights:flags:environment:authorizedRights:error:",
+              "unavailable": true
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_authorization"
+            },
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFAuthorization",
+          "protocols": [
+            "NSSecureCoding"
+          ],
+          "super": "NSObject"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi"
+    },
+    {
+      "categories": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10",
+              "name": "permitWithRights:flags:environment:authorizedRights:"
+            },
+            {
+              "access": "public",
+              "introduced": "10",
+              "name": "permitWithRight:flags:"
+            }
+          ],
+          "interface": "SFAuthorization",
+          "name": "SFAuthorizationDeprecated"
+        }
+      ],
+      "interfaces": [
+        {
+          "access": "public",
+          "categories": [
+            "SFAuthorizationDeprecated"
+          ],
+          "classMethods": [
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "authorization"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "authorizationWithFlags:rights:environment:"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "authorizationRef"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "initWithFlags:rights:environment:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "init"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "invalidateCredentials"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "obtainWithRight:flags:error:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "obtainWithRights:flags:environment:authorizedRights:error:"
+            }
+          ],
+          "ivars": [
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_authorization"
+            },
+            {
+              "access": "public",
+              "accessControl": "private",
+              "linkage": "exported",
+              "name": "_reserved"
+            }
+          ],
+          "linkage": "exported",
+          "name": "SFAuthorization",
+          "protocols": [
+            "NSSecureCoding"
+          ],
+          "super": "NSObject"
+        }
+      ],
+      "target": "arm64e-apple-macos14"
+    }
+  ],
+  "projectName": "SecurityFoundation",
+  "version": "1.0"
+}

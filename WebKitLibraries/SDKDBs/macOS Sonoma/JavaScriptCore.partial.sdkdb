@@ -1,0 +1,3054 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "categories": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "objectForKeyedSubscript:"
+            },
+            {
+              "access": "public",
+              "name": "setObject:forKeyedSubscript:"
+            }
+          ],
+          "interface": "JSContext",
+          "name": "SubscriptSupport"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "contextWithJSGlobalContextRef:"
+            }
+          ],
+          "interface": "JSContext",
+          "name": "JSContextRefSupport",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "JSGlobalContextRef",
+              "name": "JSGlobalContextRef"
+            }
+          ]
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "valueWithPoint:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithRange:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithRect:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithSize:inContext:"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "toPoint"
+            },
+            {
+              "access": "public",
+              "name": "toRange"
+            },
+            {
+              "access": "public",
+              "name": "toRect"
+            },
+            {
+              "access": "public",
+              "name": "toSize"
+            }
+          ],
+          "interface": "JSValue",
+          "name": "StructSupport"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "valueForProperty:"
+            },
+            {
+              "access": "public",
+              "name": "setValue:forProperty:"
+            },
+            {
+              "access": "public",
+              "name": "deleteProperty:"
+            },
+            {
+              "access": "public",
+              "name": "hasProperty:"
+            },
+            {
+              "access": "public",
+              "name": "defineProperty:descriptor:"
+            },
+            {
+              "access": "public",
+              "name": "valueAtIndex:"
+            },
+            {
+              "access": "public",
+              "name": "setValue:atIndex:"
+            }
+          ],
+          "interface": "JSValue",
+          "name": "PropertyAccess"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "objectForKeyedSubscript:"
+            },
+            {
+              "access": "public",
+              "name": "objectAtIndexedSubscript:"
+            },
+            {
+              "access": "public",
+              "name": "setObject:forKeyedSubscript:"
+            },
+            {
+              "access": "public",
+              "name": "setObject:atIndexedSubscript:"
+            }
+          ],
+          "interface": "JSValue",
+          "name": "SubscriptSupport"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "valueWithJSValueRef:inContext:"
+            }
+          ],
+          "interface": "JSValue",
+          "name": "JSValueRefSupport",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "JSValueRef",
+              "name": "JSValueRef"
+            }
+          ]
+        }
+      ],
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kJSTypeUndefined"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeNull"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeBoolean"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeNumber"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeString"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeObject"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "kJSTypeSymbol"
+            }
+          ],
+          "name": "JSType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeInt8Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeInt16Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeInt32Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeUint8Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeUint8ClampedArray"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeUint16Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeUint32Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeFloat32Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeFloat64Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeArrayBuffer"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeNone"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeBigInt64Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeBigUint64Array"
+            }
+          ],
+          "name": "JSTypedArrayType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kJSPropertyAttributeNone"
+            },
+            {
+              "access": "public",
+              "name": "kJSPropertyAttributeReadOnly"
+            },
+            {
+              "access": "public",
+              "name": "kJSPropertyAttributeDontEnum"
+            },
+            {
+              "access": "public",
+              "name": "kJSPropertyAttributeDontDelete"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/78cccf7a-5318-11ee-80ec-926038f30c31/Library/Caches/com.apple.xbs/Binaries/JavaScriptCore/install/PublicSDKContentRoot/System/Cryptexes/OS/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Headers/JSObjectRef.h:50:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kJSClassAttributeNone"
+            },
+            {
+              "access": "public",
+              "name": "kJSClassAttributeNoAutomaticPrototype"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/78cccf7a-5318-11ee-80ec-926038f30c31/Library/Caches/com.apple.xbs/Binaries/JavaScriptCore/install/PublicSDKContentRoot/System/Cryptexes/OS/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Headers/JSObjectRef.h:68:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSEvaluateScript"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSCheckScriptSyntax"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGarbageCollect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueGetType"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsUndefined"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsNull"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsBoolean"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsNumber"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsSymbol"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsObject"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsObjectOfClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsDate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueGetTypedArrayType"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsEqual"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsStrictEqual"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsInstanceOfConstructor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeUndefined"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeNull"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeBoolean"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeNumber"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeSymbol"
+        },
+        {
+          "access": "public",
+          "introduced": "10.7",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeFromJSONString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.7",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueCreateJSONString"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueToBoolean"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueToNumber"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueToStringCopy"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueToObject"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueProtect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueUnprotect"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kJSClassDefinitionEmpty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSClassCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSClassRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSClassRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMake"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeFunctionWithCallback"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeConstructor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeDate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeError"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeRegExp"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeDeferredPromise"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeFunction"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetPrototype"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetPrototype"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectHasProperty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetProperty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetProperty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectDeleteProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectHasPropertyForKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetPropertyForKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetPropertyForKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectDeletePropertyForKey"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetPropertyAtIndex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetPropertyAtIndex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetPrivate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetPrivate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectIsFunction"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectCallAsFunction"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectIsConstructor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectCallAsConstructor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectCopyPropertyNames"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameArrayRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameArrayRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameArrayGetCount"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameArrayGetNameAtIndex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameAccumulatorAddName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGroupCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGroupRetain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGroupRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextCreateInGroup"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGetGlobalObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGetGroup"
+        },
+        {
+          "access": "public",
+          "introduced": "10.7",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGetGlobalContext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextCopyName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextSetName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextIsInspectable"
+        },
+        {
+          "access": "public",
+          "introduced": "13.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextSetInspectable"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringCreateWithCharacters"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringCreateWithUTF8CString"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringGetLength"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringGetCharactersPtr"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringGetMaximumUTF8CStringSize"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringGetUTF8CString"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringIsEqual"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringIsEqualToUTF8CString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeTypedArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeTypedArrayWithBytesNoCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeTypedArrayWithArrayBuffer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeTypedArrayWithArrayBufferAndOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayBytesPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayLength"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayByteLength"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayByteOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayBuffer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeArrayBufferWithBytesNoCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetArrayBufferBytesPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetArrayBufferByteLength"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringCreateWithCFString"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringCopyCFString"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorWritableKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorEnumerableKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorConfigurableKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorValueKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorGetKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorSetKey"
+        }
+      ],
+      "interfaces": [
+        {
+          "access": "public",
+          "categories": [
+            "SubscriptSupport",
+            "JSContextRefSupport"
+          ],
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "currentContext"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "currentCallee"
+            },
+            {
+              "access": "public",
+              "name": "currentThis"
+            },
+            {
+              "access": "public",
+              "name": "currentArguments"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "init"
+            },
+            {
+              "access": "public",
+              "name": "initWithVirtualMachine:"
+            },
+            {
+              "access": "public",
+              "name": "evaluateScript:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "evaluateScript:withSourceURL:"
+            }
+          ],
+          "introduced": "10.9",
+          "linkage": "exported",
+          "name": "JSContext",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "globalObject",
+              "name": "globalObject"
+            },
+            {
+              "access": "public",
+              "getter": "exception",
+              "name": "exception",
+              "setter": "setException:"
+            },
+            {
+              "access": "public",
+              "getter": "exceptionHandler",
+              "name": "exceptionHandler",
+              "setter": "setExceptionHandler:"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "virtualMachine",
+              "name": "virtualMachine"
+            },
+            {
+              "access": "public",
+              "getter": "name",
+              "introduced": "10.10",
+              "name": "name",
+              "setter": "setName:"
+            },
+            {
+              "access": "public",
+              "getter": "isInspectable",
+              "introduced": "13.3",
+              "name": "inspectable",
+              "setter": "setInspectable:"
+            }
+          ],
+          "super": "NSObject"
+        },
+        {
+          "access": "public",
+          "categories": [
+            "StructSupport",
+            "PropertyAccess",
+            "SubscriptSupport",
+            "JSValueRefSupport"
+          ],
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "valueWithObject:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithBool:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithDouble:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithInt32:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithUInt32:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNewObjectInContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNewArrayInContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNewRegularExpressionFromPattern:flags:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNewErrorFromMessage:inContext:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "valueWithNewPromiseInContext:fromExecutor:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "valueWithNewPromiseResolvedWithResult:inContext:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "valueWithNewPromiseRejectedWithReason:inContext:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "valueWithNewSymbolFromDescription:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNullInContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithUndefinedInContext:"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "toObject"
+            },
+            {
+              "access": "public",
+              "name": "toObjectOfClass:"
+            },
+            {
+              "access": "public",
+              "name": "toBool"
+            },
+            {
+              "access": "public",
+              "name": "toDouble"
+            },
+            {
+              "access": "public",
+              "name": "toInt32"
+            },
+            {
+              "access": "public",
+              "name": "toUInt32"
+            },
+            {
+              "access": "public",
+              "name": "toNumber"
+            },
+            {
+              "access": "public",
+              "name": "toString"
+            },
+            {
+              "access": "public",
+              "name": "toDate"
+            },
+            {
+              "access": "public",
+              "name": "toArray"
+            },
+            {
+              "access": "public",
+              "name": "toDictionary"
+            },
+            {
+              "access": "public",
+              "name": "isEqualToObject:"
+            },
+            {
+              "access": "public",
+              "name": "isEqualWithTypeCoercionToObject:"
+            },
+            {
+              "access": "public",
+              "name": "isInstanceOf:"
+            },
+            {
+              "access": "public",
+              "name": "callWithArguments:"
+            },
+            {
+              "access": "public",
+              "name": "constructWithArguments:"
+            },
+            {
+              "access": "public",
+              "name": "invokeMethod:withArguments:"
+            }
+          ],
+          "introduced": "10.9",
+          "linkage": "exported",
+          "name": "JSValue",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "context",
+              "name": "context"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isUndefined",
+              "name": "isUndefined"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isNull",
+              "name": "isNull"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isBoolean",
+              "name": "isBoolean"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isNumber",
+              "name": "isNumber"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isString",
+              "name": "isString"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isObject",
+              "name": "isObject"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isArray",
+              "introduced": "10.11",
+              "name": "isArray"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isDate",
+              "introduced": "10.11",
+              "name": "isDate"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isSymbol",
+              "introduced": "10.15",
+              "name": "isSymbol"
+            }
+          ],
+          "super": "NSObject"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "managedValueWithValue:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "managedValueWithValue:andOwner:"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "initWithValue:"
+            }
+          ],
+          "introduced": "10.9",
+          "linkage": "exported",
+          "name": "JSManagedValue",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "value",
+              "name": "value"
+            }
+          ],
+          "super": "NSObject"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "init"
+            },
+            {
+              "access": "public",
+              "name": "addManagedReference:withOwner:"
+            },
+            {
+              "access": "public",
+              "name": "removeManagedReference:withOwner:"
+            }
+          ],
+          "introduced": "10.9",
+          "linkage": "exported",
+          "name": "JSVirtualMachine",
+          "super": "NSObject"
+        }
+      ],
+      "protocols": [
+        {
+          "access": "public",
+          "name": "JSExport"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "JSContextGroupRef"
+        },
+        {
+          "access": "public",
+          "name": "JSContextRef"
+        },
+        {
+          "access": "public",
+          "name": "JSGlobalContextRef"
+        },
+        {
+          "access": "public",
+          "name": "JSStringRef"
+        },
+        {
+          "access": "public",
+          "name": "JSClassRef"
+        },
+        {
+          "access": "public",
+          "name": "JSPropertyNameArrayRef"
+        },
+        {
+          "access": "public",
+          "name": "JSPropertyNameAccumulatorRef"
+        },
+        {
+          "access": "public",
+          "name": "JSTypedArrayBytesDeallocator"
+        },
+        {
+          "access": "public",
+          "name": "JSValueRef"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectRef"
+        },
+        {
+          "access": "public",
+          "name": "JSType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "name": "JSTypedArrayType"
+        },
+        {
+          "access": "public",
+          "name": "JSPropertyAttributes"
+        },
+        {
+          "access": "public",
+          "name": "JSClassAttributes"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectInitializeCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectFinalizeCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectHasPropertyCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectGetPropertyCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectSetPropertyCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectDeletePropertyCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectGetPropertyNamesCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectCallAsFunctionCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectCallAsConstructorCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectHasInstanceCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectConvertToTypeCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSStaticValue"
+        },
+        {
+          "access": "public",
+          "name": "JSStaticFunction"
+        },
+        {
+          "access": "public",
+          "name": "JSClassDefinition"
+        },
+        {
+          "access": "public",
+          "name": "JSChar"
+        },
+        {
+          "access": "public",
+          "name": "JSValueProperty"
+        }
+      ]
+    },
+    {
+      "categories": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "objectForKeyedSubscript:"
+            },
+            {
+              "access": "public",
+              "name": "setObject:forKeyedSubscript:"
+            }
+          ],
+          "interface": "JSContext",
+          "name": "SubscriptSupport"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "contextWithJSGlobalContextRef:"
+            }
+          ],
+          "interface": "JSContext",
+          "name": "JSContextRefSupport",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "JSGlobalContextRef",
+              "name": "JSGlobalContextRef"
+            }
+          ]
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "valueWithPoint:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithRange:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithRect:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithSize:inContext:"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "toPoint"
+            },
+            {
+              "access": "public",
+              "name": "toRange"
+            },
+            {
+              "access": "public",
+              "name": "toRect"
+            },
+            {
+              "access": "public",
+              "name": "toSize"
+            }
+          ],
+          "interface": "JSValue",
+          "name": "StructSupport"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "valueForProperty:"
+            },
+            {
+              "access": "public",
+              "name": "setValue:forProperty:"
+            },
+            {
+              "access": "public",
+              "name": "deleteProperty:"
+            },
+            {
+              "access": "public",
+              "name": "hasProperty:"
+            },
+            {
+              "access": "public",
+              "name": "defineProperty:descriptor:"
+            },
+            {
+              "access": "public",
+              "name": "valueAtIndex:"
+            },
+            {
+              "access": "public",
+              "name": "setValue:atIndex:"
+            }
+          ],
+          "interface": "JSValue",
+          "name": "PropertyAccess"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "objectForKeyedSubscript:"
+            },
+            {
+              "access": "public",
+              "name": "objectAtIndexedSubscript:"
+            },
+            {
+              "access": "public",
+              "name": "setObject:forKeyedSubscript:"
+            },
+            {
+              "access": "public",
+              "name": "setObject:atIndexedSubscript:"
+            }
+          ],
+          "interface": "JSValue",
+          "name": "SubscriptSupport"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "valueWithJSValueRef:inContext:"
+            }
+          ],
+          "interface": "JSValue",
+          "name": "JSValueRefSupport",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "JSValueRef",
+              "name": "JSValueRef"
+            }
+          ]
+        }
+      ],
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kJSTypeUndefined"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeNull"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeBoolean"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeNumber"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeString"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypeObject"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "kJSTypeSymbol"
+            }
+          ],
+          "name": "JSType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeInt8Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeInt16Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeInt32Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeUint8Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeUint8ClampedArray"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeUint16Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeUint32Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeFloat32Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeFloat64Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeArrayBuffer"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeNone"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeBigInt64Array"
+            },
+            {
+              "access": "public",
+              "name": "kJSTypedArrayTypeBigUint64Array"
+            }
+          ],
+          "name": "JSTypedArrayType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kJSPropertyAttributeNone"
+            },
+            {
+              "access": "public",
+              "name": "kJSPropertyAttributeReadOnly"
+            },
+            {
+              "access": "public",
+              "name": "kJSPropertyAttributeDontEnum"
+            },
+            {
+              "access": "public",
+              "name": "kJSPropertyAttributeDontDelete"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/78cccf7a-5318-11ee-80ec-926038f30c31/Library/Caches/com.apple.xbs/Binaries/JavaScriptCore/install/PublicSDKContentRoot/System/Cryptexes/OS/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Headers/JSObjectRef.h:50:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kJSClassAttributeNone"
+            },
+            {
+              "access": "public",
+              "name": "kJSClassAttributeNoAutomaticPrototype"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/78cccf7a-5318-11ee-80ec-926038f30c31/Library/Caches/com.apple.xbs/Binaries/JavaScriptCore/install/PublicSDKContentRoot/System/Cryptexes/OS/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Headers/JSObjectRef.h:68:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSEvaluateScript"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSCheckScriptSyntax"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGarbageCollect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueGetType"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsUndefined"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsNull"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsBoolean"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsNumber"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsSymbol"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsObject"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsObjectOfClass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10.11",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsDate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueGetTypedArrayType"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsEqual"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsStrictEqual"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueIsInstanceOfConstructor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeUndefined"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeNull"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeBoolean"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeNumber"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeSymbol"
+        },
+        {
+          "access": "public",
+          "introduced": "10.7",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueMakeFromJSONString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.7",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueCreateJSONString"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueToBoolean"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueToNumber"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueToStringCopy"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueToObject"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueProtect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSValueUnprotect"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kJSClassDefinitionEmpty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSClassCreate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSClassRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSClassRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMake"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeFunctionWithCallback"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeConstructor"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeDate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeError"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeRegExp"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeDeferredPromise"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeFunction"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetPrototype"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetPrototype"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectHasProperty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetProperty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetProperty"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectDeleteProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectHasPropertyForKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetPropertyForKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetPropertyForKey"
+        },
+        {
+          "access": "public",
+          "introduced": "10.15",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectDeletePropertyForKey"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetPropertyAtIndex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetPropertyAtIndex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetPrivate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectSetPrivate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectIsFunction"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectCallAsFunction"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectIsConstructor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectCallAsConstructor"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectCopyPropertyNames"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameArrayRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameArrayRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameArrayGetCount"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameArrayGetNameAtIndex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSPropertyNameAccumulatorAddName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGroupCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGroupRetain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGroupRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextCreateInGroup"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGetGlobalObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGetGroup"
+        },
+        {
+          "access": "public",
+          "introduced": "10.7",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSContextGetGlobalContext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextCopyName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextSetName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextIsInspectable"
+        },
+        {
+          "access": "public",
+          "introduced": "13.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSGlobalContextSetInspectable"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringCreateWithCharacters"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringCreateWithUTF8CString"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringGetLength"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringGetCharactersPtr"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringGetMaximumUTF8CStringSize"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringGetUTF8CString"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringIsEqual"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringIsEqualToUTF8CString"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeTypedArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeTypedArrayWithBytesNoCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeTypedArrayWithArrayBuffer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeTypedArrayWithArrayBufferAndOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayBytesPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayLength"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayByteLength"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayByteOffset"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetTypedArrayBuffer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectMakeArrayBufferWithBytesNoCopy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetArrayBufferBytesPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSObjectGetArrayBufferByteLength"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringCreateWithCFString"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_JSStringCopyCFString"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorWritableKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorEnumerableKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorConfigurableKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorValueKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorGetKey"
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_JSPropertyDescriptorSetKey"
+        }
+      ],
+      "interfaces": [
+        {
+          "access": "public",
+          "categories": [
+            "SubscriptSupport",
+            "JSContextRefSupport"
+          ],
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "currentContext"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "currentCallee"
+            },
+            {
+              "access": "public",
+              "name": "currentThis"
+            },
+            {
+              "access": "public",
+              "name": "currentArguments"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "init"
+            },
+            {
+              "access": "public",
+              "name": "initWithVirtualMachine:"
+            },
+            {
+              "access": "public",
+              "name": "evaluateScript:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "evaluateScript:withSourceURL:"
+            }
+          ],
+          "introduced": "10.9",
+          "linkage": "exported",
+          "name": "JSContext",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "globalObject",
+              "name": "globalObject"
+            },
+            {
+              "access": "public",
+              "getter": "exception",
+              "name": "exception",
+              "setter": "setException:"
+            },
+            {
+              "access": "public",
+              "getter": "exceptionHandler",
+              "name": "exceptionHandler",
+              "setter": "setExceptionHandler:"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "virtualMachine",
+              "name": "virtualMachine"
+            },
+            {
+              "access": "public",
+              "getter": "name",
+              "introduced": "10.10",
+              "name": "name",
+              "setter": "setName:"
+            },
+            {
+              "access": "public",
+              "getter": "isInspectable",
+              "introduced": "13.3",
+              "name": "inspectable",
+              "setter": "setInspectable:"
+            }
+          ],
+          "super": "NSObject"
+        },
+        {
+          "access": "public",
+          "categories": [
+            "StructSupport",
+            "PropertyAccess",
+            "SubscriptSupport",
+            "JSValueRefSupport"
+          ],
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "valueWithObject:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithBool:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithDouble:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithInt32:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithUInt32:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNewObjectInContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNewArrayInContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNewRegularExpressionFromPattern:flags:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNewErrorFromMessage:inContext:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "valueWithNewPromiseInContext:fromExecutor:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "valueWithNewPromiseResolvedWithResult:inContext:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "valueWithNewPromiseRejectedWithReason:inContext:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.15",
+              "name": "valueWithNewSymbolFromDescription:inContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithNullInContext:"
+            },
+            {
+              "access": "public",
+              "name": "valueWithUndefinedInContext:"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "toObject"
+            },
+            {
+              "access": "public",
+              "name": "toObjectOfClass:"
+            },
+            {
+              "access": "public",
+              "name": "toBool"
+            },
+            {
+              "access": "public",
+              "name": "toDouble"
+            },
+            {
+              "access": "public",
+              "name": "toInt32"
+            },
+            {
+              "access": "public",
+              "name": "toUInt32"
+            },
+            {
+              "access": "public",
+              "name": "toNumber"
+            },
+            {
+              "access": "public",
+              "name": "toString"
+            },
+            {
+              "access": "public",
+              "name": "toDate"
+            },
+            {
+              "access": "public",
+              "name": "toArray"
+            },
+            {
+              "access": "public",
+              "name": "toDictionary"
+            },
+            {
+              "access": "public",
+              "name": "isEqualToObject:"
+            },
+            {
+              "access": "public",
+              "name": "isEqualWithTypeCoercionToObject:"
+            },
+            {
+              "access": "public",
+              "name": "isInstanceOf:"
+            },
+            {
+              "access": "public",
+              "name": "callWithArguments:"
+            },
+            {
+              "access": "public",
+              "name": "constructWithArguments:"
+            },
+            {
+              "access": "public",
+              "name": "invokeMethod:withArguments:"
+            }
+          ],
+          "introduced": "10.9",
+          "linkage": "exported",
+          "name": "JSValue",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "context",
+              "name": "context"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isUndefined",
+              "name": "isUndefined"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isNull",
+              "name": "isNull"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isBoolean",
+              "name": "isBoolean"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isNumber",
+              "name": "isNumber"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isString",
+              "name": "isString"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isObject",
+              "name": "isObject"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isArray",
+              "introduced": "10.11",
+              "name": "isArray"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isDate",
+              "introduced": "10.11",
+              "name": "isDate"
+            },
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "isSymbol",
+              "introduced": "10.15",
+              "name": "isSymbol"
+            }
+          ],
+          "super": "NSObject"
+        },
+        {
+          "access": "public",
+          "classMethods": [
+            {
+              "access": "public",
+              "name": "managedValueWithValue:"
+            },
+            {
+              "access": "public",
+              "introduced": "10.10",
+              "name": "managedValueWithValue:andOwner:"
+            }
+          ],
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "initWithValue:"
+            }
+          ],
+          "introduced": "10.9",
+          "linkage": "exported",
+          "name": "JSManagedValue",
+          "properties": [
+            {
+              "access": "public",
+              "attr": [
+                "readonly"
+              ],
+              "getter": "value",
+              "name": "value"
+            }
+          ],
+          "super": "NSObject"
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "init"
+            },
+            {
+              "access": "public",
+              "name": "addManagedReference:withOwner:"
+            },
+            {
+              "access": "public",
+              "name": "removeManagedReference:withOwner:"
+            }
+          ],
+          "introduced": "10.9",
+          "linkage": "exported",
+          "name": "JSVirtualMachine",
+          "super": "NSObject"
+        }
+      ],
+      "protocols": [
+        {
+          "access": "public",
+          "name": "JSExport"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "JSContextGroupRef"
+        },
+        {
+          "access": "public",
+          "name": "JSContextRef"
+        },
+        {
+          "access": "public",
+          "name": "JSGlobalContextRef"
+        },
+        {
+          "access": "public",
+          "name": "JSStringRef"
+        },
+        {
+          "access": "public",
+          "name": "JSClassRef"
+        },
+        {
+          "access": "public",
+          "name": "JSPropertyNameArrayRef"
+        },
+        {
+          "access": "public",
+          "name": "JSPropertyNameAccumulatorRef"
+        },
+        {
+          "access": "public",
+          "name": "JSTypedArrayBytesDeallocator"
+        },
+        {
+          "access": "public",
+          "name": "JSValueRef"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectRef"
+        },
+        {
+          "access": "public",
+          "name": "JSType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "name": "JSTypedArrayType"
+        },
+        {
+          "access": "public",
+          "name": "JSPropertyAttributes"
+        },
+        {
+          "access": "public",
+          "name": "JSClassAttributes"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectInitializeCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectFinalizeCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectHasPropertyCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectGetPropertyCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectSetPropertyCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectDeletePropertyCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectGetPropertyNamesCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectCallAsFunctionCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectCallAsConstructorCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectHasInstanceCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSObjectConvertToTypeCallback"
+        },
+        {
+          "access": "public",
+          "name": "JSStaticValue"
+        },
+        {
+          "access": "public",
+          "name": "JSStaticFunction"
+        },
+        {
+          "access": "public",
+          "name": "JSClassDefinition"
+        },
+        {
+          "access": "public",
+          "name": "JSChar"
+        },
+        {
+          "access": "public",
+          "name": "JSValueProperty"
+        }
+      ]
+    }
+  ],
+  "projectName": "JavaScriptCore",
+  "version": "1.0"
+}

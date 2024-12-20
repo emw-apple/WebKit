@@ -1,0 +1,358 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "QUADRATURE_SUCCESS"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INVALID_ARG_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_ALLOC_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTERNAL_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_MAX_EVAL_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_BAD_BEHAVIOUR_ERROR"
+            }
+          ],
+          "name": "quadrature_status"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QNG"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QAG"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QAGS"
+            }
+          ],
+          "name": "quadrature_integrator"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_quadrature_integrate"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "quadrature_status"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_function_array"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrator"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrate_function"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrate_options"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "QUADRATURE_SUCCESS"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INVALID_ARG_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_ALLOC_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTERNAL_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_MAX_EVAL_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_BAD_BEHAVIOUR_ERROR"
+            }
+          ],
+          "name": "quadrature_status"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QNG"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QAG"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QAGS"
+            }
+          ],
+          "name": "quadrature_integrator"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_quadrature_integrate"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "quadrature_status"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_function_array"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrator"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrate_function"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrate_options"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "QUADRATURE_SUCCESS"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INVALID_ARG_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_ALLOC_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTERNAL_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_MAX_EVAL_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_BAD_BEHAVIOUR_ERROR"
+            }
+          ],
+          "name": "quadrature_status"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QNG"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QAG"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QAGS"
+            }
+          ],
+          "name": "quadrature_integrator"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_quadrature_integrate"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "quadrature_status"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_function_array"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrator"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrate_function"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrate_options"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "QUADRATURE_SUCCESS"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INVALID_ARG_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_ALLOC_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTERNAL_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_MAX_EVAL_ERROR"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_BAD_BEHAVIOUR_ERROR"
+            }
+          ],
+          "name": "quadrature_status"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QNG"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QAG"
+            },
+            {
+              "access": "public",
+              "name": "QUADRATURE_INTEGRATE_QAGS"
+            }
+          ],
+          "name": "quadrature_integrator"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.12",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_quadrature_integrate"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "quadrature_status"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_function_array"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrator"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrate_function"
+        },
+        {
+          "access": "public",
+          "name": "quadrature_integrate_options"
+        }
+      ]
+    }
+  ],
+  "projectName": "Quadrature",
+  "version": "1.0"
+}

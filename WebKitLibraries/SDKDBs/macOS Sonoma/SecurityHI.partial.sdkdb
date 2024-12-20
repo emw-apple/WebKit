@@ -1,0 +1,1004 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kURLReplaceExistingFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLBinHexFileFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLExpandFileFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDisplayProgressFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDisplayAuthFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLUploadFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLIsDirectoryHintFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDoNotTryAnonymousFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDirectoryListingFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLExpandAndVerifyFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLNoAutoRedirectFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDebinhexOnlyFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDoNotDeleteOnErrorFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLResumeDownloadFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLReservedFlag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:47:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kURLNullState"
+            },
+            {
+              "access": "public",
+              "name": "kURLInitiatingState"
+            },
+            {
+              "access": "public",
+              "name": "kURLLookingUpHostState"
+            },
+            {
+              "access": "public",
+              "name": "kURLConnectingState"
+            },
+            {
+              "access": "public",
+              "name": "kURLResourceFoundState"
+            },
+            {
+              "access": "public",
+              "name": "kURLDownloadingState"
+            },
+            {
+              "access": "public",
+              "name": "kURLDataAvailableState"
+            },
+            {
+              "access": "public",
+              "name": "kURLTransactionCompleteState"
+            },
+            {
+              "access": "public",
+              "name": "kURLErrorOccurredState"
+            },
+            {
+              "access": "public",
+              "name": "kURLAbortingState"
+            },
+            {
+              "access": "public",
+              "name": "kURLCompletedState"
+            },
+            {
+              "access": "public",
+              "name": "kURLUploadingState"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:70:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kURLInitiatedEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLResourceFoundEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLDownloadingEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLAbortInitiatedEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLCompletedEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLErrorOccurredEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLDataAvailableEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLTransactionCompleteEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLUploadingEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLSystemEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLPercentEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLPeriodicEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLPropertyChangedEvent"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:86:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kURLInitiatedEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLResourceFoundEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLDownloadingMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLUploadingMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLAbortInitiatedMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLCompletedEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLErrorOccurredEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLDataAvailableEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLTransactionCompleteEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLSystemEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLPercentEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLPeriodicEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLPropertyChangedEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLAllBufferEventsMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLAllNonBufferEventsMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLAllEventsMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:103:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kUserNameAndPasswordFlag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:133:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "typeSecIdentityRef"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/SecCertificateSupport.h:52:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddAppleSharePassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddInternetPassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddInternetPasswordWithPath"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddGenericPassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddItem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCUnlock"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCCreateKeychain"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCChangeSettings"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcunlock"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kccreatekeychain"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcaddapplesharepassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcaddinternetpassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcaddinternetpasswordwithpath"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcaddgenericpassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewURLNotifyUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewURLSystemEventUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeURLNotifyUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeURLSystemEventUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeURLNotifyUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeURLSystemEventUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecChooseIdentity"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecChooseIdentityAsSheet"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecDisplayCertificate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecDisplayCertificateGroup"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecEditTrust"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecEditTrustAsSheet"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "URLReference"
+        },
+        {
+          "access": "public",
+          "name": "URLOpenFlags"
+        },
+        {
+          "access": "public",
+          "name": "URLState"
+        },
+        {
+          "access": "public",
+          "name": "URLEvent"
+        },
+        {
+          "access": "public",
+          "name": "URLEventMask"
+        },
+        {
+          "access": "public",
+          "name": "URLCallbackInfo"
+        },
+        {
+          "access": "public",
+          "name": "URLNotifyProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "URLSystemEventProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "URLNotifyUPP"
+        },
+        {
+          "access": "public",
+          "name": "URLSystemEventUPP"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kURLReplaceExistingFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLBinHexFileFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLExpandFileFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDisplayProgressFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDisplayAuthFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLUploadFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLIsDirectoryHintFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDoNotTryAnonymousFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDirectoryListingFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLExpandAndVerifyFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLNoAutoRedirectFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDebinhexOnlyFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLDoNotDeleteOnErrorFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLResumeDownloadFlag"
+            },
+            {
+              "access": "public",
+              "name": "kURLReservedFlag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:47:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kURLNullState"
+            },
+            {
+              "access": "public",
+              "name": "kURLInitiatingState"
+            },
+            {
+              "access": "public",
+              "name": "kURLLookingUpHostState"
+            },
+            {
+              "access": "public",
+              "name": "kURLConnectingState"
+            },
+            {
+              "access": "public",
+              "name": "kURLResourceFoundState"
+            },
+            {
+              "access": "public",
+              "name": "kURLDownloadingState"
+            },
+            {
+              "access": "public",
+              "name": "kURLDataAvailableState"
+            },
+            {
+              "access": "public",
+              "name": "kURLTransactionCompleteState"
+            },
+            {
+              "access": "public",
+              "name": "kURLErrorOccurredState"
+            },
+            {
+              "access": "public",
+              "name": "kURLAbortingState"
+            },
+            {
+              "access": "public",
+              "name": "kURLCompletedState"
+            },
+            {
+              "access": "public",
+              "name": "kURLUploadingState"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:70:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kURLInitiatedEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLResourceFoundEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLDownloadingEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLAbortInitiatedEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLCompletedEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLErrorOccurredEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLDataAvailableEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLTransactionCompleteEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLUploadingEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLSystemEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLPercentEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLPeriodicEvent"
+            },
+            {
+              "access": "public",
+              "name": "kURLPropertyChangedEvent"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:86:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kURLInitiatedEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLResourceFoundEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLDownloadingMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLUploadingMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLAbortInitiatedMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLCompletedEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLErrorOccurredEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLDataAvailableEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLTransactionCompleteEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLSystemEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLPercentEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLPeriodicEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLPropertyChangedEventMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLAllBufferEventsMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLAllNonBufferEventsMask"
+            },
+            {
+              "access": "public",
+              "name": "kURLAllEventsMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:103:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kUserNameAndPasswordFlag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/URLAccess.h:133:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "typeSecIdentityRef"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SecurityHI/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SecurityHI.framework/Versions/A/Headers/SecCertificateSupport.h:52:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddAppleSharePassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddInternetPassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddInternetPasswordWithPath"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddGenericPassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCAddItem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCUnlock"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCCreateKeychain"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_KCChangeSettings"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcunlock"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kccreatekeychain"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcaddapplesharepassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcaddinternetpassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcaddinternetpasswordwithpath"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_kcaddgenericpassword"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewURLNotifyUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewURLSystemEventUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeURLNotifyUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeURLSystemEventUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeURLNotifyUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeURLSystemEventUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecChooseIdentity"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecChooseIdentityAsSheet"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecDisplayCertificate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecDisplayCertificateGroup"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecEditTrust"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SecEditTrustAsSheet"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "URLReference"
+        },
+        {
+          "access": "public",
+          "name": "URLOpenFlags"
+        },
+        {
+          "access": "public",
+          "name": "URLState"
+        },
+        {
+          "access": "public",
+          "name": "URLEvent"
+        },
+        {
+          "access": "public",
+          "name": "URLEventMask"
+        },
+        {
+          "access": "public",
+          "name": "URLCallbackInfo"
+        },
+        {
+          "access": "public",
+          "name": "URLNotifyProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "URLSystemEventProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "URLNotifyUPP"
+        },
+        {
+          "access": "public",
+          "name": "URLSystemEventUPP"
+        }
+      ]
+    }
+  ],
+  "projectName": "SecurityHI",
+  "version": "1.0"
+}

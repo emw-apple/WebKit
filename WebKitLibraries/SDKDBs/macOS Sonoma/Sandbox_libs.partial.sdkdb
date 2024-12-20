@@ -1,0 +1,222 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sandbox_init",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoInternet",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoNetwork",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoWrite",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoWriteExceptTemporary",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfilePureComputation",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sandbox_free_error",
+          "unavailable": true
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi"
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sandbox_init"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoInternet"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoNetwork"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoWrite"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoWriteExceptTemporary"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfilePureComputation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sandbox_free_error"
+        }
+      ],
+      "target": "x86_64-apple-macos14"
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sandbox_init",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoInternet",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoNetwork",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoWrite",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoWriteExceptTemporary",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfilePureComputation",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sandbox_free_error",
+          "unavailable": true
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi"
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sandbox_init"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoInternet"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoNetwork"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoWrite"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfileNoWriteExceptTemporary"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "variable",
+          "linkage": "exported",
+          "name": "_kSBXProfilePureComputation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_sandbox_free_error"
+        }
+      ],
+      "target": "arm64e-apple-macos14"
+    }
+  ],
+  "projectName": "Sandbox_libs",
+  "version": "1.0"
+}

@@ -1,0 +1,614 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_create"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_set_and_retain"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_get_and_retain"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_release_value"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_remove"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_remove_all"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_destroy"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_hash_cb_cstring"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_hash_cb_integer"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_is_equal_cb_cstring"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_is_equal_cb_integer"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_release_cb_free"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_value_make_purgeable_cb"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_value_make_nonpurgeable_cb"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_hash_byte_string"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "cache_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_attributes_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_cost_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_hash_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_is_equal_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_retain_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_retain_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_release_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_make_nonpurgeable_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_make_purgeable_cb_t"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_create"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_set_and_retain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_get_and_retain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_release_value"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_remove"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_remove_all"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_destroy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_hash_cb_cstring"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_hash_cb_integer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_is_equal_cb_cstring"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_is_equal_cb_integer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_release_cb_free"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_value_make_purgeable_cb"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_value_make_nonpurgeable_cb"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_hash_byte_string"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "cache_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_attributes_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_cost_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_hash_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_is_equal_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_retain_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_retain_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_release_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_make_nonpurgeable_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_make_purgeable_cb_t"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_create"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_set_and_retain"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_get_and_retain"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_release_value"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_remove"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_remove_all"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_destroy"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_hash_cb_cstring"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_hash_cb_integer"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_is_equal_cb_cstring"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_is_equal_cb_integer"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_release_cb_free"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_value_make_purgeable_cb"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_value_make_nonpurgeable_cb"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_hash_byte_string"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "cache_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_attributes_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_cost_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_hash_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_is_equal_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_retain_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_retain_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_release_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_make_nonpurgeable_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_make_purgeable_cb_t"
+        }
+      ]
+    },
+    {
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_create"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_set_and_retain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_get_and_retain"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_release_value"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_remove"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_remove_all"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_destroy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_hash_cb_cstring"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_hash_cb_integer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_is_equal_cb_cstring"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_key_is_equal_cb_integer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_release_cb_free"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_value_make_purgeable_cb"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_value_make_nonpurgeable_cb"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cache_hash_byte_string"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "cache_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_attributes_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_cost_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_hash_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_is_equal_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_key_retain_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_retain_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_release_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_make_nonpurgeable_cb_t"
+        },
+        {
+          "access": "public",
+          "name": "cache_value_make_purgeable_cb_t"
+        }
+      ]
+    }
+  ],
+  "projectName": "libcache",
+  "version": "1.0"
+}

@@ -1,0 +1,4398 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAUNoErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUBadParamErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUStatErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUSysctlErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUOpenErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeSubjectTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteSubjectTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteCallerTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeReturnTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteReturnTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUCloseErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeTextTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAULastErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/OpenBSM/install/PublicSDKContentRoot/usr/include/bsm/libbsm.h:1028:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "AU_SDEVF_NONBLOCK"
+            },
+            {
+              "access": "public",
+              "name": "AU_SDEVF_ALLSESSIONS"
+            }
+          ],
+          "name": "au_sdev_open_flags"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_submit",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauclass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauclass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassent_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnam",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnam_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnum",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnum_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setac",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endac",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacdir",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacmin",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacfilesz",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacflg",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacna",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacpol",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacsflagsmask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getachost",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacexpire",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauditflagsbin",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauditflagschar",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_preselect",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_poltostr",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strtopol",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sflagstostr",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strtosflags",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauevent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauevent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevent_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnam",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnam_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnum",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnum_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnonam",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnonam_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauuser",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauuser",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauuserent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauuserent_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauusernam",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauusernam_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_user_mask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getfauditflags",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_read_rec",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_fetch_tok",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_tok",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_flags_tok",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_tok_xml",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_xml_header",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_xml_footer",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strerror",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_free_token",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_get_state",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_notify_initialize",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_notify_terminate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cannot_audit",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_terminal_id_ex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_terminal_id",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success_ex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success_self",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_ex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_self",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_na_ex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_na",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_au32",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_auid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_euid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_egid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_ruid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_rgid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_pid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_asid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_pidversion",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_car",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_class",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_class",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_cond",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_cond",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_cwd",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_fsize",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_fsize",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_kmask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_kmask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_kaudit",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_kaudit",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_pmask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_pinfo",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_pinfo_addr",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_policy",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_policy",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_qctrl",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_qctrl",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sflags",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_sflags",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sflags_mask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_sflags_mask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sinfo_addr",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_stat",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_stat",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_send_trigger",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_ctlmode",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_expire_after",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_open",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_close",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_fd",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_read_aia",
+          "unavailable": true
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "au_event_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_class_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_user_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tid32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tid64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tidaddr32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tidaddr64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arg32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arg64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arb_t"
+        },
+        {
+          "access": "public",
+          "name": "au_attr32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_attr64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_execarg_t"
+        },
+        {
+          "access": "public",
+          "name": "au_execenv_t"
+        },
+        {
+          "access": "public",
+          "name": "au_cert_hash_t"
+        },
+        {
+          "access": "public",
+          "name": "au_krb5_principal_t"
+        },
+        {
+          "access": "public",
+          "name": "au_exit_t"
+        },
+        {
+          "access": "public",
+          "name": "au_file_t"
+        },
+        {
+          "access": "public",
+          "name": "au_groups_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header32_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header64_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_inaddr_t"
+        },
+        {
+          "access": "public",
+          "name": "au_inaddr_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ip_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ipc_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ipcperm_t"
+        },
+        {
+          "access": "public",
+          "name": "au_iport_t"
+        },
+        {
+          "access": "public",
+          "name": "au_opaque_t"
+        },
+        {
+          "access": "public",
+          "name": "au_path_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc32ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc64ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ret32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ret64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_seq_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socket_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socket_ex32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketinet_ex32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketinet32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketunix_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject32ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject64ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_text_t"
+        },
+        {
+          "access": "public",
+          "name": "au_zonename_t"
+        },
+        {
+          "access": "public",
+          "name": "au_kevent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_invalid_t"
+        },
+        {
+          "access": "public",
+          "name": "au_identity_t"
+        },
+        {
+          "access": "public",
+          "name": "au_trailer_t"
+        },
+        {
+          "access": "public",
+          "name": "tokenstr_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_attach_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_reinit_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_record_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_rawrecord_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_detach_t"
+        },
+        {
+          "access": "public",
+          "name": "au_sdev_handle_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAUNoErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUBadParamErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUStatErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUSysctlErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUOpenErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeSubjectTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteSubjectTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteCallerTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeReturnTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteReturnTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUCloseErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeTextTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAULastErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/OpenBSM/install/PublicSDKContentRoot/usr/include/bsm/libbsm.h:1028:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "AU_SDEVF_NONBLOCK"
+            },
+            {
+              "access": "public",
+              "name": "AU_SDEVF_ALLSESSIONS"
+            }
+          ],
+          "name": "au_sdev_open_flags"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_submit"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauclass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauclass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassent_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnam"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnam_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnum"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnum_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setac"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endac"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacdir"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacmin"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacfilesz"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacflg"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacna"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacpol"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacsflagsmask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getachost"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacexpire"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauditflagsbin"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauditflagschar"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_preselect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_poltostr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strtopol"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sflagstostr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strtosflags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauevent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauevent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevent_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnam"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnam_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnum"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnum_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnonam"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnonam_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauuser"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauuser"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauuserent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauuserent_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauusernam"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauusernam_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_user_mask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getfauditflags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_read_rec"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_fetch_tok"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_tok"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_flags_tok"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_tok_xml"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_xml_header"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_xml_footer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strerror"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_free_token"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_get_state"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_notify_initialize"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_notify_terminate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cannot_audit"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_terminal_id_ex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_terminal_id"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success_ex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success_self"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_ex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_self"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_na_ex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_na"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_au32"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_auid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_euid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_egid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_ruid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_rgid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_pid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_asid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_pidversion"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_car"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_class"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_class"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_cond"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_cond"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_cwd"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_fsize"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_fsize"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_kmask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_kmask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_kaudit"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_kaudit"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_pmask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_pinfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_pinfo_addr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_policy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_policy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_qctrl"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_qctrl"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sflags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_sflags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sflags_mask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_sflags_mask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sinfo_addr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_stat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_stat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_send_trigger"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_ctlmode"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_expire_after"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_open"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_close"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_fd"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_read_aia"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "au_event_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_class_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_user_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tid32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tid64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tidaddr32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tidaddr64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arg32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arg64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arb_t"
+        },
+        {
+          "access": "public",
+          "name": "au_attr32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_attr64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_execarg_t"
+        },
+        {
+          "access": "public",
+          "name": "au_execenv_t"
+        },
+        {
+          "access": "public",
+          "name": "au_cert_hash_t"
+        },
+        {
+          "access": "public",
+          "name": "au_krb5_principal_t"
+        },
+        {
+          "access": "public",
+          "name": "au_exit_t"
+        },
+        {
+          "access": "public",
+          "name": "au_file_t"
+        },
+        {
+          "access": "public",
+          "name": "au_groups_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header32_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header64_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_inaddr_t"
+        },
+        {
+          "access": "public",
+          "name": "au_inaddr_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ip_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ipc_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ipcperm_t"
+        },
+        {
+          "access": "public",
+          "name": "au_iport_t"
+        },
+        {
+          "access": "public",
+          "name": "au_opaque_t"
+        },
+        {
+          "access": "public",
+          "name": "au_path_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc32ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc64ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ret32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ret64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_seq_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socket_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socket_ex32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketinet_ex32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketinet32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketunix_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject32ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject64ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_text_t"
+        },
+        {
+          "access": "public",
+          "name": "au_zonename_t"
+        },
+        {
+          "access": "public",
+          "name": "au_kevent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_invalid_t"
+        },
+        {
+          "access": "public",
+          "name": "au_identity_t"
+        },
+        {
+          "access": "public",
+          "name": "au_trailer_t"
+        },
+        {
+          "access": "public",
+          "name": "tokenstr_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_attach_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_reinit_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_record_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_rawrecord_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_detach_t"
+        },
+        {
+          "access": "public",
+          "name": "au_sdev_handle_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAUNoErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUBadParamErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUStatErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUSysctlErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUOpenErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeSubjectTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteSubjectTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteCallerTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeReturnTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteReturnTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUCloseErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeTextTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAULastErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/OpenBSM/install/PublicSDKContentRoot/usr/include/bsm/libbsm.h:1028:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "AU_SDEVF_NONBLOCK"
+            },
+            {
+              "access": "public",
+              "name": "AU_SDEVF_ALLSESSIONS"
+            }
+          ],
+          "name": "au_sdev_open_flags"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_submit",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauclass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauclass",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassent_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnam",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnam_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnum",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnum_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setac",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endac",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacdir",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacmin",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacfilesz",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacflg",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacna",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacpol",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacsflagsmask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getachost",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacexpire",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauditflagsbin",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauditflagschar",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_preselect",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_poltostr",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strtopol",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sflagstostr",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strtosflags",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauevent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauevent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevent_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnam",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnam_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnum",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnum_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnonam",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnonam_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauuser",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauuser",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauuserent",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauuserent_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauusernam",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauusernam_r",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_user_mask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getfauditflags",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_read_rec",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_fetch_tok",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_tok",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_flags_tok",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_tok_xml",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_xml_header",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_xml_footer",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strerror",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_free_token",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_get_state",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_notify_initialize",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_notify_terminate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cannot_audit",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_terminal_id_ex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_terminal_id",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success_ex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success_self",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_ex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_self",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_na_ex",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_na",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_au32",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_auid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_euid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_egid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_ruid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_rgid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_pid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_asid",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_pidversion",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_car",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_class",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_class",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_cond",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_cond",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_cwd",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_fsize",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_fsize",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_kmask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_kmask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_kaudit",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_kaudit",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_pmask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_pinfo",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_pinfo_addr",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_policy",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_policy",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_qctrl",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_qctrl",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sflags",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_sflags",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sflags_mask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_sflags_mask",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sinfo_addr",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_stat",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_stat",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_send_trigger",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_ctlmode",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_expire_after",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_open",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_close",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_fd",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_read_aia",
+          "unavailable": true
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "au_event_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_class_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_user_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tid32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tid64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tidaddr32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tidaddr64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arg32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arg64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arb_t"
+        },
+        {
+          "access": "public",
+          "name": "au_attr32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_attr64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_execarg_t"
+        },
+        {
+          "access": "public",
+          "name": "au_execenv_t"
+        },
+        {
+          "access": "public",
+          "name": "au_cert_hash_t"
+        },
+        {
+          "access": "public",
+          "name": "au_krb5_principal_t"
+        },
+        {
+          "access": "public",
+          "name": "au_exit_t"
+        },
+        {
+          "access": "public",
+          "name": "au_file_t"
+        },
+        {
+          "access": "public",
+          "name": "au_groups_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header32_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header64_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_inaddr_t"
+        },
+        {
+          "access": "public",
+          "name": "au_inaddr_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ip_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ipc_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ipcperm_t"
+        },
+        {
+          "access": "public",
+          "name": "au_iport_t"
+        },
+        {
+          "access": "public",
+          "name": "au_opaque_t"
+        },
+        {
+          "access": "public",
+          "name": "au_path_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc32ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc64ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ret32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ret64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_seq_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socket_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socket_ex32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketinet_ex32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketinet32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketunix_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject32ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject64ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_text_t"
+        },
+        {
+          "access": "public",
+          "name": "au_zonename_t"
+        },
+        {
+          "access": "public",
+          "name": "au_kevent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_invalid_t"
+        },
+        {
+          "access": "public",
+          "name": "au_identity_t"
+        },
+        {
+          "access": "public",
+          "name": "au_trailer_t"
+        },
+        {
+          "access": "public",
+          "name": "tokenstr_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_attach_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_reinit_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_record_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_rawrecord_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_detach_t"
+        },
+        {
+          "access": "public",
+          "name": "au_sdev_handle_t"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAUNoErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUBadParamErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUStatErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUSysctlErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUOpenErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeSubjectTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteSubjectTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteCallerTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeReturnTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUWriteReturnTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUCloseErr"
+            },
+            {
+              "access": "public",
+              "name": "kAUMakeTextTokErr"
+            },
+            {
+              "access": "public",
+              "name": "kAULastErr"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/OpenBSM/install/PublicSDKContentRoot/usr/include/bsm/libbsm.h:1028:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "AU_SDEVF_NONBLOCK"
+            },
+            {
+              "access": "public",
+              "name": "AU_SDEVF_ALLSESSIONS"
+            }
+          ],
+          "name": "au_sdev_open_flags"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_submit"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauclass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauclass"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassent_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnam"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnam_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnum"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauclassnum_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setac"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endac"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacdir"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacmin"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacfilesz"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacflg"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacna"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacpol"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacsflagsmask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getachost"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getacexpire"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauditflagsbin"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauditflagschar"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_preselect"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_poltostr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strtopol"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sflagstostr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strtosflags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauevent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauevent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevent_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnam"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnam_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnum"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnum_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnonam"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauevnonam_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_setauuser"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_endauuser"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauuserent"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauuserent_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauusernam"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getauusernam_r"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_user_mask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_getfauditflags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_read_rec"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_fetch_tok"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_tok"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_flags_tok"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_tok_xml"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_xml_header"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_print_xml_footer"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_strerror"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_free_token"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_get_state"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_notify_initialize"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_notify_terminate"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_cannot_audit"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_terminal_id_ex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_terminal_id"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success_ex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_success_self"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_ex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_self"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_na_ex"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_write_failure_na"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_au32"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_auid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_euid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_egid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_ruid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_rgid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_pid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_asid"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_token_to_pidversion"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_car"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_class"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_class"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_cond"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_cond"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_cwd"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_fsize"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_fsize"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_kmask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_kmask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_kaudit"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_kaudit"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_pmask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_pinfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_pinfo_addr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_policy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_policy"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_qctrl"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_qctrl"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sflags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_sflags"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sflags_mask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_sflags_mask"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_sinfo_addr"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_stat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_set_stat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_send_trigger"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_ctlmode"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_audit_get_expire_after"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_open"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_close"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_fd"
+        },
+        {
+          "access": "public",
+          "introduced": "10.8",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_au_sdev_read_aia"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "au_event_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_class_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_user_ent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tid32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tid64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tidaddr32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_tidaddr64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arg32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arg64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_arb_t"
+        },
+        {
+          "access": "public",
+          "name": "au_attr32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_attr64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_execarg_t"
+        },
+        {
+          "access": "public",
+          "name": "au_execenv_t"
+        },
+        {
+          "access": "public",
+          "name": "au_cert_hash_t"
+        },
+        {
+          "access": "public",
+          "name": "au_krb5_principal_t"
+        },
+        {
+          "access": "public",
+          "name": "au_exit_t"
+        },
+        {
+          "access": "public",
+          "name": "au_file_t"
+        },
+        {
+          "access": "public",
+          "name": "au_groups_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header32_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_header64_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_inaddr_t"
+        },
+        {
+          "access": "public",
+          "name": "au_inaddr_ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ip_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ipc_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ipcperm_t"
+        },
+        {
+          "access": "public",
+          "name": "au_iport_t"
+        },
+        {
+          "access": "public",
+          "name": "au_opaque_t"
+        },
+        {
+          "access": "public",
+          "name": "au_path_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc32ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_proc64ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ret32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_ret64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_seq_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socket_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socket_ex32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketinet_ex32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketinet32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_socketunix_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject32_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject64_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject32ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_subject64ex_t"
+        },
+        {
+          "access": "public",
+          "name": "au_text_t"
+        },
+        {
+          "access": "public",
+          "name": "au_zonename_t"
+        },
+        {
+          "access": "public",
+          "name": "au_kevent_t"
+        },
+        {
+          "access": "public",
+          "name": "au_invalid_t"
+        },
+        {
+          "access": "public",
+          "name": "au_identity_t"
+        },
+        {
+          "access": "public",
+          "name": "au_trailer_t"
+        },
+        {
+          "access": "public",
+          "name": "tokenstr_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_attach_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_reinit_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_record_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_rawrecord_t"
+        },
+        {
+          "access": "public",
+          "name": "audit_filter_detach_t"
+        },
+        {
+          "access": "public",
+          "name": "au_sdev_handle_t"
+        }
+      ]
+    }
+  ],
+  "projectName": "OpenBSM",
+  "version": "1.0"
+}

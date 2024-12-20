@@ -1,0 +1,6090 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmICCProfileVersion4"
+            },
+            {
+              "access": "public",
+              "name": "cmICCProfileVersion2"
+            },
+            {
+              "access": "public",
+              "name": "cmICCProfileVersion21"
+            },
+            {
+              "access": "public",
+              "name": "cmCS2ProfileVersion"
+            },
+            {
+              "access": "public",
+              "name": "cmCS1ProfileVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:76:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmProfileMajorVersionMask"
+            },
+            {
+              "access": "public",
+              "name": "cmCurrentProfileMajorVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:85:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmMagicNumber"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmICCReservedFlagsMask"
+            },
+            {
+              "access": "public",
+              "name": "cmEmbeddedMask"
+            },
+            {
+              "access": "public",
+              "name": "cmEmbeddedUseMask"
+            },
+            {
+              "access": "public",
+              "name": "cmBlackPointCompensationMask"
+            },
+            {
+              "access": "public",
+              "name": "cmCMSReservedFlagsMask"
+            },
+            {
+              "access": "public",
+              "name": "cmQualityMask"
+            },
+            {
+              "access": "public",
+              "name": "cmInterpolationMask"
+            },
+            {
+              "access": "public",
+              "name": "cmGamutCheckingMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:100:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmEmbeddedProfile"
+            },
+            {
+              "access": "public",
+              "name": "cmEmbeddedUse"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:112:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNormalMode"
+            },
+            {
+              "access": "public",
+              "name": "cmDraftMode"
+            },
+            {
+              "access": "public",
+              "name": "cmBestMode"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:118:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmBlackPointCompensation"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:125:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmReflectiveTransparentMask"
+            },
+            {
+              "access": "public",
+              "name": "cmGlossyMatteMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:134:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmReflective"
+            },
+            {
+              "access": "public",
+              "name": "cmGlossy"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:140:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmPerceptual"
+            },
+            {
+              "access": "public",
+              "name": "cmRelativeColorimetric"
+            },
+            {
+              "access": "public",
+              "name": "cmSaturation"
+            },
+            {
+              "access": "public",
+              "name": "cmAbsoluteColorimetric"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:147:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmAsciiData"
+            },
+            {
+              "access": "public",
+              "name": "cmBinaryData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:157:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmPrtrDefaultScreens"
+            },
+            {
+              "access": "public",
+              "name": "cmLinesPer"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:163:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNumHeaderElements"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:169:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmAToB0Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmAToB1Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmAToB2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmBlueColorantTag"
+            },
+            {
+              "access": "public",
+              "name": "cmBlueTRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmBToA0Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmBToA1Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmBToA2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmCalibrationDateTimeTag"
+            },
+            {
+              "access": "public",
+              "name": "cmChromaticAdaptationTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCharTargetTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCopyrightTag"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceMfgDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceModelDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmGamutTag"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayTRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmGreenColorantTag"
+            },
+            {
+              "access": "public",
+              "name": "cmGreenTRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmLuminanceTag"
+            },
+            {
+              "access": "public",
+              "name": "cmMeasurementTag"
+            },
+            {
+              "access": "public",
+              "name": "cmMediaBlackPointTag"
+            },
+            {
+              "access": "public",
+              "name": "cmMediaWhitePointTag"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedColorTag"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedColor2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPreview0Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPreview1Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPreview2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileDescriptionTag"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileSequenceDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CRD0Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CRD1Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CRD2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CRD3Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CSATag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2RenderingIntentTag"
+            },
+            {
+              "access": "public",
+              "name": "cmRedColorantTag"
+            },
+            {
+              "access": "public",
+              "name": "cmRedTRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmScreeningDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmScreeningTag"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyTag"
+            },
+            {
+              "access": "public",
+              "name": "cmUcrBgTag"
+            },
+            {
+              "access": "public",
+              "name": "cmViewingConditionsDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmViewingConditionsTag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:174:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmPS2CRDVMSizeTag"
+            },
+            {
+              "access": "public",
+              "name": "cmVideoCardGammaTag"
+            },
+            {
+              "access": "public",
+              "name": "cmMakeAndModelTag"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileDescriptionMLTag"
+            },
+            {
+              "access": "public",
+              "name": "cmNativeDisplayInfoTag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:221:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmSigCrdInfoType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigCurveType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigDataType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigDateTimeType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigLut16Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigLut8Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMeasurementType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMultiFunctA2BType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMultiFunctB2AType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigNamedColorType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigNamedColor2Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigParametricCurveType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigProfileDescriptionType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigProfileSequenceDescType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigScreeningType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigS15Fixed16Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigSignatureType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigTextType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigU16Fixed16Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigU1Fixed15Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUInt8Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUInt16Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUInt32Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUInt64Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUcrBgType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUnicodeTextType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigViewingConditionsType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigXYZType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:230:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmSigPS2CRDVMSizeType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigVideoCardGammaType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMakeAndModelType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigNativeDisplayInfoType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMultiLocalizedUniCodeType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:262:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmTechnologyDigitalCamera"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyFilmScanner"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyReflectiveScanner"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyInkJetPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyThermalWaxPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyElectrophotographicPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyElectrostaticPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyDyeSublimationPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyPhotographicPaperPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyFilmWriter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyVideoMonitor"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyVideoCamera"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyProjectionTelevision"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyCRTDisplay"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyPMDisplay"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyAMDisplay"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyPhotoCD"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyPhotoImageSetter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyGravure"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyOffsetLithography"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologySilkscreen"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyFlexography"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:272:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmFlare0"
+            },
+            {
+              "access": "public",
+              "name": "cmFlare100"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:300:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmGeometryUnknown"
+            },
+            {
+              "access": "public",
+              "name": "cmGeometry045or450"
+            },
+            {
+              "access": "public",
+              "name": "cmGeometry0dord0"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:306:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmStdobsUnknown"
+            },
+            {
+              "access": "public",
+              "name": "cmStdobs1931TwoDegrees"
+            },
+            {
+              "access": "public",
+              "name": "cmStdobs1964TenDegrees"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:313:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmIlluminantUnknown"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantD50"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantD65"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantD93"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantF2"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantD55"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantA"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantEquiPower"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantF8"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:320:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmSpotFunctionUnknown"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionDefault"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionRound"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionDiamond"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionEllipse"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionLine"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionSquare"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionCross"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:333:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmXYZData"
+            },
+            {
+              "access": "public",
+              "name": "cmLabData"
+            },
+            {
+              "access": "public",
+              "name": "cmLuvData"
+            },
+            {
+              "access": "public",
+              "name": "cmYCbCrData"
+            },
+            {
+              "access": "public",
+              "name": "cmYxyData"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBData"
+            },
+            {
+              "access": "public",
+              "name": "cmSRGBData"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayData"
+            },
+            {
+              "access": "public",
+              "name": "cmHSVData"
+            },
+            {
+              "access": "public",
+              "name": "cmHLSData"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYKData"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYData"
+            },
+            {
+              "access": "public",
+              "name": "cmMCH5Data"
+            },
+            {
+              "access": "public",
+              "name": "cmMCH6Data"
+            },
+            {
+              "access": "public",
+              "name": "cmMCH7Data"
+            },
+            {
+              "access": "public",
+              "name": "cmMCH8Data"
+            },
+            {
+              "access": "public",
+              "name": "cm3CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm4CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm5CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm6CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm7CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm8CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm9CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm10CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm11CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm12CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm13CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm14CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm15CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:345:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmInputClass"
+            },
+            {
+              "access": "public",
+              "name": "cmDisplayClass"
+            },
+            {
+              "access": "public",
+              "name": "cmOutputClass"
+            },
+            {
+              "access": "public",
+              "name": "cmLinkClass"
+            },
+            {
+              "access": "public",
+              "name": "cmAbstractClass"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedColorClass"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:379:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmMacintosh"
+            },
+            {
+              "access": "public",
+              "name": "cmMicrosoft"
+            },
+            {
+              "access": "public",
+              "name": "cmSolaris"
+            },
+            {
+              "access": "public",
+              "name": "cmSiliconGraphics"
+            },
+            {
+              "access": "public",
+              "name": "cmTaligent"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:390:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmParametricType0"
+            },
+            {
+              "access": "public",
+              "name": "cmParametricType1"
+            },
+            {
+              "access": "public",
+              "name": "cmParametricType2"
+            },
+            {
+              "access": "public",
+              "name": "cmParametricType3"
+            },
+            {
+              "access": "public",
+              "name": "cmParametricType4"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:399:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmCS1ChromTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCS1TRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCS1NameTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCS1CustTag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:409:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmVideoCardGammaTableType"
+            },
+            {
+              "access": "public",
+              "name": "cmVideoCardGammaFormulaType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:833:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmUseDefaultChromaticAdaptation"
+            },
+            {
+              "access": "public",
+              "name": "cmLinearChromaticAdaptation"
+            },
+            {
+              "access": "public",
+              "name": "cmVonKriesChromaticAdaptation"
+            },
+            {
+              "access": "public",
+              "name": "cmBradfordChromaticAdaptation"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1018:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kDefaultCMMSignature"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1085:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmPS7bit"
+            },
+            {
+              "access": "public",
+              "name": "cmPS8bit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1138:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmOpenReadSpool"
+            },
+            {
+              "access": "public",
+              "name": "cmOpenWriteSpool"
+            },
+            {
+              "access": "public",
+              "name": "cmReadSpool"
+            },
+            {
+              "access": "public",
+              "name": "cmWriteSpool"
+            },
+            {
+              "access": "public",
+              "name": "cmCloseSpool"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1152:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmOpenReadAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmOpenWriteAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmReadAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmWriteAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmCloseAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmCreateNewAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmAbortWriteAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmBeginAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmEndAccess"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1161:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmInputUse"
+            },
+            {
+              "access": "public",
+              "name": "cmOutputUse"
+            },
+            {
+              "access": "public",
+              "name": "cmDisplayUse"
+            },
+            {
+              "access": "public",
+              "name": "cmProofUse"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1174:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNoTransform"
+            },
+            {
+              "access": "public",
+              "name": "kUseAtoB"
+            },
+            {
+              "access": "public",
+              "name": "kUseBtoA"
+            },
+            {
+              "access": "public",
+              "name": "kUseBtoB"
+            },
+            {
+              "access": "public",
+              "name": "kDeviceToPCS"
+            },
+            {
+              "access": "public",
+              "name": "kPCSToDevice"
+            },
+            {
+              "access": "public",
+              "name": "kPCSToPCS"
+            },
+            {
+              "access": "public",
+              "name": "kUseProfileIntent"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1214:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmColorSpaceSpaceMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpacePremulAlphaMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceAlphaMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceSpaceAndAlphaMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpacePackingMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceEncodingMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceReservedMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1380:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNoColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmWord5ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmWord565ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmLong8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmLong10ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmAlphaFirstPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmOneBitDirectPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmAlphaLastPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm8_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm16_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm24_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm32_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm40_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm48_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm56_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm64_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm32_16ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm48_16ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm64_16ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm32_32ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmLittleEndianPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmReverseChannelPacking"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1391:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmSRGB16ChannelEncoding"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1417:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNoSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYKSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmHSVSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmHLSSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmYXYSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmLUVSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmLABSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmReservedSpace1"
+            },
+            {
+              "access": "public",
+              "name": "cmGraySpace"
+            },
+            {
+              "access": "public",
+              "name": "cmReservedSpace2"
+            },
+            {
+              "access": "public",
+              "name": "cmGamutResultSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedIndexedSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCFiveSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCSixSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCSevenSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCEightSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmAlphaPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmAlphaSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBASpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayASpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBAPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayAPmulSpace"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1422:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmGray8Space"
+            },
+            {
+              "access": "public",
+              "name": "cmGray16Space"
+            },
+            {
+              "access": "public",
+              "name": "cmGray16LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA16Space"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA32LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA16PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA32PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA32LPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB16Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB16LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB565Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB565LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB24Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB48Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB48LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB64Space"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB64LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA64Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA64LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB32PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB64PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB64LPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA32PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA64PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA64LPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYK32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYK64Space"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYK64LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmHSV32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmHLS32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmYXY32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZ24Space"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZ32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZ48Space"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZ48LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmLUV32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmLAB24Space"
+            },
+            {
+              "access": "public",
+              "name": "cmLAB32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmLAB48Space"
+            },
+            {
+              "access": "public",
+              "name": "cmLAB48LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGamutResult1Space"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedIndexed32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedIndexed32LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCFive8Space"
+            },
+            {
+              "access": "public",
+              "name": "cmMCSix8Space"
+            },
+            {
+              "access": "public",
+              "name": "cmMCSeven8Space"
+            },
+            {
+              "access": "public",
+              "name": "cmMCEight8Space"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1452:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "CS_MAX_PATH"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1523:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNoProfileBase"
+            },
+            {
+              "access": "public",
+              "name": "cmPathBasedProfile"
+            },
+            {
+              "access": "public",
+              "name": "cmBufferBasedProfile"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1535:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmOriginalProfileLocationSize"
+            },
+            {
+              "access": "public",
+              "name": "cmCurrentProfileLocationSize"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1603:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmProfileIterateDataVersion1"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileIterateDataVersion2"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileIterateDataVersion3"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileIterateDataVersion4"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1611:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kCMFloatBitmapFlagsNone"
+            },
+            {
+              "access": "public",
+              "name": "kCMFloatBitmapFlagsAlpha"
+            },
+            {
+              "access": "public",
+              "name": "kCMFloatBitmapFlagsAlphaPremul"
+            },
+            {
+              "access": "public",
+              "name": "kCMFloatBitmapFlagsRangeClipped"
+            }
+          ],
+          "name": "CMFloatBitmapFlags"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmDeviceInfoVersion1"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceProfileInfoVersion1"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceProfileInfoVersion2"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1844:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmCurrentDeviceInfoVersion"
+            },
+            {
+              "access": "public",
+              "name": "cmCurrentProfileInfoVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1850:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmDefaultDeviceID"
+            },
+            {
+              "access": "public",
+              "name": "cmDefaultProfileID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1859:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmDeviceStateDefault"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateOffline"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateBusy"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateForceNotify"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateDeviceRsvdBits"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateAppleRsvdBits"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1868:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmIterateFactoryDeviceProfiles"
+            },
+            {
+              "access": "public",
+              "name": "cmIterateCustomDeviceProfiles"
+            },
+            {
+              "access": "public",
+              "name": "cmIterateCurrentDeviceProfiles"
+            },
+            {
+              "access": "public",
+              "name": "cmIterateAllDeviceProfiles"
+            },
+            {
+              "access": "public",
+              "name": "cmIterateDeviceProfilesMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1905:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmDeviceDBNotFoundErr"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceAlreadyRegistered"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceNotRegistered"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceProfilesNotFound"
+            },
+            {
+              "access": "public",
+              "name": "cmInternalCFErr"
+            },
+            {
+              "access": "public",
+              "name": "cmPrefsSynchError"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1916:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmScannerDeviceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmCameraDeviceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmDisplayDeviceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmPrinterDeviceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmProofDeviceClass"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1968:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "srcCopy"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/Quickdraw.h:51:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "k1MonochromePixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k2IndexedPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k4IndexedPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k8IndexedPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16BE555PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k24RGBPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k32ARGBPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k1IndexedGrayPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k2IndexedGrayPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k4IndexedGrayPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k8IndexedGrayPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16LE555PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16LE5551PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16BE565PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16LE565PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k24BGRPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k32BGRAPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k32ABGRPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k32RGBAPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYUVSPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYUVUPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYVU9PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYUV411PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYVYU422PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kUYVY422PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYUV211PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k2vuyPixelFormat"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/Quickdraw.h:111:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNoConstraint"
+            },
+            {
+              "access": "public",
+              "name": "kVerticalConstraint"
+            },
+            {
+              "access": "public",
+              "name": "kHorizontalConstraint"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/Quickdraw.h:219:1)"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDateTime"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMFixedXYColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMFixedXYZColor"
+        },
+        {
+          "access": "public",
+          "name": "CMXYZComponent"
+        },
+        {
+          "access": "public",
+          "name": "CMXYZColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileMD5Ptr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CM2Header"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CM4Header"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMTagRecord"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMTagElemTable"
+        },
+        {
+          "access": "public",
+          "name": "CM2Profile"
+        },
+        {
+          "access": "public",
+          "name": "CM2ProfilePtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CM2ProfileHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMAdaptationMatrixType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMCurveType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDataType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDateTimeType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLut16Type"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLut8Type"
+        },
+        {
+          "access": "public",
+          "name": "CMMultiFunctLutType"
+        },
+        {
+          "access": "public",
+          "name": "CMMultiFunctLutA2BType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultiFunctLutB2AType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultiFunctCLUTType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMeasurementType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNamedColorType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNamedColor2EntryType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNamedColor2Type"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNativeDisplayInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNativeDisplayInfoType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMParametricCurveType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMTextDescriptionType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMTextType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUnicodeTextType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMScreeningChannelRec"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMScreeningType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMSignatureType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMS15Fixed16ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMU16Fixed16ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUInt8ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUInt16ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUInt32ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUInt64ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMViewingConditionsType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMXYZType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileSequenceDescType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUcrBgType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMIntentCRDVMSize"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMPS2CRDVMSizeType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMVideoCardGammaTable"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMVideoCardGammaFormula"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMVideoCardGamma"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMVideoCardGammaType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMakeAndModel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMakeAndModelType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultiLocalizedUniCodeEntryRec"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultiLocalizedUniCodeType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMWorldRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDisplayIDType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMChromaticAdaptation"
+        },
+        {
+          "access": "public",
+          "name": "CMFlattenProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CMFlattenUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBitmapCallBackProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBitmapCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMConcatCallBackProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMConcatCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMAppleProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMConcatProfileSet"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NCMConcatProfileSpec"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NCMConcatProfileSet"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMRGBColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMCMYKColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMCMYColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMHLSColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMHSVColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLabColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLuvColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMYxyColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMGrayColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultichannel5Color"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultichannel6Color"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultichannel7Color"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultichannel8Color"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNamedColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBitmapColorSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBitmap"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMHandleLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMPathLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBufferLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfLoc"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileIterateData"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileIterateProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileIterateUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMIterateProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMIterateUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLabToLabProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CMFloatBitmapFlags"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMFloatBitmap"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceState"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceID"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceProfileID"
+        },
+        {
+          "access": "public",
+          "name": "CMDeviceClass"
+        },
+        {
+          "access": "public",
+          "name": "CMDeviceScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceProfileScope"
+        },
+        {
+          "access": "public",
+          "name": "CMDeviceInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceInfoPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceProfileInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NCMDeviceProfileInfo"
+        },
+        {
+          "access": "public",
+          "name": "CMDeviceProfileArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceProfileArrayPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMIterateDeviceInfoProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMIterateDeviceProfileProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "GrafPtr"
+        },
+        {
+          "access": "public",
+          "name": "CGrafPtr"
+        },
+        {
+          "access": "public",
+          "name": "GWorldPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDErr"
+        },
+        {
+          "access": "public",
+          "name": "GWorldFlags"
+        },
+        {
+          "access": "public",
+          "name": "BitMap"
+        },
+        {
+          "access": "public",
+          "name": "BitMapPtr"
+        },
+        {
+          "access": "public",
+          "name": "BitMapHandle"
+        },
+        {
+          "access": "public",
+          "name": "RGBColor"
+        },
+        {
+          "access": "public",
+          "name": "ColorSpec"
+        },
+        {
+          "access": "public",
+          "name": "ColorSpecPtr"
+        },
+        {
+          "access": "public",
+          "name": "CSpecArray"
+        },
+        {
+          "access": "public",
+          "name": "ColorTable"
+        },
+        {
+          "access": "public",
+          "name": "CTabPtr"
+        },
+        {
+          "access": "public",
+          "name": "CTabHandle"
+        },
+        {
+          "access": "public",
+          "name": "PixMap"
+        },
+        {
+          "access": "public",
+          "name": "PixMapPtr"
+        },
+        {
+          "access": "public",
+          "name": "PixMapHandle"
+        },
+        {
+          "access": "public",
+          "name": "Pattern"
+        },
+        {
+          "access": "public",
+          "name": "PatPtr"
+        },
+        {
+          "access": "public",
+          "name": "PatHandle"
+        },
+        {
+          "access": "public",
+          "name": "PixPat"
+        },
+        {
+          "access": "public",
+          "name": "PixPatPtr"
+        },
+        {
+          "access": "public",
+          "name": "PixPatHandle"
+        },
+        {
+          "access": "public",
+          "name": "RgnHandle"
+        },
+        {
+          "access": "public",
+          "name": "GDevice"
+        },
+        {
+          "access": "public",
+          "name": "GDPtr"
+        },
+        {
+          "access": "public",
+          "name": "GDHandle"
+        },
+        {
+          "access": "public",
+          "name": "Picture"
+        },
+        {
+          "access": "public",
+          "name": "PicPtr"
+        },
+        {
+          "access": "public",
+          "name": "PicHandle"
+        },
+        {
+          "access": "public",
+          "name": "OpenCPicParams"
+        },
+        {
+          "access": "public",
+          "name": "FontInfo"
+        },
+        {
+          "access": "public",
+          "name": "QDRegionParseDirection"
+        },
+        {
+          "access": "public",
+          "name": "RegionToRectsProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "RegionToRectsUPP"
+        },
+        {
+          "access": "public",
+          "name": "TruncCode"
+        },
+        {
+          "access": "public",
+          "name": "DragConstraint"
+        },
+        {
+          "access": "public",
+          "name": "DragGrayRgnProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ColorSearchProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ColorComplementProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "DragGrayRgnUPP"
+        },
+        {
+          "access": "public",
+          "name": "ColorSearchUPP"
+        },
+        {
+          "access": "public",
+          "name": "ColorComplementUPP"
+        },
+        {
+          "access": "public",
+          "name": "WindowPtr"
+        },
+        {
+          "access": "public",
+          "name": "DialogPtr"
+        },
+        {
+          "access": "public",
+          "name": "WindowRef"
+        },
+        {
+          "access": "public",
+          "name": "VDGammaRecord"
+        },
+        {
+          "access": "public",
+          "name": "VDGamRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "MacPolygon"
+        },
+        {
+          "access": "public",
+          "name": "Polygon"
+        },
+        {
+          "access": "public",
+          "name": "PolyPtr"
+        },
+        {
+          "access": "public",
+          "name": "PolyHandle"
+        },
+        {
+          "access": "public",
+          "name": "GrafVerb"
+        },
+        {
+          "access": "public",
+          "name": "PrinterStatusOpcode"
+        },
+        {
+          "access": "public",
+          "name": "QDTextProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDLineProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDRectProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDRRectProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDOvalProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDArcProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDPolyProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDRgnProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDBitsProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDCommentProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDTxMeasProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDGetPicProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDPutPicProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDOpcodeProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDStdGlyphsProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDJShieldCursorProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDPrinterStatusProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDTextUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDLineUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDRectUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDRRectUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDOvalUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDArcUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDPolyUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDRgnUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDBitsUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDCommentUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDTxMeasUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDGetPicUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDPutPicUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDOpcodeUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDStdGlyphsUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDJShieldCursorUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDPrinterStatusUPP"
+        },
+        {
+          "access": "public",
+          "name": "CQDProcs"
+        },
+        {
+          "access": "public",
+          "name": "CQDProcsPtr"
+        },
+        {
+          "access": "public",
+          "name": "GrafPort"
+        },
+        {
+          "access": "public",
+          "name": "CGrafPort"
+        },
+        {
+          "access": "public",
+          "name": "FontRec"
+        },
+        {
+          "access": "public",
+          "name": "FontRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "FontRecHdl"
+        },
+        {
+          "access": "public",
+          "name": "FMInput"
+        },
+        {
+          "access": "public",
+          "name": "FamRec"
+        },
+        {
+          "access": "public",
+          "name": "AsscEntry"
+        },
+        {
+          "access": "public",
+          "name": "FontAssoc"
+        },
+        {
+          "access": "public",
+          "name": "StyleTable"
+        },
+        {
+          "access": "public",
+          "name": "NameTable"
+        },
+        {
+          "access": "public",
+          "name": "KernPair"
+        },
+        {
+          "access": "public",
+          "name": "KernEntry"
+        },
+        {
+          "access": "public",
+          "name": "KernTable"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmICCProfileVersion4"
+            },
+            {
+              "access": "public",
+              "name": "cmICCProfileVersion2"
+            },
+            {
+              "access": "public",
+              "name": "cmICCProfileVersion21"
+            },
+            {
+              "access": "public",
+              "name": "cmCS2ProfileVersion"
+            },
+            {
+              "access": "public",
+              "name": "cmCS1ProfileVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:76:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmProfileMajorVersionMask"
+            },
+            {
+              "access": "public",
+              "name": "cmCurrentProfileMajorVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:85:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmMagicNumber"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmICCReservedFlagsMask"
+            },
+            {
+              "access": "public",
+              "name": "cmEmbeddedMask"
+            },
+            {
+              "access": "public",
+              "name": "cmEmbeddedUseMask"
+            },
+            {
+              "access": "public",
+              "name": "cmBlackPointCompensationMask"
+            },
+            {
+              "access": "public",
+              "name": "cmCMSReservedFlagsMask"
+            },
+            {
+              "access": "public",
+              "name": "cmQualityMask"
+            },
+            {
+              "access": "public",
+              "name": "cmInterpolationMask"
+            },
+            {
+              "access": "public",
+              "name": "cmGamutCheckingMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:100:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmEmbeddedProfile"
+            },
+            {
+              "access": "public",
+              "name": "cmEmbeddedUse"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:112:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNormalMode"
+            },
+            {
+              "access": "public",
+              "name": "cmDraftMode"
+            },
+            {
+              "access": "public",
+              "name": "cmBestMode"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:118:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmBlackPointCompensation"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:125:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmReflectiveTransparentMask"
+            },
+            {
+              "access": "public",
+              "name": "cmGlossyMatteMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:134:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmReflective"
+            },
+            {
+              "access": "public",
+              "name": "cmGlossy"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:140:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmPerceptual"
+            },
+            {
+              "access": "public",
+              "name": "cmRelativeColorimetric"
+            },
+            {
+              "access": "public",
+              "name": "cmSaturation"
+            },
+            {
+              "access": "public",
+              "name": "cmAbsoluteColorimetric"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:147:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmAsciiData"
+            },
+            {
+              "access": "public",
+              "name": "cmBinaryData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:157:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmPrtrDefaultScreens"
+            },
+            {
+              "access": "public",
+              "name": "cmLinesPer"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:163:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNumHeaderElements"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:169:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmAToB0Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmAToB1Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmAToB2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmBlueColorantTag"
+            },
+            {
+              "access": "public",
+              "name": "cmBlueTRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmBToA0Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmBToA1Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmBToA2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmCalibrationDateTimeTag"
+            },
+            {
+              "access": "public",
+              "name": "cmChromaticAdaptationTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCharTargetTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCopyrightTag"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceMfgDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceModelDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmGamutTag"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayTRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmGreenColorantTag"
+            },
+            {
+              "access": "public",
+              "name": "cmGreenTRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmLuminanceTag"
+            },
+            {
+              "access": "public",
+              "name": "cmMeasurementTag"
+            },
+            {
+              "access": "public",
+              "name": "cmMediaBlackPointTag"
+            },
+            {
+              "access": "public",
+              "name": "cmMediaWhitePointTag"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedColorTag"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedColor2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPreview0Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPreview1Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPreview2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileDescriptionTag"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileSequenceDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CRD0Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CRD1Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CRD2Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CRD3Tag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2CSATag"
+            },
+            {
+              "access": "public",
+              "name": "cmPS2RenderingIntentTag"
+            },
+            {
+              "access": "public",
+              "name": "cmRedColorantTag"
+            },
+            {
+              "access": "public",
+              "name": "cmRedTRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmScreeningDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmScreeningTag"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyTag"
+            },
+            {
+              "access": "public",
+              "name": "cmUcrBgTag"
+            },
+            {
+              "access": "public",
+              "name": "cmViewingConditionsDescTag"
+            },
+            {
+              "access": "public",
+              "name": "cmViewingConditionsTag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:174:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmPS2CRDVMSizeTag"
+            },
+            {
+              "access": "public",
+              "name": "cmVideoCardGammaTag"
+            },
+            {
+              "access": "public",
+              "name": "cmMakeAndModelTag"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileDescriptionMLTag"
+            },
+            {
+              "access": "public",
+              "name": "cmNativeDisplayInfoTag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:221:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmSigCrdInfoType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigCurveType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigDataType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigDateTimeType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigLut16Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigLut8Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMeasurementType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMultiFunctA2BType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMultiFunctB2AType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigNamedColorType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigNamedColor2Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigParametricCurveType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigProfileDescriptionType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigProfileSequenceDescType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigScreeningType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigS15Fixed16Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigSignatureType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigTextType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigU16Fixed16Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigU1Fixed15Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUInt8Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUInt16Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUInt32Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUInt64Type"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUcrBgType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigUnicodeTextType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigViewingConditionsType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigXYZType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:230:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmSigPS2CRDVMSizeType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigVideoCardGammaType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMakeAndModelType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigNativeDisplayInfoType"
+            },
+            {
+              "access": "public",
+              "name": "cmSigMultiLocalizedUniCodeType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:262:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmTechnologyDigitalCamera"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyFilmScanner"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyReflectiveScanner"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyInkJetPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyThermalWaxPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyElectrophotographicPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyElectrostaticPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyDyeSublimationPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyPhotographicPaperPrinter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyFilmWriter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyVideoMonitor"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyVideoCamera"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyProjectionTelevision"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyCRTDisplay"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyPMDisplay"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyAMDisplay"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyPhotoCD"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyPhotoImageSetter"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyGravure"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyOffsetLithography"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologySilkscreen"
+            },
+            {
+              "access": "public",
+              "name": "cmTechnologyFlexography"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:272:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmFlare0"
+            },
+            {
+              "access": "public",
+              "name": "cmFlare100"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:300:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmGeometryUnknown"
+            },
+            {
+              "access": "public",
+              "name": "cmGeometry045or450"
+            },
+            {
+              "access": "public",
+              "name": "cmGeometry0dord0"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:306:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmStdobsUnknown"
+            },
+            {
+              "access": "public",
+              "name": "cmStdobs1931TwoDegrees"
+            },
+            {
+              "access": "public",
+              "name": "cmStdobs1964TenDegrees"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:313:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmIlluminantUnknown"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantD50"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantD65"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantD93"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantF2"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantD55"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantA"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantEquiPower"
+            },
+            {
+              "access": "public",
+              "name": "cmIlluminantF8"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:320:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmSpotFunctionUnknown"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionDefault"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionRound"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionDiamond"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionEllipse"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionLine"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionSquare"
+            },
+            {
+              "access": "public",
+              "name": "cmSpotFunctionCross"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:333:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmXYZData"
+            },
+            {
+              "access": "public",
+              "name": "cmLabData"
+            },
+            {
+              "access": "public",
+              "name": "cmLuvData"
+            },
+            {
+              "access": "public",
+              "name": "cmYCbCrData"
+            },
+            {
+              "access": "public",
+              "name": "cmYxyData"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBData"
+            },
+            {
+              "access": "public",
+              "name": "cmSRGBData"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayData"
+            },
+            {
+              "access": "public",
+              "name": "cmHSVData"
+            },
+            {
+              "access": "public",
+              "name": "cmHLSData"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYKData"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYData"
+            },
+            {
+              "access": "public",
+              "name": "cmMCH5Data"
+            },
+            {
+              "access": "public",
+              "name": "cmMCH6Data"
+            },
+            {
+              "access": "public",
+              "name": "cmMCH7Data"
+            },
+            {
+              "access": "public",
+              "name": "cmMCH8Data"
+            },
+            {
+              "access": "public",
+              "name": "cm3CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm4CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm5CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm6CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm7CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm8CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm9CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm10CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm11CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm12CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm13CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm14CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cm15CLRData"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedData"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:345:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmInputClass"
+            },
+            {
+              "access": "public",
+              "name": "cmDisplayClass"
+            },
+            {
+              "access": "public",
+              "name": "cmOutputClass"
+            },
+            {
+              "access": "public",
+              "name": "cmLinkClass"
+            },
+            {
+              "access": "public",
+              "name": "cmAbstractClass"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedColorClass"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:379:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmMacintosh"
+            },
+            {
+              "access": "public",
+              "name": "cmMicrosoft"
+            },
+            {
+              "access": "public",
+              "name": "cmSolaris"
+            },
+            {
+              "access": "public",
+              "name": "cmSiliconGraphics"
+            },
+            {
+              "access": "public",
+              "name": "cmTaligent"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:390:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmParametricType0"
+            },
+            {
+              "access": "public",
+              "name": "cmParametricType1"
+            },
+            {
+              "access": "public",
+              "name": "cmParametricType2"
+            },
+            {
+              "access": "public",
+              "name": "cmParametricType3"
+            },
+            {
+              "access": "public",
+              "name": "cmParametricType4"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:399:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmCS1ChromTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCS1TRCTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCS1NameTag"
+            },
+            {
+              "access": "public",
+              "name": "cmCS1CustTag"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:409:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmVideoCardGammaTableType"
+            },
+            {
+              "access": "public",
+              "name": "cmVideoCardGammaFormulaType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:833:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmUseDefaultChromaticAdaptation"
+            },
+            {
+              "access": "public",
+              "name": "cmLinearChromaticAdaptation"
+            },
+            {
+              "access": "public",
+              "name": "cmVonKriesChromaticAdaptation"
+            },
+            {
+              "access": "public",
+              "name": "cmBradfordChromaticAdaptation"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1018:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kDefaultCMMSignature"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1085:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmPS7bit"
+            },
+            {
+              "access": "public",
+              "name": "cmPS8bit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1138:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmOpenReadSpool"
+            },
+            {
+              "access": "public",
+              "name": "cmOpenWriteSpool"
+            },
+            {
+              "access": "public",
+              "name": "cmReadSpool"
+            },
+            {
+              "access": "public",
+              "name": "cmWriteSpool"
+            },
+            {
+              "access": "public",
+              "name": "cmCloseSpool"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1152:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmOpenReadAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmOpenWriteAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmReadAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmWriteAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmCloseAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmCreateNewAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmAbortWriteAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmBeginAccess"
+            },
+            {
+              "access": "public",
+              "name": "cmEndAccess"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1161:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmInputUse"
+            },
+            {
+              "access": "public",
+              "name": "cmOutputUse"
+            },
+            {
+              "access": "public",
+              "name": "cmDisplayUse"
+            },
+            {
+              "access": "public",
+              "name": "cmProofUse"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1174:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNoTransform"
+            },
+            {
+              "access": "public",
+              "name": "kUseAtoB"
+            },
+            {
+              "access": "public",
+              "name": "kUseBtoA"
+            },
+            {
+              "access": "public",
+              "name": "kUseBtoB"
+            },
+            {
+              "access": "public",
+              "name": "kDeviceToPCS"
+            },
+            {
+              "access": "public",
+              "name": "kPCSToDevice"
+            },
+            {
+              "access": "public",
+              "name": "kPCSToPCS"
+            },
+            {
+              "access": "public",
+              "name": "kUseProfileIntent"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1214:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmColorSpaceSpaceMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpacePremulAlphaMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceAlphaMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceSpaceAndAlphaMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpacePackingMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceEncodingMask"
+            },
+            {
+              "access": "public",
+              "name": "cmColorSpaceReservedMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1380:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNoColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmWord5ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmWord565ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmLong8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmLong10ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmAlphaFirstPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmOneBitDirectPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmAlphaLastPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm8_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm16_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm24_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm32_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm40_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm48_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm56_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm64_8ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm32_16ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm48_16ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm64_16ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cm32_32ColorPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmLittleEndianPacking"
+            },
+            {
+              "access": "public",
+              "name": "cmReverseChannelPacking"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1391:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmSRGB16ChannelEncoding"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1417:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNoSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYKSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmHSVSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmHLSSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmYXYSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmLUVSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmLABSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmReservedSpace1"
+            },
+            {
+              "access": "public",
+              "name": "cmGraySpace"
+            },
+            {
+              "access": "public",
+              "name": "cmReservedSpace2"
+            },
+            {
+              "access": "public",
+              "name": "cmGamutResultSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedIndexedSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCFiveSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCSixSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCSevenSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCEightSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmAlphaPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmAlphaSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBASpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayASpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBAPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayAPmulSpace"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1422:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmGray8Space"
+            },
+            {
+              "access": "public",
+              "name": "cmGray16Space"
+            },
+            {
+              "access": "public",
+              "name": "cmGray16LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA16Space"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA32LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA16PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA32PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGrayA32LPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB16Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB16LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB565Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB565LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB24Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB48Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGB48LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB64Space"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB64LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA64Space"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA64LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB32PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB64PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmARGB64LPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA32PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA64PmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmRGBA64LPmulSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYK32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYK64Space"
+            },
+            {
+              "access": "public",
+              "name": "cmCMYK64LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmHSV32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmHLS32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmYXY32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZ24Space"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZ32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZ48Space"
+            },
+            {
+              "access": "public",
+              "name": "cmXYZ48LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmLUV32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmLAB24Space"
+            },
+            {
+              "access": "public",
+              "name": "cmLAB32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmLAB48Space"
+            },
+            {
+              "access": "public",
+              "name": "cmLAB48LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmGamutResult1Space"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedIndexed32Space"
+            },
+            {
+              "access": "public",
+              "name": "cmNamedIndexed32LSpace"
+            },
+            {
+              "access": "public",
+              "name": "cmMCFive8Space"
+            },
+            {
+              "access": "public",
+              "name": "cmMCSix8Space"
+            },
+            {
+              "access": "public",
+              "name": "cmMCSeven8Space"
+            },
+            {
+              "access": "public",
+              "name": "cmMCEight8Space"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1452:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "CS_MAX_PATH"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1523:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmNoProfileBase"
+            },
+            {
+              "access": "public",
+              "name": "cmPathBasedProfile"
+            },
+            {
+              "access": "public",
+              "name": "cmBufferBasedProfile"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1535:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmOriginalProfileLocationSize"
+            },
+            {
+              "access": "public",
+              "name": "cmCurrentProfileLocationSize"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1603:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmProfileIterateDataVersion1"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileIterateDataVersion2"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileIterateDataVersion3"
+            },
+            {
+              "access": "public",
+              "name": "cmProfileIterateDataVersion4"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1611:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kCMFloatBitmapFlagsNone"
+            },
+            {
+              "access": "public",
+              "name": "kCMFloatBitmapFlagsAlpha"
+            },
+            {
+              "access": "public",
+              "name": "kCMFloatBitmapFlagsAlphaPremul"
+            },
+            {
+              "access": "public",
+              "name": "kCMFloatBitmapFlagsRangeClipped"
+            }
+          ],
+          "name": "CMFloatBitmapFlags"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmDeviceInfoVersion1"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceProfileInfoVersion1"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceProfileInfoVersion2"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1844:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmCurrentDeviceInfoVersion"
+            },
+            {
+              "access": "public",
+              "name": "cmCurrentProfileInfoVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1850:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmDefaultDeviceID"
+            },
+            {
+              "access": "public",
+              "name": "cmDefaultProfileID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1859:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmDeviceStateDefault"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateOffline"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateBusy"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateForceNotify"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateDeviceRsvdBits"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceStateAppleRsvdBits"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1868:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmIterateFactoryDeviceProfiles"
+            },
+            {
+              "access": "public",
+              "name": "cmIterateCustomDeviceProfiles"
+            },
+            {
+              "access": "public",
+              "name": "cmIterateCurrentDeviceProfiles"
+            },
+            {
+              "access": "public",
+              "name": "cmIterateAllDeviceProfiles"
+            },
+            {
+              "access": "public",
+              "name": "cmIterateDeviceProfilesMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1905:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmDeviceDBNotFoundErr"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceAlreadyRegistered"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceNotRegistered"
+            },
+            {
+              "access": "public",
+              "name": "cmDeviceProfilesNotFound"
+            },
+            {
+              "access": "public",
+              "name": "cmInternalCFErr"
+            },
+            {
+              "access": "public",
+              "name": "cmPrefsSynchError"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1916:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "cmScannerDeviceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmCameraDeviceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmDisplayDeviceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmPrinterDeviceClass"
+            },
+            {
+              "access": "public",
+              "name": "cmProofDeviceClass"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/ColorSyncDeprecated.h:1968:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "srcCopy"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/Quickdraw.h:51:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "k1MonochromePixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k2IndexedPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k4IndexedPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k8IndexedPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16BE555PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k24RGBPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k32ARGBPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k1IndexedGrayPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k2IndexedGrayPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k4IndexedGrayPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k8IndexedGrayPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16LE555PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16LE5551PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16BE565PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k16LE565PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k24BGRPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k32BGRAPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k32ABGRPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k32RGBAPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYUVSPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYUVUPixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYVU9PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYUV411PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYVYU422PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kUYVY422PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "kYUV211PixelFormat"
+            },
+            {
+              "access": "public",
+              "name": "k2vuyPixelFormat"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/Quickdraw.h:111:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kNoConstraint"
+            },
+            {
+              "access": "public",
+              "name": "kVerticalConstraint"
+            },
+            {
+              "access": "public",
+              "name": "kHorizontalConstraint"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/Quickdraw/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/Headers/Quickdraw.h:219:1)"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDateTime"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMFixedXYColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMFixedXYZColor"
+        },
+        {
+          "access": "public",
+          "name": "CMXYZComponent"
+        },
+        {
+          "access": "public",
+          "name": "CMXYZColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileMD5"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileMD5Ptr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CM2Header"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CM4Header"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMTagRecord"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMTagElemTable"
+        },
+        {
+          "access": "public",
+          "name": "CM2Profile"
+        },
+        {
+          "access": "public",
+          "name": "CM2ProfilePtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CM2ProfileHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMAdaptationMatrixType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMCurveType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDataType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDateTimeType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLut16Type"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLut8Type"
+        },
+        {
+          "access": "public",
+          "name": "CMMultiFunctLutType"
+        },
+        {
+          "access": "public",
+          "name": "CMMultiFunctLutA2BType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultiFunctLutB2AType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultiFunctCLUTType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMeasurementType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNamedColorType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNamedColor2EntryType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNamedColor2Type"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNativeDisplayInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNativeDisplayInfoType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMParametricCurveType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMTextDescriptionType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMTextType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUnicodeTextType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMScreeningChannelRec"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMScreeningType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMSignatureType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMS15Fixed16ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMU16Fixed16ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUInt8ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUInt16ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUInt32ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUInt64ArrayType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMViewingConditionsType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMXYZType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileSequenceDescType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMUcrBgType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMIntentCRDVMSize"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMPS2CRDVMSizeType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMVideoCardGammaTable"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMVideoCardGammaFormula"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMVideoCardGamma"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMVideoCardGammaType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMakeAndModel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMakeAndModelType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultiLocalizedUniCodeEntryRec"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultiLocalizedUniCodeType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMWorldRef"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDisplayIDType"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMChromaticAdaptation"
+        },
+        {
+          "access": "public",
+          "name": "CMFlattenProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CMFlattenUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBitmapCallBackProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBitmapCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMConcatCallBackProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMConcatCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMAppleProfileHeader"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMConcatProfileSet"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NCMConcatProfileSpec"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NCMConcatProfileSet"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMRGBColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMCMYKColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMCMYColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMHLSColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMHSVColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLabColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLuvColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMYxyColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMGrayColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultichannel5Color"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultichannel6Color"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultichannel7Color"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMultichannel8Color"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMNamedColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMColor"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBitmapColorSpace"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBitmap"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMHandleLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMPathLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMBufferLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfLoc"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileIterateData"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileIterateProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMProfileIterateUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMIterateProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMMIterateUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMLabToLabProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "CMFloatBitmapFlags"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMFloatBitmap"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceState"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceID"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceProfileID"
+        },
+        {
+          "access": "public",
+          "name": "CMDeviceClass"
+        },
+        {
+          "access": "public",
+          "name": "CMDeviceScope"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceProfileScope"
+        },
+        {
+          "access": "public",
+          "name": "CMDeviceInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceInfoPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceProfileInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "NCMDeviceProfileInfo"
+        },
+        {
+          "access": "public",
+          "name": "CMDeviceProfileArray"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMDeviceProfileArrayPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMIterateDeviceInfoProcPtr"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "name": "CMIterateDeviceProfileProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "GrafPtr"
+        },
+        {
+          "access": "public",
+          "name": "CGrafPtr"
+        },
+        {
+          "access": "public",
+          "name": "GWorldPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDErr"
+        },
+        {
+          "access": "public",
+          "name": "GWorldFlags"
+        },
+        {
+          "access": "public",
+          "name": "BitMap"
+        },
+        {
+          "access": "public",
+          "name": "BitMapPtr"
+        },
+        {
+          "access": "public",
+          "name": "BitMapHandle"
+        },
+        {
+          "access": "public",
+          "name": "RGBColor"
+        },
+        {
+          "access": "public",
+          "name": "ColorSpec"
+        },
+        {
+          "access": "public",
+          "name": "ColorSpecPtr"
+        },
+        {
+          "access": "public",
+          "name": "CSpecArray"
+        },
+        {
+          "access": "public",
+          "name": "ColorTable"
+        },
+        {
+          "access": "public",
+          "name": "CTabPtr"
+        },
+        {
+          "access": "public",
+          "name": "CTabHandle"
+        },
+        {
+          "access": "public",
+          "name": "PixMap"
+        },
+        {
+          "access": "public",
+          "name": "PixMapPtr"
+        },
+        {
+          "access": "public",
+          "name": "PixMapHandle"
+        },
+        {
+          "access": "public",
+          "name": "Pattern"
+        },
+        {
+          "access": "public",
+          "name": "PatPtr"
+        },
+        {
+          "access": "public",
+          "name": "PatHandle"
+        },
+        {
+          "access": "public",
+          "name": "PixPat"
+        },
+        {
+          "access": "public",
+          "name": "PixPatPtr"
+        },
+        {
+          "access": "public",
+          "name": "PixPatHandle"
+        },
+        {
+          "access": "public",
+          "name": "RgnHandle"
+        },
+        {
+          "access": "public",
+          "name": "GDevice"
+        },
+        {
+          "access": "public",
+          "name": "GDPtr"
+        },
+        {
+          "access": "public",
+          "name": "GDHandle"
+        },
+        {
+          "access": "public",
+          "name": "Picture"
+        },
+        {
+          "access": "public",
+          "name": "PicPtr"
+        },
+        {
+          "access": "public",
+          "name": "PicHandle"
+        },
+        {
+          "access": "public",
+          "name": "OpenCPicParams"
+        },
+        {
+          "access": "public",
+          "name": "FontInfo"
+        },
+        {
+          "access": "public",
+          "name": "QDRegionParseDirection"
+        },
+        {
+          "access": "public",
+          "name": "RegionToRectsProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "RegionToRectsUPP"
+        },
+        {
+          "access": "public",
+          "name": "TruncCode"
+        },
+        {
+          "access": "public",
+          "name": "DragConstraint"
+        },
+        {
+          "access": "public",
+          "name": "DragGrayRgnProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ColorSearchProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ColorComplementProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "DragGrayRgnUPP"
+        },
+        {
+          "access": "public",
+          "name": "ColorSearchUPP"
+        },
+        {
+          "access": "public",
+          "name": "ColorComplementUPP"
+        },
+        {
+          "access": "public",
+          "name": "WindowPtr"
+        },
+        {
+          "access": "public",
+          "name": "DialogPtr"
+        },
+        {
+          "access": "public",
+          "name": "WindowRef"
+        },
+        {
+          "access": "public",
+          "name": "VDGammaRecord"
+        },
+        {
+          "access": "public",
+          "name": "VDGamRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "MacPolygon"
+        },
+        {
+          "access": "public",
+          "name": "Polygon"
+        },
+        {
+          "access": "public",
+          "name": "PolyPtr"
+        },
+        {
+          "access": "public",
+          "name": "PolyHandle"
+        },
+        {
+          "access": "public",
+          "name": "GrafVerb"
+        },
+        {
+          "access": "public",
+          "name": "PrinterStatusOpcode"
+        },
+        {
+          "access": "public",
+          "name": "QDTextProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDLineProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDRectProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDRRectProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDOvalProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDArcProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDPolyProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDRgnProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDBitsProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDCommentProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDTxMeasProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDGetPicProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDPutPicProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDOpcodeProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDStdGlyphsProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDJShieldCursorProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDPrinterStatusProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "QDTextUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDLineUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDRectUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDRRectUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDOvalUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDArcUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDPolyUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDRgnUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDBitsUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDCommentUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDTxMeasUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDGetPicUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDPutPicUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDOpcodeUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDStdGlyphsUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDJShieldCursorUPP"
+        },
+        {
+          "access": "public",
+          "name": "QDPrinterStatusUPP"
+        },
+        {
+          "access": "public",
+          "name": "CQDProcs"
+        },
+        {
+          "access": "public",
+          "name": "CQDProcsPtr"
+        },
+        {
+          "access": "public",
+          "name": "GrafPort"
+        },
+        {
+          "access": "public",
+          "name": "CGrafPort"
+        },
+        {
+          "access": "public",
+          "name": "FontRec"
+        },
+        {
+          "access": "public",
+          "name": "FontRecPtr"
+        },
+        {
+          "access": "public",
+          "name": "FontRecHdl"
+        },
+        {
+          "access": "public",
+          "name": "FMInput"
+        },
+        {
+          "access": "public",
+          "name": "FamRec"
+        },
+        {
+          "access": "public",
+          "name": "AsscEntry"
+        },
+        {
+          "access": "public",
+          "name": "FontAssoc"
+        },
+        {
+          "access": "public",
+          "name": "StyleTable"
+        },
+        {
+          "access": "public",
+          "name": "NameTable"
+        },
+        {
+          "access": "public",
+          "name": "KernPair"
+        },
+        {
+          "access": "public",
+          "name": "KernEntry"
+        },
+        {
+          "access": "public",
+          "name": "KernTable"
+        }
+      ]
+    }
+  ],
+  "projectName": "Quickdraw",
+  "version": "1.0"
+}

@@ -1,0 +1,1740 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRNotAvailable"
+            },
+            {
+              "access": "public",
+              "name": "kSRInternalError"
+            },
+            {
+              "access": "public",
+              "name": "kSRComponentNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kSROutOfMemory"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotASpeechObject"
+            },
+            {
+              "access": "public",
+              "name": "kSRBadParameter"
+            },
+            {
+              "access": "public",
+              "name": "kSRParamOutOfRange"
+            },
+            {
+              "access": "public",
+              "name": "kSRBadSelector"
+            },
+            {
+              "access": "public",
+              "name": "kSRBufferTooSmall"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotARecSystem"
+            },
+            {
+              "access": "public",
+              "name": "kSRFeedbackNotAvail"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantSetProperty"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantGetProperty"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantSetDuringRecognition"
+            },
+            {
+              "access": "public",
+              "name": "kSRAlreadyListening"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotListeningState"
+            },
+            {
+              "access": "public",
+              "name": "kSRModelMismatch"
+            },
+            {
+              "access": "public",
+              "name": "kSRNoClientLanguageModel"
+            },
+            {
+              "access": "public",
+              "name": "kSRNoPendingUtterances"
+            },
+            {
+              "access": "public",
+              "name": "kSRRecognitionCanceled"
+            },
+            {
+              "access": "public",
+              "name": "kSRRecognitionDone"
+            },
+            {
+              "access": "public",
+              "name": "kSROtherRecAlreadyModal"
+            },
+            {
+              "access": "public",
+              "name": "kSRHasNoSubItems"
+            },
+            {
+              "access": "public",
+              "name": "kSRSubItemNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kSRLanguageModelTooBig"
+            },
+            {
+              "access": "public",
+              "name": "kSRAlreadyReleased"
+            },
+            {
+              "access": "public",
+              "name": "kSRAlreadyFinished"
+            },
+            {
+              "access": "public",
+              "name": "kSRWordNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotFinishedWithRejection"
+            },
+            {
+              "access": "public",
+              "name": "kSRExpansionTooDeep"
+            },
+            {
+              "access": "public",
+              "name": "kSRTooManyElements"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantAdd"
+            },
+            {
+              "access": "public",
+              "name": "kSRSndInSourceDisconnected"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantReadLanguageObject"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotImplementedYet"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:32:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRDefaultRecognitionSystemID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:158:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRFeedbackAndListeningModes"
+            },
+            {
+              "access": "public",
+              "name": "kSRRejectedWord"
+            },
+            {
+              "access": "public",
+              "name": "kSRCleanupOnClientExit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:163:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRNoFeedbackNoListenModes"
+            },
+            {
+              "access": "public",
+              "name": "kSRHasFeedbackHasListenModes"
+            },
+            {
+              "access": "public",
+              "name": "kSRNoFeedbackHasListenModes"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:169:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRDefaultSpeechSource"
+            },
+            {
+              "access": "public",
+              "name": "kSRLiveDesktopSpeechSource"
+            },
+            {
+              "access": "public",
+              "name": "kSRCanned22kHzSpeechSource"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:176:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRNotifyRecognitionBeginning"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotifyRecognitionDone"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:184:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAESpeechSuite"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:191:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAESpeechDone"
+            },
+            {
+              "access": "public",
+              "name": "kAESpeechDetected"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:196:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "keySRRecognizer"
+            },
+            {
+              "access": "public",
+              "name": "keySRSpeechResult"
+            },
+            {
+              "access": "public",
+              "name": "keySRSpeechStatus"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:202:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "typeSRRecognizer"
+            },
+            {
+              "access": "public",
+              "name": "typeSRSpeechResult"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:209:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRNotificationParam"
+            },
+            {
+              "access": "public",
+              "name": "kSRCallBackParam"
+            },
+            {
+              "access": "public",
+              "name": "kSRSearchStatusParam"
+            },
+            {
+              "access": "public",
+              "name": "kSRAutoFinishingParam"
+            },
+            {
+              "access": "public",
+              "name": "kSRForegroundOnly"
+            },
+            {
+              "access": "public",
+              "name": "kSRBlockBackground"
+            },
+            {
+              "access": "public",
+              "name": "kSRBlockModally"
+            },
+            {
+              "access": "public",
+              "name": "kSRWantsResultTextDrawn"
+            },
+            {
+              "access": "public",
+              "name": "kSRWantsAutoFBGestures"
+            },
+            {
+              "access": "public",
+              "name": "kSRSoundInVolume"
+            },
+            {
+              "access": "public",
+              "name": "kSRReadAudioFSSpec"
+            },
+            {
+              "access": "public",
+              "name": "kSRReadAudioURL"
+            },
+            {
+              "access": "public",
+              "name": "kSRCancelOnSoundOut"
+            },
+            {
+              "access": "public",
+              "name": "kSRSpeedVsAccuracyParam"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:216:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRUseToggleListen"
+            },
+            {
+              "access": "public",
+              "name": "kSRUsePushToTalk"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:235:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRListenKeyMode"
+            },
+            {
+              "access": "public",
+              "name": "kSRListenKeyCombo"
+            },
+            {
+              "access": "public",
+              "name": "kSRListenKeyName"
+            },
+            {
+              "access": "public",
+              "name": "kSRKeyWord"
+            },
+            {
+              "access": "public",
+              "name": "kSRKeyExpected"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:240:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRIdleRecognizer"
+            },
+            {
+              "access": "public",
+              "name": "kSRSearchInProgress"
+            },
+            {
+              "access": "public",
+              "name": "kSRSearchWaitForAllClients"
+            },
+            {
+              "access": "public",
+              "name": "kSRMustCancelSearch"
+            },
+            {
+              "access": "public",
+              "name": "kSRPendingSearch"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:249:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRTEXTFormat"
+            },
+            {
+              "access": "public",
+              "name": "kSRPhraseFormat"
+            },
+            {
+              "access": "public",
+              "name": "kSRPathFormat"
+            },
+            {
+              "access": "public",
+              "name": "kSRLanguageModelFormat"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:258:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRSpelling"
+            },
+            {
+              "access": "public",
+              "name": "kSRLMObjType"
+            },
+            {
+              "access": "public",
+              "name": "kSRRefCon"
+            },
+            {
+              "access": "public",
+              "name": "kSROptional"
+            },
+            {
+              "access": "public",
+              "name": "kSREnabled"
+            },
+            {
+              "access": "public",
+              "name": "kSRRepeatable"
+            },
+            {
+              "access": "public",
+              "name": "kSRRejectable"
+            },
+            {
+              "access": "public",
+              "name": "kSRRejectionLevel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:266:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRLanguageModelType"
+            },
+            {
+              "access": "public",
+              "name": "kSRPathType"
+            },
+            {
+              "access": "public",
+              "name": "kSRPhraseType"
+            },
+            {
+              "access": "public",
+              "name": "kSRWordType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:279:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRDefaultRejectionLevel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:287:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSRCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSRCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSRCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SROpenRecognitionSystem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRCloseRecognitionSystem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRGetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRReleaseObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRGetReference"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewRecognizer"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRStartListening"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRStopListening"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSetLanguageModel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRGetLanguageModel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRContinueRecognition"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRCancelRecognition"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRIdle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewLanguageModel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewPath"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewPhrase"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewWord"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRPutLanguageObjectIntoHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRPutLanguageObjectIntoDataFile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewLanguageObjectFromHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewLanguageObjectFromDataFile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SREmptyLanguageObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRChangeLanguageObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRAddLanguageObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRAddText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRRemoveLanguageObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRCountItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRGetIndexedItem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSetIndexedItem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRRemoveIndexedItem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRDrawText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRDrawRecognizedText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSpeakText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSpeakAndDrawText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRStopSpeech"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSpeechBusy"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRProcessBegin"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRProcessEnd"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SRSpeechObject"
+        },
+        {
+          "access": "public",
+          "name": "SRRecognitionSystem"
+        },
+        {
+          "access": "public",
+          "name": "SRRecognizer"
+        },
+        {
+          "access": "public",
+          "name": "SRSpeechSource"
+        },
+        {
+          "access": "public",
+          "name": "SRRecognitionResult"
+        },
+        {
+          "access": "public",
+          "name": "SRLanguageObject"
+        },
+        {
+          "access": "public",
+          "name": "SRLanguageModel"
+        },
+        {
+          "access": "public",
+          "name": "SRPath"
+        },
+        {
+          "access": "public",
+          "name": "SRPhrase"
+        },
+        {
+          "access": "public",
+          "name": "SRWord"
+        },
+        {
+          "access": "public",
+          "name": "SRSpeedSetting"
+        },
+        {
+          "access": "public",
+          "name": "SRRejectionLevel"
+        },
+        {
+          "access": "public",
+          "name": "SRCallBackStruct"
+        },
+        {
+          "access": "public",
+          "name": "SRCallBackProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SRCallBackUPP"
+        },
+        {
+          "access": "public",
+          "name": "SRCallBackParam"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRNotAvailable"
+            },
+            {
+              "access": "public",
+              "name": "kSRInternalError"
+            },
+            {
+              "access": "public",
+              "name": "kSRComponentNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kSROutOfMemory"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotASpeechObject"
+            },
+            {
+              "access": "public",
+              "name": "kSRBadParameter"
+            },
+            {
+              "access": "public",
+              "name": "kSRParamOutOfRange"
+            },
+            {
+              "access": "public",
+              "name": "kSRBadSelector"
+            },
+            {
+              "access": "public",
+              "name": "kSRBufferTooSmall"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotARecSystem"
+            },
+            {
+              "access": "public",
+              "name": "kSRFeedbackNotAvail"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantSetProperty"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantGetProperty"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantSetDuringRecognition"
+            },
+            {
+              "access": "public",
+              "name": "kSRAlreadyListening"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotListeningState"
+            },
+            {
+              "access": "public",
+              "name": "kSRModelMismatch"
+            },
+            {
+              "access": "public",
+              "name": "kSRNoClientLanguageModel"
+            },
+            {
+              "access": "public",
+              "name": "kSRNoPendingUtterances"
+            },
+            {
+              "access": "public",
+              "name": "kSRRecognitionCanceled"
+            },
+            {
+              "access": "public",
+              "name": "kSRRecognitionDone"
+            },
+            {
+              "access": "public",
+              "name": "kSROtherRecAlreadyModal"
+            },
+            {
+              "access": "public",
+              "name": "kSRHasNoSubItems"
+            },
+            {
+              "access": "public",
+              "name": "kSRSubItemNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kSRLanguageModelTooBig"
+            },
+            {
+              "access": "public",
+              "name": "kSRAlreadyReleased"
+            },
+            {
+              "access": "public",
+              "name": "kSRAlreadyFinished"
+            },
+            {
+              "access": "public",
+              "name": "kSRWordNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotFinishedWithRejection"
+            },
+            {
+              "access": "public",
+              "name": "kSRExpansionTooDeep"
+            },
+            {
+              "access": "public",
+              "name": "kSRTooManyElements"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantAdd"
+            },
+            {
+              "access": "public",
+              "name": "kSRSndInSourceDisconnected"
+            },
+            {
+              "access": "public",
+              "name": "kSRCantReadLanguageObject"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotImplementedYet"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:32:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRDefaultRecognitionSystemID"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:158:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRFeedbackAndListeningModes"
+            },
+            {
+              "access": "public",
+              "name": "kSRRejectedWord"
+            },
+            {
+              "access": "public",
+              "name": "kSRCleanupOnClientExit"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:163:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRNoFeedbackNoListenModes"
+            },
+            {
+              "access": "public",
+              "name": "kSRHasFeedbackHasListenModes"
+            },
+            {
+              "access": "public",
+              "name": "kSRNoFeedbackHasListenModes"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:169:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRDefaultSpeechSource"
+            },
+            {
+              "access": "public",
+              "name": "kSRLiveDesktopSpeechSource"
+            },
+            {
+              "access": "public",
+              "name": "kSRCanned22kHzSpeechSource"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:176:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRNotifyRecognitionBeginning"
+            },
+            {
+              "access": "public",
+              "name": "kSRNotifyRecognitionDone"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:184:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAESpeechSuite"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:191:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAESpeechDone"
+            },
+            {
+              "access": "public",
+              "name": "kAESpeechDetected"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:196:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "keySRRecognizer"
+            },
+            {
+              "access": "public",
+              "name": "keySRSpeechResult"
+            },
+            {
+              "access": "public",
+              "name": "keySRSpeechStatus"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:202:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "typeSRRecognizer"
+            },
+            {
+              "access": "public",
+              "name": "typeSRSpeechResult"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:209:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRNotificationParam"
+            },
+            {
+              "access": "public",
+              "name": "kSRCallBackParam"
+            },
+            {
+              "access": "public",
+              "name": "kSRSearchStatusParam"
+            },
+            {
+              "access": "public",
+              "name": "kSRAutoFinishingParam"
+            },
+            {
+              "access": "public",
+              "name": "kSRForegroundOnly"
+            },
+            {
+              "access": "public",
+              "name": "kSRBlockBackground"
+            },
+            {
+              "access": "public",
+              "name": "kSRBlockModally"
+            },
+            {
+              "access": "public",
+              "name": "kSRWantsResultTextDrawn"
+            },
+            {
+              "access": "public",
+              "name": "kSRWantsAutoFBGestures"
+            },
+            {
+              "access": "public",
+              "name": "kSRSoundInVolume"
+            },
+            {
+              "access": "public",
+              "name": "kSRReadAudioFSSpec"
+            },
+            {
+              "access": "public",
+              "name": "kSRReadAudioURL"
+            },
+            {
+              "access": "public",
+              "name": "kSRCancelOnSoundOut"
+            },
+            {
+              "access": "public",
+              "name": "kSRSpeedVsAccuracyParam"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:216:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRUseToggleListen"
+            },
+            {
+              "access": "public",
+              "name": "kSRUsePushToTalk"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:235:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRListenKeyMode"
+            },
+            {
+              "access": "public",
+              "name": "kSRListenKeyCombo"
+            },
+            {
+              "access": "public",
+              "name": "kSRListenKeyName"
+            },
+            {
+              "access": "public",
+              "name": "kSRKeyWord"
+            },
+            {
+              "access": "public",
+              "name": "kSRKeyExpected"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:240:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRIdleRecognizer"
+            },
+            {
+              "access": "public",
+              "name": "kSRSearchInProgress"
+            },
+            {
+              "access": "public",
+              "name": "kSRSearchWaitForAllClients"
+            },
+            {
+              "access": "public",
+              "name": "kSRMustCancelSearch"
+            },
+            {
+              "access": "public",
+              "name": "kSRPendingSearch"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:249:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRTEXTFormat"
+            },
+            {
+              "access": "public",
+              "name": "kSRPhraseFormat"
+            },
+            {
+              "access": "public",
+              "name": "kSRPathFormat"
+            },
+            {
+              "access": "public",
+              "name": "kSRLanguageModelFormat"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:258:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRSpelling"
+            },
+            {
+              "access": "public",
+              "name": "kSRLMObjType"
+            },
+            {
+              "access": "public",
+              "name": "kSRRefCon"
+            },
+            {
+              "access": "public",
+              "name": "kSROptional"
+            },
+            {
+              "access": "public",
+              "name": "kSREnabled"
+            },
+            {
+              "access": "public",
+              "name": "kSRRepeatable"
+            },
+            {
+              "access": "public",
+              "name": "kSRRejectable"
+            },
+            {
+              "access": "public",
+              "name": "kSRRejectionLevel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:266:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRLanguageModelType"
+            },
+            {
+              "access": "public",
+              "name": "kSRPathType"
+            },
+            {
+              "access": "public",
+              "name": "kSRPhraseType"
+            },
+            {
+              "access": "public",
+              "name": "kSRWordType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:279:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kSRDefaultRejectionLevel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/SpeechRecognition/install/PublicSDKContentRoot/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/SpeechRecognition.framework/Versions/A/Headers/SpeechRecognition.h:287:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_NewSRCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_DisposeSRCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_InvokeSRCallBackUPP"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SROpenRecognitionSystem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRCloseRecognitionSystem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRGetProperty"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRReleaseObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRGetReference"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewRecognizer"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRStartListening"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRStopListening"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSetLanguageModel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRGetLanguageModel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRContinueRecognition"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRCancelRecognition"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRIdle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewLanguageModel"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewPath"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewPhrase"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewWord"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRPutLanguageObjectIntoHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRPutLanguageObjectIntoDataFile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewLanguageObjectFromHandle"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRNewLanguageObjectFromDataFile"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SREmptyLanguageObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRChangeLanguageObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRAddLanguageObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRAddText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRRemoveLanguageObject"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRCountItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRGetIndexedItem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSetIndexedItem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRRemoveIndexedItem"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRDrawText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRDrawRecognizedText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSpeakText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSpeakAndDrawText"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRStopSpeech"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRSpeechBusy"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRProcessBegin"
+        },
+        {
+          "access": "public",
+          "introduced": "10",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_SRProcessEnd"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "SRSpeechObject"
+        },
+        {
+          "access": "public",
+          "name": "SRRecognitionSystem"
+        },
+        {
+          "access": "public",
+          "name": "SRRecognizer"
+        },
+        {
+          "access": "public",
+          "name": "SRSpeechSource"
+        },
+        {
+          "access": "public",
+          "name": "SRRecognitionResult"
+        },
+        {
+          "access": "public",
+          "name": "SRLanguageObject"
+        },
+        {
+          "access": "public",
+          "name": "SRLanguageModel"
+        },
+        {
+          "access": "public",
+          "name": "SRPath"
+        },
+        {
+          "access": "public",
+          "name": "SRPhrase"
+        },
+        {
+          "access": "public",
+          "name": "SRWord"
+        },
+        {
+          "access": "public",
+          "name": "SRSpeedSetting"
+        },
+        {
+          "access": "public",
+          "name": "SRRejectionLevel"
+        },
+        {
+          "access": "public",
+          "name": "SRCallBackStruct"
+        },
+        {
+          "access": "public",
+          "name": "SRCallBackProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "SRCallBackUPP"
+        },
+        {
+          "access": "public",
+          "name": "SRCallBackParam"
+        }
+      ]
+    }
+  ],
+  "projectName": "SpeechRecognition",
+  "version": "1.0"
+}

@@ -1,0 +1,3790 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMCancel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:37:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMDestinationInvalid"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationPrinter"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationFile"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationFax"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationPreview"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationProcessPDF"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:54:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPortrait"
+            },
+            {
+              "access": "public",
+              "name": "kPMLandscape"
+            },
+            {
+              "access": "public",
+              "name": "kPMReversePortrait"
+            },
+            {
+              "access": "public",
+              "name": "kPMReverseLandscape"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:66:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPrinterIdle"
+            },
+            {
+              "access": "public",
+              "name": "kPMPrinterProcessing"
+            },
+            {
+              "access": "public",
+              "name": "kPMPrinterStopped"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:75:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMUnknownColorSpaceModel"
+            },
+            {
+              "access": "public",
+              "name": "kPMGrayColorSpaceModel"
+            },
+            {
+              "access": "public",
+              "name": "kPMRGBColorSpaceModel"
+            },
+            {
+              "access": "public",
+              "name": "kPMCMYKColorSpaceModel"
+            },
+            {
+              "access": "public",
+              "name": "kPMDevNColorSpaceModel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:82:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMQualityLowest"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityInkSaver"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityDraft"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityNormal"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityPhoto"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityBest"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityHighest"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:94:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPaperTypeUnknown"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypePlain"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypeCoated"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypePremium"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypeGlossy"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypeTransparency"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypeTShirt"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:107:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMScalingPinTopLeft"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingPinTopRight"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingPinBottomLeft"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingPinBottomRight"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingCenterOnPaper"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingCenterOnImgArea"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:119:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMDuplexNone"
+            },
+            {
+              "access": "public",
+              "name": "kPMDuplexNoTumble"
+            },
+            {
+              "access": "public",
+              "name": "kPMDuplexTumble"
+            },
+            {
+              "access": "public",
+              "name": "kPMSimplexTumble"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:130:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMLayoutLeftRightTopBottom"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutLeftRightBottomTop"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutRightLeftTopBottom"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutRightLeftBottomTop"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutTopBottomLeftRight"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutTopBottomRightLeft"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutBottomTopLeftRight"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutBottomTopRightLeft"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:139:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMBorderSingleHairline"
+            },
+            {
+              "access": "public",
+              "name": "kPMBorderDoubleHairline"
+            },
+            {
+              "access": "public",
+              "name": "kPMBorderSingleThickline"
+            },
+            {
+              "access": "public",
+              "name": "kPMBorderDoubleThickline"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:153:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMHideInlineItems"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowDefaultInlineItems"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlineCopies"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlinePageRange"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlinePageRangeWithSelection"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlinePaperSize"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlineOrientation"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlineScale"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowPageAttributesPDE"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:165:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAllPPDDomains"
+            },
+            {
+              "access": "public",
+              "name": "kSystemPPDDomain"
+            },
+            {
+              "access": "public",
+              "name": "kLocalPPDDomain"
+            },
+            {
+              "access": "public",
+              "name": "kNetworkPPDDomain"
+            },
+            {
+              "access": "public",
+              "name": "kUserPPDDomain"
+            },
+            {
+              "access": "public",
+              "name": "kCUPSPPDDomain"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:178:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMNoError"
+            },
+            {
+              "access": "public",
+              "name": "kPMGeneralError"
+            },
+            {
+              "access": "public",
+              "name": "kPMOutOfScope"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidParameter"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoDefaultPrinter"
+            },
+            {
+              "access": "public",
+              "name": "kPMNotImplemented"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoSuchEntry"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPrintSettings"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPageFormat"
+            },
+            {
+              "access": "public",
+              "name": "kPMValueOutOfRange"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:207:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMInvalidPrintSession"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPrinter"
+            },
+            {
+              "access": "public",
+              "name": "kPMObjectInUse"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPreset"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:220:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPrintAllPages"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:228:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMUnlocked"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:232:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMDataFormatXMLDefault"
+            },
+            {
+              "access": "public",
+              "name": "kPMDataFormatXMLMinimal"
+            },
+            {
+              "access": "public",
+              "name": "kPMDataFormatXMLCompressed"
+            }
+          ],
+          "name": "PMDataFormat"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMCoverPageNone"
+            },
+            {
+              "access": "public",
+              "name": "kPMCoverPageBefore"
+            },
+            {
+              "access": "public",
+              "name": "kPMCoverPageAfter"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMPrintSettingsKeys.h:156:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPageToPaperMappingNone"
+            },
+            {
+              "access": "public",
+              "name": "kPMPageToPaperMappingScaleToFit"
+            }
+          ],
+          "name": "PMPageToPaperMappingType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMAllocationFailure"
+            },
+            {
+              "access": "public",
+              "name": "kPMInternalError"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidIndex"
+            },
+            {
+              "access": "public",
+              "name": "kPMStringConversionFailure"
+            },
+            {
+              "access": "public",
+              "name": "kPMXMLParseError"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidJobTemplate"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPrinterInfo"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidConnection"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidKey"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidValue"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidAllocator"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidTicket"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidItem"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidType"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidReply"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidFileType"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidObject"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPaper"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidCalibrationTarget"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoDefaultItem"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoDefaultSettings"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPDEContext"
+            },
+            {
+              "access": "public",
+              "name": "kPMDontSwitchPDEError"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnableToFindProcess"
+            },
+            {
+              "access": "public",
+              "name": "kPMFeatureNotInstalled"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPBMRef"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoSelectedPrinters"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidLookupSpec"
+            },
+            {
+              "access": "public",
+              "name": "kPMSyncRequestFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMEditRequestFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMPrBrowserNoUI"
+            },
+            {
+              "access": "public",
+              "name": "kPMTicketTypeNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMUpdateTicketFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMValidateTicketFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMSubTicketNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidSubTicket"
+            },
+            {
+              "access": "public",
+              "name": "kPMDeleteSubTicketFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMItemIsLocked"
+            },
+            {
+              "access": "public",
+              "name": "kPMTicketIsLocked"
+            },
+            {
+              "access": "public",
+              "name": "kPMTemplateIsLocked"
+            },
+            {
+              "access": "public",
+              "name": "kPMKeyNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMKeyNotUnique"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnknownDataType"
+            },
+            {
+              "access": "public",
+              "name": "kPMCreateMessageFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerCommunicationFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMKeyOrValueNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMMessagingError"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerAlreadyRunning"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerSuspended"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerAttributeRestricted"
+            },
+            {
+              "access": "public",
+              "name": "kPMFileOrDirOperationFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMUserOrGroupNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMPermissionError"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnknownMessage"
+            },
+            {
+              "access": "public",
+              "name": "kPMQueueNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMQueueAlreadyExists"
+            },
+            {
+              "access": "public",
+              "name": "kPMQueueJobFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobBusy"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobCanceled"
+            },
+            {
+              "access": "public",
+              "name": "kPMDocumentNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMPMSymbolNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMIOMSymbolNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMCVMSymbolNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPMContext"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidIOMContext"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidCVMContext"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidJobID"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoPrinterJobID"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobStreamOpenFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobStreamReadFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobStreamEndError"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobManagerAborted"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobGetTicketBadFormatError"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobGetTicketReadError"
+            },
+            {
+              "access": "public",
+              "name": "kPMPluginNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMPluginRegisterationFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMFontNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMFontNameTooLong"
+            },
+            {
+              "access": "public",
+              "name": "kPMGeneralCGError"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidState"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnexpectedImagingError"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPrinterAddress"
+            },
+            {
+              "access": "public",
+              "name": "kPMOpenFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMReadFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMWriteFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMStatusFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMCloseFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnsupportedConnection"
+            },
+            {
+              "access": "public",
+              "name": "kPMIOAttrNotAvailable"
+            },
+            {
+              "access": "public",
+              "name": "kPMReadGotZeroData"
+            },
+            {
+              "access": "public",
+              "name": "kPMLastErrorCodeToMakeMaintenanceOfThisListEasier"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMErrors.h:35:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreateSession"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionError"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionSetError"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionBeginCGDocumentNoDialog"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionEndDocumentNoDialog"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionBeginPageNoDialog"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionEndPageNoDialog"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionGetCGGraphicsContext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionGetDestinationType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCopyDestinationFormat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCopyDestinationLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionSetDestination"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCopyOutputFormatList"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCreatePageFormatList"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCreatePrinterList"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionGetCurrentPrinter"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionSetCurrentPMPrinter"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionGetDataFromSession"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionSetDataInSession"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreatePageFormat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionDefaultPageFormat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionValidatePageFormat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyPageFormat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreatePageFormatWithPMPaper"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPageFormatCreateDataRepresentation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPageFormatCreateWithDataRepresentation"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetAdjustedPageRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetAdjustedPaperRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetOrientation"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetPageFormatExtendedData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPageFormatGetPrinterID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetScale"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetUnadjustedPageRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetUnadjustedPaperRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetOrientation"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetPageFormatExtendedData"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetScale"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreatePrintSettings"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionDefaultPrintSettings"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionValidatePrintSettings"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyPrintSettings"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsCreateDataRepresentation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsCreateWithDataRepresentation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetCollate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetCopies"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetDuplex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetFirstPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetLastPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetPageRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsGetJobName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsGetValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetCollate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetCopies"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetDuplex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetFirstPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetLastPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetPageRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsSetJobName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsSetValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsCopyAsDictionary"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsCopyKeys"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreateGenericPrinter"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMServerCreatePrinterList"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMServerLaunchPrinterBrowser"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCreateFromPrinterID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyDescriptionURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyDeviceURI"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyHostName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyPresets"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetCommInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetLocation"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetDriverCreator"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetDriverReleaseInfo"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetPrinterResolutionCount"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetIndexedPrinterResolution"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetOutputResolution"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterSetOutputResolution"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetLanguageInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetMakeAndModelName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetMimeTypes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetPaperList"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetState"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsDefault"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsFavorite"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsPostScriptCapable"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsPostScriptPrinter"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsRemote"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterSetDefault"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPresetCopyName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPresetCreatePrintSettings"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPresetGetAttributes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetPageFormatPaper"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperCreateCustom"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetWidth"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetHeight"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetMargins"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetPPDPaperName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperCreateLocalizedName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetPrinterID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperIsCustom"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMWorkflowCopyItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMWorkflowSubmitPDFWithOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMWorkflowSubmitPDFWithSettings"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterPrintWithProvider"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterPrintWithFile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterWritePostScriptToURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsToOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsToOptionsWithPrinterAndPageFormat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterSendCommand"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyState"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyAvailablePPDs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyLocalizedPPD"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyPPDData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCGImageCreateWithEPSDataProvider"
+        }
+      ],
+      "protocols": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "initWithBundle:"
+            },
+            {
+              "access": "public",
+              "name": "PDEPanelsForType:withHostInfo:"
+            }
+          ],
+          "name": "PDEPlugIn",
+          "protocols": [
+            "NSObject"
+          ]
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "willShow"
+            },
+            {
+              "access": "public",
+              "name": "shouldHide"
+            },
+            {
+              "access": "public",
+              "name": "saveValuesAndReturnError:"
+            },
+            {
+              "access": "public",
+              "name": "restoreValuesAndReturnError:"
+            },
+            {
+              "access": "public",
+              "name": "supportedPPDOptionKeys",
+              "optional": true
+            },
+            {
+              "access": "public",
+              "name": "PPDOptionKeyValueDidChange:ppdChoice:"
+            },
+            {
+              "access": "public",
+              "name": "panelView"
+            },
+            {
+              "access": "public",
+              "name": "panelName"
+            },
+            {
+              "access": "public",
+              "name": "panelKind"
+            },
+            {
+              "access": "public",
+              "name": "summaryInfo"
+            },
+            {
+              "access": "public",
+              "name": "shouldShowHelp",
+              "optional": true
+            },
+            {
+              "access": "public",
+              "name": "shouldPrint",
+              "optional": true
+            },
+            {
+              "access": "public",
+              "name": "printWindowWillClose:",
+              "optional": true
+            }
+          ],
+          "name": "PDEPanel",
+          "protocols": [
+            "NSObject"
+          ]
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "printSession"
+            },
+            {
+              "access": "public",
+              "name": "printSettings"
+            },
+            {
+              "access": "public",
+              "name": "pageFormat"
+            },
+            {
+              "access": "public",
+              "name": "PMPrinter"
+            },
+            {
+              "access": "public",
+              "name": "ppdFile"
+            },
+            {
+              "access": "public",
+              "name": "willChangePPDOptionKeyValue:ppdChoice:"
+            }
+          ],
+          "name": "PDEPlugInCallbackProtocol"
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "PMObject"
+        },
+        {
+          "access": "public",
+          "name": "PMPrintSettings"
+        },
+        {
+          "access": "public",
+          "name": "PMPageFormat"
+        },
+        {
+          "access": "public",
+          "name": "PMPrintSession"
+        },
+        {
+          "access": "public",
+          "name": "PMPrinter"
+        },
+        {
+          "access": "public",
+          "name": "PMServer"
+        },
+        {
+          "access": "public",
+          "name": "PMPreset"
+        },
+        {
+          "access": "public",
+          "name": "PMPaper"
+        },
+        {
+          "access": "public",
+          "name": "PMDestinationType"
+        },
+        {
+          "access": "public",
+          "name": "PMOrientation"
+        },
+        {
+          "access": "public",
+          "name": "PMPrinterState"
+        },
+        {
+          "access": "public",
+          "name": "PMColorSpaceModel"
+        },
+        {
+          "access": "public",
+          "name": "PMQualityMode"
+        },
+        {
+          "access": "public",
+          "name": "PMPaperType"
+        },
+        {
+          "access": "public",
+          "name": "PMScalingAlignment"
+        },
+        {
+          "access": "public",
+          "name": "PMDuplexMode"
+        },
+        {
+          "access": "public",
+          "name": "PMLayoutDirection"
+        },
+        {
+          "access": "public",
+          "name": "PMBorderType"
+        },
+        {
+          "access": "public",
+          "name": "PMPrintDialogOptionFlags"
+        },
+        {
+          "access": "public",
+          "name": "PMPPDDomain"
+        },
+        {
+          "access": "public",
+          "name": "PMRect"
+        },
+        {
+          "access": "public",
+          "name": "PMResolution"
+        },
+        {
+          "access": "public",
+          "name": "PMLanguageInfo"
+        },
+        {
+          "access": "public",
+          "name": "PMPaperMargins"
+        },
+        {
+          "access": "public",
+          "name": "PMDataFormat"
+        },
+        {
+          "access": "public",
+          "name": "PMPageToPaperMappingType"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMCancel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:37:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMDestinationInvalid"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationPrinter"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationFile"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationFax"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationPreview"
+            },
+            {
+              "access": "public",
+              "name": "kPMDestinationProcessPDF"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:54:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPortrait"
+            },
+            {
+              "access": "public",
+              "name": "kPMLandscape"
+            },
+            {
+              "access": "public",
+              "name": "kPMReversePortrait"
+            },
+            {
+              "access": "public",
+              "name": "kPMReverseLandscape"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:66:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPrinterIdle"
+            },
+            {
+              "access": "public",
+              "name": "kPMPrinterProcessing"
+            },
+            {
+              "access": "public",
+              "name": "kPMPrinterStopped"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:75:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMUnknownColorSpaceModel"
+            },
+            {
+              "access": "public",
+              "name": "kPMGrayColorSpaceModel"
+            },
+            {
+              "access": "public",
+              "name": "kPMRGBColorSpaceModel"
+            },
+            {
+              "access": "public",
+              "name": "kPMCMYKColorSpaceModel"
+            },
+            {
+              "access": "public",
+              "name": "kPMDevNColorSpaceModel"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:82:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMQualityLowest"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityInkSaver"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityDraft"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityNormal"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityPhoto"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityBest"
+            },
+            {
+              "access": "public",
+              "name": "kPMQualityHighest"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:94:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPaperTypeUnknown"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypePlain"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypeCoated"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypePremium"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypeGlossy"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypeTransparency"
+            },
+            {
+              "access": "public",
+              "name": "kPMPaperTypeTShirt"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:107:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMScalingPinTopLeft"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingPinTopRight"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingPinBottomLeft"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingPinBottomRight"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingCenterOnPaper"
+            },
+            {
+              "access": "public",
+              "name": "kPMScalingCenterOnImgArea"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:119:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMDuplexNone"
+            },
+            {
+              "access": "public",
+              "name": "kPMDuplexNoTumble"
+            },
+            {
+              "access": "public",
+              "name": "kPMDuplexTumble"
+            },
+            {
+              "access": "public",
+              "name": "kPMSimplexTumble"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:130:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMLayoutLeftRightTopBottom"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutLeftRightBottomTop"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutRightLeftTopBottom"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutRightLeftBottomTop"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutTopBottomLeftRight"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutTopBottomRightLeft"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutBottomTopLeftRight"
+            },
+            {
+              "access": "public",
+              "name": "kPMLayoutBottomTopRightLeft"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:139:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMBorderSingleHairline"
+            },
+            {
+              "access": "public",
+              "name": "kPMBorderDoubleHairline"
+            },
+            {
+              "access": "public",
+              "name": "kPMBorderSingleThickline"
+            },
+            {
+              "access": "public",
+              "name": "kPMBorderDoubleThickline"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:153:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMHideInlineItems"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowDefaultInlineItems"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlineCopies"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlinePageRange"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlinePageRangeWithSelection"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlinePaperSize"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlineOrientation"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowInlineScale"
+            },
+            {
+              "access": "public",
+              "name": "kPMShowPageAttributesPDE"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:165:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kAllPPDDomains"
+            },
+            {
+              "access": "public",
+              "name": "kSystemPPDDomain"
+            },
+            {
+              "access": "public",
+              "name": "kLocalPPDDomain"
+            },
+            {
+              "access": "public",
+              "name": "kNetworkPPDDomain"
+            },
+            {
+              "access": "public",
+              "name": "kUserPPDDomain"
+            },
+            {
+              "access": "public",
+              "name": "kCUPSPPDDomain"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:178:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMNoError"
+            },
+            {
+              "access": "public",
+              "name": "kPMGeneralError"
+            },
+            {
+              "access": "public",
+              "name": "kPMOutOfScope"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidParameter"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoDefaultPrinter"
+            },
+            {
+              "access": "public",
+              "name": "kPMNotImplemented"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoSuchEntry"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPrintSettings"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPageFormat"
+            },
+            {
+              "access": "public",
+              "name": "kPMValueOutOfRange"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:207:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMInvalidPrintSession"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPrinter"
+            },
+            {
+              "access": "public",
+              "name": "kPMObjectInUse"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPreset"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:220:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPrintAllPages"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:228:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMUnlocked"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMDefinitions.h:232:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMDataFormatXMLDefault"
+            },
+            {
+              "access": "public",
+              "name": "kPMDataFormatXMLMinimal"
+            },
+            {
+              "access": "public",
+              "name": "kPMDataFormatXMLCompressed"
+            }
+          ],
+          "name": "PMDataFormat"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMCoverPageNone"
+            },
+            {
+              "access": "public",
+              "name": "kPMCoverPageBefore"
+            },
+            {
+              "access": "public",
+              "name": "kPMCoverPageAfter"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMPrintSettingsKeys.h:156:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMPageToPaperMappingNone"
+            },
+            {
+              "access": "public",
+              "name": "kPMPageToPaperMappingScaleToFit"
+            }
+          ],
+          "name": "PMPageToPaperMappingType"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kPMAllocationFailure"
+            },
+            {
+              "access": "public",
+              "name": "kPMInternalError"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidIndex"
+            },
+            {
+              "access": "public",
+              "name": "kPMStringConversionFailure"
+            },
+            {
+              "access": "public",
+              "name": "kPMXMLParseError"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidJobTemplate"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPrinterInfo"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidConnection"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidKey"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidValue"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidAllocator"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidTicket"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidItem"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidType"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidReply"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidFileType"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidObject"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPaper"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidCalibrationTarget"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoDefaultItem"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoDefaultSettings"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPDEContext"
+            },
+            {
+              "access": "public",
+              "name": "kPMDontSwitchPDEError"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnableToFindProcess"
+            },
+            {
+              "access": "public",
+              "name": "kPMFeatureNotInstalled"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPBMRef"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoSelectedPrinters"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidLookupSpec"
+            },
+            {
+              "access": "public",
+              "name": "kPMSyncRequestFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMEditRequestFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMPrBrowserNoUI"
+            },
+            {
+              "access": "public",
+              "name": "kPMTicketTypeNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMUpdateTicketFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMValidateTicketFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMSubTicketNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidSubTicket"
+            },
+            {
+              "access": "public",
+              "name": "kPMDeleteSubTicketFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMItemIsLocked"
+            },
+            {
+              "access": "public",
+              "name": "kPMTicketIsLocked"
+            },
+            {
+              "access": "public",
+              "name": "kPMTemplateIsLocked"
+            },
+            {
+              "access": "public",
+              "name": "kPMKeyNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMKeyNotUnique"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnknownDataType"
+            },
+            {
+              "access": "public",
+              "name": "kPMCreateMessageFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerCommunicationFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMKeyOrValueNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMMessagingError"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerAlreadyRunning"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerSuspended"
+            },
+            {
+              "access": "public",
+              "name": "kPMServerAttributeRestricted"
+            },
+            {
+              "access": "public",
+              "name": "kPMFileOrDirOperationFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMUserOrGroupNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMPermissionError"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnknownMessage"
+            },
+            {
+              "access": "public",
+              "name": "kPMQueueNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMQueueAlreadyExists"
+            },
+            {
+              "access": "public",
+              "name": "kPMQueueJobFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobBusy"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobCanceled"
+            },
+            {
+              "access": "public",
+              "name": "kPMDocumentNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMPMSymbolNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMIOMSymbolNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMCVMSymbolNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPMContext"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidIOMContext"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidCVMContext"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidJobID"
+            },
+            {
+              "access": "public",
+              "name": "kPMNoPrinterJobID"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobStreamOpenFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobStreamReadFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobStreamEndError"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobManagerAborted"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobGetTicketBadFormatError"
+            },
+            {
+              "access": "public",
+              "name": "kPMJobGetTicketReadError"
+            },
+            {
+              "access": "public",
+              "name": "kPMPluginNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMPluginRegisterationFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMFontNotFound"
+            },
+            {
+              "access": "public",
+              "name": "kPMFontNameTooLong"
+            },
+            {
+              "access": "public",
+              "name": "kPMGeneralCGError"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidState"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnexpectedImagingError"
+            },
+            {
+              "access": "public",
+              "name": "kPMInvalidPrinterAddress"
+            },
+            {
+              "access": "public",
+              "name": "kPMOpenFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMReadFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMWriteFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMStatusFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMCloseFailed"
+            },
+            {
+              "access": "public",
+              "name": "kPMUnsupportedConnection"
+            },
+            {
+              "access": "public",
+              "name": "kPMIOAttrNotAvailable"
+            },
+            {
+              "access": "public",
+              "name": "kPMReadGotZeroData"
+            },
+            {
+              "access": "public",
+              "name": "kPMLastErrorCodeToMakeMaintenanceOfThisListEasier"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/PrintingCore/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/Headers/PMErrors.h:35:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMRetain"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMRelease"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreateSession"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionError"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionSetError"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionBeginCGDocumentNoDialog"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionEndDocumentNoDialog"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionBeginPageNoDialog"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionEndPageNoDialog"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionGetCGGraphicsContext"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionGetDestinationType"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCopyDestinationFormat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCopyDestinationLocation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionSetDestination"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCopyOutputFormatList"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCreatePageFormatList"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionCreatePrinterList"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionGetCurrentPrinter"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionSetCurrentPMPrinter"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionGetDataFromSession"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionSetDataInSession"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreatePageFormat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionDefaultPageFormat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionValidatePageFormat"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyPageFormat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreatePageFormatWithPMPaper"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPageFormatCreateDataRepresentation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPageFormatCreateWithDataRepresentation"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetAdjustedPageRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetAdjustedPaperRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetOrientation"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetPageFormatExtendedData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPageFormatGetPrinterID"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetScale"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetUnadjustedPageRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetUnadjustedPaperRect"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetOrientation"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetPageFormatExtendedData"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetScale"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreatePrintSettings"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionDefaultPrintSettings"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSessionValidatePrintSettings"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyPrintSettings"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsCreateDataRepresentation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsCreateWithDataRepresentation"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetCollate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetCopies"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetDuplex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetFirstPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetLastPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetPageRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsGetJobName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsGetValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetCollate"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetCopies"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetDuplex"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetFirstPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetLastPage"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMSetPageRange"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsSetJobName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsSetValue"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsCopyAsDictionary"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsCopyKeys"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCreateGenericPrinter"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMServerCreatePrinterList"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMServerLaunchPrinterBrowser"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCreateFromPrinterID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyDescriptionURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.4",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyDeviceURI"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyHostName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyPresets"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetCommInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetLocation"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetDriverCreator"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetDriverReleaseInfo"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetPrinterResolutionCount"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetIndexedPrinterResolution"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetOutputResolution"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterSetOutputResolution"
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetLanguageInfo"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetMakeAndModelName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetMimeTypes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetPaperList"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterGetState"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsDefault"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsFavorite"
+        },
+        {
+          "access": "public",
+          "introduced": "10.2",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsPostScriptCapable"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsPostScriptPrinter"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterIsRemote"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterSetDefault"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPresetCopyName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPresetCreatePrintSettings"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPresetGetAttributes"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMGetPageFormatPaper"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperCreateCustom"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetWidth"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetHeight"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetMargins"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetPPDPaperName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperCreateLocalizedName"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperGetPrinterID"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPaperIsCustom"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMWorkflowCopyItems"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMWorkflowSubmitPDFWithOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMWorkflowSubmitPDFWithSettings"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterPrintWithProvider"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterPrintWithFile"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterWritePostScriptToURL"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsToOptions"
+        },
+        {
+          "access": "public",
+          "introduced": "10.5",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrintSettingsToOptionsWithPrinterAndPageFormat"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterSendCommand"
+        },
+        {
+          "access": "public",
+          "introduced": "10.6",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMPrinterCopyState"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyAvailablePPDs"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyLocalizedPPD"
+        },
+        {
+          "access": "public",
+          "introduced": "10.3",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCopyPPDData"
+        },
+        {
+          "access": "public",
+          "introduced": "10.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_PMCGImageCreateWithEPSDataProvider"
+        }
+      ],
+      "protocols": [
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "initWithBundle:"
+            },
+            {
+              "access": "public",
+              "name": "PDEPanelsForType:withHostInfo:"
+            }
+          ],
+          "name": "PDEPlugIn",
+          "protocols": [
+            "NSObject"
+          ]
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "willShow"
+            },
+            {
+              "access": "public",
+              "name": "shouldHide"
+            },
+            {
+              "access": "public",
+              "name": "saveValuesAndReturnError:"
+            },
+            {
+              "access": "public",
+              "name": "restoreValuesAndReturnError:"
+            },
+            {
+              "access": "public",
+              "name": "supportedPPDOptionKeys",
+              "optional": true
+            },
+            {
+              "access": "public",
+              "name": "PPDOptionKeyValueDidChange:ppdChoice:"
+            },
+            {
+              "access": "public",
+              "name": "panelView"
+            },
+            {
+              "access": "public",
+              "name": "panelName"
+            },
+            {
+              "access": "public",
+              "name": "panelKind"
+            },
+            {
+              "access": "public",
+              "name": "summaryInfo"
+            },
+            {
+              "access": "public",
+              "name": "shouldShowHelp",
+              "optional": true
+            },
+            {
+              "access": "public",
+              "name": "shouldPrint",
+              "optional": true
+            },
+            {
+              "access": "public",
+              "name": "printWindowWillClose:",
+              "optional": true
+            }
+          ],
+          "name": "PDEPanel",
+          "protocols": [
+            "NSObject"
+          ]
+        },
+        {
+          "access": "public",
+          "instanceMethods": [
+            {
+              "access": "public",
+              "name": "printSession"
+            },
+            {
+              "access": "public",
+              "name": "printSettings"
+            },
+            {
+              "access": "public",
+              "name": "pageFormat"
+            },
+            {
+              "access": "public",
+              "name": "PMPrinter"
+            },
+            {
+              "access": "public",
+              "name": "ppdFile"
+            },
+            {
+              "access": "public",
+              "name": "willChangePPDOptionKeyValue:ppdChoice:"
+            }
+          ],
+          "name": "PDEPlugInCallbackProtocol"
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "PMObject"
+        },
+        {
+          "access": "public",
+          "name": "PMPrintSettings"
+        },
+        {
+          "access": "public",
+          "name": "PMPageFormat"
+        },
+        {
+          "access": "public",
+          "name": "PMPrintSession"
+        },
+        {
+          "access": "public",
+          "name": "PMPrinter"
+        },
+        {
+          "access": "public",
+          "name": "PMServer"
+        },
+        {
+          "access": "public",
+          "name": "PMPreset"
+        },
+        {
+          "access": "public",
+          "name": "PMPaper"
+        },
+        {
+          "access": "public",
+          "name": "PMDestinationType"
+        },
+        {
+          "access": "public",
+          "name": "PMOrientation"
+        },
+        {
+          "access": "public",
+          "name": "PMPrinterState"
+        },
+        {
+          "access": "public",
+          "name": "PMColorSpaceModel"
+        },
+        {
+          "access": "public",
+          "name": "PMQualityMode"
+        },
+        {
+          "access": "public",
+          "name": "PMPaperType"
+        },
+        {
+          "access": "public",
+          "name": "PMScalingAlignment"
+        },
+        {
+          "access": "public",
+          "name": "PMDuplexMode"
+        },
+        {
+          "access": "public",
+          "name": "PMLayoutDirection"
+        },
+        {
+          "access": "public",
+          "name": "PMBorderType"
+        },
+        {
+          "access": "public",
+          "name": "PMPrintDialogOptionFlags"
+        },
+        {
+          "access": "public",
+          "name": "PMPPDDomain"
+        },
+        {
+          "access": "public",
+          "name": "PMRect"
+        },
+        {
+          "access": "public",
+          "name": "PMResolution"
+        },
+        {
+          "access": "public",
+          "name": "PMLanguageInfo"
+        },
+        {
+          "access": "public",
+          "name": "PMPaperMargins"
+        },
+        {
+          "access": "public",
+          "name": "PMDataFormat"
+        },
+        {
+          "access": "public",
+          "name": "PMPageToPaperMappingType"
+        }
+      ]
+    }
+  ],
+  "projectName": "PrintingCore",
+  "version": "1.0"
+}

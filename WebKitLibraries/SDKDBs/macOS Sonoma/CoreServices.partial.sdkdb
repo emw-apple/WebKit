@@ -1,0 +1,18 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "target": "x86_64-apple-ios17-macabi"
+    },
+    {
+      "target": "x86_64-apple-macos14"
+    },
+    {
+      "target": "arm64e-apple-ios17-macabi"
+    },
+    {
+      "target": "arm64e-apple-macos14"
+    }
+  ],
+  "projectName": "CoreServices",
+  "version": "1.0"
+}

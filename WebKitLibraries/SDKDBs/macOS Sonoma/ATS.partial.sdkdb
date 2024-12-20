@@ -1,0 +1,4826 @@
+{
+  "PublicSDKContentRoot": [
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kInvalidGeneration"
+            },
+            {
+              "access": "public",
+              "name": "kInvalidFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kInvalidFont"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:116:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMCurrentFilterFormat"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:122:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMFontTechnologyFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontContainerFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMGenerationFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontFamilyCallbackFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontCallbackFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontDirectoryFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontFileRefFilterSelector"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:127:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMTrueTypeFontTechnology"
+            },
+            {
+              "access": "public",
+              "name": "kFMPostScriptFontTechnology"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:137:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFormatUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:287:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSGenerationUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContainerRefUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFamilyRefUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontRefUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:291:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSItalicQDSkew"
+            },
+            {
+              "access": "public",
+              "name": "kATSBoldQDStretch"
+            },
+            {
+              "access": "public",
+              "name": "kATSRadiansFactor"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:322:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSCubicCurveType"
+            },
+            {
+              "access": "public",
+              "name": "kATSQuadCurveType"
+            },
+            {
+              "access": "public",
+              "name": "kATSOtherCurveType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:330:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSDeletedGlyphcode"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:341:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUseGlyphAdvance"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseLineHeight"
+            },
+            {
+              "access": "public",
+              "name": "kATSNoTracking"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:50:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUseCaretOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseDeviceOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseFractionalOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseOriginFlags"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationNone"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationMorph"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationKerningAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationBaselineAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationTrackingAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationPostLayoutAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationAppleReserved"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:103:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationCallbackStatusHandled"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationCallbackStatusContinue"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:154:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSLineNoLayoutOptions"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineIsDisplayOnly"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineHasNoHangers"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineHasNoOpticalAlignment"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineKeepSpacesOutOfMargin"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineNoSpecialJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineLastNoJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineFractDisable"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineImposeNoAngleForEnds"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineFillOutToWidth"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineTabAdjustEnabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineIgnoreFontLeading"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineApplyAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineNoAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableNegativeJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAutoAdjustDisplayPos"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineUseQDRendering"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllGlyphMorphing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllKerningAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllBaselineAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllTrackingAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllLayoutOperations"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineUseDeviceMetrics"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineBreakToNearestCharacter"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineAppleReserved"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:182:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSStyleNoOptions"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleNoHinting"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleApplyAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleNoAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleAppleReserved"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleApplyHints"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:344:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoAppleReserved"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsAttachment"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsLTHanger"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsRBHanger"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoTerminatorGlyph"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsWhiteSpace"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoHasImposedWidth"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoByteSizeMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:399:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFontNoPlatform"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoScript"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoLanguage"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoName"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/SFNTTypes.h:25:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsComposeFontPostScriptName"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseDataForkAsResourceFork"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseResourceFork"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseDataFork"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:57:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSIterationCompleted"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontFamilyAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSIterationScopeModified"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontTableAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontContainerAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidGlyphAccess"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontContextUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContextGlobal"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContextLocal"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:77:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsActivateDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsProcessSubdirectories"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDoNotNotify"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsRecordPersistently"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:83:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIterateByPrecedenceMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIncludeDisabledMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIterationScopeMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDefaultScope"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUnRestrictedScope"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsRestrictedScope"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFilterCurrentVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:104:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorGeneration"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontFamilyApplierFunction"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontApplierFunction"
+            },
+            {
+              "access": "public",
+              "name": "kATSFileReferenceFilterSelector"
+            }
+          ],
+          "name": "ATSFontFilterSelector"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontNotifyOptionDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontNotifyOptionReceiveWhileSuspended"
+            }
+          ],
+          "name": "ATSFontNotifyOption"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontNotifyActionFontsChanged"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontNotifyActionDirectoriesChanged"
+            }
+          ],
+          "name": "ATSFontNotifyAction"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSQueryActivateFontMessage"
+            }
+          ],
+          "name": "ATSFontQueryMessageID"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationEnabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationAsk"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:1469:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSGetGeneration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontActivateFromFileReference"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontActivateFromMemory"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontDeactivate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetContainerFromFileReference"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetContainer"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetEnabled"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIsEnabled"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyApplyFunction"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorReset"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorNext"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyFindFromName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetGeneration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetEncoding"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontApplyFunction"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorReset"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorNext"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromPostScriptName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromContainer"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetGeneration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetPostScriptName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetTableDirectory"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetTable"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetHorizontalMetrics"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetVerticalMetrics"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyFindFromQuickDrawName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetQuickDrawName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetFileReference"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetFontFamilyResource"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotify"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotificationSubscribe"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotificationUnsubscribe"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSCreateFontQueryRunLoopSource"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetGlobalAutoActivationSetting"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetGlobalAutoActivationSetting"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetAutoActivationSettingForApplication"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetAutoActivationSettingForApplication"
+        }
+      ],
+      "target": "x86_64-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ATSPoint"
+        },
+        {
+          "access": "public",
+          "name": "ATSFSSpec"
+        },
+        {
+          "access": "public",
+          "name": "FMGeneration"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamily"
+        },
+        {
+          "access": "public",
+          "name": "FMFontStyle"
+        },
+        {
+          "access": "public",
+          "name": "FMFontSize"
+        },
+        {
+          "access": "public",
+          "name": "FMFont"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyInstance"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFontIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyInstanceIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFilterSelector"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyCallbackFilterProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "FMFontCallbackFilterProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyCallbackFilterUPP"
+        },
+        {
+          "access": "public",
+          "name": "FMFontCallbackFilterUPP"
+        },
+        {
+          "access": "public",
+          "name": "FMFontDirectoryFilter"
+        },
+        {
+          "access": "public",
+          "name": "FMFilter"
+        },
+        {
+          "access": "public",
+          "name": "ATSOptionFlags"
+        },
+        {
+          "access": "public",
+          "name": "ATSGeneration"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontContainerRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontSize"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFormat"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontMetrics"
+        },
+        {
+          "access": "public",
+          "name": "ATSCurveType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCurvePath"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCurvePaths"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphIdealMetrics"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphScreenMetrics"
+        },
+        {
+          "access": "public",
+          "name": "GlyphID"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationCallbackStatus"
+        },
+        {
+          "access": "public",
+          "name": "ATSLineLayoutOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSStyleRenderingOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphInfoFlags"
+        },
+        {
+          "access": "public",
+          "name": "ATSLayoutRecord"
+        },
+        {
+          "access": "public",
+          "name": "ATSTrapezoid"
+        },
+        {
+          "access": "public",
+          "name": "ATSJustWidthDeltaEntryOverride"
+        },
+        {
+          "access": "public",
+          "name": "ATSJustPriorityWidthDeltaOverrides"
+        },
+        {
+          "access": "public",
+          "name": "ATSULineRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSUDirectLayoutOperationOverrideProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSUDirectLayoutOperationOverrideUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationOverrideSpecifier"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontContext"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyApplierFunction"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontApplierFunction"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyIterator"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontIterator"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFilterSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFilter"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotificationRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotificationInfoRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotifyOption"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotifyAction"
+        },
+        {
+          "access": "public",
+          "name": "ATSNotificationCallback"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQuerySourceContext"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQueryMessageID"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQueryCallback"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontAutoActivationSetting"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kInvalidGeneration"
+            },
+            {
+              "access": "public",
+              "name": "kInvalidFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kInvalidFont"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:116:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMCurrentFilterFormat"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:122:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMFontTechnologyFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontContainerFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMGenerationFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontFamilyCallbackFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontCallbackFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontDirectoryFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontFileRefFilterSelector"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:127:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMTrueTypeFontTechnology"
+            },
+            {
+              "access": "public",
+              "name": "kFMPostScriptFontTechnology"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:137:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFormatUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:287:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSGenerationUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContainerRefUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFamilyRefUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontRefUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:291:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSItalicQDSkew"
+            },
+            {
+              "access": "public",
+              "name": "kATSBoldQDStretch"
+            },
+            {
+              "access": "public",
+              "name": "kATSRadiansFactor"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:322:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSCubicCurveType"
+            },
+            {
+              "access": "public",
+              "name": "kATSQuadCurveType"
+            },
+            {
+              "access": "public",
+              "name": "kATSOtherCurveType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:330:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSDeletedGlyphcode"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:341:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUseGlyphAdvance"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseLineHeight"
+            },
+            {
+              "access": "public",
+              "name": "kATSNoTracking"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:50:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUseCaretOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseDeviceOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseFractionalOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseOriginFlags"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationNone"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationMorph"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationKerningAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationBaselineAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationTrackingAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationPostLayoutAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationAppleReserved"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:103:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationCallbackStatusHandled"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationCallbackStatusContinue"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:154:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSLineNoLayoutOptions"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineIsDisplayOnly"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineHasNoHangers"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineHasNoOpticalAlignment"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineKeepSpacesOutOfMargin"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineNoSpecialJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineLastNoJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineFractDisable"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineImposeNoAngleForEnds"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineFillOutToWidth"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineTabAdjustEnabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineIgnoreFontLeading"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineApplyAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineNoAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableNegativeJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAutoAdjustDisplayPos"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineUseQDRendering"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllGlyphMorphing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllKerningAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllBaselineAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllTrackingAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllLayoutOperations"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineUseDeviceMetrics"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineBreakToNearestCharacter"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineAppleReserved"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:182:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSStyleNoOptions"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleNoHinting"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleApplyAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleNoAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleAppleReserved"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleApplyHints"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:344:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoAppleReserved"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsAttachment"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsLTHanger"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsRBHanger"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoTerminatorGlyph"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsWhiteSpace"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoHasImposedWidth"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoByteSizeMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:399:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFontNoPlatform"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoScript"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoLanguage"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoName"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/SFNTTypes.h:25:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsComposeFontPostScriptName"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseDataForkAsResourceFork"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseResourceFork"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseDataFork"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:57:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSIterationCompleted"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontFamilyAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSIterationScopeModified"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontTableAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontContainerAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidGlyphAccess"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontContextUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContextGlobal"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContextLocal"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:77:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsActivateDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsProcessSubdirectories"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDoNotNotify"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsRecordPersistently"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:83:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIterateByPrecedenceMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIncludeDisabledMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIterationScopeMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDefaultScope"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUnRestrictedScope"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsRestrictedScope"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFilterCurrentVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:104:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorGeneration"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontFamilyApplierFunction"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontApplierFunction"
+            },
+            {
+              "access": "public",
+              "name": "kATSFileReferenceFilterSelector"
+            }
+          ],
+          "name": "ATSFontFilterSelector"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontNotifyOptionDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontNotifyOptionReceiveWhileSuspended"
+            }
+          ],
+          "name": "ATSFontNotifyOption"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontNotifyActionFontsChanged"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontNotifyActionDirectoriesChanged"
+            }
+          ],
+          "name": "ATSFontNotifyAction"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSQueryActivateFontMessage"
+            }
+          ],
+          "name": "ATSFontQueryMessageID"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationEnabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationAsk"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:1469:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSGetGeneration",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontActivateFromMemory",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontDeactivate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetContainer",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetEnabled",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIsEnabled",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyApplyFunction",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorRelease",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorReset",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorNext",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyFindFromName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetGeneration",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontApplyFunction",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorRelease",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorReset",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorNext",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromPostScriptName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromContainer",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetGeneration",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetPostScriptName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetTableDirectory",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetTable",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetHorizontalMetrics",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetVerticalMetrics",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyFindFromQuickDrawName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetQuickDrawName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetFontFamilyResource",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotify",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotificationSubscribe",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotificationUnsubscribe",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSCreateFontQueryRunLoopSource",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetGlobalAutoActivationSetting",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetGlobalAutoActivationSetting",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetAutoActivationSettingForApplication",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetAutoActivationSettingForApplication",
+          "unavailable": true
+        }
+      ],
+      "target": "x86_64-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ATSPoint"
+        },
+        {
+          "access": "public",
+          "name": "FMGeneration"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamily"
+        },
+        {
+          "access": "public",
+          "name": "FMFontStyle"
+        },
+        {
+          "access": "public",
+          "name": "FMFontSize"
+        },
+        {
+          "access": "public",
+          "name": "FMFont"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyInstance"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFontIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyInstanceIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFilterSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSOptionFlags"
+        },
+        {
+          "access": "public",
+          "name": "ATSGeneration"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontContainerRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontSize"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFormat"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontMetrics"
+        },
+        {
+          "access": "public",
+          "name": "ATSCurveType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCurvePath"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCurvePaths"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphIdealMetrics"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphScreenMetrics"
+        },
+        {
+          "access": "public",
+          "name": "GlyphID"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationCallbackStatus"
+        },
+        {
+          "access": "public",
+          "name": "ATSLineLayoutOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSStyleRenderingOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphInfoFlags"
+        },
+        {
+          "access": "public",
+          "name": "ATSLayoutRecord"
+        },
+        {
+          "access": "public",
+          "name": "ATSTrapezoid"
+        },
+        {
+          "access": "public",
+          "name": "ATSJustWidthDeltaEntryOverride"
+        },
+        {
+          "access": "public",
+          "name": "ATSJustPriorityWidthDeltaOverrides"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontContext"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyApplierFunction"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontApplierFunction"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyIterator"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontIterator"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFilterSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFilter"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotificationRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotificationInfoRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotifyOption"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotifyAction"
+        },
+        {
+          "access": "public",
+          "name": "ATSNotificationCallback"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQuerySourceContext"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQueryMessageID"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQueryCallback"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontAutoActivationSetting"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kInvalidGeneration"
+            },
+            {
+              "access": "public",
+              "name": "kInvalidFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kInvalidFont"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:116:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMCurrentFilterFormat"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:122:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMFontTechnologyFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontContainerFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMGenerationFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontFamilyCallbackFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontCallbackFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontDirectoryFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontFileRefFilterSelector"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:127:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMTrueTypeFontTechnology"
+            },
+            {
+              "access": "public",
+              "name": "kFMPostScriptFontTechnology"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:137:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFormatUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:287:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSGenerationUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContainerRefUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFamilyRefUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontRefUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:291:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSItalicQDSkew"
+            },
+            {
+              "access": "public",
+              "name": "kATSBoldQDStretch"
+            },
+            {
+              "access": "public",
+              "name": "kATSRadiansFactor"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:322:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSCubicCurveType"
+            },
+            {
+              "access": "public",
+              "name": "kATSQuadCurveType"
+            },
+            {
+              "access": "public",
+              "name": "kATSOtherCurveType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:330:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSDeletedGlyphcode"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:341:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUseGlyphAdvance"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseLineHeight"
+            },
+            {
+              "access": "public",
+              "name": "kATSNoTracking"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:50:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUseCaretOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseDeviceOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseFractionalOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseOriginFlags"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationNone"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationMorph"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationKerningAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationBaselineAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationTrackingAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationPostLayoutAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationAppleReserved"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:103:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationCallbackStatusHandled"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationCallbackStatusContinue"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:154:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSLineNoLayoutOptions"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineIsDisplayOnly"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineHasNoHangers"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineHasNoOpticalAlignment"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineKeepSpacesOutOfMargin"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineNoSpecialJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineLastNoJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineFractDisable"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineImposeNoAngleForEnds"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineFillOutToWidth"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineTabAdjustEnabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineIgnoreFontLeading"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineApplyAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineNoAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableNegativeJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAutoAdjustDisplayPos"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineUseQDRendering"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllGlyphMorphing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllKerningAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllBaselineAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllTrackingAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllLayoutOperations"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineUseDeviceMetrics"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineBreakToNearestCharacter"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineAppleReserved"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:182:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSStyleNoOptions"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleNoHinting"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleApplyAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleNoAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleAppleReserved"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleApplyHints"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:344:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoAppleReserved"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsAttachment"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsLTHanger"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsRBHanger"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoTerminatorGlyph"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsWhiteSpace"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoHasImposedWidth"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoByteSizeMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:399:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFontNoPlatform"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoScript"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoLanguage"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoName"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/SFNTTypes.h:25:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsComposeFontPostScriptName"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseDataForkAsResourceFork"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseResourceFork"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseDataFork"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:57:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSIterationCompleted"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontFamilyAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSIterationScopeModified"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontTableAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontContainerAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidGlyphAccess"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontContextUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContextGlobal"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContextLocal"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:77:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsActivateDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsProcessSubdirectories"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDoNotNotify"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsRecordPersistently"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:83:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIterateByPrecedenceMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIncludeDisabledMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIterationScopeMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDefaultScope"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUnRestrictedScope"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsRestrictedScope"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFilterCurrentVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:104:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorGeneration"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontFamilyApplierFunction"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontApplierFunction"
+            },
+            {
+              "access": "public",
+              "name": "kATSFileReferenceFilterSelector"
+            }
+          ],
+          "name": "ATSFontFilterSelector"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontNotifyOptionDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontNotifyOptionReceiveWhileSuspended"
+            }
+          ],
+          "name": "ATSFontNotifyOption"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontNotifyActionFontsChanged"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontNotifyActionDirectoriesChanged"
+            }
+          ],
+          "name": "ATSFontNotifyAction"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSQueryActivateFontMessage"
+            }
+          ],
+          "name": "ATSFontQueryMessageID"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationEnabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationAsk"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:1469:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSGetGeneration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontActivateFromFileReference"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontActivateFromMemory"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontDeactivate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetContainerFromFileReference"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetContainer"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetEnabled"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIsEnabled"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyApplyFunction"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorReset"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorNext"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyFindFromName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetGeneration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetEncoding"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontApplyFunction"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorCreate"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorRelease"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorReset"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorNext"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromPostScriptName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromContainer"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetGeneration"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetPostScriptName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetTableDirectory"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetTable"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetHorizontalMetrics"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetVerticalMetrics"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyFindFromQuickDrawName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetQuickDrawName"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetFileReference"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetFontFamilyResource"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotify"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotificationSubscribe"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotificationUnsubscribe"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSCreateFontQueryRunLoopSource"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetGlobalAutoActivationSetting"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetGlobalAutoActivationSetting"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetAutoActivationSettingForApplication"
+        },
+        {
+          "access": "public",
+          "introduced": "13.1",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetAutoActivationSettingForApplication"
+        }
+      ],
+      "target": "arm64e-apple-ios17-macabi",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ATSPoint"
+        },
+        {
+          "access": "public",
+          "name": "ATSFSSpec"
+        },
+        {
+          "access": "public",
+          "name": "FMGeneration"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamily"
+        },
+        {
+          "access": "public",
+          "name": "FMFontStyle"
+        },
+        {
+          "access": "public",
+          "name": "FMFontSize"
+        },
+        {
+          "access": "public",
+          "name": "FMFont"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyInstance"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFontIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyInstanceIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFilterSelector"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyCallbackFilterProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "FMFontCallbackFilterProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyCallbackFilterUPP"
+        },
+        {
+          "access": "public",
+          "name": "FMFontCallbackFilterUPP"
+        },
+        {
+          "access": "public",
+          "name": "FMFontDirectoryFilter"
+        },
+        {
+          "access": "public",
+          "name": "FMFilter"
+        },
+        {
+          "access": "public",
+          "name": "ATSOptionFlags"
+        },
+        {
+          "access": "public",
+          "name": "ATSGeneration"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontContainerRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontSize"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFormat"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontMetrics"
+        },
+        {
+          "access": "public",
+          "name": "ATSCurveType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCurvePath"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCurvePaths"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphIdealMetrics"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphScreenMetrics"
+        },
+        {
+          "access": "public",
+          "name": "GlyphID"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationCallbackStatus"
+        },
+        {
+          "access": "public",
+          "name": "ATSLineLayoutOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSStyleRenderingOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphInfoFlags"
+        },
+        {
+          "access": "public",
+          "name": "ATSLayoutRecord"
+        },
+        {
+          "access": "public",
+          "name": "ATSTrapezoid"
+        },
+        {
+          "access": "public",
+          "name": "ATSJustWidthDeltaEntryOverride"
+        },
+        {
+          "access": "public",
+          "name": "ATSJustPriorityWidthDeltaOverrides"
+        },
+        {
+          "access": "public",
+          "name": "ATSULineRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSUDirectLayoutOperationOverrideProcPtr"
+        },
+        {
+          "access": "public",
+          "name": "ATSUDirectLayoutOperationOverrideUPP"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationOverrideSpecifier"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontContext"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyApplierFunction"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontApplierFunction"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyIterator"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontIterator"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFilterSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFilter"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotificationRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotificationInfoRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotifyOption"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotifyAction"
+        },
+        {
+          "access": "public",
+          "name": "ATSNotificationCallback"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQuerySourceContext"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQueryMessageID"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQueryCallback"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontAutoActivationSetting"
+        }
+      ]
+    },
+    {
+      "enums": [
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kInvalidGeneration"
+            },
+            {
+              "access": "public",
+              "name": "kInvalidFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kInvalidFont"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:116:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMCurrentFilterFormat"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:122:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMFontTechnologyFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontContainerFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMGenerationFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontFamilyCallbackFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontCallbackFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontDirectoryFilterSelector"
+            },
+            {
+              "access": "public",
+              "name": "kFMFontFileRefFilterSelector"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:127:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFMTrueTypeFontTechnology"
+            },
+            {
+              "access": "public",
+              "name": "kFMPostScriptFontTechnology"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:137:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFormatUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:287:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSGenerationUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContainerRefUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFamilyRefUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontRefUnspecified"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:291:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSItalicQDSkew"
+            },
+            {
+              "access": "public",
+              "name": "kATSBoldQDStretch"
+            },
+            {
+              "access": "public",
+              "name": "kATSRadiansFactor"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:322:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSCubicCurveType"
+            },
+            {
+              "access": "public",
+              "name": "kATSQuadCurveType"
+            },
+            {
+              "access": "public",
+              "name": "kATSOtherCurveType"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:330:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSDeletedGlyphcode"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSTypes.h:341:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUseGlyphAdvance"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseLineHeight"
+            },
+            {
+              "access": "public",
+              "name": "kATSNoTracking"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:50:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSUseCaretOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseDeviceOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseFractionalOrigins"
+            },
+            {
+              "access": "public",
+              "name": "kATSUseOriginFlags"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationNone"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationMorph"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationKerningAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationBaselineAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationTrackingAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationPostLayoutAdjustment"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationAppleReserved"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:103:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationCallbackStatusHandled"
+            },
+            {
+              "access": "public",
+              "name": "kATSULayoutOperationCallbackStatusContinue"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:154:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSLineNoLayoutOptions"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineIsDisplayOnly"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineHasNoHangers"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineHasNoOpticalAlignment"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineKeepSpacesOutOfMargin"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineNoSpecialJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineLastNoJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineFractDisable"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineImposeNoAngleForEnds"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineFillOutToWidth"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineTabAdjustEnabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineIgnoreFontLeading"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineApplyAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineNoAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableNegativeJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAutoAdjustDisplayPos"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineUseQDRendering"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllJustification"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllGlyphMorphing"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllKerningAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllBaselineAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllTrackingAdjustments"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineDisableAllLayoutOperations"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineUseDeviceMetrics"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineBreakToNearestCharacter"
+            },
+            {
+              "access": "public",
+              "name": "kATSLineAppleReserved"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:182:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSStyleNoOptions"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleNoHinting"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleApplyAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleNoAntiAliasing"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleAppleReserved"
+            },
+            {
+              "access": "public",
+              "name": "kATSStyleApplyHints"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:344:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoAppleReserved"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsAttachment"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsLTHanger"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsRBHanger"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoTerminatorGlyph"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoIsWhiteSpace"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoHasImposedWidth"
+            },
+            {
+              "access": "public",
+              "name": "kATSGlyphInfoByteSizeMask"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSLayoutTypes.h:399:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kFontNoPlatform"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoScript"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoLanguage"
+            },
+            {
+              "access": "public",
+              "name": "kFontNoName"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/SFNTTypes.h:25:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsComposeFontPostScriptName"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseDataForkAsResourceFork"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseResourceFork"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUseDataFork"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:57:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSIterationCompleted"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontFamilyAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSIterationScopeModified"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontTableAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidFontContainerAccess"
+            },
+            {
+              "access": "public",
+              "name": "kATSInvalidGlyphAccess"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:65:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontContextUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContextGlobal"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontContextLocal"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:77:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsActivateDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsProcessSubdirectories"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDoNotNotify"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsRecordPersistently"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:83:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIterateByPrecedenceMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIncludeDisabledMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsIterationScopeMask"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsDefaultScope"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsUnRestrictedScope"
+            },
+            {
+              "access": "public",
+              "name": "kATSOptionFlagsRestrictedScope"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:91:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFilterCurrentVersion"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:104:1)"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorUnspecified"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorGeneration"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontFamily"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontFamilyApplierFunction"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontFilterSelectorFontApplierFunction"
+            },
+            {
+              "access": "public",
+              "name": "kATSFileReferenceFilterSelector"
+            }
+          ],
+          "name": "ATSFontFilterSelector"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontNotifyOptionDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontNotifyOptionReceiveWhileSuspended"
+            }
+          ],
+          "name": "ATSFontNotifyOption"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontNotifyActionFontsChanged"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontNotifyActionDirectoriesChanged"
+            }
+          ],
+          "name": "ATSFontNotifyAction"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSQueryActivateFontMessage"
+            }
+          ],
+          "name": "ATSFontQueryMessageID"
+        },
+        {
+          "access": "public",
+          "constants": [
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationDefault"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationDisabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationEnabled"
+            },
+            {
+              "access": "public",
+              "name": "kATSFontAutoActivationAsk"
+            }
+          ],
+          "name": "enum (unnamed at /AppleInternal/Library/BuildRoots/98ed8ad3-3356-11ee-9b53-aead88ae2785/Library/Caches/com.apple.xbs/Binaries/ATS/install/PublicSDKContentRoot/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/Headers/ATSFont.h:1469:1)"
+        }
+      ],
+      "globals": [
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSGetGeneration",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontActivateFromMemory",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontDeactivate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetContainer",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetEnabled",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIsEnabled",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyApplyFunction",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorRelease",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorReset",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyIteratorNext",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyFindFromName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetGeneration",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontApplyFunction",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorCreate",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorRelease",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorReset",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontIteratorNext",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromPostScriptName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFindFromContainer",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetGeneration",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetPostScriptName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetTableDirectory",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetTable",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetHorizontalMetrics",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetVerticalMetrics",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyFindFromQuickDrawName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontFamilyGetQuickDrawName",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetFontFamilyResource",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotify",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotificationSubscribe",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontNotificationUnsubscribe",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSCreateFontQueryRunLoopSource",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetGlobalAutoActivationSetting",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetGlobalAutoActivationSetting",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontSetAutoActivationSettingForApplication",
+          "unavailable": true
+        },
+        {
+          "access": "public",
+          "kind": "function",
+          "linkage": "exported",
+          "name": "_ATSFontGetAutoActivationSettingForApplication",
+          "unavailable": true
+        }
+      ],
+      "target": "arm64e-apple-macos14",
+      "typedefs": [
+        {
+          "access": "public",
+          "name": "ATSPoint"
+        },
+        {
+          "access": "public",
+          "name": "FMGeneration"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamily"
+        },
+        {
+          "access": "public",
+          "name": "FMFontStyle"
+        },
+        {
+          "access": "public",
+          "name": "FMFontSize"
+        },
+        {
+          "access": "public",
+          "name": "FMFont"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyInstance"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFontIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFontFamilyInstanceIterator"
+        },
+        {
+          "access": "public",
+          "name": "FMFilterSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSOptionFlags"
+        },
+        {
+          "access": "public",
+          "name": "ATSGeneration"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontContainerRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontSize"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFormat"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontMetrics"
+        },
+        {
+          "access": "public",
+          "name": "ATSCurveType"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCurvePath"
+        },
+        {
+          "access": "public",
+          "name": "ATSUCurvePaths"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphIdealMetrics"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphScreenMetrics"
+        },
+        {
+          "access": "public",
+          "name": "GlyphID"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSULayoutOperationCallbackStatus"
+        },
+        {
+          "access": "public",
+          "name": "ATSLineLayoutOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSStyleRenderingOptions"
+        },
+        {
+          "access": "public",
+          "name": "ATSGlyphInfoFlags"
+        },
+        {
+          "access": "public",
+          "name": "ATSLayoutRecord"
+        },
+        {
+          "access": "public",
+          "name": "ATSTrapezoid"
+        },
+        {
+          "access": "public",
+          "name": "ATSJustWidthDeltaEntryOverride"
+        },
+        {
+          "access": "public",
+          "name": "ATSJustPriorityWidthDeltaOverrides"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontContext"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyApplierFunction"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontApplierFunction"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFamilyIterator"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontIterator"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFilterSelector"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontFilter"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotificationRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotificationInfoRef"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotifyOption"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontNotifyAction"
+        },
+        {
+          "access": "public",
+          "name": "ATSNotificationCallback"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQuerySourceContext"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQueryMessageID"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontQueryCallback"
+        },
+        {
+          "access": "public",
+          "name": "ATSFontAutoActivationSetting"
+        }
+      ]
+    }
+  ],
+  "projectName": "ATS",
+  "version": "1.0"
+}
