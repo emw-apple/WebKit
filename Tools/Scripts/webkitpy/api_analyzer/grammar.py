@@ -49,7 +49,7 @@ def _load_production(typ, fd, failable=False):
 
 
 class Parseable:
-    pattern = None
+    pattern: typing.Optional[typing.Pattern[str]] = None
 
     @classmethod
     def load(cls, fd):

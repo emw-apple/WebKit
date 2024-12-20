@@ -12,7 +12,7 @@ from . import objdump
 SCHEMA_VERSION = 1
 
 class sdkdb:
-    def __init__(self, db_file: str = None):
+    def __init__(self, db_file: typing.Optional[str] = None):
         self.con = sqlite3.connect(':memory:')
         if db_file is None:
             _initialize_db(self.con)
@@ -51,6 +51,8 @@ class sdkdb:
         # the former.
         root = doc['PublicSDKContentRoot' if doc['PublicSDKContentRoot']
                    else 'SDKContentRoot']
+        if 'Libc' in sdkdb_file:
+            import pdb; pdb.set_trace()
         with self.con:
             for ent in root:
                 for category in ent.get('categories', []):

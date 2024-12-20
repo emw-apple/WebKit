@@ -6,7 +6,7 @@ import subprocess
 import sys
 
 import typing
-from typing import NamedTuple, Union, List, GenericAlias, Optional, Generic, TypeVar
+from typing import NamedTuple, Union, List, Optional, Generic, TypeVar
 from dataclasses import dataclass
 
 from .grammar import Parseable
@@ -212,39 +212,6 @@ class report(Parseable):
         for entry in self.objc_metadata:
             if entry.section == '__objc_catlist':
                 return entry
-
-
-# ---
-
-@dataclass
-class nested_table_entry:
-    key: str
-    value: Union[str, List['nested_table_entry']]
-
-
-
-def nested_table_from_entries(entries: List[objc_table_line]):
-    result = []
-    cur_indent = TAB_SIZE
-    cursor = [result]
-
-    for table_line in objc_table.lines:
-        line_indent = len(table_line.indent)
-        indent_cmp = line_indent - cur_indent
-        if indent_cmp > 0:
-            # discard the "value" recorded for the last key (which is just
-            # an address for the sub-data) and replace it with a new dict.
-            sub_entries = []
-            cursor[-1][-1].value = sub_entries
-            cursor.append(sub_entries)
-            cur_indent = line_indent
-        elif indent_cmp < 0:
-            for _ in range(line_indent, cur_indent, TAB_SIZE):
-                cursor.pop()
-            cur_indent = line_indent
-        cursor[-1].append(nested_table_entry(
-            key=table_line.key, value=table_line.value))
-    return result
 
 
 # ---
