@@ -1,41 +1,14 @@
-import argparse
 import re
 import io
-import os
 import subprocess
-import sys
 
-import typing
-from typing import NamedTuple, Union, List, Optional, Generic, TypeVar
+from typing import Union, List, Optional
 from dataclasses import dataclass
 
 from .grammar import Parseable
 
 TAB_SIZE = 4
 
-# class table(NamedTuple):
-#     values : dict
-#
-#     _line_re = re.compile(rb'(?P<indent> +)(?P<key>[a-zA-Z]) +(?P<value>.+)')
-#
-#     @classmethod
-#     def load(cls, fd, indent=4):
-#         result = {}
-#         cursor = result
-#
-#         while line := fd.readline():
-#             if not m := _line_re.match(line):
-#
-#                 return result
-#             matched_indent = len(m.group('indent'))
-#             if matched_indent == indent:
-#                 k, v = match.group('key', 'value')
-#                 cursor[k] = v
-#             elif matched_indent == indent + TAB_SIZE:
-#                 k, _ = result.popitem()
-#                 result[k] = {}
-#                 cursor = result[k]
-#                 indent += TAB_SIZE
 
 @dataclass
 class objc_table_line(Parseable):
@@ -51,7 +24,7 @@ class objc_table_line(Parseable):
 
 @dataclass
 class objc_table(Parseable):
-    lines : List[objc_table_line]
+    lines: List[objc_table_line]
 
     def __getitem__(self, key_path: tuple[str]):
         i = 0
@@ -103,12 +76,14 @@ class objc_class(Parseable):
     pattern = re.compile(r'(?P<address>[0-9a-f]+ 0x[0-9a-f]+)'
                          r'( (?P<symbol>_OBJC_CLASS_\S+))?')
 
+
 @dataclass
 class objc_selref(Parseable):
     address: str
     name: str
 
     pattern = re.compile(r'    +(?P<address>0x[0-9a-f]+) (?P<name>[\w:.]+)')
+
 
 @dataclass
 class objc_symbol(Parseable):
@@ -117,17 +92,19 @@ class objc_symbol(Parseable):
     name: str
 
     pattern = re.compile(r'(?P<offset>[0-9a-z]+) (?P<address>0x[0-9a-z]+) '
-        r'(?P<name>.+)')
+                         r'(?P<name>.+)')
 
 
 @dataclass
 class objc_section(Parseable):
     segment: str
     section: str
-    entries: Union[List[objc_class], List[objc_symbol], List[objc_selref], objc_table]
+    entries: Union[List[objc_class], List[objc_symbol], List[objc_selref],
+                   objc_table]
 
-    pattern = re.compile(
-        r'Contents of \((?P<segment>\w+),(?P<section>\w+)\) section')
+    pattern = re.compile(r'Contents of '
+                         r'\((?P<segment>\w+),(?P<section>\w+)\) section')
+
 
 @dataclass
 class binding_header(Parseable):
@@ -140,8 +117,9 @@ class binding_header(Parseable):
     column7: str
 
     pattern = re.compile(r'(?P<column1>\w+)\s+(?P<column2>\w+)\s+'
-        r'(?P<column3>\w+)\s+(?P<column4>\w+)\s+(?P<column5>\w+)\s+'
-        r'(?P<column6>\w+)\s+(?P<column7>\w+)')
+                         r'(?P<column3>\w+)\s+(?P<column4>\w+)\s+'
+                         r'(?P<column5>\w+)\s+(?P<column6>\w+)\s+'
+                         r'(?P<column7>\w+)')
 
 
 @dataclass
@@ -156,12 +134,13 @@ class binding(Parseable):
     attributes: str
 
     pattern = re.compile(r'(?P<segment>\w+)\s+'
-        r'(?P<section>\w+)\s+'
-        r'(?P<address>0x[0-9A-F]+)\s+'
-        r'(?P<typ>\w+( \w+)*)\s+'
-        r'(?P<addend>\d+)\s+'
-        r'(?P<dylib>\S+)\s+'
-        r'(?P<symbol>\S+)( \((?P<attributes>.+)\))?')
+                         r'(?P<section>\w+)\s+'
+                         r'(?P<address>0x[0-9A-F]+)\s+'
+                         r'(?P<typ>\w+( \w+)*)\s+'
+                         r'(?P<addend>\d+)\s+'
+                         r'(?P<dylib>\S+)\s+'
+                         r'(?P<symbol>\S+)( \((?P<attributes>.+)\))?')
+
 
 @dataclass
 class bind_table(Parseable):
@@ -171,12 +150,14 @@ class bind_table(Parseable):
 
     pattern = re.compile(r'(?P<header>Bind table:)')
 
+
 @dataclass
 class export(Parseable):
     address: str
     symbol: str
 
     pattern = re.compile(r'(?P<address>0x[0-9A-F]+)\s+(?P<symbol>.+)')
+
 
 @dataclass
 class exports_trie(Parseable):
@@ -185,18 +166,44 @@ class exports_trie(Parseable):
 
     pattern = re.compile(r'(?P<header>Exports trie:)')
 
+
+@dataclass
+class symbol(Parseable):
+    address: str
+    flags: str
+    segment: str
+    name: str
+
+    pattern = re.compile(r'(?P<address>[0-9a-f]+) (?P<flags>.......) '
+                         r'(?P<segment>[\w,]+|\*\w+\*) (?P<name>.+)')
+
+
+@dataclass
+class symbol_table(Parseable):
+    header: str
+    entries: List[symbol]
+
+    pattern = re.compile(r'(?P<header>SYMBOL TABLE:)')
+
+
 @dataclass
 class whitespace(Parseable):
     space: str
     pattern = re.compile(r'(?P<space>\s+)')
 
+
 @dataclass
 class report(Parseable):
     filename: str
-    objc_metadata: Optional[List[objc_section]]
     space1: Optional[whitespace]
-    exports: Optional[exports_trie]
+    symbol_table: Optional[symbol_table]
     space2: Optional[whitespace]
+    # TODO: ignore everything but selrefs?
+    objc_metadata: Optional[List[objc_section]]
+    space3: Optional[whitespace]
+    # TODO: remove
+    exports: Optional[exports_trie]
+    space4: Optional[whitespace]
     bind_table: Optional[bind_table]
 
     pattern = re.compile(r'(?P<filename>.+):')
@@ -216,17 +223,15 @@ class report(Parseable):
 
 # ---
 
-def load(binary_path, bindings=True, objc_metadata=True, exports=True):
+def load(binary_path, *, arch, exports_only=False, bindings=True, objc_metadata=True, exports=True):
     objdump = subprocess.run(('xcrun', 'llvm-objdump', '-m', binary_path,
-                             *(('--bind',) if bindings else ()),
-                             *(('--objc-meta-data',) if objc_metadata else ()),
-                             *(('--exports-trie',) if exports else ())),
-                            check=True, stdout=subprocess.PIPE,
-                            text=True, errors='replace')
+                              '--arch', arch,
+                              '--objc-meta-data', '--syms',
+                              *(() if exports_only else ('--bind',))),
+                             check=True, stdout=subprocess.PIPE,
+                             text=True, errors='replace')
     return report.load(io.StringIO(objdump.stdout))
 
-def main(argv=None):
-    pass
 
 if __name__ == '__main__':
     main()
