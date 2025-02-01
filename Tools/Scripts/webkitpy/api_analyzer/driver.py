@@ -60,6 +60,7 @@ def main(argv=None):
     parser.add_argument('binary', help='file to test')
     parser.add_argument('-i', '--sdkdb-file')
     parser.add_argument('-l', '--extra-binaries', action='append')
+    parser.add_argument('-s', '--extra-sdkdb', action='append')
     parser.add_argument('-a', '--arch-name', required=True)
     parser.add_argument('--profile', help='write cProfile data to path')
     if apple_additions():
@@ -77,6 +78,9 @@ def main(argv=None):
         interface = objdump.load(dylib, arch=args.arch_name, bindings=False)
         db.add_objdump(interface)
 
+    for name in args.extra_sdkdb or ():
+        db.add_partial_sdkdb(name, spi=True, abi=True)
+
     report = objdump.load(args.binary, arch=args.arch_name)
     if apple_additions():
         reporter = apple_additions().api_analyzer.configure_reporter(args, db)
@@ -88,13 +92,13 @@ def main(argv=None):
     for section in report.objc_metadata:
         if not section.section == '__objc_selrefs':
             continue
-        for selref in section.entries:
+        for selref in sorted(section.entries, key=lambda s: s.name):
             if not db.objc_selector(selref.name):
                 reporter.missing_selector(selref.name)
 
     objc_class_re = re.compile(r'_OBJC_CLASS_\$_(?P<name>.+)')
 
-    for binding in report.bind_table.entries:
+    for binding in sorted(report.bind_table.entries, key=lambda b: b.symbol):
         if binding.symbol in reporter.seen:
             continue  # for ___CFConstantStringClassReference and ___kCFBooleanTrue only afaict
         ignored = binding.dylib in ALLOWED_DYLIBS or \

@@ -44,7 +44,7 @@ class sdkdb:
         persistent = sqlite3.connect(db_file)
         self.con.backup(persistent)
 
-    def add_partial_sdkdb(self, sdkdb_file: str):
+    def add_partial_sdkdb(self, sdkdb_file: str, spi=False, abi=False):
         doc = json.load(open(sdkdb_file))
 
         # There may be multiple RuntimeRoot entries for different architectures 
@@ -54,24 +54,31 @@ class sdkdb:
         #), f'unknown ({sdkdb_file})')
 
         with self.con:
-            for key in 'PublicSDKContentRoot', 'SDKContentRoot':
+            criteria = [
+                ('PublicSDKContentRoot', lambda _: True),
+                ('SDKContentRoot', lambda x: spi or x.get('access') == 'public'),
+            ]
+            if abi:
+                criteria.append(('RuntimeRoot', lambda _: True))
+            for key, pred in criteria:
                 root = doc[key]
                 for ent in root:
                     for category in ent.get('categories', []):
                         class_name = f'{category["interface"]}({category["name"]})'
-                        self._add_objc_interface(category, class_name, sdkdb_file)
-                    for glob in ent.get('globals', []):
-                        if glob.get('access', 'public') == 'public':
-                            self._add_symbol(glob['name'], sdkdb_file)
+                        self._add_objc_interface(category, class_name,
+                                                 sdkdb_file, pred)
+                    for symbol in ent.get('globals', []):
+                        if pred(symbol):
+                            self._add_symbol(symbol['name'], sdkdb_file)
                     for iface in ent.get('interfaces', []):
-                        if iface.get('access', 'public') == 'public':
+                        if pred(iface):
                             self._add_objc_interface(iface, iface['name'],
-                                                     sdkdb_file)
+                                                     sdkdb_file, pred)
                             self._add_objc_class(iface['name'], sdkdb_file)
                     for proto in ent.get('protocols', []):
-                        if proto.get('access', 'public') == 'public':
+                        if pred(proto):
                             self._add_objc_interface(proto, proto['name'],
-                                                     sdkdb_file)
+                                                     sdkdb_file, pred)
 
     _method_to_selector_re = re.compile(r'[-+]\[(?P<class>\S+) '
                                         r'(?P<selector>[^\]]+)\]')
@@ -180,21 +187,21 @@ class sdkdb:
         row = cur.fetchone()
         return row
 
-    def _add_objc_interface(self, ent, class_name, install_name):
+    def _add_objc_interface(self, ent, class_name, install_name, pred):
         for key in 'instanceMethods', 'classMethods':
             for method in ent.get(key, []):
-                if method.get('access', 'public') == 'public':
+                if pred(method):
                     self._add_objc_selector(method['name'], class_name,
                                             install_name)
         for prop in ent.get('properties', []):
-            if prop.get('access', 'public') == 'public':
+            if pred(prop):
                 self._add_objc_selector(prop['getter'], class_name,
                                         install_name)
                 if 'readonly' not in prop.get('attr', {}):
                     self._add_objc_selector(prop['setter'], class_name,
                                             install_name)
         for ivar in ent.get('ivars', []):
-            if ivar.get('access', 'public') == 'public':
+            if pred(ivar):
                 self._add_symbol(
                     f'_OBJC_IVAR_$_{class_name}.{ivar["name"]}', install_name)
 
