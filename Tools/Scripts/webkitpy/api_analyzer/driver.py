@@ -42,13 +42,13 @@ class Reporter:
     def missing_class(self, dylib: str, name: str, ignore=False):
         self.seen.add(name)
         if not ignore:
-            print(f'class:', dylib, name, sep='\t')
+            print(f'class:', name, dylib, sep='\t')
             self.n_issues += 1
 
     def missing_symbol(self, dylib: str, name: str, ignore=False):
         self.seen.add(name)
         if not ignore:
-            print(f'symbol:', dylib, name, sep='\t')
+            print(f'symbol:', name, dylib, sep='\t')
             self.n_issues += 1
 
     def finished(self):
