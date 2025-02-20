@@ -39,45 +39,61 @@ def _load_production(typ, fd, failable=False):
     else:
         if failable:
             start = fd.tell()
-        try:
-            return typ.load(fd)
-        except ParseError:
-            if failable:
-                fd.seek(start)
+        if typ.pattern:
+            line = fd.readline()
+            m = typ.pattern.match(line)
+            if not m:
+                if failable:
+                    fd.seek(start)
+                    return
+                else:
+                    raise ParseError(line, typ.pattern, typ)
+            members = m.groupdict()
+        else:
+            members = {}
+
+        for name, typ_ in typ.__annotations__.items():
+            # token fields -- str
+            if typ_ == str:
+                assert typ.pattern, f'{typ_} must define a regexp pattern ' \
+                    'to match token types'
+                assert name in members, f'{name} not matched by pattern ' \
+                    'in {typ_}'
             else:
-                raise
+                members[name] = _load_production(typ_, fd)
+        return typ(**members)
 
 
 class Parseable:
     pattern: typing.Optional[typing.Pattern[str]] = None
 
-    @classmethod
-    def load(cls, fd):
-        if cls.pattern:
-            line = fd.readline()
-            m = cls.pattern.match(line)
-            if not m:
-                raise ParseError(line, cls.pattern, cls)
-            members = m.groupdict()
-        else:
-            members = {}
-
-        for name, typ in cls.__annotations__.items():
-            # token fields -- str
-            if typ == str:
-                assert cls.pattern, f'{cls} must define a regexp pattern ' \
-                    'to match token types'
-                assert name in members, f'{name} not matched by pattern ' \
-                    'in {cls}'
-            else:
-                members[name] = _load_production(typ, fd)
-        return cls(**members)
-
-    @classmethod
-    def try_load(cls, fd):
-        start = fd.tell()
-        try:
-            return cls.load(fd)
-        except ParseError:
-            fd.seek(start)
-            return
+#     @classmethod
+#     def load(cls, fd):
+#         if cls.pattern:
+#             line = fd.readline()
+#             m = cls.pattern.match(line)
+#             if not m:
+#                 raise ParseError(line, cls.pattern, cls)
+#             members = m.groupdict()
+#         else:
+#             members = {}
+#
+#         for name, typ in cls.__annotations__.items():
+#             # token fields -- str
+#             if typ == str:
+#                 assert cls.pattern, f'{cls} must define a regexp pattern ' \
+#                     'to match token types'
+#                 assert name in members, f'{name} not matched by pattern ' \
+#                     'in {cls}'
+#             else:
+#                 members[name] = _load_production(typ, fd)
+#         return cls(**members)
+#
+#     @classmethod
+#     def try_load(cls, fd):
+#         start = fd.tell()
+#         try:
+#             return cls.load(fd)
+#         except ParseError:
+#             fd.seek(start)
+#             return

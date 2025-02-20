@@ -5,7 +5,7 @@ import subprocess
 from typing import Union, List, Optional
 from dataclasses import dataclass
 
-from .grammar import Parseable
+from .grammar import Parseable, _load_production
 
 TAB_SIZE = 4
 
@@ -94,13 +94,16 @@ class objc_symbol(Parseable):
     pattern = re.compile(r'(?P<offset>[0-9a-z]+) (?P<address>0x[0-9a-z]+) '
                          r'(?P<name>.+)')
 
+@dataclass
+class text(Parseable):
+    text: str
+    pattern = re.compile(r'(?!Contents of)(?P<text>.+)')
 
 @dataclass
 class objc_section(Parseable):
     segment: str
     section: str
-    entries: Union[List[objc_class], List[objc_symbol], List[objc_selref],
-                   objc_table]
+    entries: Union[List[objc_selref], List[text]]
 
     pattern = re.compile(r'Contents of '
                          r'\((?P<segment>\w+),(?P<section>\w+)\) section')
@@ -175,7 +178,7 @@ class symbol(Parseable):
     name: str
 
     pattern = re.compile(r'(?P<address>[0-9a-f]+) (?P<flags>.......) '
-                         r'(?P<segment>[\w,]+|\*\w+\*) (?P<name>.+)')
+                         r'(?P<segment>[\w,]+|\*\w+\*) (?P<name>.*)')
 
 
 @dataclass
@@ -230,7 +233,7 @@ def load(binary_path, *, arch, exports_only=False, bindings=True, objc_metadata=
                               *(() if exports_only else ('--bind',))),
                              check=True, stdout=subprocess.PIPE,
                              text=True, errors='replace')
-    return report.load(io.StringIO(objdump.stdout))
+    return _load_production(report, io.StringIO(objdump.stdout))
 
 
 if __name__ == '__main__':
