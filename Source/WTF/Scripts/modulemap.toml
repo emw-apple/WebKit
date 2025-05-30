@@ -1,0 +1,27 @@
+module-name = 'wtf'
+config-macros = ['UCHAR_TYPE']
+requirements = ['cplusplus11']
+
+one-submodule-per-header = true
+
+[submodule-mappings]
+HashMap      = ['HashMap.h', 'RobinHoodHashTable.h']
+Platform     = ['Platform.h', 'PlatformCallingConventions.h', 'PlatformCPU.h',
+                'PlatformEnable.h', 'PlatformEnableCocoa.h', 'PlatformHave.h',
+                'PlatformLegacy.h', 'PlatformOS.h', 'PlatformUse.h']
+SoftLinking  = ['cocoa/SoftLinking.h']
+SoftLinking2 = ['SoftLinking.h']
+
+[module.Assertions]
+attributes = ['extern_c']
+requirements = []
+[module.ExportMacros]
+attributes = ['extern_c']
+requirements = []
+[module.Compiler]
+attributes = ['extern_c']
+requirements = []
+[module.Platform]
+requirements = []
+[module.AutodrainedPool]
+requirements = ['cplusplus11', '!objc']
