@@ -2,7 +2,9 @@
 # NEVER add to this list, only remove!
 
 [graphics.legacy]
-class = "CAFilter"
+classes = [
+    "CAFilter",
+]
 
 [writing-tools.legacy]
 classes = [
@@ -14,6 +16,14 @@ symbols = [
     "_$s5UIKit16UITextEffectViewC0C2IDVSQAAMc",
     "_$s5UIKit16UITextEffectViewC16removeAllEffectsyyFTj",
 ]
+
+[UIScrollView.legacy]
+selectors = [
+    { name = "_isAnimatingScroll", class = "UIScrollView" },
+    { name = "_isAnimatingZoom", class = "UIScrollView" },
+    { name = "_stopScrollingAndZoomingAnimations", class = "UIScrollView" },
+]
+requires = [ "!HAVE_UI_SCROLL_VIEW_APIS_ADDED_IN_RADAR_112474145" ]
 
 [ios26.legacy]
 selectors = [
@@ -50,7 +60,7 @@ selectors = [
     "prepareResourceMonitorRulesForStore:completionHandler:",
     "presentNewPINEntryInterfaceWithMinLength:",
     "provider",
-    "quad",
+    { name = "quad", class = "VKCTranslatedParagraph" },
     "rectValue",
     "rtfData",
     "sendResponse:",
@@ -455,8 +465,8 @@ selectors = [
     "initWithPolicyChangeHandler:",
     "initWithPreviewItemProvider:contentType:previewTitle:fileSize:previewItem:",
     "initWithPrimaryString:alternativeStrings:isLowConfidence:",
-    "initWithQueue:",
     "initWithRelyingPartyIdentifier:",
+    { name = "initWithQueue:", class = "CoreTelephonyClient" },
     "initWithRequest:bag:presentingViewController:",
     "initWithRequestContext:appIdentifier:",
     "initWithRequestDictionary:",
@@ -481,7 +491,7 @@ selectors = [
     "isMalware",
     "isMinimized",
     "isOnScreen",
-    "isPassthrough",
+    { name = "isPassthrough", class = "VKCTranslatedParagraph" },
     "isPhishing",
     "isRegistrationRequest",
     "isSuspendedUnderLock",
