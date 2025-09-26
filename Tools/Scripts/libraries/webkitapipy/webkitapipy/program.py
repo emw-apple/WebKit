@@ -92,7 +92,7 @@ SDK_ALLOWLIST = {
 # In addition to the main directory of partial SDKDBs passed via `--sdkdb-dir`,
 # this path will be appended to framework search paths to find partial SDKDBs
 # that correspond to frameworks added via `-framework`.
-FRAMEWORK_SDKDB_DIR = 'SDKDB'
+FRAMEWORK_SDKDB_DIR = 'SDKDBs'
 
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description='''\
@@ -255,8 +255,13 @@ def main(argv: Optional[list[str]] = None):
     def add_corresponding_sdkdb(binary: Path) -> None:
         # There is no platform convention for where to put partial
         # SDKDBs in build products, so match what WebKit.xcconfig
-        # does and look for a "SDKDB" directory.
-        for search_path in args.framework_search_paths or ():
+        # does and look for a "SDKDBs" directory in search paths.
+        search_paths = []
+        if args.framework_search_paths:
+            search_paths.extend(args.framework_search_paths)
+        if args.library_search_paths:
+            search_paths.extend(args.library_search_paths)
+        for search_path in search_paths:
             sdkdb_path = (search_path / FRAMEWORK_SDKDB_DIR /
                           f'{binary.name}.partial.sdkdb')
             if sdkdb_path.exists():
@@ -274,8 +279,17 @@ def main(argv: Optional[list[str]] = None):
         with db:
             for search_path in args.framework_search_paths or ():
                 binary_path = search_path / f'{name}.framework/{name}'
+                tbd_path = binary_path.with_suffix('.tbd')
+                # TBDs lack ObjC method info, so prefer loading the real binary
+                # if it's available. This addresses frameworks like WebCore
+                # which do not use InstallAPI but do have ObjC classes that are
+                # subclassed by other projects in the WebKit stack.
                 if binary_path.exists():
                     db.add_binary(use_input(binary_path), arch=args.arch_name)
+                    add_corresponding_sdkdb(binary_path)
+                    break
+                elif tbd_path.exists():
+                    db.add_tbd(use_input(tbd_path))
                     add_corresponding_sdkdb(binary_path)
                     break
             else:
@@ -285,9 +299,13 @@ def main(argv: Optional[list[str]] = None):
     for name in args.libraries or ():
         with db:
             for search_path in args.library_search_paths or ():
-                path = search_path / f'lib{name}.dylib'
-                if path.exists():
-                    db.add_binary(use_input(path), arch=args.arch_name)
+                binary_path = search_path / f'lib{name}.dylib'
+                tbd_path = binary_path.with_suffix('.tbd')
+                if binary_path.exists():
+                    db.add_binary(use_input(binary_path), arch=args.arch_name)
+                    break
+                elif tbd_path.exists():
+                    db.add_tbd(use_input(tbd_path))
                     break
             else:
                 sys.exit(f'error: Could not find "lib{name}.dylib" in search '
@@ -322,3 +340,7 @@ def main(argv: Optional[list[str]] = None):
 
     if args.errors and reporter.has_errors():
         sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()

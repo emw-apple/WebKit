@@ -222,6 +222,14 @@ class SDKDB:
                           ) -> bool:
         fd = open(sdkdb_file)
         sdkdb_hash = os.fstat(fd.fileno()).st_mtime_ns
+        # If a file is being re-added with different spi and abi flags, it
+        # should be removed and re-added from the cache. This can happen if,
+        # for instance, the checked-in partial SDKDBs contain JavaScriptCore,
+        # but then we build JavaScriptCore and want to ingest its SPI and IPI
+        # when auditing WebCore.
+        # An optimization would be to *always* ingest SPI and IPI, and use the
+        # spi and abi flags to control what's visible through the window.
+        sdkdb_hash ^= (spi << 1) | abi
 
         if self._cache_hit_preparing_to_insert(sdkdb_file,
                                                sdkdb_hash):
@@ -296,7 +304,7 @@ class SDKDB:
                 self._add_symbol(symbol, binary, dest=dest)
 
     def add_tbd(self, tbd_file: Path,
-                only_including: Optional[Iterable[str]]) -> bool:
+                only_including: Optional[Iterable[str]] = None) -> bool:
         fd = open(tbd_file)
         stat_hash = os.fstat(fd.fileno()).st_mtime_ns
 

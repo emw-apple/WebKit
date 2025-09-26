@@ -1,7 +1,11 @@
 from __future__ import annotations
 from fnmatch import fnmatch
-from . import program
+from typing import TYPE_CHECKING
+
 from .sdkdb import SDKDB, Diagnostic, MissingName, UnusedAllowedName, UnnecessaryAllowedName, SYMBOL, OBJC_CLS, OBJC_SEL
+
+if TYPE_CHECKING:
+    from . import program
 
 
 class Reporter:
@@ -12,13 +16,14 @@ class Reporter:
     def emit_diagnostic(self, diag: Diagnostic) -> bool:
         ignored = False
         if isinstance(diag, MissingName):
+            from .program import ALLOWED_SYMBOLS, ALLOWED_SYMBOL_GLOBS
             if diag.kind is SYMBOL:
-                ignored = diag.name in program.ALLOWED_SYMBOLS
+                ignored = diag.name in ALLOWED_SYMBOLS
                 if not ignored:
                     ignored = any(fnmatch(diag.name, pattern)
-                                  for pattern in program.ALLOWED_SYMBOL_GLOBS)
+                                  for pattern in ALLOWED_SYMBOL_GLOBS)
             elif diag.kind is OBJC_CLS:
-                ignored = f'_OBJC_CLASS_$_{diag.name}' in program.ALLOWED_SYMBOLS
+                ignored = f'_OBJC_CLASS_$_{diag.name}' in ALLOWED_SYMBOLS
         if not ignored:
             self.issues.append(diag)
             print(self.format_diagnostic(diag))

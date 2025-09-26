@@ -6,4 +6,5 @@
     includedSubdirectoryPatterns = Tools/MiniBrowser
     includedSubdirectoryPatterns = Tools/TestRunnerShared
     includedSubdirectoryPatterns = Tools/WebKitTestRunner
+    includedSubdirectoryPatterns = Tools/Scripts/libraries/webkitapipy
     excludedSubdirectoryPatterns = Tools/WebKitTestRunner/gtk
