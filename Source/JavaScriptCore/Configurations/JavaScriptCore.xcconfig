@@ -107,6 +107,11 @@ OTHER_TAPI_FLAGS_STATICLIBS_NO = -filelist $(BUILT_PRODUCTS_DIR)/usr/local/inclu
 OTHER_TAPI_FLAGS_STATICLIBS_YES = -filelist $(DERIVED_FILE_DIR)/bmalloc.json -filelist $(DERIVED_FILE_DIR)/WTF.json
 OTHER_TAPI_FLAGS_SPI_CHECKING_YES = -sdkdb-output-dir $(BUILT_PRODUCTS_DIR)/SDKDB;
 
+// libpas is disabled on arm64_32 only, and its headers do not parse correctly
+// on that architecture. Hide them from TAPI for the entire platform.
+// ExtraSymbolsForTAPI.h declares the symbols that *do* exist on arm64e watchOS.
+OTHER_TAPI_FLAGS[sdk=watch*] = $(inherited) -exclude-private-header **/*_heap.h -exclude-private-header **/*_heap_config.h -exclude-private-header **/*_heap_innards.h -exclude-private-header **/*_heap_ref.h -exclude-private-header **/*_heap_config_root_data.h -exclude-private-header **/bmalloc_type.h -exclude-private-header **/bmalloc_heap_inlines.h -exclude-private-header **/pas_*.h;
+
 WK_AUDIT_SPI_ALLOWLISTS = $(SRCROOT)/Configurations/AllowedSPI.toml $(SRCROOT)/Configurations/AllowedSPI-legacy.toml $(WK_AUDIT_SPI_ALLOWLISTS_$(USE_INTERNAL_SDK));
 WK_AUDIT_SPI_ALLOWLISTS_YES = $(WK_WEBKITADDITIONS_HEADERS_FOLDER_PATH)/AllowedSPI/AllowedSPI-JavaScriptCore.toml;
 

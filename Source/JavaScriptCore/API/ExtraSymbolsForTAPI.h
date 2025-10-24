@@ -40,3 +40,21 @@ namespace WTF {
 // old that all supported versions of Safari have the change.
 WTF_EXPORT_PRIVATE unsigned weakRandomUint32();
 }
+
+// MARK: bmalloc
+
+#if PLATFORM(WATCHOS) && BENABLE(LIBPAS)
+// On watchOS, libpas is disabled for arm64_32 and its headers do not parse
+// correctly, so we hide libpas headers from TAPI. But this hides the headers
+// on all architectures, so we need to redeclare libpas's API surface here.
+extern "C" {
+BEXPORT extern bool pas_system_heap_is_enabled(void);
+BEXPORT extern void* pas_system_heap_malloc(void);
+BEXPORT extern void* pas_system_heap_memalign(void);
+BEXPORT extern void* pas_system_heap_realloc(void);
+BEXPORT extern void* pas_system_heap_malloc_compact(void);
+BEXPORT extern void* pas_system_heap_memalign_compact(void);
+BEXPORT extern void* pas_system_heap_realloc_compact(void);
+BEXPORT extern void pas_system_heap_free(void);
+}
+#endif
