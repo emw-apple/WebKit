@@ -23,6 +23,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -41,6 +42,7 @@ if sys.version_info < (3, 11):
 else:
     from enum import StrEnum
 
+VERSION_REQ = re.compile(r'(?P<platform>[a-zA-Z]+) ?(?P<op>==|!=|>|>=|<=|<) ?(?P<version>\d+(\.\d+)*)')
 
 @dataclass
 class AllowedSPI:
@@ -51,6 +53,8 @@ class AllowedSPI:
     selectors: list[Selector]
     classes: list[str]
     requires: list[str] = field(default_factory=list)
+    requires_os: list[RequiredVersion] = field(default_factory=list)
+    requires_sdk: list[RequiredVersion] = field(default_factory=list)
     allow_unused: bool = False
 
     class Selector(NamedTuple):
@@ -60,6 +64,11 @@ class AllowedSPI:
     class Bugs(NamedTuple):
         request: Optional[str]
         cleanup: Optional[str]
+
+    class RequiredVersion(NamedTuple):
+        platform: str
+        operator: str
+        version: str
 
 
 class AllowedReason(StrEnum):
@@ -110,9 +119,24 @@ class AllowList:
                 bugs = AllowedSPI.Bugs(entry.pop('request', None),
                                        entry.pop('cleanup', None))
                 allow_unused = bool(entry.pop('allow-unused', False))
+
+                requires_os: list[AllowedSPI.RequiredVersion] = []
+                requires_sdk: list[AllowedSPI.RequiredVersion] = []
+                for required_versions, key in ((requires_os, 'requires-os'),
+                                               (requires_sdk, 'requires-sdk')):
+                    for clause in entry.pop(key, []):
+                        m = VERSION_REQ.match(clause)
+                        if not m:
+                            raise ValueError('unmatched requirement '
+                                             f'clause: "{clause}"')
+                        required_versions.append(
+                            AllowedSPI.RequiredVersion(m['platform'], m['op'],
+                                                       m['version']))
                 allow = AllowedSPI(reason=reason, bugs=bugs, symbols=syms,
                                    selectors=sels, classes=clss, requires=reqs,
-                                   allow_unused=allow_unused)
+                                   allow_unused=allow_unused,
+                                   requires_os=requires_os,
+                                   requires_sdk=requires_sdk)
 
                 if reason == AllowedReason.TEMPORARY_USAGE:
                     if not bugs.cleanup:
@@ -124,8 +148,14 @@ class AllowList:
                         raise ValueError('Allowlist entries marked '
                                          'temporary-usage must have a '
                                          f'"cleanup" bug: {allow}')
-                elif reason not in (AllowedReason.LEGACY,
-                                    AllowedReason.STAGING):
+                elif reason == AllowedReason.STAGING:
+                    if not requires_sdk:
+                        raise ValueError('Allowlist entries marked staging '
+                                         'must have a "requires-sdk" clause '
+                                         'that specifies when the SDK '
+                                         'version where the API is first '
+                                         f'available: {allow}')
+                elif reason != AllowedReason.LEGACY:
                     if not bugs.request:
                         raise ValueError('Allowlist entries must have a '
                                          f'"request" bug: {allow}')

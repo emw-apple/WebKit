@@ -227,3 +227,10 @@ selectors = [
     { name = "_verticalScrollIndicatorColor", class = "UIScrollView" },
 ]
 requires = ["HAVE_UIKIT_SCROLLBAR_COLOR_SPI"]
+
+[[staging]]
+selectors = [
+    { name = "isDeviceConfiguredForPasskeys", class = "ASAuthorizationWebBrowserPublicKeyCredentialManager" },
+]
+requires = ["WEB_AUTHN_PUBLIC_KEY_CREDENTIAL_MANAGER"]
+requires-sdk = ["iOS < 26.1"]
