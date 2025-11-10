@@ -39,6 +39,8 @@ classes = ["NSTemporarilyAllowed"]
 request = "rdar://234567890"
 symbols = ["Permanent1", "Permanent2"]
 requires = ["ENABLE_FOO", "!ENABLE_BAR"]
+requires-os = ["iOS<26.0", "iOS>=18.2"]
+requires-sdk = [ "iOS >= 26.0" ]
 '''
 
 A1 = AllowedSPI(reason=AllowedReason.TEMPORARY_USAGE,
@@ -50,7 +52,10 @@ A1 = AllowedSPI(reason=AllowedReason.TEMPORARY_USAGE,
 A2 = AllowedSPI(reason=AllowedReason.NOT_WEB_ESSENTIAL,
                 bugs=AllowedSPI.Bugs(request='rdar://234567890', cleanup=None),
                 symbols=['_Permanent1', '_Permanent2'],
-                selectors=[], classes=[], requires=['ENABLE_FOO', '!ENABLE_BAR'])
+                selectors=[], classes=[], requires=['ENABLE_FOO', '!ENABLE_BAR'],
+                requires_os=[AllowedSPI.RequiredVersion('iOS', '<', '26.0'),
+                             AllowedSPI.RequiredVersion('iOS', '>=', '18.2')],
+                requires_sdk=[AllowedSPI.RequiredVersion('iOS', '>=', '26.0')])
 
 
 class TestAllowList(TestCase):
@@ -131,11 +136,34 @@ class TestAllowList(TestCase):
                  'requires': ['A', 'B', 'A']}
             ]})
 
-
     def test_no_string(self):
         with self.assertRaisesRegex(ValueError, '"Foo" in allowlist is a '
                                     'string, expected a list'):
             AllowList.from_dict({'temporary-usage': [
                 {'request': 'rdar://1', 'cleanup': 'rdar://2',
                  'classes': 'Foo'},
+            ]})
+
+    def test_invalid_version_requirements(self):
+        with self.assertRaisesRegex(ValueError, 'unmatched requirement'):
+            AllowList.from_dict({'temporary-usage': [
+                {'request': 'rdar://1', 'cleanup': 'rdar://2',
+                 'classes': ['Foo'], 'requires-os': ['15.0 < macOS']}
+            ]})
+        with self.assertRaisesRegex(ValueError, 'unmatched requirement'):
+            AllowList.from_dict({'temporary-usage': [
+                {'request': 'rdar://1', 'cleanup': 'rdar://2',
+                 'classes': ['Foo'], 'requires-os': ['macOS=15.0']}
+            ]})
+
+    def test_required_fields(self):
+        with self.assertRaisesRegex(ValueError, 'must have a "cleanup" bug'):
+            AllowList.from_dict({'temporary-usage': [
+                {'request': 'rdar://1', 'classes': ['Foo']}
+            ]})
+
+        with self.assertRaisesRegex(ValueError, 'must have a "requires-sdk" '
+                                    'clause'):
+            AllowList.from_dict({'staging': [
+                {'classes': ['Foo']}
             ]})

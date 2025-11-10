@@ -37,6 +37,9 @@ objc_fully_qualified_method = re.compile(r'[-+]\[(?P<class>\S+) (?P<selector>[^\
 class APIReport:
     file: Path
     arch: str
+    platform: str
+    min_os: str
+    sdk: str
 
     exports: set[str] = field(default_factory=set)
     methods: set[APIReport.Selector] = field(default_factory=set)
@@ -49,7 +52,7 @@ class APIReport:
 
     @classmethod
     def from_binary(cls, binary_path: Path, *, arch: str, exports_only=False):
-        dyld_args = ['-arch', arch, '-exports', '-objc']
+        dyld_args = ['-arch', arch, '-platform', '-exports', '-objc']
         if not exports_only:
             dyld_args.extend(('-imports',
                               # WebKit binaries typically use __DATA_CONST, but
@@ -61,14 +64,17 @@ class APIReport:
         dyld = subprocess.run(('xcrun', 'dyld_info', *dyld_args, binary_path),
                               check=True, stdout=subprocess.PIPE, text=True)
 
-        report = cls(file=binary_path, arch=arch)
+        report = cls(file=binary_path, arch=arch,
+                     platform='', min_os='', sdk='')
         report._populate_from_dyld_info(dyld.stdout)
         return report
 
     def _populate_from_dyld_info(self, dyld_output: str):
-        Sect = Enum('Sect', 'EXPORTS IMPORTS OBJC SELREFS DLSYM GETCLASS')
+        Sect = Enum('Sect', 'PLATFORM EXPORTS IMPORTS OBJC SELREFS DLSYM '
+                    'GETCLASS')
         in_section = None
         next_cstr = bytearray()
+        seen_platform = False
 
         header_line = f'{self.file} [{self.arch}]:'
         for line in dyld_output.splitlines():
@@ -81,7 +87,9 @@ class APIReport:
                 continue
 
             # Detect changes to the section of output.
-            if line == '-exports:':
+            if line == '-platform:':
+                in_section = Sect.PLATFORM
+            elif line == '-exports:':
                 in_section = Sect.EXPORTS
             elif line == '-imports:':
                 in_section = Sect.IMPORTS
@@ -96,6 +104,17 @@ class APIReport:
                 in_section = Sect.GETCLASS
 
             # Parse symbol information based on the current section.
+            elif in_section == Sect.PLATFORM:
+                # ```
+                # platform     minOS      sdk
+                #      iOS     26.0      26.0
+                # ```
+                if not seen_platform:
+                    assert line.split() == ['platform', 'minOS', 'sdk'], \
+                        'dyld_info -platform info in unexpected format'
+                    seen_platform = True
+                    continue
+                self.platform, self.min_os, self.sdk = line.split()
             elif in_section == Sect.EXPORTS:
                 # Address in binary and symbol name:
                 # ```

@@ -297,7 +297,7 @@ def main(argv: Optional[list[str]] = None):
         with db:
             db.add_allowlist(use_input(path))
     if args.defines:
-        db.add_defines(args.defines)
+        db.add_conditions({d: 1 for d in args.defines})
 
     if program_additions:
         reporter = program_additions.configure_reporter(args, db)
