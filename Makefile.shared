@@ -19,7 +19,51 @@ BUILD_WEBKIT_BASE += --no-use-workspace
 BUILD_GOAL = $(notdir $(CURDIR))
 endif
 
-XCODE_OPTIONS = $(ARGS)
+# These variables control custom behavior in the Makefile. All other variables
+# passed on the command line are forwarded to xcodebuild directly, in the
+# BUILD_SETTING_OVERRIDES assignment below.
+MAKE_ARGS = \
+    ANALYZER_EXEC \
+    ANALYZER_FLAGS \
+    ANALYZER_OUTPUT \
+    ARCHS \
+    ARGS \
+    ASAN \
+    BUILD_WEBKIT_OPTIONS \
+    CC \
+    CODE_COVERAGE \
+    CPLUSPLUS \
+    ENABLE_LLVM_PROFILE_GENERATION \
+    EXPORT_COMPILE_COMMANDS \
+    EXTRA_CFLAGS \
+    GCC_PREPROCESSOR_ADDITIONS \
+    LIBFUZZER \
+    OTHER_CFLAGS \
+    OTHER_LDFLAGS \
+    PATH_TO_SCAN_BUILD \
+    SCHEME \
+    SDKROOT \
+    SDK_VARIANT \
+    TSAN \
+    UBSAN \
+    USE_WORKSPACE \
+    VERBOSITY \
+    WK_LTO_MODE \
+    WK_SANITIZER_COVERAGE \
+    WK_USE_CCACHE \
+    WORKSPACE_PATH \
+    #
+
+BUILD_SETTING_OVERRIDES := $(filter-out $(MAKE_ARGS),$(foreach v,$(.VARIABLES),$(if $(findstring command line,$(origin $v)),$v)))
+
+ifneq (,$(ARGS))
+_ARGS_THAT_COULD_BE_COMMAND_LINE_VARIABLES := $(shell printf '%s\n' $(ARGS) | perl -nE 'say for /\w+=.*/g')
+ifneq (,$(_ARGS_THAT_COULD_BE_COMMAND_LINE_VARIABLES))
+$(warning Passing build settings via ARGS is deprecated. "$(_ARGS_THAT_COULD_BE_COMMAND_LINE_VARIABLES)" can be passed directly on the Make command line.)
+endif
+endif
+
+XCODE_OPTIONS = $(foreach v,$(BUILD_SETTING_OVERRIDES),$v=$($v)) $(ARGS)
 XCODE_OPTIONS += $(if $(GCC_PREPROCESSOR_ADDITIONS),GCC_PREPROCESSOR_DEFINITIONS='$(GCC_PREPROCESSOR_ADDITIONS) $$(inherited)')
 ifeq (ON,$(ENABLE_LLVM_PROFILE_GENERATION))
 	XCODE_OPTIONS += ENABLE_LLVM_PROFILE_GENERATION=ENABLE_LLVM_PROFILE_GENERATION
