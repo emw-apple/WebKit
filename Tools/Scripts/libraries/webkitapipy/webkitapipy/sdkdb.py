@@ -35,6 +35,7 @@ from pathlib import Path
 from .macho import APIReport, objc_fully_qualified_method
 from .tbd import TBD
 from .allow import AllowList
+from .swift_mangle import mangle_partial
 
 # Increment this number to force clients to rebuild from scratch, to
 # accomodate schema changes or fix caching bugs.
@@ -96,6 +97,10 @@ def semver_to_int(semver: str) -> int:
         return version[0] * 10000
 
 
+def escape_for_like_sql(value: str) -> str:
+    return f'replace(replace(replace({value}, "\\", "\\\\"), "_", "\\_"), "%", "\\%")'
+
+
 class MissingName(NamedTuple):
     name: str
     file: Path
@@ -154,6 +159,7 @@ class SDKDB:
                                        detect_types=sqlite3.PARSE_DECLTYPES)
             self.con.execute('PRAGMA busy_timeout = 300000')
             self.con.execute('PRAGMA foreign_keys = ON')
+            self.con.execute('PRAGMA case_sensitive_like = ON')
             user_version, = self.con.execute('PRAGMA user_version').fetchone()
             if user_version == 0:
                 try:
@@ -315,16 +321,24 @@ class SDKDB:
     class InsertionKind(Enum):
         EXPORTS = 1
         ALLOW = 2
+        ALLOW_PREFIX = 3
 
         @property
         def statement(self) -> str:
             if self == self.EXPORTS:
-                return (f'INSERT INTO exports VALUES (:name, :class_name, '
-                        '                             :kind, :file)')
-            else:  # self.ALLOW
-                return (f'INSERT INTO allow VALUES (:name, :class_name, '
+                return ('INSERT INTO exports VALUES (:name, :class_name, '
+                        '                            :kind, :file)')
+            elif self == self.ALLOW:
+                return (f'INSERT INTO allow VALUES ({escape_for_like_sql(":name")}, :class_name, '
                         '                           :allow_unused, :kind, '
                         '                           :cond, :file)')
+            elif self == self.ALLOW_PREFIX:
+                return (f'INSERT INTO allow VALUES ({escape_for_like_sql(":name")} || "%", :class_name, '
+                        '                           :allow_unused, :kind, '
+                        '                           :cond, :file)')
+            else:
+                raise RuntimeError('unreachable')
+
 
     def _add_api_report(self, report: APIReport, binary: Path,
                         dest=InsertionKind.EXPORTS):
@@ -416,6 +430,14 @@ class SDKDB:
                                         dest=self.InsertionKind.ALLOW,
                                         cond_id=cond_id,
                                         allow_unused=entry.allow_unused)
+            for decl in entry.swift_decls:
+                mangled = mangle_partial(decl.name, type_kinds=decl.type_kinds,
+                                         extension_module=decl.extension,
+                                         extension_base_depth=decl.extension_base_depth)  # TODO: adjust
+                self._add_symbol(mangled, allowlist,
+                                 dest=self.InsertionKind.ALLOW_PREFIX,
+                                 cond_id=cond_id,
+                                 allow_unused=entry.allow_unused)
 
     def add_conditions(self, conditions: Mapping[str, ConditionVariable]):
         cur = self.con.cursor()
@@ -439,14 +461,14 @@ class SDKDB:
         # different invocation that reads exports from this binary from
         # inserting to the exports table.
         cur.execute('INSERT INTO window VALUES (?)', (path,))
-        cur.executemany('INSERT INTO imports VALUES (?, ?, ?, ?)',
+        cur.executemany(f'INSERT INTO imports VALUES (?, ?, ?, ?)',
                         ((sym.removeprefix(_OBJC_CLASS_), OBJC_CLS,
                           path, arch) if sym.startswith(_OBJC_CLASS_) else
                          (sym.removeprefix(_OBJC_METACLASS_), OBJC_CLS,
                           path, arch) if sym.startswith(_OBJC_METACLASS_) else
                          (sym, SYMBOL, path, arch)
                          for sym in report.imports))
-        cur.executemany('INSERT INTO imports VALUES (?, ?, ?, ?)',
+        cur.executemany(f'INSERT INTO imports VALUES (?, ?, ?, ?)',
                         ((sel, OBJC_SEL, path, report.arch)
                          for sel in report.selrefs))
 
@@ -470,8 +492,8 @@ class SDKDB:
                     ') '
                     # Then cross-check imports and allowed declarations against
                     # exports.
-                    'SELECT i.arch, i.kind, i.input_file, i.name, '
-                    '       a.kind, group_concat(aw.input_file), a.name, '
+                    'SELECT i.arch, i.kind, i.input_file, replace(i.name, "\\", ""), '
+                    '       a.kind, group_concat(aw.input_file), replace(a.name, "\\", ""), '
                     '           min(a.allow_unused), '
                     '       group_concat(ew.input_file), '
                     '       sum(e.name IS NOT NULL AND '
@@ -483,7 +505,8 @@ class SDKDB:
                     '           aw.input_file IS NOT NULL) as allow_found '
                     'FROM imports AS i '
                     'LEFT JOIN exports AS e USING (name, kind) '
-                    'FULL JOIN allow AS a USING (name, kind) '
+                    # TODO: check optimization
+                    'FULL JOIN allow AS a ON i.name LIKE a.name ESCAPE "\\" AND i.kind = a.kind '
                     # The `input_file` columns added by these joins will be
                     # NULL if the respective export or allowed declaration is
                     # not loaded (i.e. it's in the cache from some other
@@ -509,6 +532,7 @@ class SDKDB:
                     '   (allow_found > 0 AND '
                     '    e.class_name = a.class_name IS NOT FALSE) '
                     'ORDER BY i.input_file, i.kind, a.kind, i.name, a.name')
+        seen_partial_symbols: set[str] = set()
         for (arch, import_kind, input_path, import_name,
              allowed_kind, allowlist_paths, allowed_name, allow_unused,
              export_paths, export_found, allow_found) in cur.fetchall():
@@ -525,6 +549,10 @@ class SDKDB:
                     yield UnusedAllowedName(name=allowed_name, file=Path(path),
                                             kind=allowed_kind)
             elif allow_found and export_found:
+                if allowed_kind == SYMBOL and allowed_name.endswith('%'):
+                    if allowed_name in seen_partial_symbols:
+                        continue
+                    seen_partial_symbols.add(allowed_name)
                 # Allowed but also exported => unnecessary allowlist entry to
                 # remove.
                 for path in sorted(set(allowlist_paths.split(','))):
@@ -576,6 +604,7 @@ class SDKDB:
                       file=str(file.resolve()), cond=cond_id,
                       allow_unused=allow_unused)
         cur.execute(dest.statement, params)
+
 
     def _add_objc_class(self, name: str, file: Path,
                         dest=InsertionKind.EXPORTS,
