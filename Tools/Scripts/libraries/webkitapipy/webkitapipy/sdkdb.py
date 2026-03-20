@@ -416,12 +416,12 @@ class SDKDB:
                              str(allowlist.resolve())))
                 cond_id = cur.lastrowid
             for symbol in entry.symbols:
-                self._add_symbol(symbol, allowlist,
+                self._add_symbol(symbol.name, allowlist,
                                  dest=self.InsertionKind.ALLOW,
                                  cond_id=cond_id,
                                  allow_unused=entry.allow_unused)
             for class_ in entry.classes:
-                self._add_objc_class(class_, allowlist,
+                self._add_objc_class(class_.name, allowlist,
                                      dest=self.InsertionKind.ALLOW,
                                      cond_id=cond_id,
                                      allow_unused=entry.allow_unused)

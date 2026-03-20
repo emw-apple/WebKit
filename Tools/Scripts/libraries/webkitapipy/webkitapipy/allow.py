@@ -29,7 +29,8 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from pathlib import Path
 from enum import Enum
-from typing import Any, NamedTuple, Optional, Union
+from typing import Any, NamedTuple, Optional, TypeVar, Union
+from ._toml_line_info import LineInfo, loads_with_lines
 
 if sys.version_info < (3, 11):
     from webkitapipy._vendor import tomli as tomllib
@@ -46,14 +47,14 @@ else:
 VERSION_REQ = re.compile(r'(?P<platform>[a-zA-Z]+) ?(?P<op>==|!=|>|>=|<=|<) '
                          r'?(?P<version>\d+(\.\d+\*?|\.\*)?)', flags=re.ASCII)
 
-@dataclass
+@dataclass(frozen=True)
 class AllowedSPI:
     reason: AllowedReason
     bugs: Bugs
 
-    symbols: list[str]
+    symbols: list[Declaration]
     selectors: list[Selector]
-    classes: list[str]
+    classes: list[Declaration]
     swift_decls: list[SwiftDecl] = field(default_factory=list)
 
     requires: list[str] = field(default_factory=list)
@@ -61,8 +62,14 @@ class AllowedSPI:
     requires_sdk: list[RequiredVersion] = field(default_factory=list)
     allow_unused: bool = False
 
-    class Selector(NamedTuple):
+    @dataclass(frozen=True)
+    class Declaration:
         name: str
+        line: int
+        cols: int
+
+    @dataclass(frozen=True)
+    class Selector(Declaration):
         class_: Optional[str]
 
     class Bugs(NamedTuple):
@@ -75,8 +82,7 @@ class AllowedSPI:
         version: str
 
     @dataclass(frozen=True)
-    class SwiftDecl:
-        name: str
+    class SwiftDecl(Declaration):
         type_kinds: Optional[dict[str, str]] = None
         extension: Optional[str] = None
         extension_base_depth: Optional[int] = None
@@ -123,36 +129,66 @@ def _transform_wildcard_version(op: str, version: str) -> tuple[str, str]:
     new_version = min(new_version, Decimal('99.99'))
     return '<', f'{new_version:.2f}'
 
+
+T = TypeVar('T')
+
+class ValidationError(Exception):
+    def __init__(self, message: str, filename: str, line: int, cols: int):
+        self.message = message
+        self.filename = filename
+        self.line = line
+        self.cols = cols
+
+    def __str__(self):
+        return f'error: {self.filename}:{self.line}:{self.cols}: {self.message}'
+
+
 @dataclass
 class AllowList:
     allowed_spi: list[AllowedSPI]
 
     @classmethod
-    def from_dict(cls, doc: dict[str, Any]) -> AllowList:
+    def _from_dict(cls, doc: dict[str, Any], line_info: LineInfo, filename: str) -> AllowList:
         entries = []
-        seen_syms: dict[Union[str, AllowedSPI.Selector], AllowedSPI] = {}
-        seen_sels: dict[Union[str, AllowedSPI.Selector], AllowedSPI] = {}
-        seen_clss: dict[Union[str, AllowedSPI.Selector], AllowedSPI] = {}
+        seen_syms: dict[AllowedSPI.Declaration, AllowedSPI] = {}
+        seen_sels: dict[AllowedSPI.Declaration, AllowedSPI] = {}
+        seen_clss: dict[AllowedSPI.Declaration, AllowedSPI] = {}
+
+        def validating_list(items: list[T]) -> list[T]:
+            if not isinstance(items, list):
+                raise ValidationError('expected a list', filename,
+                                      *line_info[id(items)])
+            return items
+
         for reason in AllowedReason:
             for entry in doc.pop(reason.value, []):
-                clss = entry.pop('classes', [])
-                reqs = entry.pop('requires', [])
+                clss = []
+                for name in validating_list(entry.pop('classes', [])):
+                    line, cols = line_info[id(name)]
+                    clss.append(AllowedSPI.Declaration(name, line, cols))
+                reqs = validating_list(entry.pop('requires', []))
                 sels = []
-                for sel in entry.pop('selectors', []):
+                for sel in validating_list(entry.pop('selectors', [])):
                     receiver = sel.get('class')
-                    sels.append(AllowedSPI.Selector(sel['name'],
-                                                    None if receiver == '?' else receiver))
+                    line, cols = line_info[id(sel)]
+                    sels.append(AllowedSPI.Selector(
+                        name=sel['name'],
+                        class_=None if receiver == '?' else receiver,
+                        line=line, cols=cols
+                    ))
                 # Symbols use C-style name mangling rules (implicit leading
                 # underscore), so that the names of C symbols in allowlists
                 # match their spelling in code. Internally, symbols are tracked
                 # in their raw form.
                 syms = []
-                for sym in entry.pop('symbols', []):
-                    syms.append(f'_{sym}')
+                for sym in validating_list(entry.pop('symbols', [])):
+                    line, cols = line_info[id(sym)]
+                    syms.append(AllowedSPI.Declaration(f'_{sym}', line, cols))
 
                 swift_decls = []
-                for decl in entry.pop('swift-decls', []):
-                    decl = AllowedSPI.SwiftDecl(**decl)
+                for decl in validating_list(entry.pop('swift-decls', [])):
+                    line, cols = line_info[id(decl)]
+                    decl = AllowedSPI.SwiftDecl(**decl, line=line, cols=cols)
                     swift_decls.append(decl)
 
                 bugs = AllowedSPI.Bugs(entry.pop('request', None),
@@ -163,18 +199,22 @@ class AllowList:
                 requires_sdk: list[AllowedSPI.RequiredVersion] = []
                 for required_versions, key in ((requires_os, 'requires-os'),
                                                (requires_sdk, 'requires-sdk')):
-                    for clause in entry.pop(key, []):
+                    for clause in validating_list(entry.pop(key, [])):
                         m = VERSION_REQ.fullmatch(clause)
                         if not m:
-                            raise ValueError('unmatched requirement '
-                                             f'clause: "{clause}"')
+                            raise ValidationError(
+                                '<input file>:6:16: unmatched requirement clause',
+                                filename, *line_info[id(clause)]
+                            )
                         platform, op, version = m.group('platform', 'op',
                                                         'version')
                         if version.endswith('*'):
                             if op != '<=':
-                                raise ValueError('wildcard in required version '
-                                                 'only supported when operator '
-                                                 f'is "<=": "{clause}"')
+                                raise ValidationError(
+                                    'wildcard in required version only '
+                                    'supported when operator is "<="',
+                                    filename, *line_info[id(clause)]
+                                )
                             op, version = _transform_wildcard_version(op, version)
                         required_versions.append(
                             AllowedSPI.RequiredVersion(platform, op,
@@ -193,9 +233,11 @@ class AllowList:
                         # temporary usage does not require new API to resolve.
                         # For example, using SPI to work around a bug in an
                         # underlying framework.
-                        raise ValueError('Allowlist entries marked '
-                                         'temporary-usage must have a '
-                                         f'"cleanup" bug: {allow}')
+                        raise ValidationError(
+                            'Allowlist entries marked temporary-usage must '
+                            'have a "cleanup" bug',
+                            filename, *line_info[id(entry)]
+                        )
                 elif reason == AllowedReason.STAGING:
                     pass
                     # FIXME: Disabled while allowlist entries are cleaned up,
@@ -211,42 +253,32 @@ class AllowList:
                                          f'"request" bug: {allow}')
 
                 if entry:
-                    raise ValueError('Unrecognized items in allowlist entry: '
-                                     f'{entry}')
-
-                # Validate that each section is a list (not a string, to avoid
-                # treating each character as a separate declaration), and that
-                # there are no repeats.
-                for items, prevs in (
-                    (syms, seen_syms),
-                    (sels, seen_sels),
-                    (clss, seen_clss),
-                    # Repeats in different `requires` lists are allowed, though
-                    # repeats in the same list should be detected.
-                    (reqs, {}),
-                ):
-                    if isinstance(items, str):
-                        raise ValueError(f'"{items}" in allowlist is a '
-                                         'string, expected a list')
-                    for item in items:
-                        if (prev := prevs.get(item)) and prev.requires == reqs:
-                            raise ValueError(f'"{item}" in "{bugs.request}" '
-                                             'already mentioned in allowlist '
-                                             f'at "{prev.bugs.request}".')
-                        prevs[item] = allow
+                    raise ValidationError(
+                        f'Unrecognized items in allowlist entry: {entry}',
+                        filename, *line_info[id(entry)]
+                    )
                 entries.append(allow)
         if doc:
-            raise ValueError(f'Unrecognized items in allowlist: {doc.keys()}')
+            raise ValidationError(
+                f'Unrecognized items in allowlist: {doc.keys()}',
+                filename, line=1, cols=1
+            )
         return cls(entries)
 
     @classmethod
     def from_file(cls, config_file: Path) -> AllowList:
+        return cls.from_text(config_file.read_text(),
+                             filename=str(config_file))
+
+    @classmethod
+    def from_text(cls, text: str, filename='<input file>') -> AllowList:
         try:
-            doc = tomllib.load(config_file.open('rb'))
+            doc, line_info = loads_with_lines(text)
         except tomllib.TOMLDecodeError as error:
             if sys.version_info < (3, 11):
-                raise ValueError(f'{config_file}: error: decode failed') from error
+                raise ValueError(f'{filename}: error: decode failed') from error
             else:
-                error.add_note(f'{config_file}: error: decode failed"')
+                error.add_note(f'{filename}: error: decode failed"')
                 raise
-        return cls.from_dict(doc)
+        return cls._from_dict(doc, line_info=line_info, filename=filename)
+

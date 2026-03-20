@@ -59,25 +59,27 @@ R_MissingSwiftSymbol2 = MissingName(name='_$s4Test6WKTestC3fooyyF',
 R_MissingClass = MissingName(name='WKDoesntExist', file=F_Client, arch='arm64e', kind=OBJC_CLS)
 R_MissingSelector = MissingName(name='initWithData:', file=F_Client, arch='arm64e', kind=OBJC_SEL)
 
-A = AllowList.from_dict({'temporary-usage': [
-    {'request': 'rdar://12345',
-     'cleanup': 'rdar://12346',
-     'classes': ['WKDoesntExist'],
-     'selectors': [{'name': 'initWithData:', 'class': '?'}],
-     'symbols': ['WKDoesntExistLibraryVersion'],
-     'swift-decls': [{'name': 'Test.WKTest'}]}
-]})
+A = AllowList.from_text('''
+[[temporary-usage]]
+request = "rdar://12345"
+cleanup = "rdar://12346"
+classes = ["WKDoesntExist"]
+selectors = [{name = "initWithData:", class = "?"}]
+symbols = ["WKDoesntExistLibraryVersion"]
+swift-decls = [{name = "Test.WKTest"}]
+''')
 A_File = Path('/allowed.toml')
 A_Hash = 23456
-A_ExplicitlyAllowUnused = AllowList.from_dict({'temporary-usage': [
-    {'request': 'rdar://12345',
-     'cleanup': 'rdar://12346',
-     'classes': ['WKDoesntExist'],
-     'selectors': [{'name': 'initWithData:', 'class': '?'}],
-     'symbols': ['WKDoesntExistLibraryVersion'],
-     'swift-decls': [{'name': 'Test.WKTest'}],
-     'allow-unused': True}
-]})
+A_ExplicitlyAllowUnused = AllowList.from_text('''
+[[temporary-usage]]
+request = "rdar://12345"
+cleanup = "rdar://12346"
+classes = ["WKDoesntExist"]
+selectors = [{name = "initWithData:", class = "?"}]
+symbols = ["WKDoesntExistLibraryVersion"]
+swift-decls = [{name = "Test.WKTest"}]
+allow-unused = true
+''')
 
 A_UnusedAllow = UnusedAllowedName(name='WKDoesntExist', file=A_File,
                                   kind=OBJC_CLS)
@@ -93,57 +95,62 @@ R_Uses_Own_Selector = APIReport(
     platform='iOS', min_os='1.0', sdk='1.0'
 )
 
-A_Conditional = AllowList.from_dict({'temporary-usage': [
-    {'request': 'rdar://12345',
-     'cleanup': 'rdar://12346',
-     'classes': ['WKDoesntExist'],
-     'selectors': [{'name': 'initWithData:', 'class': '?'}],
-     'symbols': ['WKDoesntExistLibraryVersion'],
-     'swift-decls': [{'name': 'Test.WKTest'}],
-     'requires': ['ENABLE_FEATURE'],
-     'requires-os': ['iOS>=1.0'],
-     'requires-sdk': ['iOS < 99']}
-]})
+A_Conditional = AllowList.from_text('''
+[[temporary-usage]]
+request = "rdar://12345"
+cleanup = "rdar://12346"
+classes = ["WKDoesntExist"]
+selectors = [{name = "initWithData:", class = "?"}]
+symbols = ["WKDoesntExistLibraryVersion"]
+swift-decls = [{name = "Test.WKTest"}]
+requires = ["ENABLE_FEATURE"]
+requires-os = ["iOS>=1.0"]
+requires-sdk = ["iOS < 99"]
+''')
 
-A_NegatedConditional = AllowList.from_dict({'temporary-usage': [
-    {'request': 'rdar://12345',
-     'cleanup': 'rdar://12346',
-     'classes': ['WKDoesntExist'],
-     'selectors': [{'name': 'initWithData:', 'class': '?'}],
-     'symbols': ['WKDoesntExistLibraryVersion'],
-     'swift-decls': [{'name': 'Test.WKTest'}],
-     'requires': ['!ENABLE_FEATURE']}
-]})
+A_NegatedConditional = AllowList.from_text('''
+[[temporary-usage]]
+request = "rdar://12345"
+cleanup = "rdar://12346"
+classes = ["WKDoesntExist"]
+selectors = [{name = "initWithData:", class = "?"}]
+symbols = ["WKDoesntExistLibraryVersion"]
+swift-decls = [{name = "Test.WKTest"}]
+requires = ["!ENABLE_FEATURE"]
+''')
 
-A_MultipleConditions = AllowList.from_dict({'temporary-usage': [
-    {'request': 'rdar://12345',
-     'cleanup': 'rdar://12346',
-     'classes': ['WKDoesntExist'],
-     'selectors': [{'name': 'initWithData:', 'class': '?'}],
-     'symbols': ['WKDoesntExistLibraryVersion'],
-     'swift-decls': [{'name': 'Test.WKTest'}],
-     'requires': ['ENABLE_A', 'ENABLE_B', '!ENABLE_C']}
-]})
+A_MultipleConditions = AllowList.from_text('''
+[[temporary-usage]]
+request = "rdar://12345"
+cleanup = "rdar://12346"
+classes = ["WKDoesntExist"]
+selectors = [{name = "initWithData:", class = "?"}]
+symbols = ["WKDoesntExistLibraryVersion"]
+swift-decls = [{name = "Test.WKTest"}]
+requires = ["ENABLE_A", "ENABLE_B", "!ENABLE_C"]
+''')
 
-A_QualifiedSelector = AllowList.from_dict({'temporary-usage': [
-    {'request': 'rdar://12345',
-     'cleanup': 'rdar://12346',
-     'classes': ['WKDoesntExist'],
-     'selectors': [{'name': 'initWithData:', 'class': 'WKDoesntExist'}],
-     'symbols': ['WKDoesntExistLibraryVersion'],
-     'swift-decls': [{'name': 'Test.WKTest'}]}
-]})
+A_QualifiedSelector = AllowList.from_text('''
+[[temporary-usage]]
+request = "rdar://12345"
+cleanup = "rdar://12346"
+classes = ["WKDoesntExist"]
+selectors = [{name = "initWithData:", class = "WKDoesntExist"}]
+symbols = ["WKDoesntExistLibraryVersion"]
+swift-decls = [{name = "Test.WKTest"}]
+''')
 
-A_NonmatchingOS = AllowList.from_dict({'temporary-usage': [
-    {'request': 'rdar://12345',
-     'cleanup': 'rdar://12346',
-     'classes': ['WKDoesntExist'],
-     'selectors': [{'name': 'initWithData:', 'class': '?'}],
-     'symbols': ['WKDoesntExistLibraryVersion'],
-     'swift-decls': [{'name': 'Test.WKTest'}],
-     'requires': ['ENABLE_FEATURE'],
-     'requires-os': ['iOS>=99.0']}
-]})
+A_NonmatchingOS = AllowList.from_text('''
+[[temporary-usage]]
+request = "rdar://12345"
+cleanup = "rdar://12346"
+classes = ["WKDoesntExist"]
+selectors = [{name = "initWithData:", class = "?"}]
+symbols = ["WKDoesntExistLibraryVersion"]
+swift-decls = [{name = "Test.WKTest"}]
+requires = ["ENABLE_FEATURE"]
+requires-os = ["iOS>=99.0"]
+''')
 
 S = {
     'PublicSDKContentRoot': [{
@@ -239,7 +246,7 @@ class TestSDKDB(TestCase):
         new_hash = F_Hash + 1
         with self.sdkdb:
             self.assertFalse(self.sdkdb._cache_hit_preparing_to_insert(F, new_hash))
-            self.sdkdb._add_api_report(new_report, new_hash)
+            self.sdkdb._add_api_report(new_report, F)
 
         # ...the old exports should be removed:
         diagnostics = set(self.audit_with(R_Client))
@@ -405,9 +412,10 @@ class TestSDKDB(TestCase):
         self.add_allowlist()
         self.reconnect()
 
-        other_allowlist = AllowList.from_dict(
-            {'legacy': [{'selectors': [{'name': 'initWithData:',
-                                        'class': '?'}]}]})
+        other_allowlist = AllowList.from_text('''
+[[legacy]]
+selectors = [{name = "initWithData:", class = "?"}]
+''')
         other_file = Path('/allowed2.toml')
         with self.sdkdb:
             self.sdkdb._cache_hit_preparing_to_insert(other_file, 34567890)
@@ -420,9 +428,10 @@ class TestSDKDB(TestCase):
         self.reconnect()
         self.add_library()
 
-        other_allowlist = AllowList.from_dict(
-            {'legacy': [{'selectors': [{'name': 'initWithData:',
-                                                'class': '?'}]}]})
+        other_allowlist = AllowList.from_text('''
+[[legacy]]
+selectors = [{name = "initWithData:", class = "?"}]
+''')
         other_file = Path('/allowed2.toml')
         with self.sdkdb:
             self.sdkdb._cache_hit_preparing_to_insert(other_file, 34567890)
@@ -440,9 +449,10 @@ class TestSDKDB(TestCase):
         self.add_allowlist()
         self.add_library()
 
-        other_allowlist = AllowList.from_dict(
-            {'legacy': [{'selectors': [{'name': 'initWithData:',
-                                                'class': '?'}]}]})
+        other_allowlist = AllowList.from_text('''
+[[legacy]]
+selectors = [{name = "initWithData:", class = "?"}]
+''')
         other_file = Path('/allowed2.toml')
         with self.sdkdb:
             self.sdkdb._cache_hit_preparing_to_insert(other_file, 34567890)
@@ -457,13 +467,14 @@ class TestSDKDB(TestCase):
                                              exported_in=F), diagnostics)
 
     def test_audit_allow_different_fully_qualified_methods_same_name(self):
-        allowlist = AllowList.from_dict({'temporary-usage': [
-            {'request': 'rdar://12345',
-             'cleanup': 'rdar://12346',
-             'classes': ['WKDoesntExist'],
-             'selectors': [{'name': 'initWithData:', 'class': 'WKDoesntExist'}],
-             'symbols': ['WKDoesntExistLibraryVersion']}
-        ]})
+        allowlist = AllowList.from_text('''
+[[temporary-usage]]
+request = "rdar://12345"
+cleanup = "rdar://12346"
+classes = ["WKDoesntExist"]
+selectors = [{name = "initWithData:", class = "WKDoesntExist"}]
+symbols = ["WKDoesntExistLibraryVersion"]
+        ''')
         self.add_allowlist(allowlist)
         client = APIReport(file=F_Client, arch='arm64e',
                            platform='iOS', min_os='1.0', sdk='1.0',
