@@ -82,10 +82,12 @@ allow-unused = true
 ''')
 
 A_UnusedAllow = UnusedAllowedName(name='WKDoesntExist', file=A_File,
-                                  kind=OBJC_CLS)
+                                  line=5, cols=12, kind=OBJC_CLS)
 A_AllowedAPI = UnnecessaryAllowedName(name='WKDoesntExist', file=A_File,
+                                      line=5, cols=12,
                                       kind=OBJC_CLS, exported_in=F)
 A_AllowedSwift = UnusedAllowedName(name='_$s4Test6WKTest%', file=A_File,
+                                   line=8, cols=16,
                                    kind=SYMBOL)
 
 R_Uses_Own_Selector = APIReport(
@@ -175,8 +177,12 @@ S_SwiftSymbols = {
 }
 S_File = Path('/Foundation.partial.sdkdb')
 S_Hash = 3456789
-S_UnnecessarySelector = UnnecessaryAllowedName(name='initWithData:', file=A_File, kind=OBJC_SEL, exported_in=S_File)
+S_UnnecessarySelector = UnnecessaryAllowedName(name='initWithData:',
+                                               file=A_File, kind=OBJC_SEL,
+                                               line=6, cols=14,
+                                               exported_in=S_File)
 S_UnnecessarySwiftDecl = UnnecessaryAllowedName(name="_$s4Test6WKTest%",
+                                                line=8, cols=16,
                                                 file=A_File, kind=SYMBOL,
                                                 exported_in=S_File)
 
@@ -333,7 +339,7 @@ class TestSDKDB(TestCase):
     def test_audit_unnecessary_allow_from_selector(self):
         self.add_partial_sdkdb()
         self.add_allowlist()
-        self.assertIn(S_UnnecessarySelector, self.audit_with(R_Client))
+        self.assertIn(S_UnnecessarySelector, list(self.audit_with(R_Client)))
 
     def test_audit_unnecessary_allow_from_swift_partial_symbol(self):
         self.add_partial_sdkdb(S_SwiftSymbols)
@@ -387,7 +393,7 @@ class TestSDKDB(TestCase):
 
     def test_audit_unused_allow_from_swift_decl(self):
         self.add_allowlist()
-        self.assertIn(A_AllowedSwift, self.sdkdb.audit())
+        self.assertIn(A_AllowedSwift, list(self.sdkdb.audit()))
 
     def test_audit_no_unused_allow_from_unloaded_allowlist(self):
         self.add_allowlist()
@@ -440,9 +446,11 @@ selectors = [{name = "initWithData:", class = "?"}]
         diagnostics = list(self.audit_with(R_Client))
         self.assertIn(UnnecessaryAllowedName(name='initWithData:',
                                              kind=OBJC_SEL, file=other_file,
+                                             line=3, cols=14,
                                              exported_in=F), diagnostics)
         self.assertNotIn(UnnecessaryAllowedName(name='initWithData:',
                                                 kind=OBJC_SEL, file=A_File,
+                                                line=3, cols=14,
                                                 exported_in=F), diagnostics)
 
     def test_audit_unused_allow_multiple_allowlists(self):
@@ -461,9 +469,11 @@ selectors = [{name = "initWithData:", class = "?"}]
         diagnostics = list(self.audit_with(R_Client))
         self.assertIn(UnnecessaryAllowedName(name='initWithData:',
                                              kind=OBJC_SEL, file=other_file,
+                                             line=3, cols=14,
                                              exported_in=F), diagnostics)
         self.assertIn(UnnecessaryAllowedName(name='initWithData:',
                                              kind=OBJC_SEL, file=A_File,
+                                             line=6, cols=14,
                                              exported_in=F), diagnostics)
 
     def test_audit_allow_different_fully_qualified_methods_same_name(self):
@@ -495,6 +505,7 @@ symbols = ["WKDoesntExistLibraryVersion"]
                                     '_OBJC_CLASS_$_WKDoesntExist'},
                            selrefs={'initWithData:'})
         self.assertIn(UnnecessaryAllowedName(name='initWithData:', file=A_File,
+                                             line=6, cols=14,
                                              kind=OBJC_SEL,
                                              exported_in=F_Client),
                       self.audit_with(client))
@@ -514,5 +525,6 @@ symbols = ["WKDoesntExistLibraryVersion"]
         self.add_allowlist()
         self.assertIn(UnnecessaryAllowedName(name='initWithData:',
                                              kind=OBJC_SEL, file=A_File,
+                                             line=6, cols=14,
                                              exported_in=F),
                       self.audit_with(R_Client))

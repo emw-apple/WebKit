@@ -39,7 +39,7 @@ from .swift_mangle import mangle_partial
 
 # Increment this number to force clients to rebuild from scratch, to
 # accomodate schema changes or fix caching bugs.
-VERSION = 9
+VERSION = 10
 
 
 class DeclarationKind(Enum):
@@ -111,12 +111,16 @@ class MissingName(NamedTuple):
 class UnusedAllowedName(NamedTuple):
     name: str
     file: Path
+    line: int
+    cols: int
     kind: DeclarationKind
 
 
 class UnnecessaryAllowedName(NamedTuple):
     name: str
     file: Path
+    line: int
+    cols: int
     kind: DeclarationKind
     exported_in: Path
 
@@ -195,7 +199,8 @@ class SDKDB:
         cur.execute('CREATE TABLE allow('
                     '   name, class_name, allow_unused, kind DeclarationKind, '
                     '   cond_id, input_file REFERENCES input_file(path) '
-                    '                       ON DELETE CASCADE)')
+                    '                       ON DELETE CASCADE, '
+                    '   line, cols)')
         cur.execute('CREATE INDEX allow_names ON allow (name, kind)')
         cur.execute('CREATE TABLE condition_chain(name, '
                     "   op CHECK (op IN ('==', '!=', '<', '<=', '>', '>=')), "
@@ -331,11 +336,11 @@ class SDKDB:
             elif self == self.ALLOW:
                 return (f'INSERT INTO allow VALUES ({escape_for_like_sql(":name")}, :class_name, '
                         '                           :allow_unused, :kind, '
-                        '                           :cond, :file)')
+                        '                           :cond, :file, :line, :cols)')
             elif self == self.ALLOW_PREFIX:
                 return (f'INSERT INTO allow VALUES ({escape_for_like_sql(":name")} || "%", :class_name, '
                         '                           :allow_unused, :kind, '
-                        '                           :cond, :file)')
+                        '                           :cond, :file, :line, :cols)')
             else:
                 raise RuntimeError('unreachable')
 
@@ -417,16 +422,19 @@ class SDKDB:
                 cond_id = cur.lastrowid
             for symbol in entry.symbols:
                 self._add_symbol(symbol.name, allowlist,
+                                 line=symbol.line, cols=symbol.cols,
                                  dest=self.InsertionKind.ALLOW,
                                  cond_id=cond_id,
                                  allow_unused=entry.allow_unused)
             for class_ in entry.classes:
                 self._add_objc_class(class_.name, allowlist,
+                                     line=class_.line, cols=class_.cols,
                                      dest=self.InsertionKind.ALLOW,
                                      cond_id=cond_id,
                                      allow_unused=entry.allow_unused)
             for sel in entry.selectors:
                 self._add_objc_selector(sel.name, sel.class_, allowlist,
+                                        line=sel.line, cols=sel.cols,
                                         dest=self.InsertionKind.ALLOW,
                                         cond_id=cond_id,
                                         allow_unused=entry.allow_unused)
@@ -435,6 +443,7 @@ class SDKDB:
                                          extension_module=decl.extension,
                                          extension_base_depth=decl.extension_base_depth)  # TODO: adjust
                 self._add_symbol(mangled, allowlist,
+                                 line=decl.line, cols=decl.cols,
                                  dest=self.InsertionKind.ALLOW_PREFIX,
                                  cond_id=cond_id,
                                  allow_unused=entry.allow_unused)
@@ -493,9 +502,18 @@ class SDKDB:
                     # Then cross-check imports and allowed declarations against
                     # exports.
                     'SELECT i.arch, i.kind, i.input_file, replace(i.name, "\\", ""), '
-                    '       a.kind, group_concat(aw.input_file), replace(a.name, "\\", ""), '
+                    #       Allowlist related fields. 
+                    '       a.kind, group_concat(aw.input_file ORDER BY a.rowid), '
+                    '           group_concat(a.line ORDER BY a.rowid) FILTER (WHERE aw.input_file = a.input_file), '
+                    '           group_concat(a.cols ORDER BY a.rowid) FILTER (WHERE aw.input_file = a.input_file), '
+                    '           replace(a.name, "\\", ""), '
                     '           min(a.allow_unused), '
+                    #       Export-related fields.
                     '       group_concat(ew.input_file), '
+                    #       Aggregate counters. `export_found` is whether this
+                    #       row represents an exported declaration in the SDK.
+                    #       `allow_found` is whether this row represents a
+                    #       declaration from an allowlist.
                     '       sum(e.name IS NOT NULL AND '
                     '           ew.input_file IS NOT NULL) as export_found, '
                     '       sum(a.name IS NOT NULL AND '
@@ -534,7 +552,7 @@ class SDKDB:
                     'ORDER BY i.input_file, i.kind, a.kind, i.name, a.name')
         seen_partial_symbols: set[str] = set()
         for (arch, import_kind, input_path, import_name,
-             allowed_kind, allowlist_paths, allowed_name, allow_unused,
+             allowed_kind, allowlist_paths, allowlist_lines, allowlist_colss, allowed_name, allow_unused,
              export_paths, export_found, allow_found) in cur.fetchall():
             if import_name and not export_found and not allow_found:
                 # Imported but neither exported nor allowed => possible SPI.
@@ -545,23 +563,36 @@ class SDKDB:
                 # FIXME: split(',') falls apart if an allowlist path contains a
                 # comma. We could improve this by using quote() in the query
                 # and unquoting here.
-                for path in sorted(set(allowlist_paths.split(','))):
-                    yield UnusedAllowedName(name=allowed_name, file=Path(path),
-                                            kind=allowed_kind)
+                for path, line, cols in sorted(set(zip(
+                    allowlist_paths.split(','),
+                    allowlist_lines.split(','),
+                    allowlist_colss.split(','),
+                ))):
+                    yield UnusedAllowedName(name=allowed_name,
+                                            kind=allowed_kind,
+                                            file=Path(path),
+                                            line=int(line),
+                                            cols=int(cols))
             elif allow_found and export_found:
+                # Allowed but also exported => unnecessary allowlist entry to
+                # remove.
                 if allowed_kind == SYMBOL and allowed_name.endswith('%'):
                     if allowed_name in seen_partial_symbols:
                         continue
                     seen_partial_symbols.add(allowed_name)
-                # Allowed but also exported => unnecessary allowlist entry to
-                # remove.
-                for path in sorted(set(allowlist_paths.split(','))):
+                for path, line, cols in sorted(set(zip(
+                    allowlist_paths.split(','),
+                    allowlist_lines.split(','),
+                    allowlist_colss.split(','),
+                ))):
                     # Normally, a declaration would only be exported from one
                     # library in the SDK. If the cache sees multiple sources,
                     # just pick one.
                     export_path = min(export_paths.split(','))
                     yield UnnecessaryAllowedName(name=allowed_name,
                                                  file=Path(path),
+                                                 line=int(line),
+                                                 cols=int(cols),
                                                  kind=allowed_kind,
                                                  exported_in=Path(export_path))
 
@@ -595,33 +626,40 @@ class SDKDB:
                 self._add_symbol(f'_OBJC_IVAR_$_{class_name}.{ivar["name"]}',
                                  file, dest=dest)
 
-    def _add_symbol(self, name: str, file: Path,
+    def _add_symbol(self, name: str, file: Path, *,
+                    line: Optional[int] = None,
+                    cols: Optional[int] = None,
                     dest=InsertionKind.EXPORTS,
                     allow_unused: Optional[bool] = None,
                     cond_id: Optional[int] = None):
         cur = self.con.cursor()
         params = dict(name=name, class_name=None, kind=SYMBOL,
                       file=str(file.resolve()), cond=cond_id,
-                      allow_unused=allow_unused)
+                      allow_unused=allow_unused, line=line, cols=cols)
         cur.execute(dest.statement, params)
 
 
-    def _add_objc_class(self, name: str, file: Path,
+    def _add_objc_class(self, name: str, file: Path, *,
+                        line: Optional[int] = None,
+                        cols: Optional[int] = None,
                         dest=InsertionKind.EXPORTS,
                         allow_unused: Optional[bool] = None,
                         cond_id: Optional[int] = None):
         cur = self.con.cursor()
         params = dict(name=name, class_name=None, kind=OBJC_CLS,
                       file=str(file.resolve()), cond=cond_id,
-                      allow_unused=allow_unused)
+                      allow_unused=allow_unused, line=line, cols=cols)
         cur.execute(dest.statement, params)
 
     def _add_objc_selector(self, name: str, class_name: Optional[str],
-                           file: Path, dest=InsertionKind.EXPORTS,
+                           file: Path, *,
+                           line: Optional[int] = None, 
+                           cols: Optional[int] = None,
+                           dest=InsertionKind.EXPORTS,
                            allow_unused: Optional[bool] = None,
                            cond_id: Optional[int] = None):
         cur = self.con.cursor()
         params = dict(name=name, class_name=class_name,
                       kind=OBJC_SEL, file=str(file.resolve()), cond=cond_id,
-                      allow_unused=allow_unused)
+                      allow_unused=allow_unused, line=line, cols=cols)
         cur.execute(dest.statement, params)

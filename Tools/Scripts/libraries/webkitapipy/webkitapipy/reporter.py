@@ -1,5 +1,6 @@
 from __future__ import annotations
 from fnmatch import fnmatch
+from pathlib import Path
 from . import program
 from .sdkdb import SDKDB, Diagnostic, MissingName, UnusedAllowedName, UnnecessaryAllowedName, SYMBOL, OBJC_CLS, OBJC_SEL
 
@@ -60,6 +61,22 @@ class BuildToolReporter(Reporter):
         self.emit_errors = args.errors
         self.suggested_allowlists = [path for path in (args.allowlists or ())
                                      if 'legacy' not in path.name]
+        self.file_line_cache: dict[Path, list[str]] = {}
+
+    def _annotate_file(self, path: Path, line: int, cols: int, context=2) -> str:
+        if path not in self.file_line_cache:
+            self.file_line_cache[path] = path.read_text().splitlines()
+        from_idx, to_idx = max(0, line - context - 1), min(len(self.file_line_cache[path]), line + context)
+        lines = self.file_line_cache[path][from_idx:to_idx]
+        result = ''
+        idx_w = len(str(to_idx - 1))
+        for idx, text in zip(range(from_idx, to_idx), lines):
+            line_number = idx + 1
+            result += f' {line_number:{idx_w}d} | {text}\n'
+            if line_number == line:
+                result += '~' * (idx_w + 3 + cols)
+                result += '^\n'
+        return result
 
     def format_diagnostic(self, diag: Diagnostic) -> str:
         severity = 'error' if self.emit_errors else 'warning'
@@ -67,16 +84,18 @@ class BuildToolReporter(Reporter):
             return (f'{diag.file}({diag.arch}): {severity}: unrecognized '
                     f'{diag.kind} "{self.demangle_name(diag)}"')
         elif isinstance(diag, UnusedAllowedName):
-            return (f'{diag.file}: {severity}: allowed {diag.kind} '
-                    f'"{self.demangle_name(diag)}" is not used')
+            return (f'{diag.file}:{diag.line}:{diag.cols}: {severity}: allowed {diag.kind} '
+                    f'"{self.demangle_name(diag)}" is not used\n') + \
+                self._annotate_file(diag.file, diag.line, diag.cols)
         elif isinstance(diag, UnnecessaryAllowedName):
             # FIXME: exported_in is the name of the loaded file, which can be a
             # .sdkdb or .tbd that doesn't correspond to the library name on the
             # system. It would be preferable to track the install name that the
             # declaration will be implemented in, and surface that here.
-            return (f'{diag.file}: {severity}: allowed {diag.kind} '
+            return (f'{diag.file}:{diag.line}:{diag.cols}: {severity}: allowed {diag.kind} '
                     f'"{self.demangle_name(diag)}" is exported from '
-                    f'"{diag.exported_in.name}" and can be removed')
+                    f'"{diag.exported_in.name}" and can be removed\n') + \
+                self._annotate_file(diag.file, diag.line, diag.cols)
 
     def allowlist_entry(self):
         missing_names = [d for d in self.issues if isinstance(d, MissingName)]
