@@ -94,8 +94,7 @@ framework module JavaScriptCore_Private [system] {
 
     explicit module Cxx {
         // This Cxx module is essentially "PrivateHeaders" minus any headers that do not actually require C++.
-
-        umbrella "PrivateHeaders"
+        umbrella header "JavaScriptCoreWebKitAPI.h"
 
         // Ideally, no headers in this module should need `requires cplusplus` and instead just have
         // compile-time guards themselves. However, this is not practical due to the large private interface

@@ -1741,8 +1741,6 @@
 		A7FB61001040C38B0017A286 /* PropertyDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FB604B103F5EAB0017A286 /* PropertyDescriptor.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		A7FCC26D17A0B6AA00786D1A /* FTLSwitchCase.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FCC26C17A0B6AA00786D1A /* FTLSwitchCase.h */; };
 		AA45D14F2EB82FEB00FCBD16 /* CachedCallInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = AA45D14E2EB82FEB00FCBD16 /* CachedCallInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		E30001002EF0001000000004 /* MicrotaskCall.h in Headers */ = {isa = PBXBuildFile; fileRef = E30001002EF0001000000001 /* MicrotaskCall.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		E30001002EF0001000000005 /* MicrotaskCallInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = E30001002EF0001000000002 /* MicrotaskCallInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		AA785BEB2E77BECA0097F688 /* JSPromiseCombinatorsContext.h in Headers */ = {isa = PBXBuildFile; fileRef = AA785BEA2E77BECA0097F688 /* JSPromiseCombinatorsContext.h */; };
 		AA785BEE2E77BED70097F688 /* JSPromiseCombinatorsContextInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = AA785BED2E77BED70097F688 /* JSPromiseCombinatorsContextInlines.h */; };
 		AD00659E1ECAC812000CA926 /* WasmLimits.h in Headers */ = {isa = PBXBuildFile; fileRef = AD00659D1ECAC7FE000CA926 /* WasmLimits.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -1948,6 +1946,7 @@
 		DD546FEC29CD2A5D00A5173B /* AirTmpWidthInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FEC858F2BDACDC70080FF74 /* AirTmpWidthInlines.h */; };
 		DD5F74F9283EF58D0027A8C6 /* copy-profiling-data.sh in Headers */ = {isa = PBXBuildFile; fileRef = DD5F74F8283EF4380027A8C6 /* copy-profiling-data.sh */; settings = {ATTRIBUTES = (Private, ); }; };
 		DDB04F41278E569A008D3678 /* libWTF.a in Product Dependencies */ = {isa = PBXBuildFile; fileRef = 1498CAD3214656C400710879 /* libWTF.a */; };
+		DDE748452F772BC0008013AB /* JavaScriptCoreWebKitAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = DDE748442F772BC0008013AB /* JavaScriptCoreWebKitAPI.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		DDE99312278D089000F60D26 /* libWebKitAdditions.a in Product Dependencies */ = {isa = PBXBuildFile; fileRef = DDE9930E278D086600F60D26 /* libWebKitAdditions.a */; };
 		DE26E9031CB5DD0500D2BE82 /* BuiltinExecutableCreator.h in Headers */ = {isa = PBXBuildFile; fileRef = DE26E9021CB5DD0500D2BE82 /* BuiltinExecutableCreator.h */; };
 		DEA7E2451BBC677F00D78440 /* JSTypedArrayViewPrototype.h in Headers */ = {isa = PBXBuildFile; fileRef = 53917E7C1B791106000EBD33 /* JSTypedArrayViewPrototype.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -5498,9 +5497,6 @@
 		A8E894310CD0602400367179 /* JSCallbackObjectFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCallbackObjectFunctions.h; sourceTree = "<group>"; };
 		A8E894330CD0603F00367179 /* JSGlobalObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSGlobalObject.h; sourceTree = "<group>"; };
 		AA45D14E2EB82FEB00FCBD16 /* CachedCallInlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CachedCallInlines.h; sourceTree = "<group>"; };
-		E30001002EF0001000000001 /* MicrotaskCall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MicrotaskCall.h; sourceTree = "<group>"; };
-		E30001002EF0001000000002 /* MicrotaskCallInlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MicrotaskCallInlines.h; sourceTree = "<group>"; };
-		E30001002EF0001000000003 /* MicrotaskCall.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MicrotaskCall.cpp; sourceTree = "<group>"; };
 		AA785BEA2E77BECA0097F688 /* JSPromiseCombinatorsContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPromiseCombinatorsContext.h; sourceTree = "<group>"; };
 		AA785BEC2E77BECF0097F688 /* JSPromiseCombinatorsContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JSPromiseCombinatorsContext.cpp; sourceTree = "<group>"; };
 		AA785BED2E77BED70097F688 /* JSPromiseCombinatorsContextInlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSPromiseCombinatorsContextInlines.h; sourceTree = "<group>"; };
@@ -5789,6 +5785,7 @@
 		DD71812F2E21D3B700A096B7 /* AllowedSPI.toml */ = {isa = PBXFileReference; lastKnownFileType = text; path = AllowedSPI.toml; sourceTree = "<group>"; };
 		DD7181302E21D3B700A096B7 /* AllowedSPI-legacy.toml */ = {isa = PBXFileReference; lastKnownFileType = text; path = "AllowedSPI-legacy.toml"; sourceTree = "<group>"; };
 		DDA35E4D29CACFDE006C1018 /* ExtraSymbolsForTAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExtraSymbolsForTAPI.h; sourceTree = "<group>"; };
+		DDE748442F772BC0008013AB /* JavaScriptCoreWebKitAPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JavaScriptCoreWebKitAPI.h; sourceTree = "<group>"; };
 		DDE9930E278D086600F60D26 /* libWebKitAdditions.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libWebKitAdditions.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE26E9021CB5DD0500D2BE82 /* BuiltinExecutableCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuiltinExecutableCreator.h; sourceTree = "<group>"; };
 		DE26E9061CB5DD9600D2BE82 /* BuiltinExecutableCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BuiltinExecutableCreator.cpp; sourceTree = "<group>"; };
@@ -6633,6 +6630,7 @@
 				07A564652E6250D900DEC7C4 /* JavaScriptCore_Private.modulemap */,
 				44F93E0D2AE71F9F00FFA37C /* JavaScriptCoreFramework.cpp */,
 				F5C290E60284F98E018635CA /* JavaScriptCorePrefix.h */,
+				DDE748442F772BC0008013AB /* JavaScriptCoreWebKitAPI.h */,
 				45E12D8806A49B0F00E9DF84 /* jsc.cpp */,
 				A7C225CC139981F100FF1662 /* KeywordLookupGenerator.py */,
 				79D7B0E121152FD200FE7C64 /* entitlements.plist */,
@@ -11750,6 +11748,7 @@
 				70113D4C1A8DB093003848C4 /* IteratorOperations.h in Headers */,
 				BC18C4130E16F5CD00B34460 /* JavaScript.h in Headers */,
 				A503FA1A188E0FB000110F14 /* JavaScriptCallFrame.h in Headers */,
+				DDE748452F772BC0008013AB /* JavaScriptCoreWebKitAPI.h in Headers */,
 				1429D9300ED22D7000B89619 /* JIT.h in Headers */,
 				FE1220271BE7F58C0039E6F2 /* JITAddGenerator.h in Headers */,
 				0F75A0662013E4F10038E2CF /* JITAllocator.h in Headers */,
