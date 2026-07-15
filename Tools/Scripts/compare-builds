@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import sys
+
+import webkitpy  # noqa: F401 - This changes sys.path(!).
+from webkitcorepy import AutoInstall, Package, Version
+
+# webkitbuilddiff reuses webkitapipy's Mach-O introspection for symbol diffing,
+# so register both repo-local libraries before importing.
+AutoInstall.register(Package("webkitapipy", Version(0, 1, 0)), local=True)
+AutoInstall.register(Package("webkitbuilddiff", Version(0, 1, 0)), local=True)
+
+from webkitbuilddiff import program
+
+sys.exit(program.main())
