@@ -1,6 +1,6 @@
 ---
 name: bisect-build-time
-description: Use when the user wants to find which commit in a range caused a WebKit build-time regression (clean or incremental build getting slower). Drives `git bisect run` on top of `Tools/Scripts/measure-build-time` via `Tools/Scripts/bisect-build-time`, timing each commit several times and using a two-sample t-test (default) to find the first commit significantly slower than the baseline; a single-measurement `--threshold` mode is also available. When `../Internal/Tools/Scripts/bisect-build-time` exists, run that instead — same tool and command line, plus it keeps the sibling checkout aligned with each commit under test.
+description: Use when the user wants to find which commit in a range caused a WebKit build-time regression (clean or incremental build getting slower). Drives `git bisect run` on top of `Tools/Scripts/measure-build-time` via `Tools/Scripts/bisect-build-time`, timing each commit several times and using a two-sample t-test (default) to find the first commit significantly slower than the baseline; a single-measurement `--threshold` mode is also available. Timings are cached per commit, so re-running over an overlapping range is cheap. When `../Internal/Tools/Scripts/bisect-build-time` exists, run that instead — same tool and command line, plus it keeps the sibling checkout aligned with each commit under test.
 user-invocable: true
 allowed-tools: Bash, Read
 ---
@@ -101,6 +101,35 @@ then do nothing across the range (`--force` overrides). A WebKit commit predatin
 all of the sibling's history becomes a `skip` mid-range, or a pre-flight abort as an
 endpoint. Both checkouts are restored when the run ends, including after Ctrl-C.
 
+## Reusing measurements
+
+Timings are cached, so re-running a bisect — after widening the range, or with a
+different `--alpha` — only builds commits it hasn't measured. Cache hits are logged
+as they happen, the summary's `CACHED` column shows how many of each commit's
+samples were reused, and a `Cache: reused N of M samples` line names the file, so a
+suspiciously fast run is always visible.
+
+A cached timing is reused only for the same commit, benchmark (`--test`), forwarded
+`measure-build-time` arguments, **and host** — reusing a fast machine's number on a
+slow one would misclassify and send the bisect down the wrong branch. On an internal
+checkout the paired sibling commit is part of the key too, so a time is never reused
+across pairs. Cached samples *accumulate*: with `--runs 3`, a commit with 2 cached
+samples gets one fresh one, and a commit with 5 keeps all 5 (Welch's t-test handles
+unequal sample sizes).
+
+The hazard is comparing cached numbers against fresh ones after conditions changed
+— a toolchain upgrade, a different ccache state, a machine under load. Guards:
+
+- Entries older than `--cache-max-age` days (default 7) are ignored; `0` never
+  expires.
+- When a commit's cached and fresh samples disagree by more than 10%, it warns.
+- `--refresh` ignores what's cached and re-measures (use after upgrading Xcode);
+  `--no-cache` bypasses the cache entirely; `--cache-tag <str>` keeps measurements
+  from different conditions apart.
+- `--show-cache` prints what's stored for the current signature; `--cache <path>`
+  moves the file, which by default is `webkit-build-time-cache.jsonl` in the
+  checkout's git directory (per worktree, and safe from the `clean` test).
+
 ## What it does per commit
 
 **t-test mode (default).** Up front, the good and bad endpoints are each timed
@@ -125,7 +154,9 @@ step runs the benchmark `--runs` times. A range of N commits costs roughly
 **runs × (log2(N) + 2)** builds in t-test mode (the `+2` is endpoint
 calibration), or `log2(N) + 2` in single-run mode (`+0` with an explicit
 `--threshold`). Warn the user before kicking off a long range, and prefer running
-it in the background.
+it in the background. Commits already in the profiling cache are free (see
+"Reusing measurements"), so a re-run over an overlapping range costs much less
+than the formula suggests.
 
 ## Extending it: per-commit setup
 

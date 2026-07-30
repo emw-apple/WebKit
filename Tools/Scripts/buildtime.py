@@ -25,17 +25,21 @@ Everything here is stdlib-only apart from an optional `tqdm` progress bar.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import math
 import os
 import re
 import shutil
+import socket
 import statistics
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
+from typing import NamedTuple
 
 try:
     from tqdm import tqdm
@@ -282,26 +286,235 @@ def run_benchmark(benchmark: Path, test_name: str, forwarded: list[str],
     return seconds
 
 
-def run_samples(benchmark: Path, test_name: str, forwarded: list[str], runs: int,
-                on_sample=None, writer=None) -> list[float] | None:
-    """Run the benchmark `runs` times; return the wall times (None if any fails).
+# --- Profiling cache --------------------------------------------------------
+#
+# Timings are expensive (minutes each) and perfectly reusable as long as nothing
+# about the build changed, so they are cached across runs. Re-running a bisect
+# after widening the range then only builds the commits it hasn't seen.
 
-    `on_sample` (if given) is called once after each run attempt — used to
-    advance the progress bar (driver) or emit a tick sentinel (harness).
-    `writer` is forwarded to `run_benchmark` to route build output through the
-    progress bar.
+CACHE_NAME = 'webkit-build-time-cache.jsonl'
+
+# Warn when cached and fresh samples for one commit disagree by more than this;
+# it means conditions drifted and the comparison is on shaky ground.
+CACHE_DRIFT_WARN = 0.10
+
+
+class Timings(NamedTuple):
+    """Wall times for one commit, and how many of them came from the cache."""
+    values: list[float]
+    cached: int
+
+
+def cache_signature(test_name: str, forwarded: list[str], tag: str | None = None) -> str:
+    """Identify the conditions a timing was measured under.
+
+    A time is only comparable to another measured the same way, so reuse is scoped
+    to this signature. The host matters most: reusing a fast machine's time on a
+    slow one misclassifies and sends the bisect down the wrong branch, which is
+    worse than re-measuring, so the cache is inherently machine-local. `tag` is the
+    manual escape hatch (`--cache-tag`) for changes we can't see, like a toolchain
+    upgrade.
     """
-    samples: list[float] = []
-    for i in range(1, runs + 1):
-        if runs > 1:
-            log.info('Timing run %d/%d', i, runs)
-        seconds = run_benchmark(benchmark, test_name, forwarded, writer=writer)
+    payload = json.dumps({'test': test_name, 'args': forwarded,
+                          'host': socket.gethostname(), 'tag': tag}, sort_keys=True)
+    return hashlib.sha256(payload.encode()).hexdigest()[:12]
+
+
+def default_cache_path(repo: Path | None = None) -> Path | None:
+    """Where to keep the cache for the repo being bisected.
+
+    Inside the git directory: it survives the `clean` test deleting the build
+    directory, never shows up in `git status`, and is per-worktree. Deliberately
+    *not* `--git-common-dir`, which linked worktrees share while having different
+    build directories.
+    """
+    try:
+        git_dir = git_output('rev-parse', '--absolute-git-dir', repo=repo)
+    except subprocess.CalledProcessError:
+        return None
+    return Path(git_dir) / CACHE_NAME if git_dir else None
+
+
+def load_cache(path: str | Path | None, signature: str, context: str = '', *,
+               max_age_days: float = 0) -> dict[str, list[float]]:
+    """Samples per commit from `path`, for this signature and context only.
+
+    Records accumulate rather than overwrite, so repeated runs make a commit's
+    sample set stronger. Entries older than `max_age_days` (0: no limit) are
+    ignored — absolute build times drift as the machine and toolchain change. A
+    malformed line is skipped rather than fatal; the file is disposable.
+    """
+    samples: dict[str, list[float]] = {}
+    if not path:
+        return samples
+    cutoff = time.time() - max_age_days * 86400 if max_age_days else 0
+    try:
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if rec.get('signature') != signature or rec.get('context', '') != context:
+                    continue
+                if cutoff and rec.get('timestamp', 0) < cutoff:
+                    continue
+                values = rec.get('samples')
+                if isinstance(values, list) and values:
+                    samples.setdefault(rec.get('commit', ''), []).extend(values)
+    except OSError:
+        return samples
+    return samples
+
+
+def cache_age(path: str | Path | None, signature: str, context: str,
+              commit: str) -> float | None:
+    """Seconds since the newest cached record for `commit`, or None if there is none."""
+    newest = None
+    try:
+        with open(path) as f:  # type: ignore[arg-type]
+            for line in f:
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if (rec.get('commit') == commit and rec.get('signature') == signature
+                        and rec.get('context', '') == context):
+                    stamp = rec.get('timestamp', 0)
+                    newest = stamp if newest is None else max(newest, stamp)
+    except (OSError, TypeError):
+        return None
+    return None if newest is None else time.time() - newest
+
+
+def append_cache(path: str | Path | None, commit: str, sample: float, *,
+                 signature: str, context: str, test_name: str) -> None:
+    """Append one measured sample. One record per sample, written as it is measured,
+    so an interrupted run keeps whatever it managed to build."""
+    if not path:
+        return
+    record = {
+        'commit': commit,
+        'signature': signature,
+        'context': context,
+        'samples': [sample],
+        'test': test_name,
+        'host': socket.gethostname(),
+        'timestamp': int(time.time()),
+    }
+    try:
+        with open(path, 'a') as f:
+            f.write(json.dumps(record) + '\n')
+    except OSError as e:
+        log.warning('Could not write to the profiling cache %s: %s', path, e)
+
+
+def format_age(seconds: float | None) -> str:
+    """Compact age for logging: `3h`, `2d`, `45m`."""
+    if seconds is None:
+        return '?'
+    if seconds < 3600:
+        return f'{seconds / 60:.0f}m'
+    if seconds < 86400:
+        return f'{seconds / 3600:.0f}h'
+    return f'{seconds / 86400:.1f}d'
+
+
+def samples_for(args: argparse.Namespace, forwarded: list[str], commit: str, *,
+                context: str = '', on_sample=None, writer=None) -> Timings | None:
+    """Timings for `commit`: cached ones plus however many more `--runs` wants.
+
+    The single place timings come from, so calibration and every bisect step share
+    the same cache behaviour. Returns None if a build failed (the caller skips the
+    commit). `on_sample` fires for cached samples too, so the progress bar total
+    still means something when a run is mostly cache hits.
+    """
+    cached: list[float] = []
+    if args.cache and not args.refresh:
+        cached = load_cache(args.cache, args.signature, context,
+                            max_age_days=args.cache_max_age).get(commit, [])
+    needed = max(0, args.runs - len(cached))
+    if cached:
+        log.info('cache: %d sample(s) for %s (newest %s old); measuring %d more',
+                 len(cached), commit[:12],
+                 format_age(cache_age(args.cache, args.signature, context, commit)),
+                 needed)
+        for _ in cached:
+            if on_sample is not None:
+                on_sample()
+
+    fresh: list[float] = []
+    for i in range(1, needed + 1):
+        if needed > 1:
+            log.info('Timing run %d/%d', i, needed)
+        seconds = run_benchmark(args.measure_build_time, args.test, forwarded,
+                                writer=writer)
         if on_sample is not None:
             on_sample()
         if seconds is None:
             return None
-        samples.append(seconds)
-    return samples
+        fresh.append(seconds)
+        if args.cache:
+            append_cache(args.cache, commit, seconds, signature=args.signature,
+                         context=context, test_name=args.test)
+
+    if cached and fresh:
+        # Free drift detection: these two sets are about to be compared with each
+        # other's neighbours, so a big gap means the cache is misleading.
+        old, new = statistics.mean(cached), statistics.mean(fresh)
+        if old and abs(new - old) / old > CACHE_DRIFT_WARN:
+            log.warning('Cached samples for %s average %.1fs but fresh ones average '
+                        '%.1fs (%.0f%% apart); conditions may have drifted — consider '
+                        '--refresh or --no-cache.',
+                        commit[:12], old, new, 100 * abs(new - old) / old)
+    return Timings(cached + fresh, len(cached))
+
+
+def show_cache(args: argparse.Namespace) -> int:
+    """Print the cache entries matching this run's signature, oldest first."""
+    if not args.cache:
+        print('Profiling cache is disabled.')
+        return 0
+    print(f'Profiling cache: {args.cache}')
+    print(f'Signature: {args.signature}  (test: {args.test}, host: '
+          f'{socket.gethostname()})')
+    if not Path(args.cache).exists():
+        print('  (nothing cached yet)')
+        return 0
+    rows = []
+    try:
+        with open(args.cache) as f:
+            for line in f:
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if rec.get('signature') != args.signature:
+                    continue
+                rows.append(rec)
+    except OSError as e:
+        print(f'  (unreadable: {e})')
+        return 0
+    if not rows:
+        print('  (no entries for this signature)')
+        return 0
+    merged: dict[tuple[str, str], list] = {}
+    for rec in rows:
+        key = (rec.get('commit', ''), rec.get('context', ''))
+        entry = merged.setdefault(key, [[], 0])
+        entry[0].extend(rec.get('samples') or [])
+        entry[1] = max(entry[1], rec.get('timestamp', 0))
+    print()
+    print(f'    {"COMMIT":<12}  {"CONTEXT":<12}  {"N":>3}  {"MEAN":>8}  AGE')
+    for (commit, context), (samples, stamp) in sorted(merged.items(),
+                                                      key=lambda kv: kv[1][1]):
+        age = format_age(time.time() - stamp) if stamp else '?'
+        print(f'    {commit[:12]:<12}  {(context or "—")[:12]:<12}  {len(samples):>3}  '
+              f'{statistics.mean(samples):>7.1f}s  {age}')
+    return 0
 
 
 # --- Statistics (stdlib only) -----------------------------------------------
@@ -385,25 +598,29 @@ def format_pvalue(p: float | None) -> str:
 
 
 def record_measurement(journal: str | None, commit: str,
-                       samples: list[float] | None, pvalue: float | None = None) -> None:
+                       samples: list[float] | None, pvalue: float | None = None,
+                       cached: int = 0) -> None:
     """Append one commit's measured wall times to the shared journal (JSON lines).
 
     The per-commit harness runs in its own process, so it can't return timings
     to the driver directly; each invocation logs here and the driver reads the
     journal back to print the final summary. `samples` is None for a skipped
     (build-failed) commit; `pvalue` is the t-test result vs baseline (t-test mode)
-    or None (threshold mode / the baseline itself). Raw samples are preserved so
-    verdicts can be recomputed at summary time.
+    or None (threshold mode / the baseline itself); `cached` is how many of the
+    samples came from the profiling cache. Raw samples are preserved so verdicts
+    can be recomputed at summary time.
     """
     if not journal:
         return
     with open(journal, 'a') as f:
-        f.write(json.dumps({'commit': commit, 'samples': samples, 'pvalue': pvalue}) + '\n')
+        f.write(json.dumps({'commit': commit, 'samples': samples, 'pvalue': pvalue,
+                            'cached': cached}) + '\n')
 
 
 # --- Harness mode (invoked once per commit by `git bisect run`) -------------
 
-def run_harness(args: argparse.Namespace, forwarded: list[str], *, hook=None) -> int:
+def run_harness(args: argparse.Namespace, forwarded: list[str], *, hook=None,
+                cache_context=None) -> int:
     """Time the commit `git bisect` has checked out and classify it."""
     commit = git_output('rev-parse', 'HEAD')
     if not Path(args.measure_build_time).exists():
@@ -419,13 +636,16 @@ def run_harness(args: argparse.Namespace, forwarded: list[str], *, hook=None) ->
         record_measurement(args.journal, commit, None, None)
         log.warning('Skipping this commit (checkout hook failed).')
         return EXIT_SKIP
+    # Asked after the hook, so it describes what will actually be built.
+    context = (cache_context(commit) or '') if cache_context is not None else ''
     on_sample = (lambda: print(TICK, flush=True)) if args.progress_ticks else None
-    samples = run_samples(args.measure_build_time, args.test, forwarded, args.runs,
+    timings = samples_for(args, forwarded, commit, context=context,
                           on_sample=on_sample)
-    if samples is None:
+    if timings is None:
         record_measurement(args.journal, commit, None, None)
         log.warning('Skipping this commit (build failed or no timing).')
         return EXIT_SKIP
+    samples = timings.values
 
     mean = statistics.mean(samples)
     pvalue = None
@@ -435,7 +655,7 @@ def run_harness(args: argparse.Namespace, forwarded: list[str], *, hook=None) ->
         t, pvalue = welch_ttest(samples, baseline)
         is_bad = t > 0 and pvalue <= args.alpha
         log.info('%s: mean %.1fs over %d runs, p=%s vs baseline -> %s',
-                 args.test, mean, args.runs, format_pvalue(pvalue),
+                 args.test, mean, len(samples), format_pvalue(pvalue),
                  'BAD' if is_bad else 'GOOD')
     else:
         # threshold mode: at or above the threshold is bad.
@@ -443,48 +663,53 @@ def run_harness(args: argparse.Namespace, forwarded: list[str], *, hook=None) ->
         log.info('%s: %.1fs (threshold %.1fs) -> %s',
                  args.test, mean, args.threshold, 'BAD' if is_bad else 'GOOD')
 
-    record_measurement(args.journal, commit, samples, pvalue)
+    record_measurement(args.journal, commit, samples, pvalue, cached=timings.cached)
     return EXIT_BAD if is_bad else EXIT_GOOD
 
 
 # --- Driver mode ------------------------------------------------------------
 
-def checkout_for_measurement(ref: str, hook, writer) -> str:
-    """Check out `ref` for measurement and return the commit SHA it resolved to.
+def checkout_for_measurement(ref: str, hook, writer, cache_context=None) -> tuple[str, str]:
+    """Check out `ref` for measurement; return (commit sha, cache context).
 
     Runs the checkout hook (if any) so anything the build depends on is prepared
-    before the benchmark runs. Exits on hook failure: unlike a bisect step, an
-    endpoint we cannot prepare cannot simply be skipped.
+    before the benchmark runs, then asks `cache_context` what that produced. Exits
+    on hook failure: unlike a bisect step, an endpoint we cannot prepare cannot
+    simply be skipped.
     """
     git('checkout', '--quiet', ref)
     sha = git_output('rev-parse', 'HEAD')
     if hook is not None and not hook(sha, writer):
         sys.exit(f'Checkout hook failed for {ref} ({sha[:12]}); cannot measure '
                  f'this endpoint.')
-    return sha
+    context = (cache_context(sha) or '') if cache_context is not None else ''
+    return sha, context
 
 
 def calibrate(args: argparse.Namespace, forwarded: list[str], progress: Progress,
-              hook=None) -> float:
+              hook=None, cache_context=None) -> float:
     """Measure the bad and good endpoints once; return the midpoint threshold.
 
     The caller restores the original ref; this leaves HEAD on the good endpoint.
     """
     log.info('Calibrating threshold by measuring both endpoints...')
-    bad_sha = checkout_for_measurement(args.bad, hook, progress.write)
-    t_bad = run_benchmark(args.measure_build_time, args.test, forwarded,
-                          writer=progress.write)
-    progress.tick()
-    record_measurement(args.journal, bad_sha, [t_bad] if t_bad is not None else None)
-    good_sha = checkout_for_measurement(args.good, hook, progress.write)
-    t_good = run_benchmark(args.measure_build_time, args.test, forwarded,
-                           writer=progress.write)
-    progress.tick()
-    record_measurement(args.journal, good_sha, [t_good] if t_good is not None else None)
+    bad_sha, bad_context = checkout_for_measurement(args.bad, hook, progress.write,
+                                                    cache_context)
+    bad = samples_for(args, forwarded, bad_sha, context=bad_context,
+                      on_sample=progress.tick, writer=progress.write)
+    record_measurement(args.journal, bad_sha, bad.values if bad else None,
+                       cached=bad.cached if bad else 0)
+    good_sha, good_context = checkout_for_measurement(args.good, hook, progress.write,
+                                                      cache_context)
+    good = samples_for(args, forwarded, good_sha, context=good_context,
+                       on_sample=progress.tick, writer=progress.write)
+    record_measurement(args.journal, good_sha, good.values if good else None,
+                       cached=good.cached if good else 0)
 
-    if t_bad is None or t_good is None:
+    if bad is None or good is None:
         sys.exit('Calibration failed: an endpoint build did not produce a timing. '
                  'Fix the build or pass --threshold explicitly.')
+    t_bad, t_good = statistics.mean(bad.values), statistics.mean(good.values)
     log.info('Endpoints: good=%.1fs bad=%.1fs', t_good, t_bad)
     if t_bad <= t_good and not args.force:
         sys.exit(f'Bad endpoint ({t_bad:.1f}s) is not slower than good '
@@ -496,7 +721,8 @@ def calibrate(args: argparse.Namespace, forwarded: list[str], progress: Progress
 
 
 def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
-                     progress: Progress, hook=None) -> tuple[list[float], str]:
+                     progress: Progress, hook=None,
+                     cache_context=None) -> tuple[list[float], str]:
     """Measure both endpoints `--runs` times; return (baseline_samples, good_sha).
 
     The good endpoint is the baseline. The bad endpoint is measured too, as a
@@ -505,20 +731,23 @@ def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
     """
     log.info('Measuring baseline over %d runs at each endpoint (t-test mode)...',
              args.runs)
-    good_sha = checkout_for_measurement(args.good, hook, progress.write)
-    baseline = run_samples(args.measure_build_time, args.test, forwarded, args.runs,
-                           on_sample=progress.tick, writer=progress.write)
-    if baseline is not None:
-        record_measurement(args.journal, good_sha, baseline, None)
-    bad_sha = checkout_for_measurement(args.bad, hook, progress.write)
-    bad_samples = run_samples(args.measure_build_time, args.test, forwarded, args.runs,
-                              on_sample=progress.tick, writer=progress.write)
+    good_sha, good_context = checkout_for_measurement(args.good, hook, progress.write,
+                                                      cache_context)
+    good = samples_for(args, forwarded, good_sha, context=good_context,
+                       on_sample=progress.tick, writer=progress.write)
+    if good is not None:
+        record_measurement(args.journal, good_sha, good.values, None, good.cached)
+    bad_sha, bad_context = checkout_for_measurement(args.bad, hook, progress.write,
+                                                    cache_context)
+    bad = samples_for(args, forwarded, bad_sha, context=bad_context,
+                      on_sample=progress.tick, writer=progress.write)
 
-    if baseline is None or bad_samples is None:
+    if good is None or bad is None:
         sys.exit('Calibration failed: an endpoint build did not produce timings. '
                  'Fix the build or reduce the range.')
+    baseline, bad_samples = good.values, bad.values
     t, p = welch_ttest(bad_samples, baseline)
-    record_measurement(args.journal, bad_sha, bad_samples, p)
+    record_measurement(args.journal, bad_sha, bad_samples, p, bad.cached)
     log.info('Baseline good=%.1fs bad=%.1fs (p=%s)',
              statistics.mean(baseline), statistics.mean(bad_samples), format_pvalue(p))
     if not (t > 0 and p <= args.alpha) and not args.force:
@@ -571,7 +800,7 @@ def run_bisect(harness: list[str], progress: Progress) -> tuple[int, str | None]
 
 def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str, *,
                   runs: int, threshold: float | None, alpha: float,
-                  baseline_commit: str | None) -> None:
+                  baseline_commit: str | None, cache: str | Path | None = None) -> None:
     """Print a table of every commit measured, highlighting the first bad one."""
     measured: dict[str, dict] = {}
     try:
@@ -605,10 +834,12 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
         pvalue = rec.get('pvalue')
         short, date, subject = commit_fields(commit)
         if not samples:
-            nstr, meanstr, pstr, verdict = '0', 'skip', '—', 'skip'
+            nstr, meanstr, pstr, verdict, cachestr = '0', 'skip', '—', 'skip', '—'
         else:
             mean = statistics.mean(samples)
             nstr, meanstr = str(len(samples)), f'{mean:.1f}s'
+            hits = rec.get('cached') or 0
+            cachestr = f'{hits}/{len(samples)}' if hits else '—'
             if ttest and commit == baseline_full:
                 pstr, verdict = 'base', 'base'
             elif ttest:
@@ -620,13 +851,14 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
                 pstr = '—'
                 verdict = 'bad' if mean >= threshold else 'good'
         rows.append((rank.get(commit, -1), short, commit, date, nstr, meanstr, pstr,
-                     verdict, subject))
+                     verdict, subject, cachestr))
     rows.sort(reverse=True)  # oldest (highest rank) first
 
     sha_w = max(len('COMMIT'), *(len(r[1]) for r in rows))
     mean_w = max(len('MEAN'), *(len(r[5]) for r in rows))
     p_w = max(len('P-VALUE'), *(len(r[6]) for r in rows))
     verdict_w = max(len('VERDICT'), *(len(r[7]) for r in rows))
+    cache_w = max(len('CACHED'), *(len(r[9]) for r in rows))
 
     bold, red, reset = ('\033[1m', '\033[31m', '\033[0m') if sys.stdout.isatty() else ('', '', '')
 
@@ -638,13 +870,14 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
         print(f'Build-time bisect summary (test: {test_name}, threshold: {threshold:.1f}s)')
     print()
     print(f'    {"COMMIT":<{sha_w}}  {"DATE":<10}  {"RUNS":>4}  {"MEAN":>{mean_w}}  '
-          f'{"P-VALUE":>{p_w}}  {"VERDICT":<{verdict_w}}  SUBJECT')
-    for _rank, short, commit, date, nstr, meanstr, pstr, verdict, subject in rows:
+          f'{"P-VALUE":>{p_w}}  {"CACHED":>{cache_w}}  {"VERDICT":<{verdict_w}}  SUBJECT')
+    for (_rank, short, commit, date, nstr, meanstr, pstr, verdict, subject,
+         cachestr) in rows:
         is_first_bad = bool(first_bad_full) and commit == first_bad_full
         marker = '>>> ' if is_first_bad else '    '
         subj = subject if len(subject) <= 60 else subject[:57] + '...'
         line = (f'{marker}{short:<{sha_w}}  {date:<10}  {nstr:>4}  {meanstr:>{mean_w}}  '
-                f'{pstr:>{p_w}}  {verdict:<{verdict_w}}  {subj}')
+                f'{pstr:>{p_w}}  {cachestr:>{cache_w}}  {verdict:<{verdict_w}}  {subj}')
         if is_first_bad:
             line = f'{bold}{red}{line}{reset}  <- first bad commit'
         print(line)
@@ -653,7 +886,12 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
     if ttest and baseline_mean is not None:
         base_short = next((r[1] for r in rows if r[2] == baseline_full), baseline_full[:9])
         print(f'Baseline: {base_short} (good endpoint), '
-              f'{baseline_mean:.1f}s mean over {runs} runs')
+              f'{baseline_mean:.1f}s mean over {len(measured[baseline_full]["samples"])} '
+              f'runs')
+    reused = sum(rec.get('cached') or 0 for rec in measured.values())
+    total = sum(len(rec.get('samples') or []) for rec in measured.values())
+    if cache and reused:
+        print(f'Cache: reused {reused} of {total} samples from {cache}')
     first_row = next((r for r in rows if r[2] == first_bad_full), None)
     if first_row:
         print(f'First bad commit: {first_row[1]} {first_row[8]}')
@@ -679,12 +917,14 @@ def harness_copy(entry_script: Path) -> tuple[Path, Path]:
 
 
 def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: Path,
-               hook=None, harness_args=()) -> int:
+               hook=None, harness_args=(), cache_context=None) -> int:
     """Calibrate the endpoints, then drive `git bisect run` over the range.
 
     `entry_script` is re-invoked once per commit in harness mode (from a temp copy).
-    `hook` prepares each commit before it is timed; `harness_args` are extra
-    arguments `entry_script` needs to reconstruct itself in the harness process.
+    `hook` prepares each commit before it is timed, `cache_context` reports what that
+    produced so cached timings are never reused under different conditions, and
+    `harness_args` are extra arguments `entry_script` needs to reconstruct itself in
+    the harness process.
     """
     benchmark = Path(args.measure_build_time)
     if not benchmark.exists():
@@ -698,6 +938,13 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
     os.close(journal_fd)
     harness_dir, harness_script = harness_copy(entry_script)
 
+    if args.cache:
+        log.info('Profiling cache: %s (signature %s, entries expire after %s)',
+                 args.cache, args.signature,
+                 f'{args.cache_max_age:g}d' if args.cache_max_age else 'never')
+    else:
+        log.info('Profiling cache disabled; every commit will be built.')
+
     ttest = args.runs > 1
     calibrating = ttest or args.threshold is None
     progress = Progress(expected_runs(args.good, args.bad, args.runs, calibrating),
@@ -710,9 +957,10 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
         try:
             if ttest:
                 baseline, baseline_commit = prepare_baseline(args, forwarded, progress,
-                                                             hook)
+                                                             hook, cache_context)
             elif args.threshold is None:
-                args.threshold = calibrate(args, forwarded, progress, hook)
+                args.threshold = calibrate(args, forwarded, progress, hook,
+                                           cache_context)
         finally:
             git('checkout', '--quiet', restore_to, check=False)
 
@@ -728,6 +976,17 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
         ]
         if args.progress_enabled:
             harness.append('--progress-ticks')
+        if args.cache:
+            # Absolute, so the harness never has to re-resolve it; its absence in
+            # the harness argv is what turns caching off there.
+            harness += ['--cache', str(args.cache),
+                        '--cache-max-age', repr(args.cache_max_age)]
+            if args.cache_tag:
+                harness += ['--cache-tag', args.cache_tag]
+            if args.refresh:
+                harness.append('--refresh')
+        else:
+            harness.append('--no-cache')
         if ttest:
             harness += ['--alpha', repr(args.alpha),
                         '--baseline', ','.join(repr(x) for x in baseline)]
@@ -759,7 +1018,7 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
 
     print_summary(args.journal, first_bad, args.test, args.bad,
                   runs=args.runs, threshold=None if ttest else args.threshold,
-                  alpha=args.alpha, baseline_commit=baseline_commit)
+                  alpha=args.alpha, baseline_commit=baseline_commit, cache=args.cache)
     os.unlink(args.journal)
     return rc
 
@@ -800,6 +1059,29 @@ def build_parser(description: str = DESCRIPTION,
     parser.add_argument('--measure-build-time', type=Path, default=None,
                         help='Path to the measure-build-time benchmark (default: '
                              '$MEASURE_BUILD_TIME, else the copy beside this script).')
+    cache = parser.add_argument_group(
+        'profiling cache',
+        'Timings are cached per commit so re-running a bisect — after widening the '
+        'range, say — only builds commits it has not measured. Reuse is scoped to '
+        'the benchmark, the forwarded arguments and this machine.')
+    cache.add_argument('--cache', default=None,
+                       help='Cache file (default: webkit-build-time-cache.jsonl in '
+                            'this checkout\'s git directory).')
+    cache.add_argument('--no-cache', action='store_true',
+                       help='Build every commit, reusing nothing (wins over --cache).')
+    cache.add_argument('--refresh', action='store_true',
+                       help='Ignore cached timings, but still measure and record new '
+                            'ones — use after the machine or toolchain changed.')
+    cache.add_argument('--cache-max-age', type=float, default=7,
+                       metavar='DAYS',
+                       help='Ignore cached timings older than this (default: 7; 0 '
+                            'never expires). Absolute build times drift.')
+    cache.add_argument('--cache-tag', default=None,
+                       help='Extra string mixed into the cache signature, to keep '
+                            'measurements from different conditions apart.')
+    cache.add_argument('--show-cache', action='store_true',
+                       help='Print the cached timings matching this run\'s signature '
+                            'and exit.')
     parser.add_argument('--progress', action=argparse.BooleanOptionalAction, default=None,
                         help='Show a tqdm progress bar over the expected number of '
                              'timing runs (default: on when attached to a terminal '
@@ -823,13 +1105,14 @@ def split_forwarded(argv: list[str]) -> tuple[list[str], list[str]]:
     return argv[:split], argv[split + 1:]
 
 
-def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace, *,
-                      benchmark: Path | None = None,
+def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace,
+                      forwarded: list[str], *, benchmark: Path | None = None,
                       needs_endpoints: bool = True) -> None:
     """Apply defaults that depend on other arguments, and validate combinations.
 
     `benchmark` is where to find measure-build-time when neither the flag nor
-    $MEASURE_BUILD_TIME says (the caller knows its own layout).
+    $MEASURE_BUILD_TIME says (the caller knows its own layout). `forwarded` is part
+    of the cache signature, since it decides what is actually built.
     """
     # Resolve --runs: default to single-run when a --threshold is given, else 3.
     if args.runs is None:
@@ -840,6 +1123,18 @@ def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace,
     if args.measure_build_time is None:
         env = os.environ.get('MEASURE_BUILD_TIME')
         args.measure_build_time = Path(env) if env else benchmark
+
+    # Resolve the cache: the driver finds it from the repo, and hands the harness an
+    # absolute path (or nothing at all, which is how caching stays off there).
+    args.signature = cache_signature(args.test, forwarded, args.cache_tag)
+    if args.no_cache:
+        args.cache = None
+    elif args.cache:
+        args.cache = Path(args.cache).resolve()
+    elif not args.run_harness:
+        args.cache = default_cache_path()
+    else:
+        args.cache = None
 
     if args.run_harness:
         if args.baseline is None and args.threshold is None:
@@ -869,15 +1164,18 @@ def configure_logging() -> None:
 
 
 def main(entry_script: Path, argv: list[str] | None = None, *, hook=None,
-         harness_args=(), benchmark: Path | None = None) -> int:
+         harness_args=(), benchmark: Path | None = None, cache_context=None) -> int:
     """Entry point for a front end that adds nothing to the shared command line."""
     configure_logging()
     argv, forwarded = split_forwarded(sys.argv[1:] if argv is None else argv)
     parser = build_parser()
     args = parser.parse_args(argv)
-    resolve_arguments(parser, args,
-                      benchmark=benchmark or entry_script.parent / 'measure-build-time')
+    resolve_arguments(parser, args, forwarded,
+                      benchmark=benchmark or entry_script.parent / 'measure-build-time',
+                      needs_endpoints=not args.show_cache)
+    if args.show_cache:
+        return show_cache(args)
     if args.run_harness:
-        return run_harness(args, forwarded, hook=hook)
+        return run_harness(args, forwarded, hook=hook, cache_context=cache_context)
     return run_driver(args, forwarded, entry_script=entry_script, hook=hook,
-                      harness_args=harness_args)
+                      harness_args=harness_args, cache_context=cache_context)
