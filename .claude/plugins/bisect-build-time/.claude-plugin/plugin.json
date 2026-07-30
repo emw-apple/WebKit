@@ -1,0 +1,5 @@
+{
+  "name": "bisect-build-time",
+  "description": "Bisect a WebKit build-time regression across a commit range using Tools/Scripts/bisect-build-time on top of measure-build-time",
+  "version": "1.0.0"
+}

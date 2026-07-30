@@ -13,6 +13,11 @@
       "name": "reduce-header-includes",
       "source": "./reduce-header-includes",
       "description": "Remove unused #includes from WebKit sources via clang-include-cleaner"
+    },
+    {
+      "name": "bisect-build-time",
+      "source": "./bisect-build-time",
+      "description": "Bisect a WebKit build-time regression across a commit range with measure-build-time"
     }
   ]
 }
