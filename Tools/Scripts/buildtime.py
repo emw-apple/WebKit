@@ -978,6 +978,31 @@ def repo_root() -> Path | None:
     return Path(toplevel).resolve() if toplevel else None
 
 
+def benchmark_copy(benchmark: Path, directory: Path, root: Path | None) -> Path | None:
+    """Copy `measure-build-time` into `directory`; None if there is nothing to pin.
+
+    `git bisect` rewinds the whole tree, the benchmark script included, so without
+    this a run launched from a tree that has changes to `measure-build-time` would
+    measure each commit with whatever version that commit happens to carry: local
+    changes silently absent, and commits predating a test or fix it needs failing
+    outright. Copying it out pins one version across the range, the same reason the
+    harness copy exists.
+
+    A benchmark that lives outside the checkout is already beyond `git bisect`'s
+    reach, so it is left where it is.
+    """
+    benchmark = benchmark.resolve()
+    if root is None or not benchmark.is_relative_to(root):
+        log.info('%s is outside the checkout being bisected; measuring with it as-is.',
+                 benchmark)
+        return None
+    copy = directory / benchmark.name
+    shutil.copy2(benchmark, copy)
+    log.info('Measuring every commit with this checkout\'s %s, copied to %s.',
+             benchmark.name, copy)
+    return copy
+
+
 def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: Path,
                hook=None, harness_args=(), cache_context=None) -> int:
     """Calibrate the endpoints, then drive `git bisect run` over the range.
@@ -1003,6 +1028,11 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
                                            dir=args.source_dir))
     log.info('Building in %s, removed when the run ends, so the clean test never '
              'deletes your own build directory.', args.build_dir)
+    if args.copy_measure_build_time:
+        # Before anything is checked out, so the copy is the version launched with.
+        copy = benchmark_copy(args.measure_build_time, harness_dir, args.source_dir)
+        if copy is not None:
+            args.measure_build_time = copy
 
     if args.cache:
         log.info('Profiling cache: %s (signature %s, entries expire after %s)',
@@ -1142,6 +1172,12 @@ def build_parser(description: str = DESCRIPTION,
     parser.add_argument('--measure-build-time', type=Path, default=None,
                         help='Path to the measure-build-time benchmark (default: '
                              '$MEASURE_BUILD_TIME, else the copy beside this script).')
+    parser.add_argument('--copy-measure-build-time',
+                        action=argparse.BooleanOptionalAction, default=True,
+                        help='Measure every commit with a copy of measure-build-time '
+                             'taken from this checkout before bisecting and run from '
+                             'outside it, so a run started from a tree that changes '
+                             'the benchmark keeps those changes.')
     cache = parser.add_argument_group(
         'profiling cache',
         'Timings are cached per commit so re-running a bisect — after widening the '
