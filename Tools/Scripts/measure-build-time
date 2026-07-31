@@ -380,7 +380,7 @@ DEFAULT_CMAKE_BUILD_COMMAND = (
 )
 DEFAULT_CMAKE_CONFIGURE_COMMAND = (
     'xcrun cmake -S {source_dir} -B {build_dir} --preset {preset} '
-    '-DCMAKE_OSX_DEPLOYMENT_TARGET={sdk_version}'
+    '-DCMAKE_OSX_DEPLOYMENT_TARGET={sdk_version} -DENABLE_CCACHE=OFF'
 )
 
 class Arguments(argparse.Namespace):
