@@ -191,21 +191,26 @@ working tree. Confirm afterward with `git status` / current branch if unsure.
 Finally it prints a summary table of every commit it measured, ordered by
 ancestry (oldest first) so the fast → slow transition is visible, with the first
 bad commit highlighted (`>>>` gutter, `<- first bad commit` tag, bold-red on a
-TTY). Columns show the run count, mean time, and (in t-test mode) the p-value vs
-baseline; the baseline commit itself shows `base`:
+TTY). Columns show the WebKit commit identifier, the run count, mean time, and (in
+t-test mode) the p-value vs baseline; the baseline commit itself shows `base`:
 
 ```
 Build-time bisect summary (test: clean, runs: 3, alpha: 0.05)
 
-    COMMIT   DATE        RUNS    MEAN  P-VALUE  VERDICT  SUBJECT
-    5667a51  2026-07-29     3   99.0s     base  base     ...
-    1c9b298  2026-07-29     3  100.0s    0.288  good     ...
->>> 82c477d  2026-07-29     3  131.0s  2.5e-06  bad      ...  <- first bad commit
-    90ea4b1  2026-07-29     3  129.7s  2.4e-04  bad      ...
+    COMMIT   IDENTIFIER   RUNS    MEAN  P-VALUE  CACHED  VERDICT  SUBJECT
+    5667a51  318105@main     3   99.0s     base       —  base     ...
+    1c9b298  318106@main     3  100.0s    0.288       —  good     ...
+>>> 82c477d  318107@main     3  131.0s  2.5e-06     3/3  bad      ...  <- first bad commit
+    90ea4b1  318108@main     3  129.7s  2.4e-04       —  bad      ...
 
 Baseline: 5667a51 (good endpoint), 99.0s mean over 3 runs
-First bad commit: 82c477d ...
+First bad commit: 82c477d (318107@main) ...
 ```
+
+The IDENTIFIER column is the `commits.webkit.org` identifier from the commit's
+`Canonical link:` trailer — what bug reports and revert requests quote. A commit
+that never landed upstream (local work, a branch built from a patch) has no
+identifier, so its committer date is shown instead.
 
 The table includes the good/bad endpoints (t-test mode always; single-run mode
 only when auto-calibrating). In single-run mode the P-VALUE column is `—`.

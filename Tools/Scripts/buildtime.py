@@ -102,6 +102,40 @@ def commit_fields(ref: str, repo: Path | None = None) -> tuple[str, str, str]:
     return short, date, subject
 
 
+# WebKit records each commit's identifier (`318105@main`) as a `Canonical link:`
+# line at the end of the message. The space in the key means git doesn't see a
+# trailer, so it is rewritten into one below. `Identifier` and `git-svn-id` are
+# declared as trailer keys as well: a paragraph is only recognized as a trailer
+# block if enough of its lines are trailers, and those two pseudo-trailers share
+# the block in much of WebKit's history.
+TRAILER_CONFIG = ('-c', 'trailer.Canonical-link.key=Canonical-link',
+                  '-c', 'trailer.Identifier.key=Identifier',
+                  '-c', 'trailer.git-svn-id.key=git-svn-id')
+CANONICAL_KEY_RE = re.compile(r'^Canonical link:', re.MULTILINE)
+CANONICAL_LINK_RE = re.compile(r'^Canonical-link:\s*\S*?commits\.webkit\.org/(\S+)\s*$',
+                               re.MULTILINE)
+
+
+def commit_identifier(ref: str, repo: Path | None = None) -> str | None:
+    """`ref`'s WebKit commit identifier (`318105@main`), or None if it has none.
+
+    Parsed through `git interpret-trailers` rather than grepped out of the message
+    so that only a canonical link in the trailer block counts — a commit whose body
+    quotes some *other* commit's link has no identifier of its own. Commits that
+    never went through commits.webkit.org (local work, or the tool's own fixtures)
+    return None.
+    """
+    message = git_output('show', '-s', '--format=%B', ref, repo=repo, check=False)
+    if 'commits.webkit.org/' not in message:
+        return None
+    prefix = ('-C', str(repo)) if repo is not None else ()
+    proc = subprocess.run(('git', *prefix, *TRAILER_CONFIG, 'interpret-trailers', '--parse'),
+                          input=CANONICAL_KEY_RE.sub('Canonical-link:', message),
+                          text=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    match = CANONICAL_LINK_RE.search(proc.stdout or '')
+    return match.group(1) if match else None
+
+
 def describe(ref: str, repo: Path | None = None, width: int = 60) -> str:
     """One-line commit description for logging: `abc1234 (2026-07-27) subject`."""
     short, date, subject = commit_fields(ref, repo=repo)
@@ -833,6 +867,10 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
         samples = rec.get('samples')
         pvalue = rec.get('pvalue')
         short, date, subject = commit_fields(commit)
+        # Prefer the commit identifier — it is what WebKit bug reports and
+        # commits.webkit.org URLs quote. Commits that never landed upstream (local
+        # work) have none, so fall back to the date.
+        ident = commit_identifier(commit) or date
         if not samples:
             nstr, meanstr, pstr, verdict, cachestr = '0', 'skip', '—', 'skip', '—'
         else:
@@ -850,11 +888,12 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
             else:
                 pstr = '—'
                 verdict = 'bad' if mean >= threshold else 'good'
-        rows.append((rank.get(commit, -1), short, commit, date, nstr, meanstr, pstr,
+        rows.append((rank.get(commit, -1), short, commit, ident, nstr, meanstr, pstr,
                      verdict, subject, cachestr))
     rows.sort(reverse=True)  # oldest (highest rank) first
 
     sha_w = max(len('COMMIT'), *(len(r[1]) for r in rows))
+    ident_w = max(len('IDENTIFIER'), *(len(r[3]) for r in rows))
     mean_w = max(len('MEAN'), *(len(r[5]) for r in rows))
     p_w = max(len('P-VALUE'), *(len(r[6]) for r in rows))
     verdict_w = max(len('VERDICT'), *(len(r[7]) for r in rows))
@@ -869,15 +908,17 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
     else:
         print(f'Build-time bisect summary (test: {test_name}, threshold: {threshold:.1f}s)')
     print()
-    print(f'    {"COMMIT":<{sha_w}}  {"DATE":<10}  {"RUNS":>4}  {"MEAN":>{mean_w}}  '
-          f'{"P-VALUE":>{p_w}}  {"CACHED":>{cache_w}}  {"VERDICT":<{verdict_w}}  SUBJECT')
-    for (_rank, short, commit, date, nstr, meanstr, pstr, verdict, subject,
+    print(f'    {"COMMIT":<{sha_w}}  {"IDENTIFIER":<{ident_w}}  {"RUNS":>4}  '
+          f'{"MEAN":>{mean_w}}  {"P-VALUE":>{p_w}}  {"CACHED":>{cache_w}}  '
+          f'{"VERDICT":<{verdict_w}}  SUBJECT')
+    for (_rank, short, commit, ident, nstr, meanstr, pstr, verdict, subject,
          cachestr) in rows:
         is_first_bad = bool(first_bad_full) and commit == first_bad_full
         marker = '>>> ' if is_first_bad else '    '
         subj = subject if len(subject) <= 60 else subject[:57] + '...'
-        line = (f'{marker}{short:<{sha_w}}  {date:<10}  {nstr:>4}  {meanstr:>{mean_w}}  '
-                f'{pstr:>{p_w}}  {cachestr:>{cache_w}}  {verdict:<{verdict_w}}  {subj}')
+        line = (f'{marker}{short:<{sha_w}}  {ident:<{ident_w}}  {nstr:>4}  '
+                f'{meanstr:>{mean_w}}  {pstr:>{p_w}}  {cachestr:>{cache_w}}  '
+                f'{verdict:<{verdict_w}}  {subj}')
         if is_first_bad:
             line = f'{bold}{red}{line}{reset}  <- first bad commit'
         print(line)
@@ -894,7 +935,7 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
         print(f'Cache: reused {reused} of {total} samples from {cache}')
     first_row = next((r for r in rows if r[2] == first_bad_full), None)
     if first_row:
-        print(f'First bad commit: {first_row[1]} {first_row[8]}')
+        print(f'First bad commit: {first_row[1]} ({first_row[3]}) {first_row[8]}')
     else:
         print('No first bad commit identified.')
 
