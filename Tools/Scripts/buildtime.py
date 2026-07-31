@@ -292,8 +292,13 @@ def stream_command(command: list[str], writer) -> int:
 
 
 def run_benchmark(benchmark: Path, test_name: str, forwarded: list[str],
-                  writer=None) -> float | None:
+                  source_dir: Path, build_dir: Path, writer=None) -> float | None:
     """Run `measure-build-time` for one benchmark; return its wall seconds.
+
+    `source_dir` and `build_dir` come ahead of `forwarded`, so a forwarded value
+    still overrides them: the benchmark works both out from its own location, which
+    the copy outside the checkout doesn't have, and the build belongs somewhere
+    throwaway rather than in the engineer's build directory.
 
     Returns None if the build fails (so the caller can skip the commit).
     """
@@ -302,6 +307,8 @@ def run_benchmark(benchmark: Path, test_name: str, forwarded: list[str],
     with tempfile.NamedTemporaryFile(prefix='bisect-build-time-', suffix='.json') as out:
         command = [
             str(benchmark),
+            '--source-dir', str(source_dir),
+            '--build-dir', str(build_dir),
             *forwarded,
             '--tests', *tests_for(test_name),
             '--no-keep-going',
@@ -488,7 +495,7 @@ def samples_for(args: argparse.Namespace, forwarded: list[str], commit: str, *,
         if needed > 1:
             log.info('Timing run %d/%d', i, needed)
         seconds = run_benchmark(args.measure_build_time, args.test, forwarded,
-                                writer=writer)
+                                args.source_dir, args.build_dir, writer=writer)
         if on_sample is not None:
             on_sample()
         if seconds is None:
@@ -965,6 +972,12 @@ def harness_copy(entry_script: Path) -> tuple[Path, Path]:
     return directory, script
 
 
+def repo_root() -> Path | None:
+    """The top level of the checkout being bisected, or None if there isn't one."""
+    toplevel = git_output('rev-parse', '--show-toplevel', check=False)
+    return Path(toplevel).resolve() if toplevel else None
+
+
 def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: Path,
                hook=None, harness_args=(), cache_context=None) -> int:
     """Calibrate the endpoints, then drive `git bisect run` over the range.
@@ -986,6 +999,10 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
                                                 suffix='.jsonl')
     os.close(journal_fd)
     harness_dir, harness_script = harness_copy(entry_script)
+    args.build_dir = Path(tempfile.mkdtemp(prefix='WebKitBuild-bisect-',
+                                           dir=args.source_dir))
+    log.info('Building in %s, removed when the run ends, so the clean test never '
+             'deletes your own build directory.', args.build_dir)
 
     if args.cache:
         log.info('Profiling cache: %s (signature %s, entries expire after %s)',
@@ -1021,8 +1038,10 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
             '--test', args.test,
             '--runs', str(args.runs),
             '--journal', args.journal,
-            # Resolved here: the copy can't find the benchmark relative to itself.
+            # Resolved here: the copy can't find the benchmark relative to itself,
+            # and every commit has to be built in the same throwaway directory.
             '--measure-build-time', str(args.measure_build_time),
+            '--build-dir', str(args.build_dir),
         ]
         if args.progress_enabled:
             harness.append('--progress-ticks')
@@ -1076,6 +1095,8 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
     finally:
         progress.close()
         shutil.rmtree(harness_dir, ignore_errors=True)
+        log.info('Removing the build directory %s.', args.build_dir)
+        shutil.rmtree(args.build_dir, ignore_errors=True)
 
     print_summary(args.journal, first_bad, args.test, args.bad,
                   runs=args.runs, threshold=None if ttest else args.threshold,
@@ -1152,6 +1173,8 @@ def build_parser(description: str = DESCRIPTION,
                         help=argparse.SUPPRESS)  # internal: per-commit test
     parser.add_argument('--journal', default=None,
                         help=argparse.SUPPRESS)  # internal: per-commit timing log
+    parser.add_argument('--build-dir', type=Path, default=None,
+                        help=argparse.SUPPRESS)  # internal: the run's build directory
     parser.add_argument('--baseline', default=None,
                         help=argparse.SUPPRESS)  # internal: baseline samples (csv)
     parser.add_argument('--progress-ticks', action='store_true',
@@ -1185,6 +1208,10 @@ def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace,
     if args.measure_build_time is None:
         env = os.environ.get('MEASURE_BUILD_TIME')
         args.measure_build_time = Path(env) if env else benchmark
+    # Both the driver and the harness run inside the checkout being bisected, so this
+    # is the source directory to build; the throwaway build directory is the driver's
+    # to create and the harness's to be told.
+    args.source_dir = repo_root()
 
     # Resolve the cache: the driver finds it from the repo, and hands the harness an
     # absolute path (or nothing at all, which is how caching stays off there).
@@ -1203,6 +1230,8 @@ def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace,
             parser.error('--run-harness requires --threshold or --baseline')
         if args.measure_build_time is None:
             parser.error('--run-harness requires --measure-build-time')
+        if args.build_dir is None:
+            parser.error('--run-harness requires --build-dir')
     else:
         if args.runs > 1 and args.threshold is not None:
             parser.error('--threshold is single-run classification; it is incompatible '
