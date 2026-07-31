@@ -56,6 +56,9 @@ MODULE = Path(__file__).resolve()
 EXIT_GOOD = 0
 EXIT_BAD = 1
 EXIT_SKIP = 125
+# 128 + SIGINT: what a shell reports for a process killed by Ctrl-C. Also >= 128,
+# which makes `git bisect run` stop rather than blame the commit under test.
+EXIT_INTERRUPTED = 130
 
 # Sentinel the harness prints on stdout after each completed timing run; the
 # driver detects it in the `git bisect run` stream to advance the progress bar.
@@ -834,7 +837,8 @@ def run_bisect(harness: list[str], progress: Progress) -> tuple[int, str | None]
 
 def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str, *,
                   runs: int, threshold: float | None, alpha: float,
-                  baseline_commit: str | None, cache: str | Path | None = None) -> None:
+                  baseline_commit: str | None, cache: str | Path | None = None,
+                  interrupted: bool = False) -> None:
     """Print a table of every commit measured, highlighting the first bad one."""
     measured: dict[str, dict] = {}
     try:
@@ -902,11 +906,15 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
     bold, red, reset = ('\033[1m', '\033[31m', '\033[0m') if sys.stdout.isatty() else ('', '', '')
 
     print()
+    # Say so when the run ended early, so a partial table isn't read as the whole
+    # range having been tested.
+    partial = ', interrupted' if interrupted else ''
     if ttest:
         print(f'Build-time bisect summary (test: {test_name}, runs: {runs}, '
-              f'alpha: {alpha})')
+              f'alpha: {alpha}{partial})')
     else:
-        print(f'Build-time bisect summary (test: {test_name}, threshold: {threshold:.1f}s)')
+        print(f'Build-time bisect summary (test: {test_name}, '
+              f'threshold: {threshold:.1f}s{partial})')
     print()
     print(f'    {"COMMIT":<{sha_w}}  {"IDENTIFIER":<{ident_w}}  {"RUNS":>4}  '
           f'{"MEAN":>{mean_w}}  {"P-VALUE":>{p_w}}  {"CACHED":>{cache_w}}  '
@@ -992,6 +1000,7 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
                         args.progress_enabled)
 
     baseline_commit = None
+    rc, first_bad, interrupted = 1, None, False
     try:
         # Calibration checks out the endpoints directly, so restore the original
         # ref however it ends — including the aborts inside these functions.
@@ -1042,7 +1051,6 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
         else:
             log.info('Starting bisect: good=%s bad=%s threshold=%.1fs',
                      args.good, args.bad, args.threshold)
-        rc, first_bad = 1, None
         try:
             git('bisect', 'start')
             git('bisect', 'bad', args.bad)
@@ -1053,15 +1061,28 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
         finally:
             log.info('Resetting bisect state (returning to %s).', restore_to)
             git('bisect', 'reset', check=False)
+    except KeyboardInterrupt:
+        # Abandoning a long bisect with Ctrl-C is a normal way to end one: the
+        # `finally` blocks above have already put the checkout back, so report what
+        # was measured and leave quietly instead of raising through the exit.
+        interrupted = True
+        log.warning('Interrupted by Ctrl-C.%s', ' Timings measured so far are in the '
+                    'cache, so re-running will not rebuild them.' if args.cache else '')
+    except SystemExit:
+        # An abort mid-run — an endpoint that won't build, no regression in the range
+        # — has nothing to summarize, so don't leave the journal behind either.
+        Path(args.journal).unlink(missing_ok=True)
+        raise
     finally:
         progress.close()
         shutil.rmtree(harness_dir, ignore_errors=True)
 
     print_summary(args.journal, first_bad, args.test, args.bad,
                   runs=args.runs, threshold=None if ttest else args.threshold,
-                  alpha=args.alpha, baseline_commit=baseline_commit, cache=args.cache)
+                  alpha=args.alpha, baseline_commit=baseline_commit, cache=args.cache,
+                  interrupted=interrupted)
     os.unlink(args.journal)
-    return rc
+    return EXIT_INTERRUPTED if interrupted else rc
 
 
 # --- Command line -----------------------------------------------------------
@@ -1204,6 +1225,18 @@ def configure_logging() -> None:
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 
 
+def interrupted_exit() -> int:
+    """Log a Ctrl-C and return its exit code, for a front end to `sys.exit`.
+
+    Everything this tool has to undo — the bisect state, the checkouts — is undone
+    in `finally` blocks, which run whether or not the interrupt is caught, so the
+    traceback Python would print on the way out is noise. Front ends call this
+    instead of letting KeyboardInterrupt escape.
+    """
+    log.warning('Interrupted.')
+    return EXIT_INTERRUPTED
+
+
 def main(entry_script: Path, argv: list[str] | None = None, *, hook=None,
          harness_args=(), benchmark: Path | None = None, cache_context=None) -> int:
     """Entry point for a front end that adds nothing to the shared command line."""
@@ -1216,7 +1249,12 @@ def main(entry_script: Path, argv: list[str] | None = None, *, hook=None,
                       needs_endpoints=not args.show_cache)
     if args.show_cache:
         return show_cache(args)
-    if args.run_harness:
-        return run_harness(args, forwarded, hook=hook, cache_context=cache_context)
-    return run_driver(args, forwarded, entry_script=entry_script, hook=hook,
-                      harness_args=harness_args, cache_context=cache_context)
+    try:
+        if args.run_harness:
+            return run_harness(args, forwarded, hook=hook, cache_context=cache_context)
+        return run_driver(args, forwarded, entry_script=entry_script, hook=hook,
+                          harness_args=harness_args, cache_context=cache_context)
+    except KeyboardInterrupt:
+        # A backstop: the driver handles the first Ctrl-C itself and returns, so this
+        # catches one pressed during that cleanup, or one in harness mode.
+        return interrupted_exit()
