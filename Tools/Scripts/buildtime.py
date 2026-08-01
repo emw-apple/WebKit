@@ -32,6 +32,7 @@ import math
 import os
 import re
 import shutil
+import signal
 import socket
 import statistics
 import subprocess
@@ -39,6 +40,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from types import FrameType
 from typing import NamedTuple
 
 try:
@@ -206,6 +208,7 @@ class Progress:
             handler = _TqdmLoggingHandler()
             handler.setFormatter(logging.Formatter(LOG_FORMAT))
             root.addHandler(handler)
+            signal.signal(signal.SIGWINCH, self.handle_resize)
 
     def tick(self, n: int = 1) -> None:
         if self.bar is not None:
@@ -218,8 +221,15 @@ class Progress:
             sys.stdout.write(text)
             sys.stdout.flush()
 
+    def handle_resize(self, signum: int, frame: FrameType | None) -> None:
+        if self.bar is not None:
+            ncols, _ = shutil.get_terminal_size()
+            self.bar.ncols = ncols
+            self.bar.refresh()
+
     def close(self) -> None:
         if self.bar is not None:
+            signal.signal(signal.SIGWINCH, signal.SIG_DFL)
             self.bar.close()
             self.bar = None
             root = logging.getLogger()
