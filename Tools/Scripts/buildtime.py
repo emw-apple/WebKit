@@ -573,60 +573,78 @@ def show_cache(args: argparse.Namespace) -> int:
 
 # --- Statistics (stdlib only) -----------------------------------------------
 
-def _betacf(a: float, b: float, x: float) -> float:
-    """Continued-fraction expansion for the incomplete beta function (NR §6.4)."""
-    MAXIT, EPS, FPMIN = 200, 3.0e-12, 1.0e-300
-    qab, qap, qam = a + b, a + 1.0, a - 1.0
-    c = 1.0
-    d = 1.0 - qab * x / qap
-    if abs(d) < FPMIN:
-        d = FPMIN
-    d = 1.0 / d
-    h = d
-    for m in range(1, MAXIT + 1):
-        m2 = 2 * m
-        aa = m * (b - m) * x / ((qam + m2) * (a + m2))
-        d = 1.0 + aa * d
-        if abs(d) < FPMIN:
-            d = FPMIN
-        c = 1.0 + aa / c
-        if abs(c) < FPMIN:
-            c = FPMIN
-        d = 1.0 / d
-        h *= d * c
-        aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2))
-        d = 1.0 + aa * d
-        if abs(d) < FPMIN:
-            d = FPMIN
-        c = 1.0 + aa / c
-        if abs(c) < FPMIN:
-            c = FPMIN
-        d = 1.0 / d
-        delta = d * c
-        h *= delta
-        if abs(delta - 1.0) < EPS:
+# The t-test below needs the regularized incomplete beta function
+#
+#     I_x(a, b) = B(x; a, b) / B(a, b),   B(x; a, b) = ∫₀ˣ u^(a-1) (1-u)^(b-1) du
+#
+# for which there is no closed form at the non-integer degrees of freedom Welch's
+# test produces, so it is summed as a series. Splitting off a factor of (1-u) and
+# integrating by parts gives, after dividing through by B(a, b),
+#
+#     I_x(a, b) = I_x(a+1, b) + x^a (1-x)^b / (a · B(a, b))
+#
+# and I_x(a+k, b) → 0 as k grows (for x < 1), so iterating that relation and
+# collecting the ratio of consecutive leftover terms leaves
+#
+#     I_x(a, b) = [x^a (1-x)^b / (a · B(a, b))] · Σ_{n≥0} [(a+b)ₙ / (a+1)ₙ] xⁿ
+#
+# writing (q)ₙ for the rising factorial q(q+1)...(q+n-1). Every term of the sum is
+# positive for a, b > 0 and 0 < x < 1, so it accumulates without cancellation.
+
+# How near 1 an argument the series is asked to sum: the term count below goes as
+# 1/(1-x), and this bounds it at a few thousand.
+SERIES_LIMIT = 0.99
+
+
+def _log_beta(a: float, b: float) -> float:
+    """log B(a, b), through lgamma so the gamma values themselves can't overflow."""
+    return math.lgamma(a) + math.lgamma(b) - math.lgamma(a + b)
+
+
+def _beta_tail(a: float, b: float, x: float) -> float:
+    """I_x(a, b) for 0 < x < 1, summed straight from the series derived above.
+
+    Consecutive terms satisfy tₙ₊₁ = tₙ · x · (a+b+n)/(a+1+n), a ratio that moves
+    monotonically toward x, so the sum is geometric in its tail and takes on the
+    order of log(EPS)/log(x) terms. Keeping x away from 1 is the caller's job;
+    MAX_TERMS is a backstop for one that doesn't, and the sum then stops at
+    whatever accuracy it has reached rather than spinning.
+    """
+    MAX_TERMS, EPS = 20_000, 1e-16
+    total = term = 1.0
+    for n in range(MAX_TERMS):
+        ratio = x * (a + b + n) / (a + 1.0 + n)
+        term *= ratio
+        total += term
+        r = ratio if ratio > x else x
+        if term * r < EPS * total * (1.0 - r):
             break
-    return h
+    log_front = a * math.log(x) + b * math.log1p(-x) - math.log(a) - _log_beta(a, b)
+    return math.exp(log_front) * total
 
 
-def betai(a: float, b: float, x: float) -> float:
-    """Regularized incomplete beta function I_x(a, b)."""
+def regularized_incomplete_beta(a: float, b: float, x: float) -> float:
+    """I_x(a, b): the share of the beta(a, b) distribution lying below x (a, b > 0)."""
     if x <= 0.0:
         return 0.0
     if x >= 1.0:
         return 1.0
-    lbeta = (math.lgamma(a + b) - math.lgamma(a) - math.lgamma(b)
-             + a * math.log(x) + b * math.log(1.0 - x))
-    front = math.exp(lbeta)
-    if x < (a + 1.0) / (a + b + 2.0):
-        return front * _betacf(a, b, x) / a
-    return 1.0 - front * _betacf(b, a, 1.0 - x) / b
+    lower_tail_is_smaller = x * (a + b) <= a
+    if x <= SERIES_LIMIT and (lower_tail_is_smaller or 1.0 - x > SERIES_LIMIT):
+        return min(1.0, _beta_tail(a, b, x))
+    return max(0.0, 1.0 - _beta_tail(b, a, 1.0 - x))
 
 
 def welch_ttest(a: list[float], b: list[float]) -> tuple[float, float]:
     """Two-sample Welch's t-test comparing `a` against `b` (each len >= 2).
 
     Returns (t, p_two_sided); t > 0 means mean(a) > mean(b).
+
+    Under the null hypothesis t is drawn from Student's t distribution with the
+    Welch–Satterthwaite degrees of freedom ν computed below. Substituting
+    u = ν/(ν + w²) into that distribution's two-sided tail 2·∫_|t|^∞ fν(w) dw
+    turns it into an incomplete beta integral whose normalization is exactly
+    B(ν/2, 1/2), leaving p = I_{ν/(ν+t²)}(ν/2, 1/2).
     """
     na, nb = len(a), len(b)
     ma, mb = statistics.mean(a), statistics.mean(b)
@@ -640,7 +658,7 @@ def welch_ttest(a: list[float], b: list[float]) -> tuple[float, float]:
         return (math.inf if ma > mb else -math.inf), 0.0
     t = (ma - mb) / math.sqrt(denom)
     df = denom * denom / (sa * sa / (na - 1) + sb * sb / (nb - 1))
-    p = betai(df / 2.0, 0.5, df / (df + t * t))
+    p = regularized_incomplete_beta(df / 2.0, 0.5, df / (df + t * t))
     return t, p
 
 
