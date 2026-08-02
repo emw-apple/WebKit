@@ -480,6 +480,8 @@ def get_args() -> Arguments:
             workspace_dir=str(internal_dir if internal_dir.exists() else args.source_dir),
             sdk_version=sdk_version,
         )
+        if not args.stdout_filter:
+            args.stdout_filter = args.source_dir / 'Tools/Scripts/filter-build-webkit'
     elif args.cmake:
         args.build_command = DEFAULT_CMAKE_BUILD_COMMAND.format(
             build_dir=str(args.build_dir),
