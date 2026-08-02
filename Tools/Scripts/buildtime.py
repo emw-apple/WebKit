@@ -19,6 +19,9 @@ with a `hook` callable:
 
     hook(commit_sha, writer) -> bool     # False: this commit cannot be measured
 
+On macOS the driver holds sleep assertions (`caffeinate -ims`) for the whole run so
+the machine cannot idle-sleep between or during builds.
+
 Everything here is stdlib-only apart from an optional `tqdm` progress bar.
 """
 
@@ -1073,6 +1076,7 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
     calibrating = ttest or args.threshold is None
     progress = Progress(expected_runs(args.good, args.bad, args.runs, calibrating),
                         args.progress_enabled)
+    awake = subprocess.Popen(('caffeinate', '-ims'))
 
     baseline_commit = None
     rc, first_bad, interrupted = 1, None, False
@@ -1152,6 +1156,8 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
         raise
     finally:
         progress.close()
+        awake.terminate()
+        awake.wait()
         shutil.rmtree(harness_dir, ignore_errors=True)
         log.info('Removing the build directory %s.', args.build_dir)
         shutil.rmtree(args.build_dir, ignore_errors=True)
