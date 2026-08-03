@@ -33,6 +33,8 @@ regressions where speed matters more than robustness, a cheaper single-run
   full set (`--build-command`, `--configuration`, etc.).
 - Known-good (older, fast) and known-bad (newer, slow) commits bounding the
   regression. The good endpoint must build (it is the t-test baseline).
+- On a sibling checkout, `GIT_LFS_SKIP_SMUDGE=1` unless the build needs the LFS
+  payloads — see "Git LFS in the sibling checkout" below.
 
 ## Basic usage
 
@@ -100,6 +102,49 @@ run when both endpoints pair with the same sibling commit, since aligning would
 then do nothing across the range (`--force` overrides). A WebKit commit predating
 all of the sibling's history becomes a `skip` mid-range, or a pre-flight abort as an
 endpoint. Both checkouts are restored when the run ends, including after Ctrl-C.
+
+Two things that pass the pre-flight check and still break every alignment checkout:
+
+- **Untracked files in the sibling that are tracked in the range.** "Untracked files
+  are fine" above applies to the WebKit checkout; a file merely untracked *now* in
+  `Internal` but committed in the paired commits stops `git checkout` cold (`error:
+  The following untracked working tree files would be overwritten by checkout`).
+  Move or delete it first.
+- **Git LFS** — see below.
+
+### Git LFS in the sibling checkout
+
+`Internal` tracks some files with Git LFS (`*.profdata.compressed`,
+`*.partial.sdkdb`, …); `OpenSource` tracks none. So every
+alignment checkout runs the LFS smudge filter, which fetches whatever the local LFS
+cache is missing over SSH. When that host is unreachable — offline, no SSH
+agent, or a sandbox blocking port 22 — the checkout fails and takes the bisect
+with it:
+
+```
+Error downloading object: WebKit/WebKitAdditions/Profiling/.../JavaScriptCore.profdata.compressed
+  ssh: connect to host <redacted> port 22: Operation not permitted
+fatal: smudge filter lfs failed
+ERROR Could not check out 772723fb0e89 in /Users/emw/src/Internal.
+Checkout hook failed for ca48ed48ca69; cannot measure this endpoint.
+```
+
+An endpoint failing this way aborts calibration outright; a mid-range commit becomes a
+`skip`. Export `GIT_LFS_SKIP_SMUDGE=1` for the whole run so checkouts write LFS pointer
+files instead of fetching payloads — the hook shells out to `git checkout`, so it
+inherits the environment:
+
+```sh
+GIT_LFS_SKIP_SMUDGE=1 ../Internal/Tools/Scripts/bisect-build-time --good <old> --bad <new> -- --make
+```
+
+Only do this when the build does not read those payloads. For a build-time
+measurement the PGO profiles are the ones that matter. PGO is only used from
+Release and Production builds, and by default, `measure-build-time` performs
+Debug builds. So they are usually fine to omit. But when explicitly testing a
+release configuration, skipping the smudge measures a different build than the
+one you care about: pre-fetch instead, with `git -C ../Internal lfs pull` (or
+`lfs fetch --recent`) while the network is available.
 
 ## Reusing measurements
 
