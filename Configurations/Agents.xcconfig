@@ -25,4 +25,4 @@
 
 // Avoid nested sandbox_apply() during the build, which will fail.
 ENABLE_USER_SCRIPT_SANDBOXING = NO;
-OTHER_SWIFT_FLAGS = $(inherted) -disable-sandbox;
+OTHER_SWIFT_FLAGS = $(inherited) -disable-sandbox;
