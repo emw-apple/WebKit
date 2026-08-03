@@ -1439,6 +1439,7 @@ sub XcodeOptions
     push @options, @baseProductDirOption;
     push @options, "ARCHS=$architecture" if $didUserSpecifyArchitecture;
     push @options, "SDKROOT=$xcodeSDK" if $xcodeSDK;
+    push @options, "-xcconfig", "$sourceDir/Configurations/Agents.xcconfig" if $ENV{CLAUDECODE};
 
     my @features = webkitperl::FeatureList::getFeatureOptionList();
     foreach (@features) {
