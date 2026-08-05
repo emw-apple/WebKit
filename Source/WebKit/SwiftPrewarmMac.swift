@@ -20,3 +20,12 @@ import PDFKit
 import Quartz
 import QuickLook
 import QuickLookUI
+
+// Modules upstream of WebKit
+import JavaScriptCore
+import JavaScriptCore_Private
+import WebCore_Private
+import WebGPU
+import WebGPU_Private
+import bmalloc
+import wtf
