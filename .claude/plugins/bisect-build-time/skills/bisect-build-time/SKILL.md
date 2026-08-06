@@ -1,6 +1,6 @@
 ---
 name: bisect-build-time
-description: Use when the user wants to find which commit in a range caused a WebKit build-time regression (clean or incremental build getting slower). Drives `git bisect run` on top of `Tools/Scripts/measure-build-time` via `Tools/Scripts/bisect-build-time`, timing each commit several times and using a two-sample t-test (default) to find the first commit significantly slower than the baseline; a single-measurement `--threshold` mode is also available. Timings are cached per commit, so re-running over an overlapping range is cheap. When `../Internal/Tools/Scripts/bisect-build-time` exists, run that instead — same tool and command line, plus it keeps the sibling checkout aligned with each commit under test.
+description: Use when the user wants to find which commit in a range caused a WebKit build-time regression (clean or incremental build getting slower). Drives `git bisect run` on top of `Tools/Scripts/measure-build-time` via `Tools/Scripts/bisect-build-time`, timing each commit several times and using a two-sample t-test to find the first commit significantly slower than the baseline. Timings are cached per commit, so re-running over an overlapping range is cheap. When `../Internal/Tools/Scripts/bisect-build-time` exists, run that instead — same tool and command line, plus it keeps the sibling checkout aligned with each commit under test.
 user-invocable: true
 allowed-tools: Bash, Read
 ---
@@ -18,11 +18,11 @@ classifies each as fast (good) or slow (bad).
 script — see "Sibling checkouts" below. It is the same tool with the same command
 line; running this script directly on such a checkout measures mismatched pairs.
 
-By default it times each commit several times and uses a **two-sample t-test**
-against a baseline (see below), which is robust to the run-to-run variability
-that otherwise flags innocent commits as the regression. For large, obvious
-regressions where speed matters more than robustness, a cheaper single-run
-`--threshold` mode is available (`--runs 1`).
+It times each commit several times and classifies it with a **two-sample t-test**
+against a baseline (see below). Build times vary from run to run by more than
+many real regressions are worth, so a verdict from a single measurement per
+commit would send the bisect down the wrong branch; comparing distributions is
+what makes the answer trustworthy.
 
 ## Prerequisites
 
@@ -49,14 +49,10 @@ pass `--tests`, `--output`, or `--keep-going` there — the script sets them.
   benchmarks (`webcore-header`, `jsc-cpp-source`, `serialization-file`, … — see
   `measure-build-time --help`), the script automatically runs `clean` first
   since they depend on it, and measures only the incremental rebuild.
-- `-r/--runs <N>` (**default 3**): timings per commit *and* per calibration
-  endpoint. `N > 1` selects **t-test mode**; `N = 1` selects single-run
-  `--threshold` mode.
+- `-r/--runs <N>` (**default 3**, minimum 2): timings per commit *and* per
+  baseline endpoint. More runs cost more builds but give the t-test the power to
+  resolve a smaller regression.
 - `--alpha <p>` (default `0.05`): t-test significance level.
-- `--threshold <seconds>`: single-run mode — a commit whose build time is
-  **≥ threshold** is bad. Passing `--threshold` implies `--runs 1`; omit it (with
-  `--runs 1`) to auto-calibrate the endpoints' midpoint. Incompatible with
-  `--runs > 1`.
 - `--force`: bisect even if calibration finds no detectable regression.
 - `--progress` / `--no-progress`: a tqdm bar over the expected number of timing
   runs. Auto-enabled when attached to a terminal and `tqdm` is installed;
@@ -177,11 +173,11 @@ The hazard is comparing cached numbers against fresh ones after conditions chang
 
 ## What it does per commit
 
-**t-test mode (default).** Up front, the good and bad endpoints are each timed
-`--runs` times; the **good endpoint is the baseline**, and the bad endpoint is a
-sanity check (the run aborts unless bad is significantly slower than good, unless
-`--force`). Then for each commit `git bisect` selects, it is timed `--runs`
-times and compared to the baseline with a one-sided two-sample Welch's t-test:
+Up front, the good and bad endpoints are each timed `--runs` times; the **good
+endpoint is the baseline**, and the bad endpoint is a sanity check (the run
+aborts unless bad is significantly slower than good, unless `--force`). Then for
+each commit `git bisect` selects, it is timed `--runs` times and compared to the
+baseline with a one-sided two-sample Welch's t-test:
 
 - significantly **slower** than baseline (`p ≤ alpha`) → **bad** (exit 1)
 - not significantly slower → **good** (exit 0)
@@ -189,19 +185,14 @@ times and compared to the baseline with a one-sided two-sample Welch's t-test:
 
 The first bad commit is the first one significantly slower than the baseline.
 
-**Single-run mode (`--runs 1`).** One timing per commit; bad iff build time
-**≥ threshold** (explicit, or the auto-calibrated good/bad midpoint).
-
 ## Cost
 
 Each timing is a full benchmark run (a clean build is many minutes), and each
 step runs the benchmark `--runs` times. A range of N commits costs roughly
-**runs × (log2(N) + 2)** builds in t-test mode (the `+2` is endpoint
-calibration), or `log2(N) + 2` in single-run mode (`+0` with an explicit
-`--threshold`). Warn the user before kicking off a long range, and prefer running
-it in the background. Commits already in the profiling cache are free (see
-"Reusing measurements"), so a re-run over an overlapping range costs much less
-than the formula suggests.
+**runs × (log2(N) + 2)** builds (the `+2` is endpoint calibration). Warn the user
+before kicking off a long range, and prefer running it in the background. Commits
+already in the profiling cache are free (see "Reusing measurements"), so a re-run
+over an overlapping range costs much less than the formula suggests.
 
 ## Extending it: per-commit setup
 
@@ -236,8 +227,8 @@ working tree. Confirm afterward with `git status` / current branch if unsure.
 Finally it prints a summary table of every commit it measured, ordered by
 ancestry (oldest first) so the fast → slow transition is visible, with the first
 bad commit highlighted (`>>>` gutter, `<- first bad commit` tag, bold-red on a
-TTY). Columns show the WebKit commit identifier, the run count, mean time, and (in
-t-test mode) the p-value vs baseline; the baseline commit itself shows `base`:
+TTY). Columns show the WebKit commit identifier, the run count, mean time, and the
+p-value vs baseline; the baseline commit itself shows `base`:
 
 ```
 Build-time bisect summary (test: clean, runs: 3, alpha: 0.05)
@@ -257,9 +248,8 @@ The IDENTIFIER column is the `commits.webkit.org` identifier from the commit's
 that never landed upstream (local work, a branch built from a patch) has no
 identifier, so its committer date is shown instead.
 
-The table includes the good/bad endpoints (t-test mode always; single-run mode
-only when auto-calibrating). In single-run mode the P-VALUE column is `—`.
-Commits whose build failed to compile render as `skip`.
+The table includes the good and bad endpoints, since both are measured to
+establish the baseline. Commits whose build failed to compile render as `skip`.
 
 ## Notes
 

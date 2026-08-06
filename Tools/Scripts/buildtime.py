@@ -3,14 +3,11 @@
 Given a commit range and a `measure-build-time` benchmark (default: `clean`), this
 drives `git bisect` to find the commit that introduced a build-time regression.
 
-By default each commit is timed several times (`--runs`, default 3) and compared to
-a baseline (the good endpoint, also timed `--runs` times) with a two-sample Welch's
-t-test: the first commit that is *significantly slower* than the baseline
-(one-sided, `p <= --alpha`) is the regression point. This is robust to the
-run-to-run variability that makes a single measurement unreliable. For a cheaper
-single-measurement run, pass `--runs 1` (or a `--threshold`): a commit is then "bad"
-if its build time is at or above `--threshold` seconds (auto-calibrated from the
-endpoints' midpoint when omitted).
+Each commit is timed several times (`--runs`, default 3) and compared to a baseline
+(the good endpoint, also timed `--runs` times) with a two-sample Welch's t-test: the
+first commit that is *significantly slower* than the baseline (one-sided,
+`p <= --alpha`) is the regression point. Comparing distributions rather than single
+numbers is what makes the verdict survive the run-to-run variability of a build.
 
 `Tools/Scripts/bisect-build-time` is a thin entry point onto `main()` here. Callers
 that need to prepare something before each commit is timed — a companion checkout,
@@ -680,10 +677,10 @@ def record_measurement(journal: str | None, commit: str,
     The per-commit harness runs in its own process, so it can't return timings
     to the driver directly; each invocation logs here and the driver reads the
     journal back to print the final summary. `samples` is None for a skipped
-    (build-failed) commit; `pvalue` is the t-test result vs baseline (t-test mode)
-    or None (threshold mode / the baseline itself); `cached` is how many of the
-    samples came from the profiling cache. Raw samples are preserved so verdicts
-    can be recomputed at summary time.
+    (build-failed) commit; `pvalue` is the t-test result against the baseline, or
+    None for the baseline commit itself; `cached` is how many of the samples came
+    from the profiling cache. Raw samples are preserved so verdicts can be
+    recomputed at summary time.
     """
     if not journal:
         return
@@ -722,21 +719,13 @@ def run_harness(args: argparse.Namespace, forwarded: list[str], *, hook=None,
         return EXIT_SKIP
     samples = timings.values
 
-    mean = statistics.mean(samples)
-    pvalue = None
-    if args.baseline is not None:
-        # t-test mode: significantly slower than the baseline (one-sided) is bad.
-        baseline = [float(x) for x in args.baseline.split(',') if x]
-        t, pvalue = welch_ttest(samples, baseline)
-        is_bad = t > 0 and pvalue <= args.alpha
-        log.info('%s: mean %.1fs over %d runs, p=%s vs baseline -> %s',
-                 args.test, mean, len(samples), format_pvalue(pvalue),
-                 'BAD' if is_bad else 'GOOD')
-    else:
-        # threshold mode: at or above the threshold is bad.
-        is_bad = mean >= args.threshold
-        log.info('%s: %.1fs (threshold %.1fs) -> %s',
-                 args.test, mean, args.threshold, 'BAD' if is_bad else 'GOOD')
+    # Significantly slower than the baseline (one-sided) is bad.
+    baseline = [float(x) for x in args.baseline.split(',') if x]
+    t, pvalue = welch_ttest(samples, baseline)
+    is_bad = t > 0 and pvalue <= args.alpha
+    log.info('%s: mean %.1fs over %d runs, p=%s vs baseline -> %s',
+             args.test, statistics.mean(samples), len(samples),
+             format_pvalue(pvalue), 'BAD' if is_bad else 'GOOD')
 
     record_measurement(args.journal, commit, samples, pvalue, cached=timings.cached)
     return EXIT_BAD if is_bad else EXIT_GOOD
@@ -761,40 +750,6 @@ def checkout_for_measurement(ref: str, hook, writer, cache_context=None) -> tupl
     return sha, context
 
 
-def calibrate(args: argparse.Namespace, forwarded: list[str], progress: Progress,
-              hook=None, cache_context=None) -> float:
-    """Measure the bad and good endpoints once; return the midpoint threshold.
-
-    The caller restores the original ref; this leaves HEAD on the good endpoint.
-    """
-    log.info('Calibrating threshold by measuring both endpoints...')
-    bad_sha, bad_context = checkout_for_measurement(args.bad, hook, progress.write,
-                                                    cache_context)
-    bad = samples_for(args, forwarded, bad_sha, context=bad_context,
-                      on_sample=progress.tick, writer=progress.write)
-    record_measurement(args.journal, bad_sha, bad.values if bad else None,
-                       cached=bad.cached if bad else 0)
-    good_sha, good_context = checkout_for_measurement(args.good, hook, progress.write,
-                                                      cache_context)
-    good = samples_for(args, forwarded, good_sha, context=good_context,
-                       on_sample=progress.tick, writer=progress.write)
-    record_measurement(args.journal, good_sha, good.values if good else None,
-                       cached=good.cached if good else 0)
-
-    if bad is None or good is None:
-        sys.exit('Calibration failed: an endpoint build did not produce a timing. '
-                 'Fix the build or pass --threshold explicitly.')
-    t_bad, t_good = statistics.mean(bad.values), statistics.mean(good.values)
-    log.info('Endpoints: good=%.1fs bad=%.1fs', t_good, t_bad)
-    if t_bad <= t_good and not args.force:
-        sys.exit(f'Bad endpoint ({t_bad:.1f}s) is not slower than good '
-                 f'({t_good:.1f}s); no regression detected in range. Pass an '
-                 f'explicit --threshold, or --force to bisect anyway.')
-    threshold = (t_good + t_bad) / 2
-    log.info('Using midpoint threshold: %.1fs', threshold)
-    return threshold
-
-
 def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
                      progress: Progress, hook=None,
                      cache_context=None) -> tuple[list[float], str]:
@@ -804,8 +759,7 @@ def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
     sanity check that the range actually contains a detectable regression. The
     caller restores the original ref; this leaves HEAD on the bad endpoint.
     """
-    log.info('Measuring baseline over %d runs at each endpoint (t-test mode)...',
-             args.runs)
+    log.info('Measuring baseline over %d runs at each endpoint...', args.runs)
     good_sha, good_context = checkout_for_measurement(args.good, hook, progress.write,
                                                       cache_context)
     good = samples_for(args, forwarded, good_sha, context=good_context,
@@ -836,19 +790,19 @@ def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
 FIRST_BAD_RE = re.compile(r'^([0-9a-f]{7,40}) is the first bad commit', re.MULTILINE)
 
 
-def expected_runs(good: str, bad: str, runs: int, calibrating: bool) -> int:
+def expected_runs(good: str, bad: str, runs: int) -> int:
     """Estimate total measure-build-time invocations for the progress bar.
 
-    git bisect tests ~log2(range) commits, each timed `runs` times, plus two
-    calibration endpoints (also `runs` each) when calibrating. Approximate —
-    skips and uneven splits vary the real count; tqdm tolerates over/undershoot.
+    git bisect tests ~log2(range) commits, each timed `runs` times, plus the two
+    baseline endpoints (also `runs` each). Approximate — skips and uneven splits
+    vary the real count; tqdm tolerates over/undershoot.
     """
     try:
         n = int(git_output('rev-list', '--count', f'{good}..{bad}'))
     except (ValueError, subprocess.CalledProcessError):
         n = 0
     steps = math.ceil(math.log2(n)) if n >= 1 else 0
-    return runs * steps + (2 * runs if calibrating else 0)
+    return runs * (steps + 2)
 
 
 def run_bisect(harness: list[str], progress: Progress) -> tuple[int, str | None]:
@@ -874,8 +828,8 @@ def run_bisect(harness: list[str], progress: Progress) -> tuple[int, str | None]
 
 
 def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str, *,
-                  runs: int, threshold: float | None, alpha: float,
-                  baseline_commit: str | None, cache: str | Path | None = None,
+                  runs: int, alpha: float, baseline_commit: str | None,
+                  cache: str | Path | None = None,
                   interrupted: bool = False) -> None:
     """Print a table of every commit measured, highlighting the first bad one."""
     measured: dict[str, dict] = {}
@@ -891,7 +845,6 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
     if not measured:
         return
 
-    ttest = threshold is None
     first_bad_full = (resolve(first_bad) or '') if first_bad else ''
     baseline_full = (resolve(baseline_commit) or '') if baseline_commit else ''
     baseline_mean = None
@@ -920,16 +873,13 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
             nstr, meanstr = str(len(samples)), f'{mean:.1f}s'
             hits = rec.get('cached') or 0
             cachestr = f'{hits}/{len(samples)}' if hits else '—'
-            if ttest and commit == baseline_full:
+            if commit == baseline_full:
                 pstr, verdict = 'base', 'base'
-            elif ttest:
+            else:
                 pstr = format_pvalue(pvalue)
                 verdict = ('bad' if (pvalue is not None and pvalue <= alpha
                                      and baseline_mean is not None and mean > baseline_mean)
                            else 'good')
-            else:
-                pstr = '—'
-                verdict = 'bad' if mean >= threshold else 'good'
         rows.append((rank.get(commit, -1), short, commit, ident, nstr, meanstr, pstr,
                      verdict, subject, cachestr))
     rows.sort(reverse=True)  # oldest (highest rank) first
@@ -947,12 +897,8 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
     # Say so when the run ended early, so a partial table isn't read as the whole
     # range having been tested.
     partial = ', interrupted' if interrupted else ''
-    if ttest:
-        print(f'Build-time bisect summary (test: {test_name}, runs: {runs}, '
-              f'alpha: {alpha}{partial})')
-    else:
-        print(f'Build-time bisect summary (test: {test_name}, '
-              f'threshold: {threshold:.1f}s{partial})')
+    print(f'Build-time bisect summary (test: {test_name}, runs: {runs}, '
+          f'alpha: {alpha}{partial})')
     print()
     print(f'    {"COMMIT":<{sha_w}}  {"IDENTIFIER":<{ident_w}}  {"RUNS":>4}  '
           f'{"MEAN":>{mean_w}}  {"P-VALUE":>{p_w}}  {"CACHED":>{cache_w}}  '
@@ -970,7 +916,7 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
         print(line)
     print()
 
-    if ttest and baseline_mean is not None:
+    if baseline_mean is not None:
         base_short = next((r[1] for r in rows if r[2] == baseline_full), baseline_full[:9])
         print(f'Baseline: {base_short} (good endpoint), '
               f'{baseline_mean:.1f}s mean over {len(measured[baseline_full]["samples"])} '
@@ -1072,24 +1018,20 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
     else:
         log.info('Profiling cache disabled; every commit will be built.')
 
-    ttest = args.runs > 1
-    calibrating = ttest or args.threshold is None
-    progress = Progress(expected_runs(args.good, args.bad, args.runs, calibrating),
+    progress = Progress(expected_runs(args.good, args.bad, args.runs),
                         args.progress_enabled)
     awake = subprocess.Popen(('caffeinate', '-ims'))
 
+    # `baseline_commit` stays live past an interrupt: the handler below falls through
+    # to the summary, which needs it even when the baseline never finished.
     baseline_commit = None
     rc, first_bad, interrupted = 1, None, False
     try:
         # Calibration checks out the endpoints directly, so restore the original
-        # ref however it ends — including the aborts inside these functions.
+        # ref however it ends — including the aborts inside prepare_baseline.
         try:
-            if ttest:
-                baseline, baseline_commit = prepare_baseline(args, forwarded, progress,
-                                                             hook, cache_context)
-            elif args.threshold is None:
-                args.threshold = calibrate(args, forwarded, progress, hook,
-                                           cache_context)
+            baseline, baseline_commit = prepare_baseline(args, forwarded, progress,
+                                                         hook, cache_context)
         finally:
             git('checkout', '--quiet', restore_to, check=False)
 
@@ -1118,20 +1060,13 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
                 harness.append('--refresh')
         else:
             harness.append('--no-cache')
-        if ttest:
-            harness += ['--alpha', repr(args.alpha),
-                        '--baseline', ','.join(repr(x) for x in baseline)]
-        else:
-            harness += ['--threshold', repr(args.threshold)]
+        harness += ['--alpha', repr(args.alpha),
+                    '--baseline', ','.join(repr(x) for x in baseline)]
         if forwarded:
             harness += ['--', *forwarded]
 
-        if ttest:
-            log.info('Starting bisect: good=%s bad=%s runs=%d alpha=%s',
-                     args.good, args.bad, args.runs, args.alpha)
-        else:
-            log.info('Starting bisect: good=%s bad=%s threshold=%.1fs',
-                     args.good, args.bad, args.threshold)
+        log.info('Starting bisect: good=%s bad=%s runs=%d alpha=%s',
+                 args.good, args.bad, args.runs, args.alpha)
         try:
             git('bisect', 'start')
             git('bisect', 'bad', args.bad)
@@ -1163,8 +1098,8 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
         shutil.rmtree(args.build_dir, ignore_errors=True)
 
     print_summary(args.journal, first_bad, args.test, args.bad,
-                  runs=args.runs, threshold=None if ttest else args.threshold,
-                  alpha=args.alpha, baseline_commit=baseline_commit, cache=args.cache,
+                  runs=args.runs, alpha=args.alpha,
+                  baseline_commit=baseline_commit, cache=args.cache,
                   interrupted=interrupted)
     os.unlink(args.journal)
     return EXIT_INTERRUPTED if interrupted else rc
@@ -1189,18 +1124,14 @@ def build_parser(description: str = DESCRIPTION,
     parser.add_argument('--bad', help='Known-slow commit (newer).')
     parser.add_argument('--test', default='clean',
                         help='measure-build-time benchmark to bisect (default: clean).')
-    parser.add_argument('-r', '--runs', type=int, default=None,
-                        help='Timing runs per commit (and per calibration endpoint). '
-                             '>1 (default: 3) uses a two-sample t-test against the '
-                             'good-endpoint baseline; 1 uses single-measurement '
-                             '--threshold classification.')
+    parser.add_argument('-r', '--runs', type=int, default=3,
+                        help='Timing runs per commit, and per baseline endpoint '
+                             '(default: 3, minimum 2). More runs cost more builds but '
+                             'give the t-test the power to resolve a smaller '
+                             'regression.')
     parser.add_argument('--alpha', type=float, default=0.05,
                         help='t-test significance level (default: 0.05). A commit is '
                              '"bad" when it is significantly slower than the baseline.')
-    parser.add_argument('--threshold', type=float, default=None,
-                        help='Single-run mode: build time in seconds at or above which '
-                             'a commit is "bad" (omit to auto-calibrate the midpoint). '
-                             'Implies --runs 1; incompatible with --runs > 1.')
     parser.add_argument('--force', action='store_true',
                         help='Bisect even if calibration finds no regression.')
     parser.add_argument('--measure-build-time', type=Path, default=None,
@@ -1269,11 +1200,11 @@ def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace,
     $MEASURE_BUILD_TIME says (the caller knows its own layout). `forwarded` is part
     of the cache signature, since it decides what is actually built.
     """
-    # Resolve --runs: default to single-run when a --threshold is given, else 3.
-    if args.runs is None:
-        args.runs = 1 if args.threshold is not None else 3
-    if args.runs < 1:
-        parser.error('--runs must be >= 1')
+    # Two samples is the least a variance — and so a t-test — can be computed from.
+    if args.runs < 2:
+        parser.error('--runs must be >= 2: a commit is classified by comparing the '
+                     'spread of its timings against the baseline\'s, which a single '
+                     'measurement cannot give.')
 
     if args.measure_build_time is None:
         env = os.environ.get('MEASURE_BUILD_TIME')
@@ -1296,16 +1227,13 @@ def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace,
         args.cache = None
 
     if args.run_harness:
-        if args.baseline is None and args.threshold is None:
-            parser.error('--run-harness requires --threshold or --baseline')
+        if args.baseline is None:
+            parser.error('--run-harness requires --baseline')
         if args.measure_build_time is None:
             parser.error('--run-harness requires --measure-build-time')
         if args.build_dir is None:
             parser.error('--run-harness requires --build-dir')
     else:
-        if args.runs > 1 and args.threshold is not None:
-            parser.error('--threshold is single-run classification; it is incompatible '
-                         'with --runs > 1 (t-test mode)')
         if needs_endpoints and (not args.good or not args.bad):
             parser.error('--good and --bad are required')
         if args.measure_build_time is None:
