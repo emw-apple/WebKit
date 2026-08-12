@@ -53,7 +53,8 @@ if (getcwd() =~ m{/CMakeFiles/}) {
 
 # Real compilation
 my $bundlePolicy = $ENV{WK_UNIFIED_SOURCES_BUNDLE_POLICY};
-if (!defined($bundlePolicy)) {
+my $swiftJobsPolicy = $ENV{WK_SWIFT_JOBS_POLICY};
+if (!defined($bundlePolicy) || !defined($swiftJobsPolicy)) {
     my $dryRun = `$ninja -n @ARGV 2>&1`;
     my ($totalCommands) = $dryRun =~ m{/(\d+)\]};
 
@@ -63,21 +64,34 @@ if (!defined($bundlePolicy)) {
         exit($? >> 8);
     }
 
-    if ($dryRun =~ /\bRe-running CMake\b/) {
-        $bundlePolicy = "Bundle";
-    } elsif ($totalCommands > 8) {
-        $bundlePolicy = "Bundle";
-    } else {
-        $bundlePolicy = "NoBundle";
+    if (!defined($bundlePolicy)) {
+        if ($dryRun =~ /\bRe-running CMake\b/) {
+            $bundlePolicy = "Bundle";
+        } elsif ($totalCommands > 8) {
+            $bundlePolicy = "Bundle";
+        } else {
+            $bundlePolicy = "NoBundle";
+        }
+
+        $ENV{WK_UNIFIED_SOURCES_BUNDLE_POLICY} = $bundlePolicy;
     }
 
-    $ENV{WK_UNIFIED_SOURCES_BUNDLE_POLICY} = $bundlePolicy;
+    # On large builds, throttle swift compilation to avoid oversaturating the
+    # machine with work.
+    if (!defined($swiftJobsPolicy)) {
+        $swiftJobsPolicy = $totalCommands > 500 ? "Throttled" : "Full";
+        $ENV{WK_SWIFT_JOBS_POLICY} = $swiftJobsPolicy;
+    }
 }
 
-# Record the bundle policy for inspection; nothing reads this file.
+# Record the policies for inspection; nothing reads these files.
 make_path("DerivedSources");
 if (open(my $fh, '>', "DerivedSources/unified-sources-bundle-policy")) {
     print($fh $bundlePolicy);
+    close($fh);
+}
+if (open(my $fh, '>', "DerivedSources/swift-jobs-policy")) {
+    print($fh $swiftJobsPolicy);
     close($fh);
 }
 

@@ -120,4 +120,55 @@ for arg in "$@"; do
     esac
 done
 
+# CMake's Swift rules hardcode `-j <ncpu> -num-threads <ncpu>`, but ninja books
+# the whole Swift compile as a single job, so one Swift edge can draw every core
+# while ninja concurrently schedules a full complement of clang edges. Throttle by
+# default so that a plain `ninja` still benefits; ninja-wrapper opts small builds
+# back out, and WEBKIT_SWIFT_JOBS[_<module>] overrides either way.
+#
+# This runs as a post-pass rather than inside the loop above because `-j` comes
+# from the rule at the front of the command line, while -module-name arrives
+# later by way of the target's compile flags.
+module_name=
+for i in "${!args[@]}"; do
+    if [[ "${args[i]}" == "-module-name" ]]; then
+        module_name="${args[i + 1]}"
+        break
+    fi
+done
+
+swift_jobs=
+if [[ -n "$module_name" ]]; then
+    jobs_var="WEBKIT_SWIFT_JOBS_${module_name//[^A-Za-z0-9_]/_}"
+    swift_jobs="${!jobs_var}"
+fi
+: "${swift_jobs:=$WEBKIT_SWIFT_JOBS}"
+
+# Three quarters of the cores leaves room for the concurrent clang edges, so
+# neither side thrashes.
+if [[ -z "$swift_jobs" && "$WK_SWIFT_JOBS_POLICY" != "Full" ]]; then
+    ncpu=$(sysctl -n hw.ncpu 2>/dev/null || nproc 2>/dev/null || echo)
+    if [[ "$ncpu" =~ ^[1-9][0-9]*$ ]]; then
+        swift_jobs=$((ncpu * 3 / 4))
+        if [ "$swift_jobs" -lt 2 ]; then
+            swift_jobs=2
+        fi
+    fi
+fi
+
+# A malformed value falls through to CMake's default instead of wedging the build.
+if [[ "$swift_jobs" =~ ^[1-9][0-9]*$ ]]; then
+    for i in "${!args[@]}"; do
+        case "${args[i]}" in
+            "-j"|"-num-threads")
+                # Only rewrite a numeric operand, so that a -Xcc-wrapped token
+                # which happens to spell one of these can't be clobbered.
+                if [[ "${args[i + 1]}" =~ ^[0-9]+$ ]]; then
+                    args[i + 1]="$swift_jobs"
+                fi
+                ;;
+        esac
+    done
+fi
+
 { "$REAL_SWIFTC" "${args[@]}" 2>&1 1>&3 | filter_benign_warnings >&2; } 3>&1
