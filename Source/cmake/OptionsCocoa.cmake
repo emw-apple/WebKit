@@ -175,6 +175,14 @@ add_compile_options(
 set_property(DIRECTORY "${CMAKE_BINARY_DIR}" APPEND PROPERTY
     ADDITIONAL_CLEAN_FILES "${CMAKE_BINARY_DIR}/SwiftModuleCache")
 
+# Swift's driver uses one lane in Ninja but has some fully parallelized work.
+# Avoid contention pressure by limiting its max concurrent jobs.
+# Tuned on an M5 Max (16 cores).
+cmake_host_system_information(RESULT _ncpu QUERY NUMBER_OF_LOGICAL_CORES)
+math(EXPR _ncpu "${_ncpu} * 3 / 4")
+set(CMAKE_Swift_NUM_THREADS ${_ncpu} CACHE INTERNAL "swiftc -j argument")
+unset(_ncpu)
+
 if (WEBKIT_SDK_IS_MACOS AND USE_APPLE_INTERNAL_SDK)
     set(WEBKIT_CODE_SIGN_IDENTITY "Safari Engineering")
     WEBKITADDITIONS_FIND_KEYCHAIN()
