@@ -16,6 +16,11 @@ function(WEBKIT_ADD_SWIFT_PREWARM _consumer _swift_source)
     get_target_property(_opts ${_consumer} COMPILE_DEFINITIONS)
     target_compile_definitions(${_prewarm} PRIVATE ${_opts})
 
+    get_target_property(_opts ${_consumer} INCLUDE_DIRECTORIES)
+    target_include_directories(${_prewarm} PRIVATE ${_opts})
+
+    target_include_directories(${_prewarm} PRIVATE ${${_consumer}_SYSTEM_INCLUDE_DIRECTORIES})
+
     get_target_property(_linked_libraries ${_consumer} LINK_LIBRARIES)
     foreach (_target ${_linked_libraries})
         if (NOT TARGET ${_target})
