@@ -88,11 +88,18 @@ set_source_files_properties(${WebKitLegacy_WEB_PREFERENCES} PROPERTIES GENERATED
 
 add_custom_command(
     OUTPUT ${WebKitLegacy_DERIVED_SOURCES_DIR}/WebViewPreferencesChangedGenerated.mm ${WebKitLegacy_DERIVED_SOURCES_DIR}/WebPreferencesInternalFeatures.mm ${WebKitLegacy_DERIVED_SOURCES_DIR}/WebPreferencesExperimentalFeatures.mm ${WebKitLegacy_DERIVED_SOURCES_DIR}/WebPreferencesDefinitions.h
-    DEPENDS ${WebKitLegacy_WEB_PREFERENCES_TEMPLATES} ${WebKitLegacy_WEB_PREFERENCES} WTF_CopyPreferences
+    DEPENDS ${WebKitLegacy_WEB_PREFERENCES_TEMPLATES} ${WebKitLegacy_WEB_PREFERENCES} 
     COMMAND ${Ruby_EXECUTABLE} ${WTF_SCRIPTS_DIR}/GeneratePreferences.rb --frontend WebKitLegacy --outputDir "${WebKitLegacy_DERIVED_SOURCES_DIR}" --template "$<JOIN:${WebKitLegacy_WEB_PREFERENCES_TEMPLATES},;--template;>" ${WebKitLegacy_WEB_PREFERENCES}
     COMMAND_EXPAND_LISTS
     VERBATIM
 )
+
+# Put the generated header into a separate target so that dependents can build
+# without waiting for the rest of WebCore to compile and link.
+add_custom_target(WebKitLegacyPreferences DEPENDS
+    ${WebKitLegacy_DERIVED_SOURCES_DIR}/WebPreferencesDefinitions.h
+)
+add_dependencies(WebKitLegacy WebKitLegacyPreferences)
 
 list(APPEND WebKitLegacy_SOURCES
     ${WebKitLegacy_DERIVED_SOURCES_DIR}/WebViewPreferencesChangedGenerated.mm
