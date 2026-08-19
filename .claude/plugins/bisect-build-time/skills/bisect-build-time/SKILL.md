@@ -32,7 +32,9 @@ what makes the answer trustworthy.
   or `--cmake` (Ninja). See `Tools/Scripts/measure-build-time --help` for the
   full set (`--build-command`, `--configuration`, etc.).
 - Known-good (older, fast) and known-bad (newer, slow) commits bounding the
-  regression. The good endpoint must build (it is the t-test baseline).
+  regression. The good endpoint must build (it is the t-test baseline), and must be
+  an **ancestor** of the bad one — the range is checked before anything is built, so
+  reversed or divergent endpoints fail immediately rather than after the baseline.
 - On a sibling checkout, `GIT_LFS_SKIP_SMUDGE=1` unless the build needs the LFS
   payloads — see "Git LFS in the sibling checkout" below.
 
@@ -52,6 +54,11 @@ pass `--tests`, `--output`, or `--keep-going` there — the script sets them.
 - `-r/--runs <N>` (**default 3**, minimum 2): timings per commit *and* per
   baseline endpoint. More runs cost more builds but give the t-test the power to
   resolve a smaller regression.
+- `-w/--warmup <N>` (default `0`): runs to throw away before the timed ones, per
+  commit and per baseline endpoint. The first build after a checkout is often
+  slower for reasons belonging to the checkout rather than the commit (cold page
+  cache, cold compiler caches); discarding it keeps that out of the samples. Costs
+  N extra builds per commit that isn't already cached — see "Reusing measurements".
 - `--alpha <p>` (default `0.05`): t-test significance level.
 - `--force`: bisect even if calibration finds no detectable regression.
 - `--progress` / `--no-progress`: a tqdm bar over the expected number of timing
@@ -158,6 +165,14 @@ across pairs. Cached samples *accumulate*: with `--runs 3`, a commit with 2 cach
 samples gets one fresh one, and a commit with 5 keeps all 5 (Welch's t-test handles
 unequal sample sizes).
 
+`--warmup` is **not** part of the cache key, and warmup timings are never written to
+the cache — they are measured, logged, and dropped. So samples taken with and without
+warmup pool together, on the assumption that warming up converges on the same number
+a repeated run would reach anyway. Two consequences: a commit whose samples are
+already cached does no warmup at all (nothing is built, so there is nothing to warm),
+and if you don't want warmed and unwarmed samples mixed, separate them with
+`--cache-tag`.
+
 The hazard is comparing cached numbers against fresh ones after conditions changed
 — a toolchain upgrade, a different ccache state, a machine under load. Guards:
 
@@ -185,14 +200,31 @@ baseline with a one-sided two-sample Welch's t-test:
 
 The first bad commit is the first one significantly slower than the baseline.
 
+With `--warmup N`, each commit and endpoint runs N discarded builds first; a build
+that fails during warmup skips the commit exactly as a failed timed run would.
+
+## Comparing two adjacent commits
+
+Passing adjacent endpoints (`--good <commit>^ --bad <commit>`) is a useful way to
+measure one commit's build-time impact rather than to search for it. No bisecting
+happens: the two endpoint measurements *are* the comparison, so the run is exactly
+`(runs + warmup) × 2` builds and reports the bad endpoint as the first bad commit
+when it is significantly slower. `git bisect` is never invoked — it can't be, since
+it treats such a range as already resolved and then rejects the harness run with
+"was both good and bad".
+
+Getting the endpoints backwards is the easy mistake here, and it now fails up front
+with a message naming both resolved commits instead of a traceback after the
+baseline builds.
+
 ## Cost
 
 Each timing is a full benchmark run (a clean build is many minutes), and each
 step runs the benchmark `--runs` times. A range of N commits costs roughly
-**runs × (log2(N) + 2)** builds (the `+2` is endpoint calibration). Warn the user
-before kicking off a long range, and prefer running it in the background. Commits
-already in the profiling cache are free (see "Reusing measurements"), so a re-run
-over an overlapping range costs much less than the formula suggests.
+**(runs + warmup) × (log2(N) + 2)** builds (the `+2` is endpoint calibration). Warn
+the user before kicking off a long range, and prefer running it in the background.
+Commits already in the profiling cache are free (see "Reusing measurements"), so a
+re-run over an overlapping range costs much less than the formula suggests.
 
 ## Extending it: per-commit setup
 

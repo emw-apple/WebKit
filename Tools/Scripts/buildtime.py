@@ -8,6 +8,8 @@ Each commit is timed several times (`--runs`, default 3) and compared to a basel
 first commit that is *significantly slower* than the baseline (one-sided,
 `p <= --alpha`) is the regression point. Comparing distributions rather than single
 numbers is what makes the verdict survive the run-to-run variability of a build.
+`--warmup N` discards N runs per commit before the timed ones, for when the first
+build after a checkout is reliably the slow one.
 
 `Tools/Scripts/bisect-build-time` is a thin entry point onto `main()` here. Callers
 that need to prepare something before each commit is timed — a companion checkout,
@@ -368,6 +370,11 @@ def cache_signature(test_name: str, forwarded: list[str], tag: str | None = None
     worse than re-measuring, so the cache is inherently machine-local. `tag` is the
     manual escape hatch (`--cache-tag`) for changes we can't see, like a toolchain
     upgrade.
+
+    `--warmup` is deliberately *not* part of it: warming up aims at the same warm
+    number a repeated run converges to, so its samples stay poolable with the rest
+    rather than forcing a full re-measure. Use `--cache-tag` to keep them apart when
+    that assumption doesn't hold.
     """
     payload = json.dumps({'test': test_name, 'args': forwarded,
                           'host': socket.gethostname(), 'tag': tag}, sort_keys=True)
@@ -483,8 +490,8 @@ def samples_for(args: argparse.Namespace, forwarded: list[str], commit: str, *,
 
     The single place timings come from, so calibration and every bisect step share
     the same cache behaviour. Returns None if a build failed (the caller skips the
-    commit). `on_sample` fires for cached samples too, so the progress bar total
-    still means something when a run is mostly cache hits.
+    commit). `on_sample` fires for cached samples and warmup runs too, so the
+    progress bar total still means something when a run is mostly cache hits.
     """
     cached: list[float] = []
     if args.cache and not args.refresh:
@@ -501,6 +508,26 @@ def samples_for(args: argparse.Namespace, forwarded: list[str], commit: str, *,
                 on_sample()
 
     fresh: list[float] = []
+    # Warm up before the runs that count. The first build after a checkout pays for
+    # a cold page cache and whatever the toolchain keeps on disk — a cost of having
+    # just checked out, not of the commit — so discarding it stops that bias landing
+    # in the samples the t-test sees. These timings are never recorded: nothing is
+    # appended to the cache and nothing is returned, so a later run at a lower
+    # --warmup can't pick one up as if it were measured. Skipped when the cache
+    # already covers this commit, since then nothing is built and nothing needs
+    # warming.
+    if needed and args.warmup:
+        for i in range(1, args.warmup + 1):
+            log.info('Warmup run %d/%d (discarded)', i, args.warmup)
+            seconds = run_benchmark(args.measure_build_time, args.test, forwarded,
+                                    args.source_dir, args.build_dir, writer=writer)
+            if on_sample is not None:
+                on_sample()
+            if seconds is None:
+                return None
+            log.info('Warmup run %d/%d took %.1fs; discarding it.',
+                     i, args.warmup, seconds)
+
     for i in range(1, needed + 1):
         if needed > 1:
             log.info('Timing run %d/%d', i, needed)
@@ -752,12 +779,17 @@ def checkout_for_measurement(ref: str, hook, writer, cache_context=None) -> tupl
 
 def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
                      progress: Progress, hook=None,
-                     cache_context=None) -> tuple[list[float], str]:
-    """Measure both endpoints `--runs` times; return (baseline_samples, good_sha).
+                     cache_context=None) -> tuple[list[float], str, str | None]:
+    """Measure both endpoints `--runs` times.
 
-    The good endpoint is the baseline. The bad endpoint is measured too, as a
-    sanity check that the range actually contains a detectable regression. The
-    caller restores the original ref; this leaves HEAD on the bad endpoint.
+    Returns (baseline samples, good sha, bad sha if it is significantly slower).
+    The good endpoint is the baseline. The bad endpoint is measured too, as a sanity
+    check that the range actually contains a detectable regression — and for a range
+    holding one commit that comparison is the whole answer, which is why the third
+    element is returned rather than recomputed. It is None only under `--force`,
+    which allows bisecting a range with no detectable regression.
+
+    The caller restores the original ref; this leaves HEAD on the bad endpoint.
     """
     log.info('Measuring baseline over %d runs at each endpoint...', args.runs)
     good_sha, good_context = checkout_for_measurement(args.good, hook, progress.write,
@@ -784,25 +816,27 @@ def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
                  f'(p={format_pvalue(p)} at alpha={args.alpha}); no detectable '
                  f'regression in range. Increase --runs, widen the range, or pass '
                  f'--force to bisect anyway.')
-    return baseline, good_sha
+    return baseline, good_sha, (bad_sha if t > 0 and p <= args.alpha else None)
+
 
 
 FIRST_BAD_RE = re.compile(r'^([0-9a-f]{7,40}) is the first bad commit', re.MULTILINE)
 
 
-def expected_runs(good: str, bad: str, runs: int) -> int:
+def expected_runs(good: str, bad: str, runs: int, warmup: int = 0) -> int:
     """Estimate total measure-build-time invocations for the progress bar.
 
-    git bisect tests ~log2(range) commits, each timed `runs` times, plus the two
-    baseline endpoints (also `runs` each). Approximate — skips and uneven splits
-    vary the real count; tqdm tolerates over/undershoot.
+    git bisect tests ~log2(range) commits, each timed `runs` times after `warmup`
+    discarded runs, plus the two baseline endpoints (the same each). Approximate —
+    skips, uneven splits, and commits served entirely from the cache (which skip
+    their warmup) vary the real count; tqdm tolerates over/undershoot.
     """
     try:
         n = int(git_output('rev-list', '--count', f'{good}..{bad}'))
     except (ValueError, subprocess.CalledProcessError):
         n = 0
     steps = math.ceil(math.log2(n)) if n >= 1 else 0
-    return runs * (steps + 2)
+    return (runs + warmup) * (steps + 2)
 
 
 def run_bisect(harness: list[str], progress: Progress) -> tuple[int, str | None]:
@@ -980,21 +1014,50 @@ def benchmark_copy(benchmark: Path, directory: Path, root: Path | None) -> Path 
     return copy
 
 
+def validate_range(good: str, bad: str) -> int:
+    """Commits in `good..bad` — the candidates for "first bad"; abort if there are none.
+
+    `git bisect` only rejects a bad range when the driver feeds it one, which is
+    after the baseline builds: an hour in, as a traceback out of git plumbing. Three
+    git calls here turn that into an immediate error.
+    """
+    for flag, ref in (('--good', good), ('--bad', bad)):
+        if resolve(ref) is None:
+            sys.exit(f'{flag} {ref} does not name a commit.')
+    # Also rules out divergent endpoints, where `git bisect` goes off to test their
+    # merge base — outside the range asked about, and arbitrarily far back.
+    if git('merge-base', '--is-ancestor', good, bad, check=False):
+        sys.exit(f'--good {good} ({describe(good)}) is not an ancestor of '
+                 f'--bad {bad} ({describe(bad)}), so they do not bound a range. '
+                 f'--good must be the older, faster commit; swap them if reversed.')
+    count = int(git_output('rev-list', '--count', f'{good}..{bad}'))
+    if not count:
+        sys.exit(f'--good and --bad are the same commit ({describe(good)}); there is '
+                 f'nothing to compare.')
+    return count
+
+
 def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: Path,
                hook=None, harness_args=(), cache_context=None) -> int:
-    """Calibrate the endpoints, then drive `git bisect run` over the range.
+    """Measure the endpoints, then find the first bad commit between them.
 
     `entry_script` is re-invoked once per commit in harness mode (from a temp copy).
     `hook` prepares each commit before it is timed, `cache_context` reports what that
     produced so cached timings are never reused under different conditions, and
     `harness_args` are extra arguments `entry_script` needs to reconstruct itself in
     the harness process.
+
+    A range holding a single commit is answered from the endpoints alone; only a
+    wider one is handed to `git bisect run`.
     """
     benchmark = Path(args.measure_build_time)
     if not benchmark.exists():
         sys.exit(f'measure-build-time not found at {benchmark}; pass '
                  f'--measure-build-time or set $MEASURE_BUILD_TIME.')
     require_clean_worktree()
+    # Before anything is built: a range git bisect won't accept should cost seconds
+    # to find out about, not a baseline's worth of builds.
+    candidates = validate_range(args.good, args.bad)
     restore_to = current_ref()
 
     journal_fd, args.journal = tempfile.mkstemp(prefix='bisect-build-time-journal-',
@@ -1018,7 +1081,7 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
     else:
         log.info('Profiling cache disabled; every commit will be built.')
 
-    progress = Progress(expected_runs(args.good, args.bad, args.runs),
+    progress = Progress(expected_runs(args.good, args.bad, args.runs, args.warmup),
                         args.progress_enabled)
     awake = subprocess.Popen(('caffeinate', '-ims'))
 
@@ -1030,53 +1093,64 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
         # Calibration checks out the endpoints directly, so restore the original
         # ref however it ends — including the aborts inside prepare_baseline.
         try:
-            baseline, baseline_commit = prepare_baseline(args, forwarded, progress,
-                                                         hook, cache_context)
+            baseline, baseline_commit, bad_if_slower = prepare_baseline(
+                args, forwarded, progress, hook, cache_context)
         finally:
             git('checkout', '--quiet', restore_to, check=False)
 
-        harness = [
-            sys.executable, str(harness_script),
-            '--run-harness',
-            *harness_args,
-            '--test', args.test,
-            '--runs', str(args.runs),
-            '--journal', args.journal,
-            # Resolved here: the copy can't find the benchmark relative to itself,
-            # and every commit has to be built in the same throwaway directory.
-            '--measure-build-time', str(args.measure_build_time),
-            '--build-dir', str(args.build_dir),
-        ]
-        if args.progress_enabled:
-            harness.append('--progress-ticks')
-        if args.cache:
-            # Absolute, so the harness never has to re-resolve it; its absence in
-            # the harness argv is what turns caching off there.
-            harness += ['--cache', str(args.cache),
-                        '--cache-max-age', repr(args.cache_max_age)]
-            if args.cache_tag:
-                harness += ['--cache-tag', args.cache_tag]
-            if args.refresh:
-                harness.append('--refresh')
+        if candidates == 1:
+            # Nothing to search for: the bad endpoint is the first bad commit by
+            # construction, and prepare_baseline has already measured the only two
+            # revisions in range. `git bisect` cannot be handed this — it resolves
+            # the range on `git bisect good` and then fails the harness run with
+            # "was both good and bad".
+            log.info('%s is the only commit in range; the endpoints answer it, so '
+                     'not bisecting.', describe(args.bad))
+            rc, first_bad = 0, bad_if_slower
         else:
-            harness.append('--no-cache')
-        harness += ['--alpha', repr(args.alpha),
-                    '--baseline', ','.join(repr(x) for x in baseline)]
-        if forwarded:
-            harness += ['--', *forwarded]
+            harness = [
+                sys.executable, str(harness_script),
+                '--run-harness',
+                *harness_args,
+                '--test', args.test,
+                '--runs', str(args.runs),
+                '--warmup', str(args.warmup),
+                '--journal', args.journal,
+                # Resolved here: the copy can't find the benchmark relative to itself,
+                # and every commit has to be built in the same throwaway directory.
+                '--measure-build-time', str(args.measure_build_time),
+                '--build-dir', str(args.build_dir),
+            ]
+            if args.progress_enabled:
+                harness.append('--progress-ticks')
+            if args.cache:
+                # Absolute, so the harness never has to re-resolve it; its absence in
+                # the harness argv is what turns caching off there.
+                harness += ['--cache', str(args.cache),
+                            '--cache-max-age', repr(args.cache_max_age)]
+                if args.cache_tag:
+                    harness += ['--cache-tag', args.cache_tag]
+                if args.refresh:
+                    harness.append('--refresh')
+            else:
+                harness.append('--no-cache')
+            harness += ['--alpha', repr(args.alpha),
+                        '--baseline', ','.join(repr(x) for x in baseline)]
+            if forwarded:
+                harness += ['--', *forwarded]
 
-        log.info('Starting bisect: good=%s bad=%s runs=%d alpha=%s',
-                 args.good, args.bad, args.runs, args.alpha)
-        try:
-            git('bisect', 'start')
-            git('bisect', 'bad', args.bad)
-            git('bisect', 'good', args.good)
-            rc, first_bad = run_bisect(harness, progress)
-            if rc != 0:
-                log.error('git bisect run exited with code %d', rc)
-        finally:
-            log.info('Resetting bisect state (returning to %s).', restore_to)
-            git('bisect', 'reset', check=False)
+            log.info('Starting bisect: good=%s bad=%s runs=%d alpha=%s',
+                     args.good, args.bad, args.runs, args.alpha)
+            try:
+                git('bisect', 'start')
+                git('bisect', 'bad', args.bad)
+                git('bisect', 'good', args.good)
+                rc, first_bad = run_bisect(harness, progress)
+                if rc != 0:
+                    log.error('git bisect run exited with code %d', rc)
+            finally:
+                log.info('Resetting bisect state (returning to %s).', restore_to)
+                git('bisect', 'reset', check=False)
     except KeyboardInterrupt:
         # Abandoning a long bisect with Ctrl-C is a normal way to end one: the
         # `finally` blocks above have already put the checkout back, so report what
@@ -1129,6 +1203,13 @@ def build_parser(description: str = DESCRIPTION,
                              '(default: 3, minimum 2). More runs cost more builds but '
                              'give the t-test the power to resolve a smaller '
                              'regression.')
+    parser.add_argument('-w', '--warmup', type=int, default=0, metavar='N',
+                        help='Discarded runs before the timed ones, per commit and per '
+                             'baseline endpoint (default: 0). The first build after a '
+                             'checkout is slower for reasons that belong to the '
+                             'checkout rather than the commit; throwing it away keeps '
+                             'that out of the samples. Costs N extra builds per commit '
+                             'that is not already cached.')
     parser.add_argument('--alpha', type=float, default=0.05,
                         help='t-test significance level (default: 0.05). A commit is '
                              '"bad" when it is significantly slower than the baseline.')
@@ -1205,6 +1286,8 @@ def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace,
         parser.error('--runs must be >= 2: a commit is classified by comparing the '
                      'spread of its timings against the baseline\'s, which a single '
                      'measurement cannot give.')
+    if args.warmup < 0:
+        parser.error('--warmup must be >= 0')
 
     if args.measure_build_time is None:
         env = os.environ.get('MEASURE_BUILD_TIME')
