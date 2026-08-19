@@ -205,12 +205,13 @@ Then for each commit `git bisect` selects, it is timed `--runs` times and compar
 the baseline with a one-sided two-sample Welch's t-test:
 
 - significantly changed from baseline **in that direction** (`p ≤ alpha`) → **bad**
-  (exit 1)
-- not significantly changed → **good** (exit 0)
+  (exit 1), reported as `slower`/`faster`
+- not significantly changed → **good** (exit 0), reported as `unchanged`
 - **build failed to compile** → **skip** (exit 125)
 
-The first bad commit is the earliest one that differs significantly from the
-baseline — the commit that made the build slower, or faster.
+The answer is the earliest commit that differs significantly from the
+baseline — the commit that made the build slower, or faster. (`git bisect`'s own
+exit-code contract is good/bad; the report phrases it as what the commit did.)
 
 With `--warmup N`, each commit and endpoint runs N discarded builds first; a build
 that fails during warmup skips the commit exactly as a failed timed run would.
@@ -220,9 +221,9 @@ that fails during warmup skips the commit exactly as a failed timed run would.
 Passing adjacent endpoints (`-a <commit>^ -b <commit>`) is a useful way to
 measure one commit's build-time impact rather than to search for it. No bisecting
 happens: the two endpoint measurements *are* the comparison, so the run is exactly
-`(runs + warmup) × 2` builds and reports `-b` as the first bad commit when it differs
-significantly from `-a` — in either direction, so this works for confirming a speedup
-as well as a regression. `git bisect` is never invoked — it can't be, since
+`(runs + warmup) × 2` builds and reports `-b` as the commit responsible when it
+differs significantly from `-a` — in either direction, so this works for confirming
+a speedup as well as a regression. `git bisect` is never invoked — it can't be, since
 it treats such a range as already resolved and then rejects the harness run with
 "was both good and bad".
 
@@ -240,16 +241,16 @@ kind of change:
 - `-b` significantly **faster** than `-a` → searches for the commit that made it
   faster (a progression).
 
-Either way a commit is "bad" when it is significantly changed *in that direction*
-from the `-a` baseline, so `git bisect`'s "first bad commit" is the commit
-responsible. The vocabulary stays git's; for a progression, read "bad" as "already
-has the speedup".
+Either way a commit counts as changed when it differs significantly *in that
+direction* from the `-a` baseline, so the commit `git bisect` converges on is the one
+responsible. The report calls it the first `slower` or first `faster` commit; git's
+own output, which is passed through, still says "first bad commit".
 
 The log states the choice before any bisecting starts:
 
 ```
 INFO -b is significantly faster than -a, so searching for the commit that made the build faster.
-INFO Starting bisect: good=<a> bad=<b> runs=3 alpha=0.05 direction=faster
+INFO Starting bisect: a=<sha> b=<sha> runs=3 alpha=0.05 direction=faster
 ```
 
 If the endpoints are *not* significantly different there is nothing to attribute, and
@@ -305,22 +306,24 @@ The script prints git's `… is the first bad commit` result, then always runs
 working tree. Confirm afterward with `git status` / current branch if unsure.
 
 Finally it prints a summary table of every commit it measured, ordered by
-ancestry (oldest first) so the fast → slow transition is visible, with the first
-bad commit highlighted (`>>>` gutter, `<- first bad commit` tag, bold-red on a
+ancestry (oldest first) so the transition is visible, with the commit responsible
+highlighted (`>>>` gutter, `<- first slower commit` tag, bold-red on a
 TTY). Columns show the WebKit commit identifier, the run count, mean time, and the
-p-value vs baseline; the baseline commit itself shows `base`:
+p-value vs baseline; the baseline commit itself shows `base`. The VERDICT column
+names what the commit did — `slower`, or `faster` for a progression — rather than
+git's good/bad, which reads backwards for a speedup:
 
 ```
 Build-time bisect summary (test: clean, runs: 3, alpha: 0.05)
 
-    COMMIT   IDENTIFIER   RUNS    MEAN  P-VALUE  CACHED  VERDICT  SUBJECT
-    5667a51  318105@main     3   99.0s     base       —  base     ...
-    1c9b298  318106@main     3  100.0s    0.288       —  good     ...
->>> 82c477d  318107@main     3  131.0s  2.5e-06     3/3  bad      ...  <- first bad commit
-    90ea4b1  318108@main     3  129.7s  2.4e-04       —  bad      ...
+    COMMIT   IDENTIFIER   RUNS    MEAN  P-VALUE  CACHED  VERDICT    SUBJECT
+    5667a51  318105@main     3   99.0s     base       —  base       ...
+    1c9b298  318106@main     3  100.0s    0.288       —  unchanged  ...
+>>> 82c477d  318107@main     3  131.0s  2.5e-06     3/3  slower     ...  <- first slower commit
+    90ea4b1  318108@main     3  129.7s  2.4e-04       —  slower     ...
 
-Baseline: 5667a51 (good endpoint), 99.0s mean over 3 runs
-First bad commit: 82c477d (318107@main) ...
+Baseline: 5667a51 (-a endpoint), 99.0s mean over 3 runs
+First slower commit: 82c477d (318107@main) ...
 ```
 
 The IDENTIFIER column is the `commits.webkit.org` identifier from the commit's
@@ -328,7 +331,7 @@ The IDENTIFIER column is the `commits.webkit.org` identifier from the commit's
 that never landed upstream (local work, a branch built from a patch) has no
 identifier, so its committer date is shown instead.
 
-The table includes the good and bad endpoints, since both are measured to
+The table includes both endpoints, since both are measured to
 establish the baseline. Commits whose build failed to compile render as `skip`.
 
 ## Notes

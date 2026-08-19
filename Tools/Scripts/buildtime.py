@@ -879,7 +879,7 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
                   direction: str = SLOWER,
                   cache: str | Path | None = None,
                   interrupted: bool = False) -> None:
-    """Print a table of every commit measured, highlighting the first bad one."""
+    """Print a table of every commit measured, highlighting the one responsible."""
     measured: dict[str, dict] = {}
     try:
         with open(journal) as f:
@@ -926,12 +926,14 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
             else:
                 pstr = format_pvalue(pvalue)
                 # Same one-sided rule the harness applied, so the table agrees with
-                # the verdicts the bisect actually acted on.
+                # the verdicts the bisect actually acted on. Reported as what the
+                # commit did rather than git's good/bad, which reads backwards for a
+                # speedup.
                 moved = (baseline_mean is not None
                          and (mean > baseline_mean if direction == SLOWER
                               else mean < baseline_mean))
-                verdict = ('bad' if (pvalue is not None and pvalue <= alpha and moved)
-                           else 'good')
+                verdict = (direction if (pvalue is not None and pvalue <= alpha
+                                         and moved) else 'unchanged')
         rows.append((rank.get(commit, -1), short, commit, ident, nstr, meanstr, pstr,
                      verdict, subject, cachestr))
     rows.sort(reverse=True)  # oldest (highest rank) first
@@ -964,13 +966,13 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
                 f'{meanstr:>{mean_w}}  {pstr:>{p_w}}  {cachestr:>{cache_w}}  '
                 f'{verdict:<{verdict_w}}  {subj}')
         if is_first_bad:
-            line = f'{bold}{red}{line}{reset}  <- first bad commit'
+            line = f'{bold}{red}{line}{reset}  <- first {direction} commit'
         print(line)
     print()
 
     if baseline_mean is not None:
         base_short = next((r[1] for r in rows if r[2] == baseline_full), baseline_full[:9])
-        print(f'Baseline: {base_short} (good endpoint), '
+        print(f'Baseline: {base_short} (-a endpoint), '
               f'{baseline_mean:.1f}s mean over {len(measured[baseline_full]["samples"])} '
               f'runs')
     reused = sum(rec.get('cached') or 0 for rec in measured.values())
@@ -979,9 +981,9 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
         print(f'Cache: reused {reused} of {total} samples from {cache}')
     first_row = next((r for r in rows if r[2] == first_bad_full), None)
     if first_row:
-        print(f'First bad commit: {first_row[1]} ({first_row[3]}) {first_row[8]}')
+        print(f'First {direction} commit: {first_row[1]} ({first_row[3]}) {first_row[8]}')
     else:
-        print('No first bad commit identified.')
+        print(f'No first {direction} commit identified.')
 
 
 def harness_copy(entry_script: Path) -> tuple[Path, Path]:
@@ -1159,7 +1161,7 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
             if forwarded:
                 harness += ['--', *forwarded]
 
-            log.info('Starting bisect: good=%s bad=%s runs=%d alpha=%s direction=%s',
+            log.info('Starting bisect: a=%s b=%s runs=%d alpha=%s direction=%s',
                      args.good, args.bad, args.runs, args.alpha, direction or SLOWER)
             try:
                 git('bisect', 'start')
