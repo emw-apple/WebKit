@@ -1,6 +1,6 @@
 ---
 name: bisect-build-time
-description: Use when the user wants to find which commit in a range caused a WebKit build-time regression (clean or incremental build getting slower). Drives `git bisect run` on top of `Tools/Scripts/measure-build-time` via `Tools/Scripts/bisect-build-time`, timing each commit several times and using a two-sample t-test to find the first commit significantly slower than the baseline. Timings are cached per commit, so re-running over an overlapping range is cheap. When `../Internal/Tools/Scripts/bisect-build-time` exists, run that instead — same tool and command line, plus it keeps the sibling checkout aligned with each commit under test.
+description: Use when the user wants to find which commit in a range changed a WebKit build time — usually a regression (clean or incremental build getting slower), but a progression (speedup) works identically, with the direction inferred from the endpoints. Drives `git bisect run` on top of `Tools/Scripts/measure-build-time` via `Tools/Scripts/bisect-build-time`, timing each commit several times and using a two-sample t-test to find the first commit that differs significantly from the baseline. Endpoints are given in history order (`-a` earlier, `-b` later). Timings are cached per commit, so re-running over an overlapping range is cheap. When `../Internal/Tools/Scripts/bisect-build-time` exists, run that instead — same tool and command line, plus it keeps the sibling checkout aligned with each commit under test.
 user-invocable: true
 allowed-tools: Bash, Read
 ---
@@ -8,10 +8,11 @@ allowed-tools: Bash, Read
 ## When to use
 
 The user has observed that a `measure-build-time` benchmark (a clean build, or
-an incremental rebuild after touching a hot header) got slower somewhere in a
-known commit range, and wants the culprit commit. `Tools/Scripts/bisect-build-time`
+an incremental rebuild after touching a hot header) changed somewhere in a known
+commit range — usually got slower, but a speedup works the same way — and wants the
+commit responsible. `Tools/Scripts/bisect-build-time`
 automates `git bisect run`: it checks out commits, times the benchmark, and
-classifies each as fast (good) or slow (bad).
+classifies each as matching the baseline or having changed.
 
 **First check for a sibling wrapper.** If
 `../Internal/Tools/Scripts/bisect-build-time` exists, invoke that instead of this
@@ -31,22 +32,31 @@ what makes the answer trustworthy.
 - A build backend to forward to `measure-build-time`, usually `--make` (Xcode)
   or `--cmake` (Ninja). See `Tools/Scripts/measure-build-time --help` for the
   full set (`--build-command`, `--configuration`, etc.).
-- Known-good (older, fast) and known-bad (newer, slow) commits bounding the
-  regression. The good endpoint must build (it is the t-test baseline), and must be
-  an **ancestor** of the bad one — the range is checked before anything is built, so
-  reversed or divergent endpoints fail immediately rather than after the baseline.
+- Two commits bounding the change, given in history order: `-a` earlier, `-b` its
+  descendant. Both must build (`-a` is the t-test baseline), and the range is checked
+  before anything is built, so reversed or divergent endpoints fail immediately
+  rather than after the baseline.
 - On a sibling checkout, `GIT_LFS_SKIP_SMUDGE=1` unless the build needs the LFS
   payloads — see "Git LFS in the sibling checkout" below.
 
 ## Basic usage
 
 ```sh
-Tools/Scripts/bisect-build-time --good <old-sha> --bad <new-sha> -- --make
+Tools/Scripts/bisect-build-time -a <old-sha> -b <new-sha> -- --make
 ```
+
+`-a`/`-b` are aliases for `--good`/`--bad`, and generally the clearer way to write
+them: what the tool requires is that the commits come in **history order** — `-a`
+earlier, `-b` its descendant — and the short names say that without implying a
+verdict. Reversed or divergent endpoints are rejected before anything is built.
+Which way the build time moved is inferred from the endpoints, so the same command
+finds a regression or a speedup — see "Direction" below.
 
 Everything after `--` is forwarded verbatim to `measure-build-time`. Do **not**
 pass `--tests`, `--output`, or `--keep-going` there — the script sets them.
 
+- `-a/--good <commit>`, `-b/--bad <commit>`: the endpoints, in history order (`-a`
+  earlier, `-b` a descendant of it). Required.
 - `--test <name>` picks the benchmark (default `clean`). For incremental
   benchmarks (`webcore-header`, `jsc-cpp-source`, `serialization-file`, … — see
   `measure-build-time --help`), the script automatically runs `clean` first
@@ -77,7 +87,7 @@ mismatched pair rather than the commit under test.
 So when `../Internal/Tools/Scripts/bisect-build-time` exists, run it instead:
 
 ```sh
-../Internal/Tools/Scripts/bisect-build-time --good <old-sha> --bad <new-sha> -- --make
+../Internal/Tools/Scripts/bisect-build-time -a <old-sha> -b <new-sha> -- --make
 ```
 
 It is a front end onto the same implementation (`Tools/Scripts/buildtime.py`) and
@@ -138,7 +148,7 @@ files instead of fetching payloads — the hook shells out to `git checkout`, so
 inherits the environment:
 
 ```sh
-GIT_LFS_SKIP_SMUDGE=1 ../Internal/Tools/Scripts/bisect-build-time --good <old> --bad <new> -- --make
+GIT_LFS_SKIP_SMUDGE=1 ../Internal/Tools/Scripts/bisect-build-time -a <old> -b <new> -- --make
 ```
 
 Only do this when the build does not read those payloads. For a build-time
@@ -188,34 +198,72 @@ The hazard is comparing cached numbers against fresh ones after conditions chang
 
 ## What it does per commit
 
-Up front, the good and bad endpoints are each timed `--runs` times; the **good
-endpoint is the baseline**, and the bad endpoint is a sanity check (the run
-aborts unless bad is significantly slower than good, unless `--force`). Then for
-each commit `git bisect` selects, it is timed `--runs` times and compared to the
-baseline with a one-sided two-sample Welch's t-test:
+Up front, both endpoints are each timed `--runs` times; **`-a` is the baseline**, and
+the comparison against `-b` both confirms the range holds a real change and fixes the
+direction to search (the run aborts if they are indistinguishable, unless `--force`).
+Then for each commit `git bisect` selects, it is timed `--runs` times and compared to
+the baseline with a one-sided two-sample Welch's t-test:
 
-- significantly **slower** than baseline (`p ≤ alpha`) → **bad** (exit 1)
-- not significantly slower → **good** (exit 0)
+- significantly changed from baseline **in that direction** (`p ≤ alpha`) → **bad**
+  (exit 1)
+- not significantly changed → **good** (exit 0)
 - **build failed to compile** → **skip** (exit 125)
 
-The first bad commit is the first one significantly slower than the baseline.
+The first bad commit is the earliest one that differs significantly from the
+baseline — the commit that made the build slower, or faster.
 
 With `--warmup N`, each commit and endpoint runs N discarded builds first; a build
 that fails during warmup skips the commit exactly as a failed timed run would.
 
 ## Comparing two adjacent commits
 
-Passing adjacent endpoints (`--good <commit>^ --bad <commit>`) is a useful way to
+Passing adjacent endpoints (`-a <commit>^ -b <commit>`) is a useful way to
 measure one commit's build-time impact rather than to search for it. No bisecting
 happens: the two endpoint measurements *are* the comparison, so the run is exactly
-`(runs + warmup) × 2` builds and reports the bad endpoint as the first bad commit
-when it is significantly slower. `git bisect` is never invoked — it can't be, since
+`(runs + warmup) × 2` builds and reports `-b` as the first bad commit when it differs
+significantly from `-a` — in either direction, so this works for confirming a speedup
+as well as a regression. `git bisect` is never invoked — it can't be, since
 it treats such a range as already resolved and then rejects the harness run with
 "was both good and bad".
 
 Getting the endpoints backwards is the easy mistake here, and it now fails up front
 with a message naming both resolved commits instead of a traceback after the
 baseline builds.
+
+## Direction: regressions and progressions
+
+The direction is **inferred from the endpoints**, so the same command finds either
+kind of change:
+
+- `-b` significantly **slower** than `-a` → searches for the commit that made the
+  build slower (a regression). The usual case.
+- `-b` significantly **faster** than `-a` → searches for the commit that made it
+  faster (a progression).
+
+Either way a commit is "bad" when it is significantly changed *in that direction*
+from the `-a` baseline, so `git bisect`'s "first bad commit" is the commit
+responsible. The vocabulary stays git's; for a progression, read "bad" as "already
+has the speedup".
+
+The log states the choice before any bisecting starts:
+
+```
+INFO -b is significantly faster than -a, so searching for the commit that made the build faster.
+INFO Starting bisect: good=<a> bad=<b> runs=3 alpha=0.05 direction=faster
+```
+
+If the endpoints are *not* significantly different there is nothing to attribute, and
+the run aborts after calibration:
+
+```
+The endpoints are not significantly different (p=0.905 at alpha=0.05); there is no
+build-time change across this range to attribute to a commit. Increase --runs, widen
+the range, or pass --force to search anyway.
+```
+
+`--force` proceeds anyway, assuming a regression; with no real change to find, every
+commit measures the same as the baseline and `git bisect` ends up attributing it to
+the `-b` endpoint, so treat that result with suspicion.
 
 ## Cost
 

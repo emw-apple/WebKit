@@ -1,13 +1,15 @@
 """Shared implementation of the `bisect-build-time` build-time bisection tool.
 
 Given a commit range and a `measure-build-time` benchmark (default: `clean`), this
-drives `git bisect` to find the commit that introduced a build-time regression.
+drives `git bisect` to find the commit that changed the build time.
 
 Each commit is timed several times (`--runs`, default 3) and compared to a baseline
-(the good endpoint, also timed `--runs` times) with a two-sample Welch's t-test: the
-first commit that is *significantly slower* than the baseline (one-sided,
-`p <= --alpha`) is the regression point. Comparing distributions rather than single
-numbers is what makes the verdict survive the run-to-run variability of a build.
+(the `-a` endpoint, also timed `--runs` times) with a two-sample Welch's t-test: the
+first commit that differs *significantly* from the baseline (one-sided,
+`p <= --alpha`) is the answer. Comparing distributions rather than single numbers is
+what makes the verdict survive the run-to-run variability of a build. Which sign
+counts is taken from the endpoints, so a range whose build got *faster* finds the
+commit responsible for the speedup just as one that got slower finds the regression.
 `--warmup N` discards N runs per commit before the timed ones, for when the first
 build after a checkout is reliably the slow one.
 
@@ -67,6 +69,10 @@ EXIT_INTERRUPTED = 130
 # Sentinel the harness prints on stdout after each completed timing run; the
 # driver detects it in the `git bisect run` stream to advance the progress bar.
 TICK = '\x1f__bisect_build_time_tick__\x1f'
+
+# Which way the build time moved across the range, and so which sign of difference
+# from the baseline marks a commit as the one being looked for.
+SLOWER, FASTER = 'slower', 'faster'
 
 
 # --- Git helpers ------------------------------------------------------------
@@ -746,13 +752,15 @@ def run_harness(args: argparse.Namespace, forwarded: list[str], *, hook=None,
         return EXIT_SKIP
     samples = timings.values
 
-    # Significantly slower than the baseline (one-sided) is bad.
+    # Significantly changed from the baseline, in the direction the endpoints
+    # established (one-sided). For a regression that is slower; for a progression
+    # the sign flips, and "bad" means "already has the speedup".
     baseline = [float(x) for x in args.baseline.split(',') if x]
     t, pvalue = welch_ttest(samples, baseline)
-    is_bad = t > 0 and pvalue <= args.alpha
-    log.info('%s: mean %.1fs over %d runs, p=%s vs baseline -> %s',
+    is_bad = (t > 0 if args.direction == SLOWER else t < 0) and pvalue <= args.alpha
+    log.info('%s: mean %.1fs over %d runs, p=%s vs baseline (%s) -> %s',
              args.test, statistics.mean(samples), len(samples),
-             format_pvalue(pvalue), 'BAD' if is_bad else 'GOOD')
+             format_pvalue(pvalue), args.direction, 'BAD' if is_bad else 'GOOD')
 
     record_measurement(args.journal, commit, samples, pvalue, cached=timings.cached)
     return EXIT_BAD if is_bad else EXIT_GOOD
@@ -782,12 +790,11 @@ def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
                      cache_context=None) -> tuple[list[float], str, str | None]:
     """Measure both endpoints `--runs` times.
 
-    Returns (baseline samples, good sha, bad sha if it is significantly slower).
-    The good endpoint is the baseline. The bad endpoint is measured too, as a sanity
-    check that the range actually contains a detectable regression — and for a range
-    holding one commit that comparison is the whole answer, which is why the third
-    element is returned rather than recomputed. It is None only under `--force`,
-    which allows bisecting a range with no detectable regression.
+    Returns (baseline samples, good sha, direction). The good endpoint is the
+    baseline; the bad endpoint is measured too, to establish that the range holds a
+    build-time change at all and which way it went. `direction` is `SLOWER` for a
+    regression, `FASTER` for a progression, or None when the endpoints are
+    indistinguishable — which only reaches a caller under `--force`.
 
     The caller restores the original ref; this leaves HEAD on the bad endpoint.
     """
@@ -811,12 +818,18 @@ def prepare_baseline(args: argparse.Namespace, forwarded: list[str],
     record_measurement(args.journal, bad_sha, bad_samples, p, bad.cached)
     log.info('Baseline good=%.1fs bad=%.1fs (p=%s)',
              statistics.mean(baseline), statistics.mean(bad_samples), format_pvalue(p))
-    if not (t > 0 and p <= args.alpha) and not args.force:
-        sys.exit(f'Bad endpoint is not significantly slower than good '
-                 f'(p={format_pvalue(p)} at alpha={args.alpha}); no detectable '
-                 f'regression in range. Increase --runs, widen the range, or pass '
-                 f'--force to bisect anyway.')
-    return baseline, good_sha, (bad_sha if t > 0 and p <= args.alpha else None)
+    if p > args.alpha and not args.force:
+        sys.exit(f'The endpoints are not significantly different '
+                 f'(p={format_pvalue(p)} at alpha={args.alpha}); there is no '
+                 f'build-time change across this range to attribute to a commit. '
+                 f'Increase --runs, widen the range, or pass --force to search '
+                 f'anyway.')
+    if p > args.alpha:
+        return baseline, good_sha, None
+    direction = SLOWER if t > 0 else FASTER
+    log.info('-b is significantly %s than -a, so searching for the commit that made '
+             'the build %s.', direction, direction)
+    return baseline, good_sha, direction
 
 
 
@@ -863,6 +876,7 @@ def run_bisect(harness: list[str], progress: Progress) -> tuple[int, str | None]
 
 def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str, *,
                   runs: int, alpha: float, baseline_commit: str | None,
+                  direction: str = SLOWER,
                   cache: str | Path | None = None,
                   interrupted: bool = False) -> None:
     """Print a table of every commit measured, highlighting the first bad one."""
@@ -911,8 +925,12 @@ def print_summary(journal: str, first_bad: str | None, test_name: str, bad: str,
                 pstr, verdict = 'base', 'base'
             else:
                 pstr = format_pvalue(pvalue)
-                verdict = ('bad' if (pvalue is not None and pvalue <= alpha
-                                     and baseline_mean is not None and mean > baseline_mean)
+                # Same one-sided rule the harness applied, so the table agrees with
+                # the verdicts the bisect actually acted on.
+                moved = (baseline_mean is not None
+                         and (mean > baseline_mean if direction == SLOWER
+                              else mean < baseline_mean))
+                verdict = ('bad' if (pvalue is not None and pvalue <= alpha and moved)
                            else 'good')
         rows.append((rank.get(commit, -1), short, commit, ident, nstr, meanstr, pstr,
                      verdict, subject, cachestr))
@@ -1021,19 +1039,19 @@ def validate_range(good: str, bad: str) -> int:
     after the baseline builds: an hour in, as a traceback out of git plumbing. Three
     git calls here turn that into an immediate error.
     """
-    for flag, ref in (('--good', good), ('--bad', bad)):
+    for flag, ref in (('-a/--good', good), ('-b/--bad', bad)):
         if resolve(ref) is None:
             sys.exit(f'{flag} {ref} does not name a commit.')
     # Also rules out divergent endpoints, where `git bisect` goes off to test their
     # merge base — outside the range asked about, and arbitrarily far back.
     if git('merge-base', '--is-ancestor', good, bad, check=False):
-        sys.exit(f'--good {good} ({describe(good)}) is not an ancestor of '
-                 f'--bad {bad} ({describe(bad)}), so they do not bound a range. '
-                 f'--good must be the older, faster commit; swap them if reversed.')
+        sys.exit(f'-a/--good {good} ({describe(good)}) is not an ancestor of '
+                 f'-b/--bad {bad} ({describe(bad)}), so they do not bound a range. '
+                 f'Give them in history order: -a earlier, -b later.')
     count = int(git_output('rev-list', '--count', f'{good}..{bad}'))
     if not count:
-        sys.exit(f'--good and --bad are the same commit ({describe(good)}); there is '
-                 f'nothing to compare.')
+        sys.exit(f'-a/--good and -b/--bad are the same commit ({describe(good)}); '
+                 f'there is nothing to compare.')
     return count
 
 
@@ -1085,15 +1103,16 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
                         args.progress_enabled)
     awake = subprocess.Popen(('caffeinate', '-ims'))
 
-    # `baseline_commit` stays live past an interrupt: the handler below falls through
-    # to the summary, which needs it even when the baseline never finished.
-    baseline_commit = None
+    # `baseline_commit` and `direction` stay live past an interrupt: the handler below
+    # falls through to the summary, which needs them even when the baseline never
+    # finished.
+    baseline_commit = direction = None
     rc, first_bad, interrupted = 1, None, False
     try:
         # Calibration checks out the endpoints directly, so restore the original
         # ref however it ends — including the aborts inside prepare_baseline.
         try:
-            baseline, baseline_commit, bad_if_slower = prepare_baseline(
+            baseline, baseline_commit, direction = prepare_baseline(
                 args, forwarded, progress, hook, cache_context)
         finally:
             git('checkout', '--quiet', restore_to, check=False)
@@ -1106,7 +1125,7 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
             # "was both good and bad".
             log.info('%s is the only commit in range; the endpoints answer it, so '
                      'not bisecting.', describe(args.bad))
-            rc, first_bad = 0, bad_if_slower
+            rc, first_bad = 0, (resolve(args.bad) if direction else None)
         else:
             harness = [
                 sys.executable, str(harness_script),
@@ -1135,12 +1154,13 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
             else:
                 harness.append('--no-cache')
             harness += ['--alpha', repr(args.alpha),
+                        '--direction', direction or SLOWER,
                         '--baseline', ','.join(repr(x) for x in baseline)]
             if forwarded:
                 harness += ['--', *forwarded]
 
-            log.info('Starting bisect: good=%s bad=%s runs=%d alpha=%s',
-                     args.good, args.bad, args.runs, args.alpha)
+            log.info('Starting bisect: good=%s bad=%s runs=%d alpha=%s direction=%s',
+                     args.good, args.bad, args.runs, args.alpha, direction or SLOWER)
             try:
                 git('bisect', 'start')
                 git('bisect', 'bad', args.bad)
@@ -1173,8 +1193,8 @@ def run_driver(args: argparse.Namespace, forwarded: list[str], *, entry_script: 
 
     print_summary(args.journal, first_bad, args.test, args.bad,
                   runs=args.runs, alpha=args.alpha,
-                  baseline_commit=baseline_commit, cache=args.cache,
-                  interrupted=interrupted)
+                  baseline_commit=baseline_commit, direction=direction or SLOWER,
+                  cache=args.cache, interrupted=interrupted)
     os.unlink(args.journal)
     return EXIT_INTERRUPTED if interrupted else rc
 
@@ -1194,8 +1214,15 @@ def build_parser(description: str = DESCRIPTION,
         description=description, epilog=epilog,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--good', help='Known-fast commit (older).')
-    parser.add_argument('--bad', help='Known-slow commit (newer).')
+    # `-a`/`-b` say the thing that actually matters — a comes before b in history —
+    # without the verdict that `good`/`bad` implies. `git bisect`'s own vocabulary
+    # keeps the long names.
+    parser.add_argument('-a', '--good', metavar='COMMIT',
+                        help='The earlier commit, and the baseline every other is '
+                             'compared against. Must be an ancestor of -b/--bad.')
+    parser.add_argument('-b', '--bad', metavar='COMMIT',
+                        help='The later commit, a descendant of -a/--good, and the '
+                             'slower of the two.')
     parser.add_argument('--test', default='clean',
                         help='measure-build-time benchmark to bisect (default: clean).')
     parser.add_argument('-r', '--runs', type=int, default=3,
@@ -1259,6 +1286,8 @@ def build_parser(description: str = DESCRIPTION,
                         help=argparse.SUPPRESS)  # internal: the run's build directory
     parser.add_argument('--baseline', default=None,
                         help=argparse.SUPPRESS)  # internal: baseline samples (csv)
+    parser.add_argument('--direction', choices=(SLOWER, FASTER), default=SLOWER,
+                        help=argparse.SUPPRESS)  # internal: which sign counts as bad
     parser.add_argument('--progress-ticks', action='store_true',
                         help=argparse.SUPPRESS)  # internal: emit per-run tick sentinels
     return parser
@@ -1318,7 +1347,7 @@ def resolve_arguments(parser: argparse.ArgumentParser, args: argparse.Namespace,
             parser.error('--run-harness requires --build-dir')
     else:
         if needs_endpoints and (not args.good or not args.bad):
-            parser.error('--good and --bad are required')
+            parser.error('-a/--good and -b/--bad are required')
         if args.measure_build_time is None:
             parser.error('Could not find measure-build-time; pass '
                          '--measure-build-time or set $MEASURE_BUILD_TIME')
