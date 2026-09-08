@@ -38,11 +38,9 @@ if (SWIFT_REQUIRED)
         set(CMAKE_Swift_FRAMEWORK_SEARCH_FLAG "-Xcc -iquote")
     endif ()
 
-    if (APPLE)
-        WEBKIT_XCRUN(CMAKE_Swift_COMPILER --find swiftc)
-    endif ()
+    # CMAKE_Swift_LAUNCHER does not work, so we need to manually set our
+    # wrapper as the compiler program.
     set(ORIGINAL_Swift_COMPILER "${CMAKE_Swift_COMPILER}")
-
     if (WIN32)
         # Avoid cmd.exe due to command-line length limits.
         set(CMAKE_Swift_COMPILER "${Python_EXECUTABLE}")
@@ -63,6 +61,20 @@ if (SWIFT_REQUIRED)
     string(REPLACE "<CMAKE_Swift_COMPILER>"
         "<CMAKE_Swift_COMPILER> --original-swift-compiler=${ORIGINAL_Swift_COMPILER}"
         CMAKE_Swift_CREATE_STATIC_LIBRARY "${CMAKE_Swift_CREATE_STATIC_LIBRARY}")
+
+    # Strip parallelism flags from the swiftc invocations that CMake has
+    # computed, so that our jobserver logic in `ninja-wrapper` takes
+    # precedence.
+    foreach (_rule COMPILE_OBJECT CREATE_SHARED_LIBRARY CREATE_SHARED_MODULE
+            CREATE_STATIC_LIBRARY LINK_EXECUTABLE LINK_EXECUTABLE_WITH_EXPORTS)
+        string(REGEX REPLACE " -j [0-9]+ -num-threads [0-9]+" ""
+            CMAKE_Swift_${_rule} "${CMAKE_Swift_${_rule}}")
+        if (CMAKE_Swift_${_rule} MATCHES "-num-threads")
+            message(WARNING "CMAKE_Swift_${_rule} still sets Swift's own "
+                "parallelism, so the driver will not follow the jobserver: "
+                "${CMAKE_Swift_${_rule}}")
+        endif ()
+    endforeach ()
 endif ()
 
 # -----------------------------------------------------------------------------

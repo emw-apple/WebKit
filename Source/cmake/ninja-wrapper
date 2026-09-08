@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Cwd qw(getcwd);
 use File::Path qw(make_path);
+use POSIX qw(mkfifo);
 
 chomp(my $ninja = `which ninja 2>/dev/null` || `xcrun -f ninja`);
 
@@ -82,4 +83,85 @@ if (open(my $fh, '>', "DerivedSources/unified-sources-bundle-policy")) {
 }
 
 print('ninja: Entering directory `' . getcwd() . "'\n");
-exec('/usr/bin/caffeinate', '-i', $ninja, @ARGV);
+
+# GNU Make jobserver. Ninja implements only the client half of the protocol
+# (https://www.gnu.org/software/make/manual/html_node/POSIX-Jobserver.html), so
+# the pool of job slots has to be owned by whoever invoked it. Hosting it here
+# puts the top-level ninja and every nested ninja that clang-wrapper starts on
+# one shared set of slots, instead of letting each one pick its own -j and
+# oversubscribe the machine.
+#
+# Ninja disables its client when -j is on its command line, so -j is taken as
+# the size of the pool rather than forwarded.
+my $jobserverPipe;
+my $jobserverFifo;
+END {
+    unlink($jobserverFifo) if $jobserverFifo;
+}
+
+my @ninjaArgs;
+my $jobs;
+for (my $i = 0; $i <= $#ARGV; ++$i) {
+    $jobs = $ARGV[++$i], next if $ARGV[$i] eq '-j';
+    $jobs = $1, next if $ARGV[$i] =~ /^-j(\d+)$/;
+    push(@ninjaArgs, $ARGV[$i]);
+}
+my $hasJobserver = startJobserver($jobs);
+push(@ninjaArgs, "-j$jobs") if !$hasJobserver && defined($jobs);
+
+my @command = ('/usr/bin/caffeinate', '-i', $ninja, @ninjaArgs);
+exec(@command) if !$hasJobserver;
+
+# Stay alive alongside ninja: the pool only exists as long as this process
+# holds the fifo open, and the fifo has to be removed afterwards. Ctrl-C
+# already reaches ninja on its own (same process group); forwarding covers a
+# signal aimed at this process by pid, which used to land on caffeinate back
+# when this was an exec. Forwarding rather than ignoring also matters because
+# exec resets caught signals to the default in the child, but an ignored signal
+# would be inherited.
+my $child;
+$SIG{$_} = sub { kill($_[0], $child) if $child } foreach qw(INT TERM HUP);
+$child = fork() // die("ninja-wrapper: fork: $!\n");
+if (!$child) {
+    exec(@command);
+    die("ninja-wrapper: exec $ninja: $!\n");
+}
+1 while waitpid($child, 0) < 0 && $!{EINTR};
+exit(($? & 127) ? 128 + ($? & 127) : $? >> 8);
+
+# Fill a fifo with job slot tokens and point MAKEFLAGS at it. Returns false,
+# leaving the caller to run ninja unchanged, if a pool can't or shouldn't be
+# built.
+sub startJobserver
+{
+    my ($jobs) = @_;
+    return 0 if $ENV{WK_DISABLE_JOBSERVER};
+
+    # Ninja's own default (processors + 2); ask for it rather than guessing at
+    # it a second time here.
+    ($jobs) = `"$ninja" --help 2>&1` =~ /-j N .*\[default=(\d+)/ if !defined($jobs);
+    return 0 if !$jobs || $jobs < 2;
+
+    (my $tmp = $ENV{TMPDIR} || '/tmp') =~ s{/$}{};
+    my $path = "$tmp/webkit-jobserver.$$";
+    unlink($path);
+    mkfifo($path, 0600) or return 0;
+
+    # '+<' is O_RDWR, the one way to open a fifo without blocking on a peer.
+    # This handle is deliberately never closed -- it is what keeps the tokens
+    # buffered and lets clients open the write end -- so it has to autoflush.
+    if (!open($jobserverPipe, '+<', $path)) {
+        unlink($path);
+        return 0;
+    }
+    $jobserverPipe->autoflush(1);
+    $jobserverFifo = $path;
+
+    # Each client may run one job on an implicit slot it is never handed, so
+    # the pool holds the other N - 1. Any byte is a token; '+' is the one GNU
+    # Make and ninja write.
+    print($jobserverPipe '+' x ($jobs - 1));
+
+    $ENV{MAKEFLAGS} = "-j$jobs --jobserver-auth=fifo:$path";
+    return 1;
+}
