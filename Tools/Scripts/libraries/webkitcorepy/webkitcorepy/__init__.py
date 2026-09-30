@@ -52,7 +52,7 @@ from webkitcorepy.null_context import NullContext
 from webkitcorepy.filtered_call import filtered_call
 from webkitcorepy.partial_proxy import PartialProxy
 
-version = Version(1, 0, 5)
+version = Version(1, 0, 6)
 
 from webkitcorepy.autoinstall import Package, AutoInstall
 
@@ -97,3 +97,38 @@ AutoInstall.register(Package('keyring', Version(23, 2, 1)))
 
 
 name = 'webkitcorepy'
+
+__all__ = [
+    'AutoInstall',
+    'BytesIO',
+    'CallByNeed',
+    'CompletedProcess',
+    'Editor',
+    'Environment',
+    'FileLock',
+    'LoggerCapture',
+    'MeasureTime',
+    'NestedFuzzyDict',
+    'NullContext',
+    'OutputCapture',
+    'OutputDuplicate',
+    'Package',
+    'PartialProxy',
+    'StringIO',
+    'TaskPool',
+    'Terminal',
+    'Thread',
+    'Timeout',
+    'TimeoutExpired',
+    'Timer',
+    'UnicodeIO',
+    'Version',
+    'credentials',
+    'delete_credentials',
+    'filtered_call',
+    'log',
+    'name',
+    'run',
+    'unicode',
+    'version',
+]
