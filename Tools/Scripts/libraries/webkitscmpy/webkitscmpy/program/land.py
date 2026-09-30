@@ -145,6 +145,11 @@ class Land(Command):
             sys.stderr.write("Please re-run `git-webkit setup` to update all local hooks\n")
             return 1
 
+        if PullRequest.uses_per_commit_pull_requests(repository, args):
+            sys.stderr.write("Commits on '{}' are uploaded as individual pull requests, which must be landed individually\n".format(repository.branch))
+            sys.stderr.write("Add the '{}' label to each pull request which is ready to land\n".format(PullRequest.MERGE_LABELS[0]))
+            return 1
+
         modified_files = [] if args.will_add is False else repository.modified()
         if args.will_add:
             modified_files = list(set(modified_files).union(set(repository.modified(staged=False))))
