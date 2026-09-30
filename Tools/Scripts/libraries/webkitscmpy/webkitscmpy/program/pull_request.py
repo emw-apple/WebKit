@@ -35,6 +35,7 @@ from .squash import Squash
 from webkitbugspy import Tracker, radar
 from webkitcorepy import arguments, run, string_utils, Terminal, OutputCapture
 from webkitscmpy import local, log, remote
+from webkitscmpy import Commit as CommitModel, PullRequest as PullRequestModel
 
 
 class PullRequest(Command):
@@ -45,6 +46,7 @@ class PullRequest(Command):
     SKIP_EWS_LABEL = 'skip-ews'
     MERGE_LABELS = ['merge-queue']
     UNSAFE_MERGE_LABELS = ['unsafe-merge-queue']
+    PER_COMMIT_CONFIG = 'branch.{}.per-commit'
 
     @classmethod
     def parser(cls, parser, loggers=None):
@@ -158,6 +160,13 @@ class PullRequest(Command):
             dest='redact', action='store_true',
             default=False,
             help='Force the a PR onto a secure remote, regardless of the current branch and issue state.',
+        )
+        parser.add_argument(
+            '--per-commit', '--no-per-commit',
+            dest='per_commit', default=None,
+            help='Upload each commit on the current branch as its own pull request against the branch it is based on '
+                 '(or upload the whole branch as a single pull request). Remembered for the current branch.',
+            action=arguments.NoAction,
         )
 
     @classmethod
@@ -992,6 +1001,304 @@ class PullRequest(Command):
         return 0
 
     @classmethod
+    def uses_per_commit_pull_requests(cls, repository, args):
+        if args.per_commit is not None:
+            return args.per_commit
+        return bool(repository.branch) and repository.config().get(cls.PER_COMMIT_CONFIG.format(repository.branch)) == 'true'
+
+    @classmethod
+    def pull_request_branch_name(cls, commit, taken, redact=False):
+        issue = commit.issues[0] if commit.issues else None
+        redacted = issue and issue.redacted and not getattr(issue.redacted, 'exemption', False)
+        if issue and (redact or redacted or issue.tracker.hide_title):
+            name = str(issue.id)
+        else:
+            name = Branch.to_branch_name(commit.message.splitlines()[0] if commit.message else commit.hash[:12])
+        name = Branch.truncate_branch_name(Branch.normalize_branch_name(name))
+
+        # Avoid '<name>-<number>', which 'clean' and 'land' consider history branches of '<name>'
+        candidate = name
+        count = 1
+        while candidate in taken:
+            count += 1
+            candidate = '{}-v{}'.format(name, count)
+        return candidate
+
+    @classmethod
+    def assign_pull_request_branches(cls, repository, args, branch_point, branch, commits, target, redact=False):
+        """Record a pull request branch in the trailers of each commit which doesn't have one yet (fixing
+        mislabeled 'Reviewed by' lines while re-writing messages). Returns the commits, oldest first."""
+        messages = {}
+        details = {commit.hash: repository.commit_details(commit.hash) for commit in commits}
+
+        owners = {}
+        for commit in commits:
+            head = PullRequestModel.branch_trailer(details[commit.hash]['message'])
+            if not head:
+                continue
+            if head in owners:
+                sys.stderr.write("Both '{}' and '{}' are recorded as the commit for '{}'\n".format(
+                    owners[head].hash[:12], commit.hash[:12], head,
+                ))
+                sys.stderr.write("Remove the '{}' trailer from one of their commit messages\n".format(PullRequestModel.BRANCH_TRAILER))
+                return None
+            owners[head] = commit
+
+        unreviewed = re.compile(r'(Unreviewed|Versioning.)', re.IGNORECASE)
+        reviewed = re.compile(r'^Reviewed by .+', re.IGNORECASE | re.MULTILINE)
+        for commit in commits:
+            message = details[commit.hash]['message']
+            if not unreviewed.search(message) or not reviewed.search(message):
+                continue
+            if Terminal.choose(
+                "'{}' is marked 'Unreviewed' or 'Versioning' but contains a 'Reviewed by' line. Remove it?".format(message.splitlines()[0]),
+                options=('Yes', 'No'),
+                default='Yes',
+            ) == 'Yes':
+                messages[commit.hash] = re.sub(r'Reviewed by .+\n?', '', message)
+
+        taken = set(repository.branches_for(remote=False)) | set(repository.branches_for(remote=target)) | set(owners.keys())
+        owned = set(commit.hash for commit in owners.values())
+        for commit in commits:
+            if commit.hash in owned:
+                continue
+            head = cls.pull_request_branch_name(commit, taken, redact=redact)
+            taken.add(head)
+            messages[commit.hash] = PullRequestModel.add_branch_trailer(messages.get(commit.hash, details[commit.hash]['message']), head)
+
+        if not messages:
+            return commits
+        log.info('Recording pull request branches in commit messages...')
+        try:
+            repository.rewrite_messages(branch_point.hash, messages, branch=branch)
+        except repository.Exception as error:
+            sys.stderr.write('{}\n'.format(error))
+            return None
+        return list(reversed(list(repository.commits(begin=dict(hash=branch_point.hash), end=dict(branch=branch)))))
+
+    @classmethod
+    def is_unchanged(cls, repository, existing_pr, rebuilt, base):
+        if not existing_pr or not existing_pr.opened or not existing_pr.hash or existing_pr.base != base:
+            return False
+        if existing_pr.hash == rebuilt:
+            return True
+        try:
+            return (
+                repository.commit_details(existing_pr.hash)['message'] == repository.commit_details(rebuilt)['message']
+                and repository.patch_id(existing_pr.hash) == repository.patch_id(rebuilt)
+            )
+        except repository.Exception:
+            # The pull request's head isn't available locally, so we can't compare it
+            return False
+
+    @classmethod
+    def create_per_commit_pull_requests(cls, repository, args, branch_point, unblock=True):
+        update_issue = getattr(args, 'update_issue', True)
+        branch = repository.branch
+        source_remote = args.remote or repository.default_remote
+
+        rebasing = cls.will_rebase(repository, args)
+        if rebasing:
+            branch_point = cls.rebase_on_source(repository, source_remote, branch_point)
+            if not branch_point:
+                return 1
+
+        if not cls.run_checks(repository, args):
+            return 1
+
+        commits = list(reversed(list(repository.commits(begin=dict(hash=branch_point.hash), end=dict(branch=branch)))))
+        if not commits:
+            sys.stderr.write("'{}' has no commits to upload\n".format(branch))
+            return 1
+
+        for commit in commits:
+            if not cls.cc_radar(repository, args, commit.issues, update_issue):
+                return 1
+
+        source_remote, remote_repo = cls.remote_for_issues(
+            repository, args, source_remote,
+            [issue for commit in commits for issue in commit.issues],
+        )
+        if not remote_repo:
+            return 1
+        if not isinstance(remote_repo, remote.GitHub):
+            sys.stderr.write("Per-commit pull requests are only supported for GitHub remotes, and '{}' is not one\n".format(source_remote))
+            return 1
+        source_remote = cls.check_previous_target(repository, args, source_remote, branch=branch)
+        if not source_remote:
+            return 1
+        target = cls.push_target(repository, remote_repo, source_remote)
+        if not target:
+            return 1
+        if not cls.check_pull_request_support(args, remote_repo):
+            return 1
+        if args.update_title is None:
+            args.update_title = repository.config().get('webkitscmpy.update-title', 'true') == 'true'
+
+        commits = cls.assign_pull_request_branches(
+            repository, args, branch_point, branch, commits, target,
+            redact=source_remote != repository.default_remote,
+        )
+        if commits is None:
+            return 1
+
+        push_env = cls.push_environment(args)
+        cls.sync_fork(repository, target, branch_point, rebasing, push_env)
+
+        # Re-create each commit on top of the base branch, without the commits below it
+        uploads = []
+        conflicted = []
+        for commit in commits:
+            head = PullRequestModel.branch_trailer(commit.message)
+            message = PullRequestModel.strip_branch_trailer(repository.commit_details(commit.hash)['message'])
+            try:
+                rebuilt = repository.rebuild_commit(commit.hash, branch_point.hash, message=message)
+            except repository.MergeConflict as conflict:
+                conflicted.append(commit)
+                sys.stderr.write("'{}' depends on an earlier commit on '{}', so it cannot be uploaded as its own pull request\n".format(
+                    message.splitlines()[0], branch,
+                ))
+                if conflict.files:
+                    sys.stderr.write('    Conflicts in {}\n'.format(', '.join(conflict.files)))
+                continue
+            except repository.Exception as error:
+                sys.stderr.write('{}\n'.format(error))
+                return 1
+
+            found = cls.existing_pull_request_for(repository, args, remote_repo, source_remote, target, branch=head)
+            if not found:
+                return 1
+            existing_pr, head_target = found
+            unchanged = cls.is_unchanged(repository, existing_pr, rebuilt, branch_point.branch)
+            uploads.append(dict(
+                commit=commit, head=head, target=head_target,
+                existing=existing_pr, pr=existing_pr, created=False, unchanged=unchanged,
+                pushed=CommitModel(hash=existing_pr.hash if unchanged else rebuilt, message=message),
+            ))
+
+        to_push = [upload for upload in uploads if not upload['unchanged']]
+        for upload in to_push:
+            cls.clear_active_labels(args, upload['existing'], unblock=unblock)
+
+        for push_target in dict.fromkeys(upload['target'] for upload in to_push):
+            pushing = [upload for upload in to_push if upload['target'] == push_target]
+            log.info("Pushing {} to '{}'...".format(', '.join("'{}'".format(upload['head']) for upload in pushing), push_target))
+            if run(
+                [repository.executable(), 'push', '-f', push_target] + [
+                    '{}:refs/heads/{}'.format(upload['pushed'].hash, upload['head']) for upload in pushing
+                ], cwd=repository.root_path, env=push_env,
+            ).returncode:
+                sys.stderr.write("Failed to push pull request branches to '{}' (alias of '{}')\n".format(push_target, repository.url(name=push_target)))
+                sys.stderr.write("Your checkout may be mis-configured, try re-running 'git-webkit setup' or\n")
+                sys.stderr.write("your checkout may not have permission to push to '{}'\n".format(repository.url(name=push_target)))
+                return 1
+
+        # Create any new pull requests first, so every pull request can list all of the others
+        for upload in uploads:
+            if upload['existing']:
+                continue
+            upload['pr'] = cls.create_or_update_pull_request(
+                repository, args, remote_repo, None,
+                head=upload['head'], commits=[upload['pushed']], base=branch_point.branch, update_issue=update_issue,
+            )
+            if not upload['pr']:
+                return 1
+            upload['created'] = True
+
+        for upload in uploads:
+            if upload['unchanged']:
+                continue
+            if not upload['commit'].issues and update_issue and Tracker.instance():
+                sys.stderr.write("'{}' does not reference an issue\n".format(upload['pushed'].message.splitlines()[0]))
+            cls.update_issues_for(repository, args, upload['pr'], [upload['commit']], upload['commit'].issues, update_issue)
+
+        # Go back and add a TOC of related PRs. Doing this after the call to
+        # update_issues_for helps avoid a race condition with ews-app, where a
+        # revision to the PR body made immediately after the PR is created gets
+        # dropped when it updates the status bubbles.
+        numbers = [upload['pr'].number for upload in uploads]
+        for upload in uploads:
+            pr = upload['pr']
+            related = PullRequestModel.related_body(numbers, current=pr)
+            if upload['created']:
+                if related and not remote_repo.pull_requests.update(
+                    pull_request=pr, title=pr.title, body=related,
+                    commits=[upload['pushed']], base=branch_point.branch,
+                ):
+                    sys.stderr.write("Failed to update pull-request '{}'\n".format(pr))
+                    return 1
+                continue
+
+            title = cls.title_for([upload['pushed']]) if args.update_title else pr.title
+            if upload['unchanged'] and (pr.body or '') == related and pr.title == title:
+                print("No changes to '{}'".format(pr))
+                continue
+            upload['pr'] = cls.create_or_update_pull_request(
+                repository, args, remote_repo, pr,
+                head=upload['head'], commits=[upload['pushed']], base=branch_point.branch,
+                update_issue=update_issue, body=related,
+            )
+            if not upload['pr']:
+                return 1
+
+        for upload in uploads:
+            if upload['unchanged']:
+                print(upload['pr'].url)
+            else:
+                cls.print_pull_request_url(args, upload['pr'])
+
+        if conflicted:
+            sys.stderr.write("{} of {} commits on '{}' {} not uploaded because {} on earlier commits\n".format(
+                len(conflicted), len(commits), branch,
+                'was' if len(conflicted) == 1 else 'were',
+                'it depends' if len(conflicted) == 1 else 'they depend',
+            ))
+            sys.stderr.write('Per-commit pull requests require commits which do not depend on each other\n')
+            return 1
+        return 0
+
+    @classmethod
+    def main_per_commit(cls, args, repository, **kwargs):
+        branch = repository.branch
+        if not branch or not Branch.editable(branch, repository=repository):
+            sys.stderr.write("Per-commit pull requests are uploaded from a local development branch, and '{}' is not one\n".format(branch or 'HEAD'))
+            sys.stderr.write("Create one with 'git checkout -b {}/<name>'\n".format(Branch.PR_PREFIX))
+            return 1
+        if args.squash:
+            sys.stderr.write("'--squash' cannot be used with per-commit pull requests\n")
+            return 1
+        version = repository.version()
+        if version < repository.MINIMUM_REBUILD_VERSION:
+            sys.stderr.write('Per-commit pull requests require git {} or later, but this is git {}\n'.format(
+                '.'.join(str(part) for part in repository.MINIMUM_REBUILD_VERSION),
+                '.'.join(str(part) for part in version),
+            ))
+            return 1
+
+        if not cls.check_redaction_args(repository, args):
+            return 1
+        branch_point = repository.branch_point()
+        if not branch_point:
+            sys.stderr.write('Failed to determine where pull-request diverged from production branch\n')
+            return 1
+        source_remote = cls.source_remote_for(repository, args, branch_point)
+        if not cls.match_base_to_remote(repository, source_remote, branch_point):
+            return 1
+
+        if repository.config().get(cls.PER_COMMIT_CONFIG.format(branch)) != 'true':
+            run([repository.executable(), 'config', cls.PER_COMMIT_CONFIG.format(branch), 'true'], capture_output=True, cwd=repository.root_path)
+            print("Uploading each commit on '{}' as its own pull request, use '--no-per-commit' to upload the branch as a single pull request".format(branch))
+
+        if args.commit is None:
+            args.commit = repository.config().get('webkitscmpy.auto-create-commit') == 'true'
+        if args.commit:
+            result = cls.create_commit(args, repository, **kwargs)
+            if result:
+                return result
+
+        return cls.create_per_commit_pull_requests(repository, args, branch_point)
+
+    @classmethod
     def main(cls, args, repository, hooks=None, **kwargs):
         if not isinstance(repository, local.Git):
             sys.stderr.write("Can only '{}' on a native Git repository\n".format(cls.name))
@@ -1002,6 +1309,11 @@ class PullRequest(Command):
             sys.stderr.write("Cannot run a command which invokes `git push` with an out-of-date pre-push hook\n")
             sys.stderr.write("Please re-run `git-webkit setup` to update all local hooks\n")
             return 1
+
+        if cls.uses_per_commit_pull_requests(repository, args):
+            return cls.main_per_commit(args, repository, **kwargs)
+        if args.per_commit is False and repository.branch and repository.config().get(cls.PER_COMMIT_CONFIG.format(repository.branch)) == 'true':
+            run([repository.executable(), 'config', cls.PER_COMMIT_CONFIG.format(repository.branch), 'false'], capture_output=True, cwd=repository.root_path)
 
         branch_point = cls.pull_request_branch_point(repository, args, **kwargs)
         if not branch_point:

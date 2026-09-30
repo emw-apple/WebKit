@@ -145,6 +145,24 @@ Note, if you'd like to submit a draft pull request, you can do so by running:
 git webkit pr --draft
 ```
 
+### Submitting several independent pull requests from one branch
+
+If a branch has several commits which don't depend on each other, you can upload each commit as its own pull request against "main", so that each can be reviewed and landed separately:
+
+```Bash
+git webkit pr --per-commit
+```
+
+This is remembered for the branch, so afterwards `git webkit pr` updates all of the branch's pull requests; `git webkit pr --no-per-commit` goes back to uploading the whole branch as a single pull request. A few things to know:
+
+- Each commit should reference its own bug in its commit message, since each pull request is linked to the bug in its commit.
+- Each pull request contains only its own commit, applied directly to "main" without the commits below it on your branch, so commits mustn't depend on each other. A commit which can't be applied without the commits below it is reported and skipped, and the rest are still uploaded; upload it again once the commits it depends on have landed.
+- `git webkit pr` adds a `Pull-Request-Branch:` line to the end of each commit message on your branch, to keep track of each commit's pull request as you rebase and amend. It is not part of the uploaded commit. Keep it when editing a commit's message, or that commit will get a new pull request.
+- Pull requests whose commit hasn't changed are left alone, so EWS doesn't re-run on them.
+- Each pull request's description links to the other pull requests from the branch.
+- Land each pull request by adding the "merge-queue" label to it. `git webkit land` can't land these branches.
+- If you cherry-pick one of these commits onto another branch uploaded with `--per-commit`, the copy keeps the `Pull-Request-Branch:` line, so uploading either branch updates the same pull request (and its links to the other pull requests). Remove the line from the copy if it should be a separate pull request.
+
 ## Addressing review feedback
 
 After you receive review feedback on GitHub, you should collaborate with the reviewer to address the feedback.

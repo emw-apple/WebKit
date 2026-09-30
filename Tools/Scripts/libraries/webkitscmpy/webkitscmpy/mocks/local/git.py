@@ -73,7 +73,8 @@ class Git(mocks.Subprocess):
         # Trees are modeled as the set of changes (by default, a commit's hash) applied to reach them.
         self.objects = {}
         self.trees = {}
-        # Hashes of commits which conflict when 'merge-tree' applies them to a new base, mapped to the conflicted files
+        # Hashes of commits (or rather, of the changes they originally introduced) which conflict when 'merge-tree'
+        # applies them to a new base, mapped to the conflicted files
         self.merge_conflicts = {}
 
         self.tags = tags or {}
@@ -1819,9 +1820,12 @@ nothing to commit, working tree clean
             if not commit:
                 return mocks.ProcessCompletion(returncode=128, stderr="fatal: could not parse as tree '{}'\n".format(name))
         merge_base, base, ref = commits
-        tree = self.tree_id(self.tree_of(base) | (self.tree_of(ref) - self.tree_of(merge_base)))
-        if ref.hash in self.merge_conflicts:
-            files = self.merge_conflicts[ref.hash]
+        changes = self.tree_of(ref) - self.tree_of(merge_base)
+        tree = self.tree_id(self.tree_of(base) | changes)
+        # Conflicts are keyed by the change, so they survive re-writing a commit's message
+        conflict = next((change for change in sorted(changes) if change in self.merge_conflicts), None)
+        if conflict:
+            files = self.merge_conflicts[conflict]
             return mocks.ProcessCompletion(returncode=1, stdout='{}\n{}\n{}'.format(
                 tree, ''.join('{}\n'.format(file) for file in files),
                 ''.join('Auto-merging {file}\nCONFLICT (content): Merge conflict in {file}\n'.format(file=file) for file in files),

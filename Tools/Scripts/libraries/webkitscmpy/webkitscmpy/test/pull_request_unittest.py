@@ -20,6 +20,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import hashlib
 import logging
 import os
 import time
@@ -29,7 +30,7 @@ from unittest.mock import patch
 
 from webkitbugspy import Tracker, bugzilla, github, radar
 from webkitbugspy import mocks as bmocks
-from webkitcorepy import OutputCapture, testing
+from webkitcorepy import OutputCapture, string_utils, testing
 from webkitcorepy.mocks import Environment
 from webkitcorepy.mocks import Terminal as MockTerminal
 
@@ -2815,6 +2816,386 @@ No pre-PR checks to run""")
         self.assertIn('password=<REDACTED>', captured.stderr.getvalue())
         self.assertNotIn('myuser', captured.stderr.getvalue())
         self.assertNotIn('mysecret', captured.stderr.getvalue())
+
+class TestPerCommitPullRequest(testing.PathTestCase):
+    basepath = 'mock/repository'
+    BUGZILLA = 'https://bugs.example.com'
+    BRANCH = 'eng/stack'
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir(os.path.join(self.path, '.git'))
+        os.mkdir(os.path.join(self.path, '.svn'))
+
+    @contextmanager
+    def environment(self, *messages, trackers=True):
+        with mocks.remote.GitHub(projects=bmocks.PROJECTS) as remote, bmocks.Bugzilla(
+            self.BUGZILLA.split('://')[-1],
+            projects=bmocks.PROJECTS, issues=bmocks.ISSUES,
+            environment=Environment(
+                BUGS_EXAMPLE_COM_USERNAME='tcontributor@example.com',
+                BUGS_EXAMPLE_COM_PASSWORD='password',
+            ),
+        ), patch(
+            'webkitbugspy.Tracker._trackers', [bugzilla.Tracker(self.BUGZILLA)] if trackers else [],
+        ), mocks.local.Git(
+            self.path, remote='https://{}'.format(remote.remote),
+            remotes=dict(fork='https://{}/Contributor/WebKit'.format(remote.hosts[0])),
+        ) as repo, mocks.local.Svn():
+            self.stack(repo, *messages)
+            yield remote, repo
+
+    @classmethod
+    def commit(cls, repo, message, position):
+        return Commit(
+            hash=hashlib.sha1(string_utils.encode(message)).hexdigest(),
+            branch=cls.BRANCH,
+            author=dict(name='Tim Contributor', emails=['tcontributor@example.com']),
+            identifier='{}.{}@{}'.format(repo.commits[repo.default_branch][-1].identifier, position, cls.BRANCH),
+            timestamp=1700000000 + position,
+            message=message,
+        )
+
+    @classmethod
+    def stack(cls, repo, *messages):
+        repo.commits[cls.BRANCH] = [repo.commits[repo.default_branch][-1]] + [
+            cls.commit(repo, message, position) for position, message in enumerate(messages, start=1)
+        ]
+        repo.head = repo.commits[cls.BRANCH][-1]
+
+    @classmethod
+    def publish_heads(cls, remote, repo):
+        # The mock GitHub doesn't see what's pushed to the mock fork, so tell it where each pull request's head is
+        for pr in remote.pull_requests:
+            pushed = repo.remotes.get('fork/{}'.format(pr['head']['ref']))
+            if pushed:
+                pr['head']['sha'] = pushed[-1].hash
+
+    @classmethod
+    def message(cls, title, bug=None):
+        return '{}{}\n\nReviewed by NOBODY (OOPS!).\n\n* Source/file.cpp:\n'.format(
+            title, '\nhttps://bugs.example.com/show_bug.cgi?id={}'.format(bug) if bug else '',
+        )
+
+    @classmethod
+    def amend(cls, repo, position):
+        # Model amending the commit at 'position' in an interactive rebase: its change is different, and the
+        # commits above it are re-created, keeping their changes
+        commits = repo.commits[cls.BRANCH]
+        changes = [repo.tree_of(commit) - repo.tree_of(repo.parent_of(commit)) for commit in commits[1:]]
+        for index in range(position, len(commits)):
+            old = commits[index]
+            change, = changes[index - 1]
+            new = Commit(
+                hash=hashlib.sha1(string_utils.encode('{} amended'.format(old.hash))).hexdigest(),
+                branch=cls.BRANCH, author=old.author, identifier=old.identifier, branch_point=old.branch_point,
+                timestamp=old.timestamp, message=old.message,
+            )
+            if index != position:
+                setattr(new, '__mock__change', change)
+            commits[index] = new
+        repo.head = commits[-1]
+
+    def pull_requests(self, remote):
+        return {pr['number']: pr for pr in remote.pull_requests}
+
+    def log(self, captured):
+        return [line for line in captured.root.log.getvalue().splitlines() if 'Mock process' not in line]
+
+    def test_create(self):
+        with OutputCapture(level=logging.INFO) as captured, self.environment(
+            self.message('First change', bug=1),
+            self.message('Second change', bug=2),
+        ) as (remote, repo):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit', '-v'), path=self.path))
+
+            self.assertEqual(
+                [PullRequest.branch_trailer(commit.message) for commit in repo.commits[self.BRANCH][1:]],
+                ['eng/First-change', 'eng/Second-change'],
+            )
+            self.assertEqual(local.Git(self.path).config()['branch.eng/stack.per-commit'], 'true')
+            self.assertEqual(Tracker.instance().issue(1).comments[-1].content, 'Pull request: https://github.example.com/WebKit/WebKit/pull/1')
+            self.assertEqual(Tracker.instance().issue(2).comments[-1].content, 'Pull request: https://github.example.com/WebKit/WebKit/pull/2')
+
+            prs = self.pull_requests(remote)
+            for number, head, title in ((1, 'eng/First-change', 'First change'), (2, 'eng/Second-change', 'Second change')):
+                self.assertEqual(prs[number]['head']['ref'], head)
+                self.assertEqual(prs[number]['base']['ref'], 'main')
+                self.assertEqual(prs[number]['title'], title)
+
+                # Each pull request has a single commit, re-created on 'main' without its trailer
+                pushed = repo.remotes['fork/{}'.format(head)]
+                self.assertEqual(pushed[0].hash, repo.commits['main'][-1].hash)
+                self.assertEqual(len(pushed), 2)
+                self.assertIsNone(PullRequest.branch_trailer(pushed[-1].message))
+                body, commits = PullRequest.parse_body(prs[number]['body'])
+                self.assertEqual([commit.hash for commit in commits], [pushed[-1].hash])
+                self.assertEqual(commits[0].message, self.message(title, bug=number).rstrip())
+                self.assertEqual(body, PullRequest.related_body([1, 2], current=number))
+
+        self.assertEqual(
+            captured.stdout.getvalue(),
+            "Uploading each commit on 'eng/stack' as its own pull request, use '--no-per-commit' to upload the branch as a single pull request\n"
+            "Created 'PR 1 | First change'!\n"
+            "Created 'PR 2 | Second change'!\n"
+            'Posted pull request link to https://bugs.example.com/show_bug.cgi?id=1\n'
+            'Posted pull request link to https://bugs.example.com/show_bug.cgi?id=2\n'
+            'https://github.example.com/WebKit/WebKit/pull/1\n'
+            'https://github.example.com/WebKit/WebKit/pull/2\n',
+        )
+        self.assertEqual(captured.stderr.getvalue(), '')
+        self.assertEqual(self.log(captured), [
+            'Using committed changes...',
+            "Rebasing 'eng/stack' on 'main'...",
+            "Rebased 'eng/stack' on 'main!'",
+            'Running pre-PR checks...',
+            'No pre-PR checks to run',
+            'Recording pull request branches in commit messages...',
+            "Updating 'main' on 'https://github.example.com/Contributor/WebKit'",
+            'Checking if PR already exists...',
+            'PR not found.',
+            'Checking if PR already exists...',
+            'PR not found.',
+            "Pushing 'eng/First-change', 'eng/Second-change' to 'fork'...",
+            "Creating pull-request for 'eng/First-change'...",
+            "Creating pull-request for 'eng/Second-change'...",
+            'Checking issue assignee...',
+            'Checking for pull request link in associated issue...',
+            'Syncing PR labels with issue component...',
+            'Synced PR labels with issue component!',
+            'Checking issue assignee...',
+            'Checking for pull request link in associated issue...',
+            'Syncing PR labels with issue component...',
+            'Synced PR labels with issue component!',
+        ])
+
+    def test_single_commit(self):
+        with OutputCapture(), self.environment(self.message('Only change', bug=1)) as (remote, repo):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            body, commits = PullRequest.parse_body(self.pull_requests(remote)[1]['body'])
+            self.assertIsNone(body)
+            self.assertEqual(len(commits), 1)
+
+    def test_unchanged(self):
+        with OutputCapture(), self.environment(
+            self.message('First change', bug=1),
+            self.message('Second change', bug=2),
+        ) as (remote, repo):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            self.publish_heads(remote, repo)
+            heads = [commit.hash for commit in repo.commits[self.BRANCH]]
+            pushed = {name: commits[-1].hash for name, commits in repo.remotes.items() if name.startswith('fork/eng/')}
+            comments = len(Tracker.instance().issue(1).comments)
+
+            # The mode is remembered for the branch
+            with OutputCapture(level=logging.INFO) as captured:
+                self.assertEqual(0, program.main(args=('pull-request', '-v'), path=self.path))
+
+            self.assertEqual([commit.hash for commit in repo.commits[self.BRANCH]], heads)
+            self.assertEqual({name: commits[-1].hash for name, commits in repo.remotes.items() if name.startswith('fork/eng/')}, pushed)
+            self.assertEqual(len(Tracker.instance().issue(1).comments), comments)
+
+        self.assertEqual(
+            captured.stdout.getvalue(),
+            "No changes to 'PR 1 | First change'\n"
+            "No changes to 'PR 2 | Second change'\n"
+            'https://github.example.com/WebKit/WebKit/pull/1\n'
+            'https://github.example.com/WebKit/WebKit/pull/2\n',
+        )
+        self.assertEqual(captured.stderr.getvalue(), '')
+        log = self.log(captured)
+        self.assertFalse([line for line in log if line.startswith(('Pushing', 'Updating pull-request', 'Creating pull-request', 'Recording'))], log)
+
+    def test_amend(self):
+        with OutputCapture(), self.environment(
+            self.message('First change', bug=1),
+            self.message('Second change', bug=2),
+            self.message('Third change'),
+        ) as (remote, repo):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            self.publish_heads(remote, repo)
+            pushed = {name: commits[-1].hash for name, commits in repo.remotes.items() if name.startswith('fork/eng/')}
+            self.amend(repo, 2)
+
+            with OutputCapture(level=logging.INFO) as captured:
+                self.assertEqual(0, program.main(args=('pull-request', '-v'), path=self.path))
+
+            self.assertEqual(repo.remotes['fork/eng/First-change'][-1].hash, pushed['fork/eng/First-change'])
+            self.assertNotEqual(repo.remotes['fork/eng/Second-change'][-1].hash, pushed['fork/eng/Second-change'])
+            self.assertEqual(repo.remotes['fork/eng/Third-change'][-1].hash, pushed['fork/eng/Third-change'])
+            _, commits = PullRequest.parse_body(self.pull_requests(remote)[2]['body'])
+            self.assertEqual([commit.hash for commit in commits], [repo.remotes['fork/eng/Second-change'][-1].hash])
+
+        self.assertEqual(
+            captured.stdout.getvalue(),
+            "No changes to 'PR 1 | First change'\n"
+            "Updated 'PR 2 | Second change'!\n"
+            "No changes to 'PR 3 | Third change'\n"
+            'https://github.example.com/WebKit/WebKit/pull/1\n'
+            'https://github.example.com/WebKit/WebKit/pull/2\n'
+            'https://github.example.com/WebKit/WebKit/pull/3\n',
+        )
+        self.assertIn("Pushing 'eng/Second-change' to 'fork'...", self.log(captured))
+
+    def test_add_commit(self):
+        with OutputCapture(), self.environment(
+            self.message('First change', bug=1),
+            self.message('Second change', bug=2),
+        ) as (remote, repo):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            self.publish_heads(remote, repo)
+            repo.commits[self.BRANCH].append(self.commit(repo, self.message('Third change'), 3))
+            repo.head = repo.commits[self.BRANCH][-1]
+
+            with OutputCapture(level=logging.INFO) as captured:
+                self.assertEqual(0, program.main(args=('pull-request', '-v'), path=self.path))
+
+            prs = self.pull_requests(remote)
+            for number in (1, 2, 3):
+                self.assertEqual(PullRequest.parse_body(prs[number]['body'])[0], PullRequest.related_body([1, 2, 3], current=number))
+
+        self.assertEqual(
+            captured.stdout.getvalue(),
+            "Created 'PR 3 | Third change'!\n"
+            "Updated 'PR 1 | First change'!\n"
+            "Updated 'PR 2 | Second change'!\n"
+            'https://github.example.com/WebKit/WebKit/pull/1\n'
+            'https://github.example.com/WebKit/WebKit/pull/2\n'
+            'https://github.example.com/WebKit/WebKit/pull/3\n',
+        )
+        self.assertEqual(captured.stderr.getvalue(), "'Third change' does not reference an issue\n")
+        self.assertIn("Pushing 'eng/Third-change' to 'fork'...", self.log(captured))
+
+    def test_dependent_commit(self):
+        with OutputCapture() as captured, self.environment(
+            self.message('First change', bug=1),
+            self.message('Second change', bug=2),
+            self.message('Third change'),
+        ) as (remote, repo):
+            repo.merge_conflicts[repo.commits[self.BRANCH][2].hash] = ['Source/file.cpp']
+            self.assertEqual(1, program.main(args=('pull-request', '--per-commit'), path=self.path))
+
+            prs = self.pull_requests(remote)
+            self.assertEqual(sorted(prs.keys()), [1, 2])
+            self.assertEqual(prs[2]['head']['ref'], 'eng/Third-change')
+            self.assertEqual(PullRequest.parse_body(prs[1]['body'])[0], PullRequest.related_body([1, 2], current=1))
+            self.assertNotIn('fork/eng/Second-change', repo.remotes)
+            # The dependent commit keeps its pull request branch for when it can be uploaded
+            self.assertEqual(PullRequest.branch_trailer(repo.commits[self.BRANCH][2].message), 'eng/Second-change')
+
+        self.assertEqual(
+            captured.stderr.getvalue(),
+            "'Second change' depends on an earlier commit on 'eng/stack', so it cannot be uploaded as its own pull request\n"
+            '    Conflicts in Source/file.cpp\n'
+            "'Third change' does not reference an issue\n"
+            "1 of 3 commits on 'eng/stack' was not uploaded because it depends on earlier commits\n"
+            'Per-commit pull requests require commits which do not depend on each other\n',
+        )
+
+    def test_unreviewed_with_reviewed_by(self):
+        # Unlike a single pull request, any commit (not just the most recent) can be fixed
+        with OutputCapture(), self.environment(
+            'Unreviewed, fix the build.\n\nReviewed by NOBODY (OOPS!)\n',
+            self.message('Second change', bug=2),
+        ) as (remote, repo), MockTerminal.input('y'):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            self.assertEqual(
+                repo.commits[self.BRANCH][1].message,
+                'Unreviewed, fix the build.\n\nPull-Request-Branch: eng/Unreviewed-fix-the-build\n',
+            )
+            self.assertEqual(PullRequest.parse_body(self.pull_requests(remote)[1]['body'])[1][0].message, 'Unreviewed, fix the build.')
+
+    def test_existing_trailer(self):
+        with OutputCapture(level=logging.INFO) as captured, self.environment(
+            self.message('First change', bug=1) + '\nPull-Request-Branch: eng/my-branch\n',
+        ) as (remote, repo):
+            head = repo.commits[self.BRANCH][-1].hash
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit', '-v'), path=self.path))
+            self.assertEqual(repo.commits[self.BRANCH][-1].hash, head)
+            self.assertEqual(self.pull_requests(remote)[1]['head']['ref'], 'eng/my-branch')
+            self.assertIsNone(PullRequest.branch_trailer(repo.remotes['fork/eng/my-branch'][-1].message))
+        self.assertNotIn('Recording pull request branches in commit messages...', self.log(captured))
+
+    def test_same_title(self):
+        with OutputCapture(), self.environment(
+            self.message('Fix a bug', bug=1),
+            self.message('Fix a bug', bug=2),
+        ) as (remote, repo):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            self.assertEqual(
+                [PullRequest.branch_trailer(commit.message) for commit in repo.commits[self.BRANCH][1:]],
+                ['eng/Fix-a-bug', 'eng/Fix-a-bug-v2'],
+            )
+
+    def test_duplicate_trailer(self):
+        with OutputCapture() as captured, self.environment(
+            self.message('First change', bug=1) + '\nPull-Request-Branch: eng/same\n',
+            self.message('Second change', bug=2) + '\nPull-Request-Branch: eng/same\n',
+        ) as (remote, repo):
+            first, second = repo.commits[self.BRANCH][1:]
+            self.assertEqual(1, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            self.assertEqual(remote.pull_requests, [])
+        self.assertEqual(
+            captured.stderr.getvalue(),
+            "Both '{}' and '{}' are recorded as the commit for 'eng/same'\n"
+            "Remove the 'Pull-Request-Branch' trailer from one of their commit messages\n".format(first.hash[:12], second.hash[:12]),
+        )
+
+    def test_no_per_commit(self):
+        with OutputCapture(), self.environment(
+            self.message('First change', bug=1),
+            self.message('Second change', bug=2),
+        ) as (remote, repo):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            self.assertEqual(0, program.main(args=('pull-request', '--no-per-commit', '--no-history'), path=self.path))
+            self.assertEqual(local.Git(self.path).config()['branch.eng/stack.per-commit'], 'false')
+            self.assertEqual(self.pull_requests(remote)[3]['head']['ref'], self.BRANCH)
+
+    def test_land(self):
+        with OutputCapture() as captured, self.environment(self.message('First change', bug=1)):
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit'), path=self.path))
+            self.assertEqual(1, program.main(args=('land',), path=self.path))
+        self.assertEqual(
+            captured.stderr.getvalue(),
+            "Commits on 'eng/stack' are uploaded as individual pull requests, which must be landed individually\n"
+            "Add the 'merge-queue' label to each pull request which is ready to land\n",
+        )
+
+    def test_open(self):
+        with OutputCapture(), self.environment(
+            self.message('First change', bug=1),
+            self.message('Second change', bug=2),
+        ) as (remote, repo), patch('webkitcorepy.Terminal.open_url') as open_url:
+            self.assertEqual(0, program.main(args=('pull-request', '--per-commit', '--open'), path=self.path))
+            self.assertEqual(open_url.call_count, 2)
+            self.publish_heads(remote, repo)
+
+            open_url.reset_mock()
+            self.amend(repo, 2)
+            self.assertEqual(0, program.main(args=('pull-request', '--open'), path=self.path))
+            open_url.assert_called_once_with('https://github.example.com/WebKit/WebKit/pull/2')
+
+    def test_squash(self):
+        with OutputCapture() as captured, self.environment(self.message('First change', bug=1)):
+            self.assertEqual(1, program.main(args=('pull-request', '--per-commit', '--squash'), path=self.path))
+        self.assertEqual(captured.stderr.getvalue(), "'--squash' cannot be used with per-commit pull requests\n")
+
+    def test_default_branch(self):
+        with OutputCapture() as captured, self.environment() as (remote, repo):
+            repo.head = repo.commits[repo.default_branch][-1]
+            self.assertEqual(1, program.main(args=('pull-request', '--per-commit'), path=self.path))
+        self.assertEqual(
+            captured.stderr.getvalue(),
+            "Per-commit pull requests are uploaded from a local development branch, and 'main' is not one\n"
+            "Create one with 'git checkout -b eng/<name>'\n",
+        )
+
+    def test_old_git(self):
+        with OutputCapture() as captured, self.environment(self.message('First change', bug=1)) as (remote, repo):
+            repo.git_version = '2.37.2'
+            self.assertEqual(1, program.main(args=('pull-request', '--per-commit'), path=self.path))
+        self.assertEqual(captured.stderr.getvalue(), 'Per-commit pull requests require git 2.38 or later, but this is git 2.37.2\n')
+
 
 class TestNetworkPullRequestGitHub(unittest.TestCase):
     remote = 'https://github.example.com/WebKit/WebKit'
