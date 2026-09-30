@@ -67,6 +67,14 @@ class Git(mocks.Subprocess):
         self.detached = detached or False
         self.is_worktree = is_worktree
         self.push_error = None
+        self.git_version = '2.45.0'
+
+        # Commits created by 'commit-tree' which aren't (yet) on a branch, and the trees they reference.
+        # Trees are modeled as the set of changes (by default, a commit's hash) applied to reach them.
+        self.objects = {}
+        self.trees = {}
+        # Hashes of commits which conflict when 'merge-tree' applies them to a new base, mapped to the conflicted files
+        self.merge_conflicts = {}
 
         self.tags = tags or {}
 
@@ -673,6 +681,53 @@ nothing to commit, working tree clean
                 cwd=self.path,
                 generator=lambda *args, **kwargs: self.push_porcelain(args[3], args[4], force='-f' in args),
             ), mocks.Subprocess.Route(
+                self.executable, '--version',
+                cwd=self.path,
+                generator=lambda *args, **kwargs: mocks.ProcessCompletion(
+                    returncode=0,
+                    stdout='git version {}\n'.format(self.git_version),
+                ),
+            ), mocks.Subprocess.Route(
+                self.executable, 'show', '-s', '--pretty=format:{}'.format(local.Git.COMMIT_DETAILS_FORMAT), re.compile(r'.+'),
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.commit_details(args[4]),
+            ), mocks.Subprocess.Route(
+                self.executable, 'rev-parse', '--verify', '--quiet', re.compile(r'.+'),
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.rev_parse_verify(args[4]),
+            ), mocks.Subprocess.Route(
+                self.executable, 'rev-list', '--reverse', '--parents', re.compile(r'.+'),
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.rev_list_parents(args[4]),
+            ), mocks.Subprocess.Route(
+                self.executable, 'merge-tree', '--write-tree', '--name-only', re.compile(r'--merge-base=.+'), re.compile(r'.+'), re.compile(r'.+'),
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.merge_tree(args[4].split('=', 1)[1], args[5], args[6]),
+            ), mocks.Subprocess.Route(
+                self.executable, 'commit-tree', re.compile(r'.+'), '-p', re.compile(r'.+'), '-F', '-',
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.commit_tree(
+                    args[2], args[4],
+                    message=string_utils.decode(kwargs.get('input') or ''),
+                    env=kwargs.get('env') or {},
+                ),
+            ), mocks.Subprocess.Route(
+                self.executable, 'update-ref', '-m', re.compile(r'.+'), re.compile(r'refs/heads/.+'), re.compile(r'.+'), re.compile(r'.+'),
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.update_branch(args[4][len('refs/heads/'):], args[5], args[6]),
+            ), mocks.Subprocess.Route(
+                self.executable, 'diff-tree', '-p', re.compile(r'.+'),
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.diff_tree(args[3]),
+            ), mocks.Subprocess.Route(
+                self.executable, 'patch-id', '--stable',
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.patch_id(string_utils.decode(kwargs.get('input') or '')),
+            ), mocks.Subprocess.Route(
+                self.executable, 'push', '-f', re.compile(r'.+'), re.compile(r'[^:]+:refs/heads/.+'),
+                cwd=self.path,
+                generator=lambda *args, **kwargs: self.push_refspecs(args[3], args[4:]),
+            ), mocks.Subprocess.Route(
                 self.executable, 'push', '-f', re.compile(r'.+'), re.compile(r'.+'),
                 cwd=self.path,
                 generator=lambda *args, **kwargs: mocks.ProcessCompletion(returncode=0),
@@ -882,6 +937,14 @@ nothing to commit, working tree clean
             if len(split) == 2 and Commit.NUMBER_RE.match(split[1]):
                 found = self.find(split[0])
                 difference = int(split[1])
+                # Commits created by 'commit-tree' aren't on a branch, walk their parents until we reach one which is
+                while found and difference and found.hash in self.objects:
+                    found = self.find(getattr(found, '__mock__parent'))
+                    difference -= 1
+                if not found or not difference or found.hash in self.objects:
+                    return found
+                if found.hash != self.find(split[0]).hash:
+                    return self.find('{}~{}'.format(found.hash, difference))
                 if split[0] in self.remotes:
                     all_commits = self.resolve_all_commits(found.branch, remote=split[0].replace('/{}'.format(found.branch), ''))
                 else:
@@ -920,6 +983,9 @@ nothing to commit, working tree clean
                     return commit
                 if len(something) > 4 and commit.hash.startswith(str(something)):
                     return commit
+        for hash, commit in self.objects.items():
+            if len(something) > 4 and hash.startswith(str(something)):
+                return commit
         return None
 
     def count(self, something):
@@ -1677,6 +1743,199 @@ nothing to commit, working tree clean
             self.remotes[remote_ref] = list(reversed(self.rev_list(value)))
         return mocks.ProcessCompletion(returncode=0)
 
+
+    def parent_of(self, commit):
+        parent = getattr(commit, '__mock__parent', None)
+        if parent:
+            return self.find(parent)
+        if not commit.branch or commit.branch not in self.commits:
+            return None
+        history = self.resolve_all_commits(commit.branch)
+        for index, candidate in enumerate(history):
+            if candidate.hash == commit.hash:
+                return history[index - 1] if index else None
+        return None
+
+    def tree_of(self, commit):
+        tree = getattr(commit, '__mock__tree', None)
+        if tree:
+            return self.trees[tree]
+        parent = self.parent_of(commit)
+        return (self.tree_of(parent) if parent else frozenset()) | {getattr(commit, '__mock__change', None) or commit.hash}
+
+    def tree_id(self, tree):
+        id = hashlib.sha1(string_utils.encode('\n'.join(sorted(tree)))).hexdigest()
+        self.trees[id] = frozenset(tree)
+        return id
+
+    def identity_of(self, commit):
+        identity = getattr(commit, '__mock__identity', None)
+        if identity:
+            return identity
+        name = commit.author.name if commit.author else 'Unknown'
+        email = commit.author.email if commit.author else 'unknown@example.com'
+        date = datetime.fromtimestamp(commit.timestamp or 0, timezone.utc).isoformat()
+        return dict(
+            GIT_AUTHOR_NAME=name, GIT_AUTHOR_EMAIL=email, GIT_AUTHOR_DATE=date,
+            GIT_COMMITTER_NAME=name, GIT_COMMITTER_EMAIL=email, GIT_COMMITTER_DATE=date,
+        )
+
+    def commit_details(self, ref):
+        commit = self.find(ref)
+        if not commit:
+            return mocks.ProcessCompletion(returncode=128, stderr="fatal: ambiguous argument '{}': unknown revision\n".format(ref))
+        parent = self.parent_of(commit)
+        identity = self.identity_of(commit)
+        message = commit.message or ''
+        return mocks.ProcessCompletion(returncode=0, stdout='\x00'.join([
+            parent.hash if parent else '',
+            self.tree_id(self.tree_of(commit)),
+            identity['GIT_AUTHOR_NAME'], identity['GIT_AUTHOR_EMAIL'], identity['GIT_AUTHOR_DATE'],
+            identity['GIT_COMMITTER_NAME'], identity['GIT_COMMITTER_EMAIL'], identity['GIT_COMMITTER_DATE'],
+            message if message.endswith('\n') else message + '\n',
+        ]))
+
+    def rev_parse_verify(self, ref):
+        ref = ref[:-len('^{commit}')] if ref.endswith('^{commit}') else ref
+        if ref.startswith('refs/heads/'):
+            ref = ref[len('refs/heads/'):]
+            commit = self.commits[ref][-1] if ref in self.commits else None
+        else:
+            commit = self.find(ref)
+        if not commit:
+            return mocks.ProcessCompletion(returncode=1)
+        return mocks.ProcessCompletion(returncode=0, stdout='{}\n'.format(commit.hash))
+
+    def rev_list_parents(self, range):
+        lines = []
+        for commit in reversed(self.rev_list(range)):
+            parent = self.parent_of(commit)
+            lines.append(' '.join([commit.hash] + ([parent.hash] if parent else [])))
+        return mocks.ProcessCompletion(returncode=0, stdout=''.join('{}\n'.format(line) for line in lines))
+
+    def merge_tree(self, merge_base, base, ref):
+        commits = [self.find(merge_base), self.find(base), self.find(ref)]
+        for name, commit in zip((merge_base, base, ref), commits):
+            if not commit:
+                return mocks.ProcessCompletion(returncode=128, stderr="fatal: could not parse as tree '{}'\n".format(name))
+        merge_base, base, ref = commits
+        tree = self.tree_id(self.tree_of(base) | (self.tree_of(ref) - self.tree_of(merge_base)))
+        if ref.hash in self.merge_conflicts:
+            files = self.merge_conflicts[ref.hash]
+            return mocks.ProcessCompletion(returncode=1, stdout='{}\n{}\n{}'.format(
+                tree, ''.join('{}\n'.format(file) for file in files),
+                ''.join('Auto-merging {file}\nCONFLICT (content): Merge conflict in {file}\n'.format(file=file) for file in files),
+            ))
+        return mocks.ProcessCompletion(returncode=0, stdout='{}\n'.format(tree))
+
+    def commit_tree(self, tree, parent, message, env):
+        parent_commit = self.find(parent)
+        if tree not in self.trees or not parent_commit:
+            return mocks.ProcessCompletion(returncode=128, stderr='fatal: not a valid object name\n')
+        name, email = self.config()['user.name'], self.config()['user.email']
+        now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        identity = dict(
+            GIT_AUTHOR_NAME=name, GIT_AUTHOR_EMAIL=email, GIT_AUTHOR_DATE=now,
+            GIT_COMMITTER_NAME=name, GIT_COMMITTER_EMAIL=email, GIT_COMMITTER_DATE=now,
+        )
+        identity.update({key: value for key, value in env.items() if key in identity and value})
+        hash = hashlib.sha1(string_utils.encode('\n'.join([tree, parent_commit.hash, json.dumps(identity, sort_keys=True), message]))).hexdigest()
+        commit = Commit(
+            hash=hash, message=message, timestamp=int(datetime.fromisoformat(identity['GIT_COMMITTER_DATE']).timestamp()),
+            author=Contributor(identity['GIT_AUTHOR_NAME'], [identity['GIT_AUTHOR_EMAIL']]),
+        )
+        setattr(commit, '__mock__tree', tree)
+        setattr(commit, '__mock__parent', parent_commit.hash)
+        setattr(commit, '__mock__identity', identity)
+        self.objects[hash] = commit
+        return mocks.ProcessCompletion(returncode=0, stdout='{}\n'.format(hash))
+
+    def update_branch(self, branch, new, old):
+        if branch not in self.commits:
+            return mocks.ProcessCompletion(returncode=128, stderr="fatal: '{}' is not a branch\n".format(branch))
+        history = self.commits[branch]
+        if not history[-1].hash.startswith(old):
+            return mocks.ProcessCompletion(returncode=128, stderr="fatal: cannot lock ref 'refs/heads/{}': is at {} but expected {}\n".format(branch, history[-1].hash, old))
+        commit = self.find(new)
+        if not commit:
+            return mocks.ProcessCompletion(returncode=128, stderr='fatal: {}: not a valid SHA1\n'.format(new))
+
+        chain = []
+        while commit and commit.hash in self.objects:
+            chain.insert(0, commit)
+            commit = self.find(getattr(commit, '__mock__parent'))
+        index = next((i for i, candidate in enumerate(history) if commit and candidate.hash == commit.hash), None)
+        if index is None:
+            return mocks.ProcessCompletion(returncode=128, stderr='fatal: unsupported ref update in mock\n')
+
+        moving_head = self.head.hash == history[-1].hash
+        previous = history[index + 1:]
+        adopted = history[:index + 1]
+        for position, commit in enumerate(chain):
+            del self.objects[commit.hash]
+            delattr(commit, '__mock__parent')
+            template = previous[position] if position < len(previous) else None
+            commit.branch = branch
+            commit.identifier = template.identifier if template else adopted[-1].identifier + 1
+            commit.branch_point = template.branch_point if template else adopted[-1].branch_point or adopted[-1].identifier
+            commit.repository_id = template.repository_id if template else adopted[-1].repository_id
+            adopted.append(commit)
+        self.commits[branch] = adopted
+        if moving_head:
+            self.head = adopted[-1]
+        return mocks.ProcessCompletion(returncode=0)
+
+    def diff_tree(self, ref):
+        commit = self.find(ref)
+        if not commit:
+            return mocks.ProcessCompletion(returncode=128, stderr="fatal: bad object {}\n".format(ref))
+        parent = self.parent_of(commit)
+        changes = sorted(self.tree_of(commit) - (self.tree_of(parent) if parent else frozenset()))
+        return mocks.ProcessCompletion(returncode=0, stdout='{}\n{}'.format(
+            commit.hash, ''.join('diff --git a/{change} b/{change}\n+{change}\n'.format(change=change) for change in changes),
+        ))
+
+    def patch_id(self, diff):
+        lines = diff.splitlines()
+        if len(lines) < 2:
+            return mocks.ProcessCompletion(returncode=0)
+        return mocks.ProcessCompletion(returncode=0, stdout='{} {}\n'.format(
+            hashlib.sha1(string_utils.encode('\n'.join(lines[1:]))).hexdigest(), lines[0],
+        ))
+
+    def push_refspecs(self, remote, refspecs):
+        if self.push_error is not None:
+            return mocks.ProcessCompletion(returncode=self.push_error)
+        for refspec in refspecs:
+            source, destination = refspec.split(':', 1)
+            branch = destination[len('refs/heads/'):]
+            commit = self.find(source)
+            if not commit:
+                return mocks.ProcessCompletion(returncode=1, stderr="error: src refspec {} does not match any\n".format(source))
+            if commit.hash not in self.objects:
+                self.remotes['{}/{}'.format(remote, branch)] = list(reversed(self.rev_list(commit.hash)))
+                continue
+
+            # Model commits which aren't on any local branch as a new branch on the remote, forking
+            # from the first ancestor which is on a local branch
+            chain = []
+            while commit.hash in self.objects:
+                chain.insert(0, commit)
+                commit = self.find(getattr(commit, '__mock__parent'))
+            history = [commit]
+            for pushed in chain:
+                previous = history[-1]
+                copy = Commit(
+                    hash=pushed.hash, message=pushed.message, author=pushed.author, timestamp=pushed.timestamp,
+                    branch=branch, repository_id=previous.repository_id,
+                    identifier=previous.identifier + 1 if previous.branch_point else 1,
+                    branch_point=previous.branch_point or previous.identifier,
+                )
+                for attribute in ('__mock__tree', '__mock__identity'):
+                    setattr(copy, attribute, getattr(pushed, attribute))
+                history.append(copy)
+            self.remotes['{}/{}'.format(remote, branch)] = history
+        return mocks.ProcessCompletion(returncode=0)
 
     def add_remote(self, name):
         for existing in list(self.remotes.keys()):

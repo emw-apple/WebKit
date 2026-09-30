@@ -324,6 +324,14 @@ class Git(Scm):
     }
     CONFIG_LOCATIONS = ['global', 'repository', 'project']
     MERGE_BASE_SHARD_SIZE = 512  # Windows has a maximum of ~32K characters in a single command
+    # 'git merge-tree --write-tree', which rebuild_commit relies on, was added in git 2.38
+    MINIMUM_REBUILD_VERSION = (2, 38)
+    COMMIT_DETAILS_FORMAT = '%P%x00%T%x00%an%x00%ae%x00%aI%x00%cn%x00%ce%x00%cI%x00%B'
+
+    class MergeConflict(Scm.Exception):
+        def __init__(self, message, files=None):
+            super().__init__(message)
+            self.files = files or []
 
     @classmethod
     @decorators.Memoize()
@@ -1607,3 +1615,160 @@ class Git(Scm):
         if result.returncode:
             return None
         return self.commit(hash=result.stdout.rstrip(), include_log=include_log, include_identifier=include_identifier)
+
+    @decorators.Memoize()
+    def version(self):
+        result = run([self.executable(), '--version'], capture_output=True, encoding='utf-8', cwd=self.root_path)
+        match = re.search(r'(\d+)\.(\d+)(?:\.(\d+))?', result.stdout or '')
+        if result.returncode or not match:
+            raise self.Exception('Failed to determine the version of git')
+        return tuple(int(part) for part in match.groups() if part is not None)
+
+    def commit_details(self, ref):
+        """Return everything needed to faithfully re-create a commit: its parents, tree,
+        author and committer identity (as git environment variables) and exact message."""
+        result = run(
+            [self.executable(), 'show', '-s', '--pretty=format:{}'.format(self.COMMIT_DETAILS_FORMAT), ref],
+            capture_output=True, encoding='utf-8', cwd=self.root_path,
+        )
+        parts = result.stdout.split('\x00', 8) if not result.returncode else []
+        if len(parts) != 9:
+            raise self.Exception("Failed to retrieve details of '{}'".format(ref))
+        parents, tree, author_name, author_email, author_date, committer_name, committer_email, committer_date, message = parts
+        return dict(
+            parents=parents.split(),
+            tree=tree,
+            identity=dict(
+                GIT_AUTHOR_NAME=author_name,
+                GIT_AUTHOR_EMAIL=author_email,
+                GIT_AUTHOR_DATE=author_date,
+                GIT_COMMITTER_NAME=committer_name,
+                GIT_COMMITTER_EMAIL=committer_email,
+                GIT_COMMITTER_DATE=committer_date,
+            ),
+            message=message,
+        )
+
+    def commit_tree(self, tree, parents, message, identity=None):
+        """Create a commit object without touching any branch, the index or the working tree.
+        Commits are signed if 'commit.gpgsign' is configured."""
+        if not message:
+            raise self.Exception('Refusing to create a commit with an empty message')
+        command = [self.executable(), 'commit-tree', tree]
+        for parent in parents:
+            command += ['-p', parent]
+        result = run(
+            command + ['-F', '-'],
+            input=message, capture_output=True, encoding='utf-8', cwd=self.root_path,
+            env=dict(os.environ, **(identity or {})),
+        )
+        if result.returncode or not result.stdout.strip():
+            raise self.Exception("Failed to create commit from tree '{}':\n{}".format(tree, result.stderr))
+        return result.stdout.strip()
+
+    def rebuild_commit(self, ref, base, message=None):
+        """Re-create the change 'ref' introduced relative to its parent on top of 'base', keeping its author,
+        committer and dates, without touching any branch, the index or the working tree. The message is
+        replaced with 'message', if provided. Returns the hash of the new commit.
+
+        Raises Git.MergeConflict if the change cannot be applied to 'base' cleanly."""
+        details = self.commit_details(ref)
+        if len(details['parents']) != 1:
+            raise self.Exception("Cannot rebuild '{}' because it has {} parents".format(ref, len(details['parents'])))
+        parent = details['parents'][0]
+
+        result = run(
+            [self.executable(), 'rev-parse', '--verify', '--quiet', '{}^{{commit}}'.format(base)],
+            capture_output=True, encoding='utf-8', cwd=self.root_path,
+        )
+        if result.returncode:
+            raise self.Exception("'{}' is not a commit".format(base))
+        base = result.stdout.strip()
+
+        if parent == base:
+            tree = details['tree']
+        else:
+            result = run(
+                [self.executable(), 'merge-tree', '--write-tree', '--name-only', '--merge-base={}'.format(parent), base, ref],
+                capture_output=True, encoding='utf-8', cwd=self.root_path,
+            )
+            lines = result.stdout.splitlines()
+            if result.returncode == 1:
+                # Conflicted files are listed after the tree, up to the first blank line
+                files = []
+                for line in lines[1:]:
+                    if not line:
+                        break
+                    if line not in files:
+                        files.append(line)
+                raise self.MergeConflict("'{}' does not apply cleanly to '{}'".format(ref, base), files=files)
+            if result.returncode or not lines:
+                raise self.Exception("Failed to apply '{}' to '{}':\n{}".format(ref, base, result.stderr))
+            tree = lines[0]
+
+        return self.commit_tree(
+            tree, [base],
+            message=details['message'] if message is None else message,
+            identity=details['identity'],
+        )
+
+    def rewrite_messages(self, base, messages, branch=None):
+        """Replace the messages of commits on 'branch' after 'base', keeping every commit's tree, author,
+        committer and dates. 'messages' maps full commit hashes to their new message. Commits after the
+        first rewritten commit are re-created on top of it, and 'branch' is moved to the new history
+        without touching the index or working tree. Returns the new head of 'branch'."""
+        branch = branch or self.branch
+        if not branch:
+            raise self.Exception('Cannot rewrite the messages of a detached HEAD')
+
+        result = run(
+            [self.executable(), 'rev-parse', '--verify', '--quiet', 'refs/heads/{}'.format(branch)],
+            capture_output=True, encoding='utf-8', cwd=self.root_path,
+        )
+        if result.returncode:
+            raise self.Exception("'{}' is not a local branch".format(branch))
+        old_head = result.stdout.strip()
+
+        result = run(
+            [self.executable(), 'rev-list', '--reverse', '--parents', '{}..{}'.format(base, old_head)],
+            capture_output=True, encoding='utf-8', cwd=self.root_path,
+        )
+        if result.returncode:
+            raise self.Exception("Failed to list the commits between '{}' and '{}'".format(base, branch))
+
+        head = None
+        for line in result.stdout.splitlines():
+            hash, parents = line.split()[0], line.split()[1:]
+            if len(parents) != 1:
+                raise self.Exception("Cannot rewrite messages on '{}' because '{}' is a merge".format(branch, hash))
+            if head is None and hash not in messages:
+                continue
+            details = self.commit_details(hash)
+            head = self.commit_tree(
+                details['tree'], [head or parents[0]],
+                message=messages.get(hash, details['message']),
+                identity=details['identity'],
+            )
+
+        if head is None:
+            return old_head
+        if run(
+            [self.executable(), 'update-ref', '-m', 'git-webkit: rewrite commit messages', 'refs/heads/{}'.format(branch), head, old_head],
+            capture_output=True, encoding='utf-8', cwd=self.root_path,
+        ).returncode:
+            raise self.Exception("Failed to move '{}' to rewritten commits".format(branch))
+        if self.cache:
+            self.cache.clear(branch)
+        return head
+
+    def patch_id(self, ref):
+        """Return a stable identifier for the change 'ref' introduced relative to its parent, which is
+        shared by commits making the same change on top of different bases, or None if 'ref' is empty."""
+        diff = run([self.executable(), 'diff-tree', '-p', ref], capture_output=True, cwd=self.root_path)
+        if diff.returncode:
+            raise self.Exception("Failed to compute the diff of '{}'".format(ref))
+        result = run([self.executable(), 'patch-id', '--stable'], input=diff.stdout, capture_output=True, cwd=self.root_path)
+        if result.returncode:
+            raise self.Exception("Failed to compute the patch-id of '{}'".format(ref))
+        output = string_utils.decode(result.stdout).split()
+        return output[0] if output else None

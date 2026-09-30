@@ -999,6 +999,83 @@ class TestMockGit(testing.PathTestCase):
                 self.assertEqual('everything-command', shutil.which('echo'))
 
 
+class TestMockGitPlumbing(testing.PathTestCase):
+    basepath = 'mock/repository'
+
+    def setUp(self):
+        super().setUp()
+        os.mkdir(os.path.join(self.path, '.git'))
+
+    def test_version(self):
+        with mocks.local.Git(self.path) as mock:
+            self.assertEqual(local.Git(self.path).version(), (2, 45, 0))
+            mock.git_version = '2.30.1'
+            self.assertEqual(local.Git(self.path).version(), (2, 30, 1))
+
+    def test_commit_details(self):
+        with mocks.local.Git(self.path) as mock:
+            base, first, _, _ = mock.commits['eng/squash-branch']
+            details = local.Git(self.path).commit_details(first.hash)
+            self.assertEqual(details['parents'], [base.hash])
+            self.assertEqual(details['message'], first.message if first.message.endswith('\n') else first.message + '\n')
+            self.assertEqual(details['identity']['GIT_AUTHOR_NAME'], first.author.name)
+            self.assertEqual(details['identity']['GIT_AUTHOR_EMAIL'], first.author.email)
+
+    def test_rebuild_commit(self):
+        with mocks.local.Git(self.path) as mock:
+            base, first, second, _ = mock.commits['eng/squash-branch']
+            repository = local.Git(self.path)
+
+            rebuilt = repository.rebuild_commit(second.hash, base.hash, message='Rebuilt change\n')
+            details = repository.commit_details(rebuilt)
+            self.assertEqual(details['parents'], [base.hash])
+            self.assertEqual(details['message'], 'Rebuilt change\n')
+            self.assertEqual(details['identity'], repository.commit_details(second.hash)['identity'])
+            self.assertEqual(repository.patch_id(rebuilt), repository.patch_id(second.hash))
+            self.assertNotEqual(repository.patch_id(rebuilt), repository.patch_id(first.hash))
+            self.assertEqual(rebuilt, repository.rebuild_commit(second.hash, base.hash, message='Rebuilt change\n'))
+
+    def test_rebuild_commit_conflict(self):
+        with mocks.local.Git(self.path) as mock:
+            base, _, second, _ = mock.commits['eng/squash-branch']
+            mock.merge_conflicts[second.hash] = ['Source/file.cpp']
+
+            with self.assertRaises(local.Git.MergeConflict) as caught:
+                local.Git(self.path).rebuild_commit(second.hash, base.hash)
+            self.assertEqual(caught.exception.files, ['Source/file.cpp'])
+
+    def test_rewrite_messages(self):
+        with mocks.local.Git(self.path) as mock:
+            base, first, second, third = mock.commits['eng/squash-branch']
+            mock.head = third
+            repository = local.Git(self.path)
+            patch_ids = [repository.patch_id(commit.hash) for commit in (first, second, third)]
+
+            head = repository.rewrite_messages(base.hash, {second.hash: 'Rewritten message\n'})
+            self.assertEqual(repository.commit().hash, head)
+
+            commits = list(reversed(list(repository.commits(begin=dict(hash=base.hash), end=dict(branch='eng/squash-branch')))))
+            self.assertEqual([str(commit) for commit in commits], ['5.1@eng/squash-branch', '5.2@eng/squash-branch', '5.3@eng/squash-branch'])
+            self.assertEqual(commits[0].hash, first.hash)
+            self.assertNotEqual(commits[1].hash, second.hash)
+            self.assertNotEqual(commits[2].hash, third.hash)
+            self.assertEqual(commits[1].message, 'Rewritten message')
+            self.assertEqual([repository.patch_id(commit.hash) for commit in commits], patch_ids)
+
+    def test_push_hashes(self):
+        with mocks.local.Git(self.path, remotes=dict(fork='https://github.example.com/Contributor/WebKit')) as mock:
+            base, _, second, _ = mock.commits['eng/squash-branch']
+            repository = local.Git(self.path)
+            rebuilt = repository.rebuild_commit(second.hash, base.hash)
+
+            self.assertEqual(0, run(
+                [repository.executable(), 'push', '-f', 'fork', '{}:refs/heads/eng/second'.format(rebuilt)],
+                cwd=self.path,
+            ).returncode)
+            self.assertEqual(mock.remotes['fork/eng/second'][-1].hash, rebuilt)
+            self.assertEqual(repository.find('fork/eng/second', include_log=False, include_identifier=False).hash, rebuilt)
+
+
 class TestGitHub(testing.TestCase):
     remote = 'https://github.example.com/WebKit/WebKit'
 
