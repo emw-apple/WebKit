@@ -103,6 +103,11 @@ class PullRequest(object):
         ),
     ]
     DIVIDER_LEN = 70
+    # Maps a local commit to the branch its pull request is uploaded from. Never pushed, see strip_branch_trailer.
+    # Deliberately not stripped by cherry-picks: a faithful copy of a commit is the same change, so uploading it
+    # updates the same pull request rather than opening a duplicate.
+    BRANCH_TRAILER = 'Pull-Request-Branch'
+    RELATED_HEADER = '#### Related pull requests'
     ESCAPE_TABLE = {
         '"': '&quot;',
         "'": '&apos;',
@@ -167,6 +172,60 @@ class PullRequest(object):
                 else:
                     body = part.rstrip().lstrip()
         return body or None, commits
+
+    @classmethod
+    def _trailer_block(cls, lines):
+        # The trailer block is the final paragraph of 'Key: value' lines, never including the title
+        start = len(lines)
+        while start > 1 and Commit.TRAILER_RE.match(lines[start - 1]):
+            start -= 1
+        if start < len(lines) and lines[start - 1]:
+            return len(lines)
+        return start
+
+    @classmethod
+    def branch_trailer(cls, message):
+        """Return the pull request branch recorded in a commit message's trailers, if any."""
+        lines = (message or '').rstrip('\n').split('\n')
+        for line in lines[cls._trailer_block(lines):]:
+            match = Commit.TRAILER_RE.match(line)
+            if match['key'] == cls.BRANCH_TRAILER and match['value'].strip():
+                return match['value'].strip()
+        return None
+
+    @classmethod
+    def add_branch_trailer(cls, message, branch):
+        """Record the pull request branch for a commit in its message's trailers, replacing any existing record."""
+        lines = cls.strip_branch_trailer(message).rstrip('\n').split('\n')
+        if cls._trailer_block(lines) == len(lines):
+            lines.append('')
+        lines.append('{}: {}'.format(cls.BRANCH_TRAILER, branch))
+        return '\n'.join(lines) + '\n'
+
+    @classmethod
+    def strip_branch_trailer(cls, message):
+        """Remove the pull request branch from a commit message's trailers, leaving the rest of the message intact."""
+        lines = (message or '').rstrip('\n').split('\n')
+        start = cls._trailer_block(lines)
+        lines = lines[:start] + [
+            line for line in lines[start:]
+            if Commit.TRAILER_RE.match(line)['key'] != cls.BRANCH_TRAILER
+        ]
+        while len(lines) > 1 and not lines[-1]:
+            lines.pop()
+        return '\n'.join(lines) + '\n'
+
+    @classmethod
+    def related_body(cls, pull_requests, current=None):
+        """Markdown listing pull requests uploaded together, marking the current one. Empty if there is nothing else to list."""
+        numbers = [getattr(pull_request, 'number', pull_request) for pull_request in pull_requests]
+        if len(numbers) < 2:
+            return ''
+        current = getattr(current, 'number', current)
+        return '\n'.join([cls.RELATED_HEADER] + [
+            '* **#{}** (this pull request)'.format(number) if number == current else '* #{}'.format(number)
+            for number in numbers
+        ])
 
     def __init__(
         self, number, title=None,

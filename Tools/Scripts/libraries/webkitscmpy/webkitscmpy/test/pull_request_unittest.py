@@ -179,6 +179,89 @@ Reviewed by Tim Contributor.
 </pre>''',
         )
 
+    WEBKIT_MESSAGE = """[git-webkit] Fix a bug
+https://bugs.webkit.org/show_bug.cgi?id=1234
+
+Reviewed by NOBODY (OOPS!).
+
+Explanation of the change.
+
+* Tools/Scripts/file.py:
+(function):
+"""
+
+    def test_branch_trailer(self):
+        self.assertIsNone(PullRequest.branch_trailer(None))
+        self.assertIsNone(PullRequest.branch_trailer(self.WEBKIT_MESSAGE))
+        self.assertEqual(
+            PullRequest.branch_trailer(self.WEBKIT_MESSAGE + '\nPull-Request-Branch: eng/fix-a-bug\n'),
+            'eng/fix-a-bug',
+        )
+        self.assertEqual(
+            PullRequest.branch_trailer('Title\n\nCanonical link: https://commits.webkit.org/1@main\nPull-Request-Branch: eng/title\n'),
+            'eng/title',
+        )
+
+    def test_branch_trailer_not_in_trailers(self):
+        # Only the final paragraph, separated from the title, holds trailers
+        self.assertIsNone(PullRequest.branch_trailer('Pull-Request-Branch: eng/title\n'))
+        self.assertIsNone(PullRequest.branch_trailer('Title\nPull-Request-Branch: eng/title\n'))
+        self.assertIsNone(PullRequest.branch_trailer('Title\n\nPull-Request-Branch: eng/title\n\nDescription\n'))
+        self.assertIsNone(PullRequest.branch_trailer('Title\n\nDescription\nPull-Request-Branch: eng/title\n'))
+
+    def test_add_branch_trailer(self):
+        self.assertEqual(
+            PullRequest.add_branch_trailer(self.WEBKIT_MESSAGE, 'eng/fix-a-bug'),
+            self.WEBKIT_MESSAGE + '\nPull-Request-Branch: eng/fix-a-bug\n',
+        )
+        self.assertEqual(
+            PullRequest.add_branch_trailer('Title\n\nSigned-off-by: Tim Contributor\n', 'eng/title'),
+            'Title\n\nSigned-off-by: Tim Contributor\nPull-Request-Branch: eng/title\n',
+        )
+        self.assertEqual(PullRequest.add_branch_trailer('Title', 'eng/title'), 'Title\n\nPull-Request-Branch: eng/title\n')
+
+    def test_add_branch_trailer_replaces(self):
+        message = PullRequest.add_branch_trailer(self.WEBKIT_MESSAGE, 'eng/old-name')
+        self.assertEqual(
+            PullRequest.add_branch_trailer(message, 'eng/new-name'),
+            self.WEBKIT_MESSAGE + '\nPull-Request-Branch: eng/new-name\n',
+        )
+        self.assertEqual(PullRequest.add_branch_trailer(message, 'eng/old-name'), message)
+
+    def test_strip_branch_trailer(self):
+        self.assertEqual(PullRequest.strip_branch_trailer(self.WEBKIT_MESSAGE), self.WEBKIT_MESSAGE)
+        self.assertEqual(
+            PullRequest.strip_branch_trailer(PullRequest.add_branch_trailer(self.WEBKIT_MESSAGE, 'eng/fix-a-bug')),
+            self.WEBKIT_MESSAGE,
+        )
+        self.assertEqual(
+            PullRequest.strip_branch_trailer('Title\n\nSigned-off-by: Tim Contributor\nPull-Request-Branch: eng/title\n'),
+            'Title\n\nSigned-off-by: Tim Contributor\n',
+        )
+        # Lines which look like the trailer outside of the trailers are left alone
+        self.assertEqual(
+            PullRequest.strip_branch_trailer('Title\n\nPull-Request-Branch: eng/title\n\nDescription\n'),
+            'Title\n\nPull-Request-Branch: eng/title\n\nDescription\n',
+        )
+
+    def test_related_body(self):
+        self.assertEqual(PullRequest.related_body([]), '')
+        self.assertEqual(PullRequest.related_body([PullRequest(number=1)], current=1), '')
+        self.assertEqual(
+            PullRequest.related_body([PullRequest(number=1), PullRequest(number=2), 3], current=PullRequest(number=2)),
+            '#### Related pull requests\n'
+            '* #1\n'
+            '* **#2** (this pull request)\n'
+            '* #3',
+        )
+
+    def test_related_body_round_trip(self):
+        commit = Commit(hash='11aa76f9fc380e9fe06157154f32b304e8dc4749', message='[scoping] Bug to fix\n\nReviewed by Tim Contributor.\n')
+        related = PullRequest.related_body([1, 2], current=2)
+        body, commits = PullRequest.parse_body(PullRequest.create_body(related, [commit]))
+        self.assertEqual(body, related)
+        self.assertEqual([c.hash for c in commits], [commit.hash])
+
     def test_create_body_multiple_no_link(self):
         self.assertEqual(
             PullRequest.create_body(None, [Commit(
