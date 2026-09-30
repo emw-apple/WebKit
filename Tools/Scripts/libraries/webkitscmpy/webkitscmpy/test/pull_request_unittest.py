@@ -2774,7 +2774,7 @@ Reviewed by NOBODY (OOPS!).
 * Source/file.cpp:
 </pre>
 ''',
-            head=dict(ref='eng/pull-request', sha='95507e3a1a4a919d1a156abbc279fdf6d24b13f5'),
+            head=dict(ref='eng/pull-request', sha='95507e3a1a4a919d1a156abbc279fdf6d24b13f5', repo=dict(full_name='tcontributor/WebKit')),
             base=dict(ref='main'),
             requested_reviews=[dict(login='rreviewer')],
             reviews=[
@@ -2845,6 +2845,27 @@ Reviewed by NOBODY (OOPS!).
             pr.generator.update(pr, head='eng/pull-request', title='New Title')
             pr = remote.GitHub(self.remote).pull_requests.get(1)
             self.assertEqual(pr.title, 'New Title')
+
+    def test_update_result(self):
+        with self.webserver():
+            pr = remote.GitHub(self.remote).pull_requests.get(1)
+            self.assertEqual(pr._metadata['full_name'], 'tcontributor/WebKit')
+            pr = pr.generator.update(pr, title='New Title')
+            self.assertEqual(pr.title, 'New Title')
+            self.assertEqual(pr.head, 'eng/pull-request')
+            self.assertEqual(pr.hash, '95507e3a1a4a919d1a156abbc279fdf6d24b13f5')
+            self.assertEqual(pr.base, 'main')
+            self.assertEqual(pr._metadata['full_name'], 'tcontributor/WebKit')
+
+    def test_update_base(self):
+        with self.webserver():
+            pr = remote.GitHub(self.remote).pull_requests.get(1)
+            pr = pr.generator.update(pr, base='safari-7614-branch')
+            self.assertEqual(pr.head, 'eng/pull-request')
+            self.assertEqual(pr.base, 'safari-7614-branch')
+
+            pr = remote.GitHub(self.remote).pull_requests.get(1)
+            self.assertEqual(pr.base, 'safari-7614-branch')
 
     def test_reviewers(self):
         with self.webserver():

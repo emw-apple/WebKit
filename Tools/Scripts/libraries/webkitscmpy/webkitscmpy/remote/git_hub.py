@@ -225,8 +225,10 @@ class GitHub(Scm):
                 pull_request.body, pull_request.commits = pull_request.parse_body(data.get('body'))
             if data.get('user', {}).get('login'):
                 pull_request.author = self.repository.contributors.create(data['user']['login'])
-            pull_request.head = data.get('head', {}).get('displayId', pull_request.base)
-            pull_request.base = data.get('base', {}).get('displayId', pull_request.base)
+            head_data = data.get('head') or {}
+            pull_request.head = head_data.get('ref', pull_request.head)
+            pull_request.hash = head_data.get('sha', pull_request.hash)
+            pull_request.base = (data.get('base') or {}).get('ref', pull_request.base)
             pull_request._opened = dict(
                 open=True,
                 closed=False,
@@ -236,6 +238,7 @@ class GitHub(Scm):
             issue_ref = data.get('_links', {}).get('issue', {}).get('href')
             pull_request._metadata = dict(
                 issue=self.repository.tracker.from_string(issue_ref) if issue_ref else None,
+                full_name=(head_data.get('repo') or {}).get('full_name') or (pull_request._metadata or {}).get('full_name'),
             )
 
             assignees = [node.get('login') for node in data.get('assignees', []) if node.get('login')]
