@@ -1,4 +1,4 @@
-# Copyright (C) 2021-2023 Apple Inc. All rights reserved.
+# Copyright (C) 2026 Apple Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -20,42 +20,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from setuptools import setup
+import os
+import unittest
+
+from webkitcorepy.testing import run_mypy
 
 
-def readme():
-    with open('README.md') as f:
-        return f.read()
+class TypeAnnotations(unittest.TestCase):
+    longMessage = False
 
-
-setup(
-    name='webkitbugspy',
-    version='0.15.7',
-    description='Library containing a shared API for various bug trackers.',
-    long_description=readme(),
-    long_description_content_type='text/markdown',
-    classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'License :: Other/Proprietary License',
-        'Operating System :: MacOS',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-    ],
-    keywords='python unicode',
-    url='https://github.com/WebKit/WebKit/tree/main/Tools/Scripts/libraries/webkitbugspy',
-    author='Jonathan Bedard',
-    author_email='jbedard@apple.com',
-    license='Modified BSD',
-    packages=[
-        'webkitbugspy',
-        'webkitbugspy.mocks',
-        'webkitbugspy.tests',
-    ],
-    install_requires=[
-        'webkitcorepy',
-    ],
-    include_package_data=True,
-    zip_safe=False,
-)
+    def test_mypy(self):
+        library = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        status, output = run_mypy(os.path.join(library, 'mypy.ini'), 'webkitbugspy')
+        self.assertEqual(status, 0, output)
