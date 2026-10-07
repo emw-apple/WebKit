@@ -29,7 +29,6 @@
 #include <WebCore/ContentSecurityPolicyResponseHeaders.h>
 #include <WebCore/CrossOriginEmbedderPolicy.h>
 #include <WebCore/FetchRequestCredentials.h>
-#include <WebCore/IsSecureContext.h>
 #include <WebCore/NetworkLoadPolicy.h>
 #include <WebCore/NotificationPermission.h>
 #include <WebCore/ScriptExecutionContextIdentifier.h>
@@ -94,7 +93,6 @@ public:
     std::optional<uint64_t> noiseInjectionHashSalt;
     String agentClusterID;
     NetworkLoadPolicy networkLoadPolicy;
-    IsSecureContext isSecureContext;
 
     WorkerParameters isolatedCopy() const;
 };

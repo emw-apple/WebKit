@@ -306,7 +306,7 @@ void VideoPresentationModelVideoElement::requestFullscreenMode(HTMLMediaElementE
         && mode == MediaPlayer::VideoFullscreenModeNone
         && videoElement->document().isMediaDocument()) {
         if (RefPtr window = protect(videoElement->document())->window())
-            protect(window->history())->back();
+            window->history().back();
     }
 }
 

@@ -103,7 +103,7 @@ ImageImpl *DisplayEGL::createImage(const egl::ImageState &state,
     return new ImageEGL(state, context, target, attribs, mEGL);
 }
 
-EGLSyncImpl *ThreadSafeDisplayEGL::createSync()
+EGLSyncImpl *DisplayEGL::createSync()
 {
     return new SyncEGL(mEGL);
 }
@@ -707,6 +707,17 @@ egl::ConfigSet DisplayEGL::generateConfigs()
     }
 
     return configSet;
+}
+
+bool DisplayEGL::testDeviceLost()
+{
+    return false;
+}
+
+egl::Error DisplayEGL::restoreLostDevice(const egl::Display *display)
+{
+    UNIMPLEMENTED();
+    return egl::NoError();
 }
 
 bool DisplayEGL::isValidNativeWindow(EGLNativeWindowType window) const

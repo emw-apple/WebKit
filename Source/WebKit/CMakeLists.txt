@@ -551,7 +551,6 @@ set(WebKit_SERIALIZATION_IN_FILES
     Shared/UserContentControllerParameters.serialization.in
     Shared/UserData.serialization.in
     Shared/VisibleContentRectUpdateInfo.serialization.in
-    Shared/VolumetricSceneContentContext.serialization.in
     Shared/WTFArgumentCoders.serialization.in
     Shared/WebBackForwardListCounts.serialization.in
     Shared/WebContextMenuItemData.serialization.in
@@ -979,7 +978,7 @@ if (SWIFT_REQUIRED)
         ${WebKit_DERIVED_SOURCES_DIR}/UIProcess/WebBackForwardListMessageReceiver.cpp
         ${WebKit_DERIVED_SOURCES_DIR}/Shared/IPCTesterReceiverMessageReceiver.cpp
     )
-    if (NOT WIN32 AND NOT PORT STREQUAL "WPE")
+    if (NOT WIN32)
         list(APPEND WebKit_SWIFT_INTEROP_SOURCES UIProcess/ViewGestureController.cpp)
     endif ()
     if (APPLE)
@@ -1007,11 +1006,6 @@ if (SWIFT_REQUIRED)
     # should match the rest of WebKit and use -Onone, but it negatively impacts build time
     webkit_target_add_swift_options(WebKit
         "$<$<AND:$<COMPILE_LANGUAGE:Swift>,$<CONFIG:Debug>>:-O>")
-    # Every frontend job imports most of WebCore's C++ declarations, at a cost
-    # of seconds of CPU time and gigabytes of memory, before compiling anything.
-    # One batch per core repeats that work for each core and competes with the
-    # C++ compiles for memory, so use fewer, larger batches.
-    webkit_target_add_swift_options(WebKit "-driver-batch-count 4")
 endif ()
 
 if (WebKit_PUBLIC_FRAMEWORK_HEADERS)
@@ -1244,9 +1238,6 @@ foreach (_rel IN LISTS _serializers_outputs)
     list(APPEND _serializers_absolute_outputs ${WebKit_DERIVED_SOURCES_DIR}/${_rel})
     list(APPEND _serializers_copy_commands COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_serializers_stage_dir}/${_rel} ${WebKit_DERIVED_SOURCES_DIR}/${_rel})
 endforeach ()
-set(_serializers_input_files_rsp ${WebKit_DERIVED_SOURCES_DIR}/GeneratedSerializersInputFiles.rsp)
-string(JOIN "\n" _serializers_input_files_rsp_content ${WebKit_SERIALIZATION_DEPENDENCIES})
-file(GENERATE OUTPUT ${_serializers_input_files_rsp} CONTENT "${_serializers_input_files_rsp_content}\n")
 add_custom_command(
     OUTPUT
         ${_serializers_absolute_outputs}
@@ -1254,9 +1245,8 @@ add_custom_command(
     DEPENDS
         ${WEBKIT_DIR}/Scripts/webkit/opaque_ipc_types.py
         ${WebKit_SERIALIZATION_DEPENDENCIES}
-        ${_serializers_input_files_rsp}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_serializers_stage_dir}
-    COMMAND ${PYTHON_EXECUTABLE} ${WEBKIT_DIR}/Scripts/generate-serializers.py ${WebKit_GENERATED_SERIALIZERS_SUFFIX} --split-by-directory @${_serializers_input_files_rsp} --output-dir ${_serializers_stage_dir}
+    COMMAND ${PYTHON_EXECUTABLE} ${WEBKIT_DIR}/Scripts/generate-serializers.py ${WebKit_GENERATED_SERIALIZERS_SUFFIX} --split-by-directory ${WebKit_SERIALIZATION_DEPENDENCIES} --output-dir ${_serializers_stage_dir}
     ${_serializers_copy_commands}
     WORKING_DIRECTORY ${WebKit_DERIVED_SOURCES_DIR}
     VERBATIM
@@ -1324,7 +1314,6 @@ set(WebKit_WEBDRIVER_BIDI_PROTOCOL_GENERATOR_INPUTS
     ${WEBKIT_DIR}/UIProcess/Automation/protocol/BidiBrowser.json
     ${WEBKIT_DIR}/UIProcess/Automation/protocol/BidiBrowsingContext.json
     ${WEBKIT_DIR}/UIProcess/Automation/protocol/BidiDigitalCredentials.json
-    ${WEBKIT_DIR}/UIProcess/Automation/protocol/BidiInput.json
     ${WEBKIT_DIR}/UIProcess/Automation/protocol/BidiLog.json
     ${WEBKIT_DIR}/UIProcess/Automation/protocol/BidiPermissions.json
     ${WEBKIT_DIR}/UIProcess/Automation/protocol/BidiScript.json
@@ -1332,16 +1321,11 @@ set(WebKit_WEBDRIVER_BIDI_PROTOCOL_GENERATOR_INPUTS
     ${WEBKIT_DIR}/UIProcess/Automation/protocol/BidiStorage.json
 )
 
-set(_platform_defines_file_arg)
-if (WEBKIT_PLATFORM_FEATURE_DEFINES_FILE)
-    set(_platform_defines_file_arg --defines-file ${WEBKIT_PLATFORM_FEATURE_DEFINES_FILE})
-endif ()
-
 add_custom_command(
     OUTPUT ${WebKit_DERIVED_SOURCES_DIR}/CombinedWebDriverBidiDomains.json
     MAIN_DEPENDENCY ${JavaScriptCore_SCRIPTS_DIR}/generate-combined-inspector-json.py
-    DEPENDS ${WebKit_WEBDRIVER_BIDI_PROTOCOL_GENERATOR_INPUTS} ${WEBKIT_PLATFORM_FEATURE_DEFINES_FILE}
-    COMMAND ${PYTHON_EXECUTABLE} ${JavaScriptCore_SCRIPTS_DIR}/generate-combined-inspector-json.py ${_platform_defines_file_arg} ${WebKit_WEBDRIVER_BIDI_PROTOCOL_GENERATOR_INPUTS} "${FEATURE_DEFINES_WITH_SPACE_SEPARATOR}" > ${WebKit_DERIVED_SOURCES_DIR}/CombinedWebDriverBidiDomains.json
+    DEPENDS ${WebKit_WEBDRIVER_BIDI_PROTOCOL_GENERATOR_INPUTS}
+    COMMAND ${PYTHON_EXECUTABLE} ${JavaScriptCore_SCRIPTS_DIR}/generate-combined-inspector-json.py ${WebKit_WEBDRIVER_BIDI_PROTOCOL_GENERATOR_INPUTS} "${FEATURE_DEFINES_WITH_SPACE_SEPARATOR}" > ${WebKit_DERIVED_SOURCES_DIR}/CombinedWebDriverBidiDomains.json
     VERBATIM)
 
 add_custom_command(
@@ -1491,7 +1475,6 @@ if (SWIFT_REQUIRED)
         ${WebKit_DERIVED_SOURCES_DIR}/IPCTesterReceiverMessageReceiver.swift
         PROPERTIES GENERATED TRUE)
     list(APPEND WebKit_SOURCES
-        ${WEBKIT_DIR}/Shared/Concurrency+Extras.swift
         ${WEBKIT_DIR}/Shared/Foundation+Extras.swift
         ${WEBKIT_DIR}/Shared/IPCTesterReceiver.swift
         ${WEBKIT_DIR}/Shared/RunJavaScriptResult.swift

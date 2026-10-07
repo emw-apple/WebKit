@@ -25,7 +25,13 @@
 
 #import <objc/NSObject.h>
 
+@class WebGeolocationPositionInternal;
+
 @interface WebGeolocationPosition : NSObject
+{
+@private
+    WebGeolocationPositionInternal *_internal;
+}
 
 - (id)initWithTimestamp:(double)timestamp latitude:(double)latitude longitude:(double)longitude accuracy:(double)accuracy;
 

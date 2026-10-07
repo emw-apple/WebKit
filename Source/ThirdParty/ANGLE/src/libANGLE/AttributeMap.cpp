@@ -82,7 +82,7 @@ AttributeMap::const_iterator AttributeMap::end() const
 }
 
 bool AttributeMap::validate(const ValidationContext *val,
-                            const egl::ThreadSafeDisplay *display,
+                            const egl::Display *display,
                             AttributeValidationFunc validationFunc) const
 {
     if (mIntPointer)
@@ -121,7 +121,7 @@ bool AttributeMap::validate(const ValidationContext *val,
 
 void AttributeMap::initializeWithoutValidation() const
 {
-    auto alwaysTrue = [](const ValidationContext *, const egl::ThreadSafeDisplay *, EGLAttrib) {
+    auto alwaysTrue = [](const ValidationContext *, const egl::Display *, EGLAttrib) {
         return true;
     };
     (void)validate(nullptr, nullptr, alwaysTrue);

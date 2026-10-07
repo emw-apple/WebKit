@@ -69,7 +69,7 @@ public:
 
     ~ShaderModule();
 
-    void compilationInfo(CompletionHandler<void(WebGPU::CompilationInfo&&)>&&);
+    void getCompilationInfo(CompletionHandler<void(WGPUCompilationInfoRequestStatus, const WGPUCompilationInfo&)>&& callback);
     void setLabel(String&&) final;
 
     bool isValid() const final { return std::holds_alternative<WGSL::SuccessfulCheck>(m_checkResult); }

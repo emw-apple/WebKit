@@ -49,7 +49,6 @@
 #include <WebCore/NavigationIdentifier.h>
 #include <WebCore/NavigationRequester.h>
 #include <WebCore/OriginKeyed.h>
-#include <WebCore/RegistrableDomain.h>
 #include <WebCore/ResourceError.h>
 #include <WebCore/ResourceLoaderIdentifier.h>
 #include <WebCore/ResourceLoaderOptions.h>
@@ -173,8 +172,6 @@ public:
     WEBCORE_EXPORT static DocumentLoader* NODELETE fromScriptExecutionContextIdentifier(ScriptExecutionContextIdentifier);
 
     WEBCORE_EXPORT virtual ~DocumentLoader();
-
-    virtual bool isWebDocumentLoaderMac() const { return false; }
 
     // CachedResourceClient, FrameDestructionObserver, ContentFilterClient.
     void ref() const final { RefCounted::ref(); }
@@ -496,8 +493,6 @@ public:
     const std::optional<CrossOriginOpenerPolicy>& crossOriginOpenerPolicy() const LIFETIME_BOUND { return m_responseCOOP; }
     OriginKeyed isOriginKeyedFromUIProcess() const { return m_isOriginKeyedFromUIProcess; }
     void setIsOriginKeyedFromUIProcess(OriginKeyed value) { m_isOriginKeyedFromUIProcess = value; }
-    bool hasUnpartitionedStorageAccess(const URL& url) const { return m_unpartitionedStorageSite && m_unpartitionedStorageSite->matches(url); }
-    void setUnpartitionedStorageSite(std::optional<RegistrableDomain>&& site) { m_unpartitionedStorageSite = WTF::move(site); }
     OptionSet<ClearSiteDataValue> responseClearSiteDataValues() const { return m_responseClearSiteDataValues; }
 
     std::unique_ptr<IntegrityPolicy> integrityPolicy();
@@ -506,9 +501,6 @@ public:
     bool isContinuingLoadAfterProvisionalLoadStarted() const { return m_isContinuingLoad == ShouldTreatAsContinuingLoad::YesAfterProvisionalLoadStarted; }
     bool isContinuingLoadAfterNavigationPolicyDecision() const { return m_isContinuingLoad == ShouldTreatAsContinuingLoad::YesAfterNavigationPolicyDecision; }
     void setIsContinuingLoad(ShouldTreatAsContinuingLoad shouldTreatAsContinuingLoad) { m_isContinuingLoad = shouldTreatAsContinuingLoad; }
-
-    bool isCacheOnlyLoadRetry() const { return m_isCacheOnlyLoadRetry; }
-    void markIsCacheOnlyLoadRetry() { m_isCacheOnlyLoadRetry = true; }
 
     bool isRequestFromClientOrUserInput() const { return m_isRequestFromClientOrUserInput; }
     void setIsRequestFromClientOrUserInput(bool isRequestFromClientOrUserInput) { m_isRequestFromClientOrUserInput = isRequestFromClientOrUserInput; }
@@ -530,13 +522,10 @@ public:
 
     std::optional<NavigationIdentifier> navigationID() const { return m_navigationID.asOptional(); }
     WEBCORE_EXPORT void NODELETE setNavigationID(NavigationIdentifier);
-    std::optional<NavigationIdentifier> takeNavigationID() { return std::exchange(m_navigationID, { }).asOptional(); }
 
     IsInitialAboutBlank isInitialAboutBlank() const { return m_isInitialAboutBlank; }
 
     CanTriggerCrossDocumentViewTransition navigationCanTriggerCrossDocumentViewTransition(Document& oldDocument, bool fromBackForwardCache);
-    bool hasDispatchedPageswapEvent() const { return m_hasDispatchedPageswapEvent; }
-    void setHasDispatchedPageswapEvent(bool hasDispatched) { m_hasDispatchedPageswapEvent = hasDispatched; }
     WEBCORE_EXPORT void whenDocumentIsCreated(Function<void(Document*)>&&);
 
     WEBCORE_EXPORT void setNewResultingClientId(ScriptExecutionContextIdentifier);
@@ -576,7 +565,6 @@ private:
 #endif
 
     void willSendRequest(ResourceRequest&&, const ResourceResponse&, CompletionHandler<void(ResourceRequest&&)>&&);
-    void updateRequestForUnpartitionedStorageAccess(ResourceRequest&, bool isRedirect) const;
     void finishedLoading();
     void mainReceivedError(const ResourceError&, LoadWillContinueInAnotherProcess = LoadWillContinueInAnotherProcess::No);
     WEBCORE_EXPORT void redirectReceived(CachedResource&, ResourceRequest&&, const ResourceResponse&, CompletionHandler<void(ResourceRequest&&)>&&) override;
@@ -616,10 +604,7 @@ private:
     bool isPostOrRedirectAfterPost(const ResourceRequest&, const ResourceResponse&);
 
     bool tryLoadingSubstituteData();
-    // completionHandler lets the rest of the response through. It may be called after this returns,
-    // when the current document first has to capture a view transition into this one.
-    void continueAfterContentPolicy(PolicyAction, CompletionHandler<void()>&& = { });
-    void commitSubstituteDataIfNeeded();
+    void continueAfterContentPolicy(PolicyAction);
 
     void stopLoadingForPolicyChange(LoadWillContinueInAnotherProcess = LoadWillContinueInAnotherProcess::No);
     ResourceError interruptedForPolicyChangeError() const;
@@ -697,7 +682,6 @@ private:
 
     std::optional<CrossOriginOpenerPolicy> m_responseCOOP;
     OriginKeyed m_isOriginKeyedFromUIProcess { OriginKeyed::No };
-    std::optional<RegistrableDomain> m_unpartitionedStorageSite;
     OptionSet<ClearSiteDataValue> m_responseClearSiteDataValues;
     
     using SubstituteResourceMap = HashMap<Ref<ResourceLoader>, RefPtr<SubstituteResource>>;
@@ -791,7 +775,6 @@ private:
 
     bool m_idempotentModeAutosizingOnlyHonorsPercentages { false };
 
-    bool m_isCacheOnlyLoadRetry { false };
     bool m_isRequestFromClientOrUserInput { false };
     bool m_hasCrossOriginRedirect { false };
     bool m_loadStartedDuringSwipeAnimation { false };
@@ -820,8 +803,6 @@ private:
     bool m_loadingMainResource { false };
 
     bool m_waitingForContentPolicy { false };
-    bool m_waitingForOutboundViewTransitionCapture { false };
-    bool m_hasDispatchedPageswapEvent { false };
     bool m_waitingForNavigationPolicy { false };
 
 #if ENABLE(APPLICATION_MANIFEST)

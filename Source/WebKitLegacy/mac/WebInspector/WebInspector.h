@@ -28,12 +28,18 @@
 
 #import <Foundation/NSObject.h>
 
-extern NSString * const WebInspectorDidStartSearchingForNode;
-extern NSString * const WebInspectorDidStopSearchingForNode;
+extern NSString *WebInspectorDidStartSearchingForNode;
+extern NSString *WebInspectorDidStopSearchingForNode;
 
 @class WebView;
+@class WebInspectorFrontend;
 
 @interface WebInspector : NSObject
+{
+@private
+    WebView *_inspectedWebView;
+    WebInspectorFrontend *_frontend;
+}
 - (id)initWithInspectedWebView:(WebView *)inspectedWebView;
 - (void)inspectedWebViewClosed;
 - (void)show:(id)sender;

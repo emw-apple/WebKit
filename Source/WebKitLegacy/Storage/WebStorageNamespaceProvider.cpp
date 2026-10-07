@@ -62,7 +62,7 @@ void WebStorageNamespaceProvider::closeLocalStorage()
 {
     for (const auto& storageNamespaceProvider : storageNamespaceProviders()) {
         if (RefPtr localStorageNamespace = storageNamespaceProvider->optionalLocalStorageNamespace())
-            downcast<StorageNamespaceImpl>(*localStorageNamespace).close();
+            static_cast<StorageNamespaceImpl&>(*localStorageNamespace).close();
     }
 }
 
@@ -70,7 +70,7 @@ void WebStorageNamespaceProvider::clearLocalStorageForAllOrigins()
 {
     for (const auto& storageNamespaceProvider : storageNamespaceProviders()) {
         if (RefPtr localStorageNamespace = storageNamespaceProvider->optionalLocalStorageNamespace())
-            downcast<StorageNamespaceImpl>(*localStorageNamespace).clearAllOriginsForDeletion();
+            static_cast<StorageNamespaceImpl&>(*localStorageNamespace).clearAllOriginsForDeletion();
     }
 }
 
@@ -78,7 +78,7 @@ void WebStorageNamespaceProvider::clearLocalStorageForOrigin(const SecurityOrigi
 {
     for (const auto& storageNamespaceProvider : storageNamespaceProviders()) {
         if (RefPtr localStorageNamespace = storageNamespaceProvider->optionalLocalStorageNamespace())
-            downcast<StorageNamespaceImpl>(*localStorageNamespace).clearOriginForDeletion(origin);
+            static_cast<StorageNamespaceImpl&>(*localStorageNamespace).clearOriginForDeletion(origin);
     }
 }
 
@@ -86,7 +86,7 @@ void WebStorageNamespaceProvider::closeIdleLocalStorageDatabases()
 {
     for (const auto& storageNamespaceProvider : storageNamespaceProviders()) {
         if (RefPtr localStorageNamespace = storageNamespaceProvider->optionalLocalStorageNamespace())
-            downcast<StorageNamespaceImpl>(*localStorageNamespace).closeIdleLocalStorageDatabases();
+            static_cast<StorageNamespaceImpl&>(*localStorageNamespace).closeIdleLocalStorageDatabases();
     }
 }
 
@@ -94,7 +94,7 @@ void WebStorageNamespaceProvider::syncLocalStorage()
 {
     for (const auto& storageNamespaceProvider : storageNamespaceProviders()) {
         if (RefPtr localStorageNamespace = storageNamespaceProvider->optionalLocalStorageNamespace())
-            downcast<StorageNamespaceImpl>(*localStorageNamespace).sync();
+            static_cast<StorageNamespaceImpl&>(*localStorageNamespace).sync();
     }
 }
 
@@ -135,7 +135,7 @@ void WebStorageNamespaceProvider::cloneSessionStorageNamespaceForPage(WebCore::P
 {
     ASSERT(sessionStorageQuota() != WebCore::StorageMap::noQuota);
 
-    auto& srcSessionStorageNamespaces = downcast<WebStorageNamespaceProvider>(srcPage.storageNamespaceProvider()).m_sessionStorageNamespaces;
+    auto& srcSessionStorageNamespaces = static_cast<WebStorageNamespaceProvider&>(srcPage.storageNamespaceProvider()).m_sessionStorageNamespaces;
     auto srcPageIt = srcSessionStorageNamespaces.find(srcPage);
     if (srcPageIt == srcSessionStorageNamespaces.end())
         return;
@@ -145,7 +145,7 @@ void WebStorageNamespaceProvider::cloneSessionStorageNamespaceForPage(WebCore::P
     for (auto& [origin, srcNamespace] : srcPageSessionStorageNamespaces)
         dstPageSessionStorageNamespaces.set(origin, protect(srcNamespace)->copy(dstPage));
 
-    auto& dstSessionStorageNamespaces = downcast<WebStorageNamespaceProvider>(dstPage.storageNamespaceProvider()).m_sessionStorageNamespaces;
+    auto& dstSessionStorageNamespaces = static_cast<WebStorageNamespaceProvider&>(dstPage.storageNamespaceProvider()).m_sessionStorageNamespaces;
     ASSERT(!dstSessionStorageNamespaces.contains(dstPage));
     dstSessionStorageNamespaces.set(dstPage, WTF::move(dstPageSessionStorageNamespaces));
 }

@@ -75,7 +75,6 @@
 #import <wtf/Vector.h>
 
 #if PLATFORM(MAC)
-#import "Helpers/mac/LocalEventMonitorSwizzler.h"
 #import <Carbon/Carbon.h>
 #endif
 
@@ -575,9 +574,8 @@ TEST(WebKit, LockdownModeDefaultFirstUseMessage)
     [webView addToTestWindow];
 
     EXPECT_EQ(presentViewControllerCallCount, 0);
-    TestWebKitAPI::Util::waitFor([&] {
-        return presentViewControllerCallCount == 1;
-    });
+    [webView waitForNextPresentationUpdate];
+    EXPECT_EQ(presentViewControllerCallCount, 1);
 
     EXPECT_TRUE([[NSUserDefaults standardUserDefaults] boolForKey:WebKitLockdownModeAlertShownKey]);
     
@@ -687,9 +685,8 @@ TEST(WebKit, LockdownModeAskAgainFirstUseMessage)
     [secondWebView addToTestWindow];
 
     EXPECT_EQ(presentViewControllerCallCount, 0);
-    TestWebKitAPI::Util::waitFor([&] {
-        return presentViewControllerCallCount == 1;
-    });
+    [secondWebView waitForNextPresentationUpdate];
+    EXPECT_EQ(presentViewControllerCallCount, 1);
 
     EXPECT_FALSE(showedCustomFirstUseMessage);
     EXPECT_FALSE(requestFutureFirstUseMessage);
@@ -1142,11 +1139,66 @@ TEST(WebKit, MouseMoveOverElement)
     TestWebKitAPI::Util::run(&done);
 }
 
+static BlockPtr<NSEvent*(NSEvent*)> gEventMonitorHandler;
+
+@interface TestLocalEventObserver : NSObject {
+    NSEventMask _mask;
+    id _block;
+    BOOL _isAdditive;
+}
++ (void)initialize;
+- (instancetype)initMatchingEvents:(NSEventMask)mask handler:(NSEvent *(^)(NSEvent *))block;
+- (void)invalidate;
+- (void)dealloc;
+- (void)recomputeObserverMask;
+@end
+
+@implementation TestLocalEventObserver
++ (void)initialize
+{
+}
+
+- (instancetype)initMatchingEvents:(NSEventMask)mask handler:(NSEvent *(^)(NSEvent *))block
+{
+    self = [super init];
+    return self;
+}
+
+- (void)dealloc
+{
+    [super dealloc];
+}
+
+- (void)invalidate
+{
+}
+
+- (void)recomputeObserverMask
+{
+}
+@end
+
+@interface TestEventMonitor : NSObject
+
++ (id)addLocalMonitorForEventsMatchingMask:(NSEventMask)mask handler:(NSEvent* (^)(NSEvent *event))block;
+
+@end
+
+@implementation TestEventMonitor
+
++ (id)addLocalMonitorForEventsMatchingMask:(NSEventMask)mask handler:(NSEvent* (^)(NSEvent *event))block
+{
+    gEventMonitorHandler = makeBlockPtr(block);
+    return adoptNS([[TestLocalEventObserver alloc] initMatchingEvents:mask handler:block]).leakRef();
+}
+
+@end
+
 TEST(WebKit, MouseMoveOverElementWithClosedWebView)
 {
     auto linkLocation = NSMakePoint(200, 150);
 
-    TestWebKitAPI::LocalEventMonitorSwizzler localMonitorSwizzler;
+    ClassMethodSwizzler localMonitorSwizzler(NSEvent.class, @selector(addLocalMonitorForEventsMatchingMask:handler:), [TestEventMonitor methodForSelector:@selector(addLocalMonitorForEventsMatchingMask:handler:)]);
 
     // We swizzle `NSWindow.mouseLocationOutsideOfEventStream` because manually calling the handler intercepted
     // from the swizzled `+[NSEvent addLocalMonitorForEventsMatchingMask:handler:]` with a fake event means we
@@ -1181,7 +1233,7 @@ TEST(WebKit, MouseMoveOverElementWithClosedWebView)
         [webView waitForNextPresentationUpdate];
         // This test just verifies that attempting to asynchronously dispatch a mouseDidMoveOverElement
         // update when the WKWebView and its page client have been destructed does not trigger a crash.
-        localMonitorSwizzler.sendEventToMonitor([NSEvent mouseEventWithType:NSEventTypeMouseMoved location:linkLocation modifierFlags:0 timestamp:0 windowNumber:[[webView hostWindow] windowNumber] context:nil eventNumber:0 clickCount:0 pressure:0]);
+        gEventMonitorHandler([NSEvent mouseEventWithType:NSEventTypeMouseMoved location:linkLocation modifierFlags:0 timestamp:0 windowNumber:[[webView hostWindow] windowNumber] context:nil eventNumber:0 clickCount:0 pressure:0]);
         [webView removeFromSuperview];
 
         EXPECT_FALSE([webView _hasFlagsChangedEventMonitorForTesting]);

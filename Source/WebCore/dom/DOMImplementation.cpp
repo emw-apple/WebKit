@@ -25,6 +25,7 @@
 #include "config.h"
 #include "DOMImplementation.h"
 
+#include "CSSStyleSheet.h"
 #include "ContentType.h"
 #include "DeprecatedGlobalSettings.h"
 #include "DocumentPage.h"
@@ -43,6 +44,7 @@
 #include "MIMETypeRegistry.h"
 #include "MediaDocument.h"
 #include "MediaPlayer.h"
+#include "MediaQueryParser.h"
 #include "NameValidation.h"
 #include "PDFJSDocument.h"
 #include "ParserContentPolicy.h"
@@ -54,6 +56,7 @@
 #include "SecurityOrigin.h"
 #include "SecurityOriginPolicy.h"
 #include "Settings.h"
+#include "StyleSheetContents.h"
 #include "Text.h"
 #include "TextDocument.h"
 #include "XMLDocument.h"
@@ -118,6 +121,15 @@ ExceptionOr<Ref<XMLDocument>> DOMImplementation::createDocument(const AtomString
         document->appendChild(*documentElement);
 
     return document;
+}
+
+Ref<CSSStyleSheet> DOMImplementation::createCSSStyleSheet(const String&, const String& media)
+{
+    // FIXME: Title should be set.
+    // FIXME: Media could have wrong syntax, in which case we should generate an exception.
+    auto sheet = CSSStyleSheet::create(StyleSheetContents::create());
+    sheet->setMediaQueries(MQ::MediaQueryParser::parse(media, strictCSSParserContext()));
+    return sheet;
 }
 
 Ref<HTMLDocument> DOMImplementation::createHTMLDocument(String&& title)

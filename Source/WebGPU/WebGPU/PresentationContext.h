@@ -58,9 +58,9 @@ public:
 
     virtual ~PresentationContext();
 
-    WebGPU::TextureFormat NODELETE getPreferredFormat(const Adapter&);
+    WGPUTextureFormat NODELETE getPreferredFormat(const Adapter&);
 
-    virtual void configure(const WebGPU::CanvasConfiguration&);
+    virtual void configure(Device&, const WGPUSwapChainDescriptor&);
     virtual void unconfigure();
 
     virtual void present(uint32_t);
@@ -68,7 +68,6 @@ public:
     virtual TextureView* getCurrentTextureView(); // FIXME: This should return a TextureView&.
 
     virtual Seconds lastFrameGPUCost() const { return 0_s; }
-    virtual Seconds lastFramePresentStall() const { return 0_s; }
 
     virtual bool isPresentationContextIOSurface() const { return false; }
     virtual bool isPresentationContextCoreAnimation() const { return false; }

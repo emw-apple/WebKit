@@ -93,9 +93,9 @@ DataTransfer::DataTransfer(StoreMode mode, std::unique_ptr<Pasteboard> pasteboar
     : m_storeMode(mode)
     , m_pasteboard(WTF::move(pasteboard))
 #if ENABLE(DRAG_SUPPORT)
+    , m_type(type)
     , m_dropEffect("uninitialized"_s)
     , m_effectAllowed(WTF::move(effectAllowed))
-    , m_type(type)
     , m_shouldUpdateDragImage(false)
 #endif
 {
@@ -146,7 +146,7 @@ static String normalizeType(const String& type)
         return type;
 
     auto lowercaseType = type.trim(isASCIIWhitespace).convertToASCIILowercase();
-    if (lowercaseType == "text"_s || lowercaseType == textPlainContentTypeAtom() || lowercaseType.startsWith("text/plain;"_s))
+    if (lowercaseType == "text"_s || lowercaseType.startsWith(textPlainContentTypeAtom()))
         return textPlainContentTypeAtom();
     if (lowercaseType == "url"_s || lowercaseType.startsWith("text/uri-list;"_s))
         return "text/uri-list"_s;
@@ -184,7 +184,7 @@ void DataTransfer::clearData(const String& type)
         m_itemList->didClearStringData(normalizedType);
 }
 
-static String readURLsFromPasteboardAsString(Page* page, Pasteboard& pasteboard, NOESCAPE const Function<bool(const String&)>& shouldIncludeURL)
+static String readURLsFromPasteboardAsString(Page* page, Pasteboard& pasteboard, Function<bool(const String&)>&& shouldIncludeURL)
 {
     StringBuilder urlList;
     auto urlStrings = pasteboard.readAllStrings("text/uri-list"_s);

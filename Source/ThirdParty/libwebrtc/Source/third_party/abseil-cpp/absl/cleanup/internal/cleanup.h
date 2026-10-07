@@ -19,7 +19,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "absl/base/config.h"
 #include "absl/base/internal/hardening.h"
 #include "absl/base/macros.h"
 #include "absl/base/thread_annotations.h"

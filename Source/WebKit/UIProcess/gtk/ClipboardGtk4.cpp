@@ -36,7 +36,6 @@
 #include <array>
 #include <gtk/gtk.h>
 #include <wtf/RefCounted.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GUniquePtr.h>
 
@@ -258,13 +257,13 @@ void Clipboard::write(WebCore::SelectionData&& selectionData, CompletionHandler<
 
     if (selectionData.hasURIList()) {
         auto uriList = selectionData.uriList().utf8();
-        GRefPtr bytes = gBytesNew(uriList.span());
+        GRefPtr<GBytes> bytes = adoptGRef(g_bytes_new(uriList.legacyCStringPointer(), uriList.length()));
         providers.append(gdk_content_provider_new_for_bytes("text/uri-list", bytes.get()));
     }
 
     if (selectionData.hasMarkup()) {
         auto markup = selectionData.markup().utf8();
-        GRefPtr bytes = gBytesNew(markup.span());
+        GRefPtr<GBytes> bytes = adoptGRef(g_bytes_new(markup.legacyCStringPointer(), markup.length()));
         providers.append(gdk_content_provider_new_for_bytes("text/html", bytes.get()));
     }
 

@@ -23,7 +23,6 @@
 
 #include <WebKitWebViewInternal.h>
 #include <wtf/URL.h>
-#include <wtf/glib/GLibExtras.h>
 
 bool WebViewTest::shouldInitializeWebViewInConstructor = true;
 bool WebViewTest::shouldCreateEphemeralWebView = false;
@@ -87,7 +86,7 @@ void WebViewTest::loadURI(const char* uri)
     m_activeURI = URL { String::fromUTF8(uri) }.string().utf8();
     webkit_web_view_load_uri(m_webView.get(), uri);
     g_assert_true(webkit_web_view_is_loading(m_webView.get()));
-    ASSERT_CMP_CSTRING(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI);
+    g_assert_cmpstr(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI.legacyCStringPointer());
 }
 
 void WebViewTest::loadHtml(const char* html, const char* baseURI, WebKitWebView* webView)
@@ -102,7 +101,7 @@ void WebViewTest::loadHtml(const char* html, const char* baseURI, WebKitWebView*
 
     webkit_web_view_load_html(webView, html, baseURI);
     g_assert_true(webkit_web_view_is_loading(webView));
-    ASSERT_CMP_CSTRING(webkit_web_view_get_uri(webView), ==, m_activeURI);
+    g_assert_cmpstr(webkit_web_view_get_uri(webView), ==, m_activeURI.legacyCStringPointer());
 }
 
 void WebViewTest::loadPlainText(const char* plainText)
@@ -110,7 +109,7 @@ void WebViewTest::loadPlainText(const char* plainText)
     m_activeURI = "about:blank"_s;
     webkit_web_view_load_plain_text(m_webView.get(), plainText);
     g_assert_true(webkit_web_view_is_loading(m_webView.get()));
-    ASSERT_CMP_CSTRING(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI);
+    g_assert_cmpstr(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI.legacyCStringPointer());
 }
 
 void WebViewTest::loadBytes(GBytes* bytes, const char* mimeType, const char* encoding, const char* baseURI)
@@ -121,7 +120,7 @@ void WebViewTest::loadBytes(GBytes* bytes, const char* mimeType, const char* enc
         m_activeURI = URL { String::fromUTF8(baseURI) }.string().utf8();
     webkit_web_view_load_bytes(m_webView.get(), bytes, mimeType, encoding, baseURI);
     g_assert_true(webkit_web_view_is_loading(m_webView.get()));
-    ASSERT_CMP_CSTRING(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI);
+    g_assert_cmpstr(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI.legacyCStringPointer());
 }
 
 void WebViewTest::loadRequest(WebKitURIRequest* request)
@@ -129,7 +128,7 @@ void WebViewTest::loadRequest(WebKitURIRequest* request)
     m_activeURI = URL { String::fromUTF8(webkit_uri_request_get_uri(request)) }.string().utf8();
     webkit_web_view_load_request(m_webView.get(), request);
     g_assert_true(webkit_web_view_is_loading(m_webView.get()));
-    ASSERT_CMP_CSTRING(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI);
+    g_assert_cmpstr(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI.legacyCStringPointer());
 }
 
 void WebViewTest::loadAlternateHTML(const char* html, const char* contentURI, const char* baseURI)
@@ -137,7 +136,7 @@ void WebViewTest::loadAlternateHTML(const char* html, const char* contentURI, co
     m_activeURI = URL { String::fromUTF8(contentURI) }.string().utf8();
     webkit_web_view_load_alternate_html(m_webView.get(), html, contentURI, baseURI);
     g_assert_true(webkit_web_view_is_loading(m_webView.get()));
-    ASSERT_CMP_CSTRING(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI);
+    g_assert_cmpstr(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI.legacyCStringPointer());
 }
 
 void WebViewTest::goBack()
@@ -146,14 +145,14 @@ void WebViewTest::goBack()
     if (canGoBack) {
         WebKitBackForwardList* list = webkit_web_view_get_back_forward_list(m_webView.get());
         WebKitBackForwardListItem* item = webkit_back_forward_list_get_nth_item(list, -1);
-        m_activeURI = UTF8CString::unsafeFromUTF8(webkit_back_forward_list_item_get_original_uri(item));
+        m_activeURI = UTF8CString { byteCast<char8_t>(webkit_back_forward_list_item_get_original_uri(item)) };
     }
 
     // Call go_back even when can_go_back returns FALSE to check nothing happens.
     webkit_web_view_go_back(m_webView.get());
     if (canGoBack) {
         g_assert_true(webkit_web_view_is_loading(m_webView.get()));
-        ASSERT_CMP_CSTRING(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI);
+        g_assert_cmpstr(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI.legacyCStringPointer());
     }
 }
 
@@ -163,23 +162,23 @@ void WebViewTest::goForward()
     if (canGoForward) {
         WebKitBackForwardList* list = webkit_web_view_get_back_forward_list(m_webView.get());
         WebKitBackForwardListItem* item = webkit_back_forward_list_get_nth_item(list, 1);
-        m_activeURI = UTF8CString::unsafeFromUTF8(webkit_back_forward_list_item_get_original_uri(item));
+        m_activeURI = UTF8CString { byteCast<char8_t>(webkit_back_forward_list_item_get_original_uri(item)) };
     }
 
     // Call go_forward even when can_go_forward returns FALSE to check nothing happens.
     webkit_web_view_go_forward(m_webView.get());
     if (canGoForward) {
         g_assert_true(webkit_web_view_is_loading(m_webView.get()));
-        ASSERT_CMP_CSTRING(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI);
+        g_assert_cmpstr(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI.legacyCStringPointer());
     }
 }
 
 void WebViewTest::goToBackForwardListItem(WebKitBackForwardListItem* item)
 {
-    m_activeURI = UTF8CString::unsafeFromUTF8(webkit_back_forward_list_item_get_original_uri(item));
+    m_activeURI = UTF8CString { byteCast<char8_t>(webkit_back_forward_list_item_get_original_uri(item)) };
     webkit_web_view_go_to_back_forward_list_item(m_webView.get(), item);
     g_assert_true(webkit_web_view_is_loading(m_webView.get()));
-    ASSERT_CMP_CSTRING(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI);
+    g_assert_cmpstr(webkit_web_view_get_uri(m_webView.get()), ==, m_activeURI.legacyCStringPointer());
 }
 
 void WebViewTest::quitMainLoop()
@@ -214,7 +213,7 @@ void WebViewTest::waitUntilLoadFinished(WebKitWebView* webView)
 
 static void titleChanged(WebKitWebView* webView, GParamSpec*, WebViewTest* test)
 {
-    if (!test->m_expectedTitle.isNull() && test->m_expectedTitle != UTF8CString::unsafeFromUTF8(webkit_web_view_get_title(webView)))
+    if (!test->m_expectedTitle.isNull() && test->m_expectedTitle != UTF8CString { byteCast<char8_t>(webkit_web_view_get_title(webView)) })
         return;
 
     g_signal_handlers_disconnect_by_func(webView, reinterpret_cast<void*>(titleChanged), test);
@@ -226,7 +225,7 @@ void WebViewTest::waitUntilTitleChangedTo(const char* expectedTitle)
     if (expectedTitle && !g_strcmp0(expectedTitle, webkit_web_view_get_title(m_webView.get())))
         return;
 
-    m_expectedTitle = UTF8CString::unsafeFromUTF8(expectedTitle);
+    m_expectedTitle = UTF8CString { byteCast<char8_t>(expectedTitle) };
     g_signal_connect(m_webView.get(), "notify::title", G_CALLBACK(titleChanged), this);
     g_main_loop_run(m_mainLoop);
     m_expectedTitle = { };
@@ -486,7 +485,7 @@ bool WebViewTest::runWebProcessTest(const char* suiteName, const char* testName,
         static const char* emptyHTML = "<html><body></body></html>";
         loadHtml(contents ? contents : emptyHTML, "webprocess://test");
     } else {
-        GRefPtr bytes = gBytesNewStatic(unsafeSpan(contents));
+        GRefPtr<GBytes> bytes = adoptGRef(g_bytes_new_static(contents, strlen(contents)));
         loadBytes(bytes.get(), contentType, nullptr, "webprocess://test");
     }
     waitUntilLoadFinished();

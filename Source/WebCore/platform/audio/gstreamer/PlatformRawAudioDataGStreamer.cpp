@@ -265,7 +265,7 @@ void PlatformRawAudioData::copyTo(std::span<uint8_t> destination, AudioSampleFor
         return;
     }
 
-    auto source = audioData.planesOfSamples(sourceOffset);
+    auto source = audioData.planesOfSamples(sourceOffset * (audioData.isInterleaved() ? numberOfChannels() : 1));
     if (!source)
         return;
 

@@ -300,7 +300,7 @@ public:
     Integrity::Random& integrityRandom() LIFETIME_BOUND { return m_integrityRandom; }
 
     template<typename Type, typename Functor>
-    Type& ensureSideData(void* key, NOESCAPE const Functor&);
+    Type& ensureSideData(void* key, const Functor&);
 
     bool hasTerminationRequest() const { return m_hasTerminationRequest; }
     void clearHasTerminationRequest()
@@ -401,8 +401,6 @@ public:
     EntryFrame* topEntryFrame { nullptr };
     void* maybeReturnPC { nullptr };
     JSPIContext* topJSPIContext { nullptr };
-    WriteBarrier<JSSentinel> m_fastArraySentinel;
-    WriteBarrier<JSSentinel> m_fastStringSentinel;
 private:
 
     struct EntryScopeServicesBits {
@@ -596,11 +594,13 @@ public:
     WriteBarrier<JSSentinel> m_fastArrayValuesSentinel;
     WriteBarrier<JSSentinel> m_fastArrayKeysSentinel;
     WriteBarrier<JSSentinel> m_fastArrayEntriesSentinel;
+    WriteBarrier<JSSentinel> m_fastArraySentinel;
     WriteBarrier<JSSentinel> m_fastMapKeysSentinel;
     WriteBarrier<JSSentinel> m_fastMapValuesSentinel;
     WriteBarrier<JSSentinel> m_fastMapEntriesSentinel;
     WriteBarrier<JSSentinel> m_fastSetValuesSentinel;
     WriteBarrier<JSSentinel> m_fastSetEntriesSentinel;
+    WriteBarrier<JSSentinel> m_fastStringValuesSentinel;
     WriteBarrier<JSSentinel> m_fastAsyncGeneratorSentinel;
 
     WriteBarrier<JSCell> m_cachedSortScratch;
@@ -670,7 +670,7 @@ public:
     JSSentinel* fastMapEntriesSentinel() { return m_fastMapEntriesSentinel.get(); }
     JSSentinel* fastSetValuesSentinel() { return m_fastSetValuesSentinel.get(); }
     JSSentinel* fastSetEntriesSentinel() { return m_fastSetEntriesSentinel.get(); }
-    JSSentinel* fastStringSentinel() { return m_fastStringSentinel.get(); }
+    JSSentinel* fastStringValuesSentinel() { return m_fastStringValuesSentinel.get(); }
     JSSentinel* fastAsyncGeneratorSentinel() { return m_fastAsyncGeneratorSentinel.get(); }
 
     inline JSPropertyNameEnumerator* emptyPropertyNameEnumerator();
@@ -1059,7 +1059,7 @@ public:
     ShadowChicken& ensureShadowChicken() { return m_shadowChicken.get(*this); }
     
     template<typename Func>
-    void logEvent(CodeBlock*, const char* summary, NOESCAPE const Func&);
+    void logEvent(CodeBlock*, const char* summary, const Func& func);
 
     inline std::optional<RefPtr<Thread>> ownerThread() const; // Defined in VMInlines.h
     inline std::optional<uint64_t> ownerThreadUID() const; // Defined in VMInlines.h
@@ -1127,7 +1127,7 @@ public:
     void NODELETE addDebugger(Debugger&);
     void NODELETE removeDebugger(Debugger&);
     template<typename Func>
-    void forEachDebugger(NOESCAPE const Func&);
+    void forEachDebugger(const Func&);
 
     void changeNumberOfActiveJITPlans(int64_t value)
     {

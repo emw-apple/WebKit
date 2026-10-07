@@ -420,12 +420,8 @@ angle::Result Image11::copyFromTexStorage(const gl::Context *context,
     ANGLE_TRY(storage11->getSubresourceIndex(context, imageIndex, &subresourceIndex));
 
     gl::Box sourceBox(0, 0, 0, mWidth, mHeight, mDepth);
-    ANGLE_TRY(
-        copyWithoutConversion(context, gl::Offset(), sourceBox, *textureHelper, subresourceIndex));
-
-    disassociateStorage();
-
-    return angle::Result::Continue;
+    return copyWithoutConversion(context, gl::Offset(), sourceBox, *textureHelper,
+                                 subresourceIndex);
 }
 
 angle::Result Image11::copyFromFramebuffer(const gl::Context *context,
@@ -608,10 +604,9 @@ angle::Result Image11::createStagingTexture(const gl::Context *context)
     int lodOffset  = 1;
     GLsizei width  = mWidth;
     GLsizei height = mHeight;
-    GLsizei depth  = mDepth;
 
     // adjust size if needed for compressed textures
-    d3d11::MakeValidSize(false, dxgiFormat, mType, width, height, depth, lodOffset);
+    d3d11::MakeValidSize(false, dxgiFormat, &width, &height, &lodOffset);
 
     Context11 *context11 = GetImplAs<Context11>(context);
 
@@ -622,7 +617,7 @@ angle::Result Image11::createStagingTexture(const gl::Context *context)
             D3D11_TEXTURE3D_DESC desc;
             desc.Width          = width;
             desc.Height         = height;
-            desc.Depth          = depth;
+            desc.Depth          = mDepth;
             desc.MipLevels      = lodOffset + 1;
             desc.Format         = dxgiFormat;
             desc.Usage          = D3D11_USAGE_STAGING;
@@ -635,7 +630,7 @@ angle::Result Image11::createStagingTexture(const gl::Context *context)
                 gl::TexLevelArray<D3D11_SUBRESOURCE_DATA> initialData;
                 ANGLE_TRY(d3d11::GenerateInitialTextureData(
                     context, mInternalFormat, mRenderer->getRenderer11DeviceCaps(), width, height,
-                    depth, lodOffset + 1, &initialData));
+                    mDepth, lodOffset + 1, &initialData));
 
                 ANGLE_TRY(mRenderer->allocateTexture(context11, desc, formatInfo,
                                                      initialData.data(), &mStagingTexture));

@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <JavaScriptCore/Debugger.h>
 #include <WebCore/ActivityState.h>
 #include <WebCore/AnimationFrameRate.h>
 #include <WebCore/BackForwardFrameItemIdentifier.h>
@@ -456,7 +455,6 @@ public:
     WEBCORE_EXPORT RefPtr<Frame> findFrameByPath(const Vector<uint64_t>& path) const;
 
     WEBCORE_EXPORT void setMainFrameURLAndOrigin(const URL&, RefPtr<SecurityOrigin>&&);
-    void topDocumentURLDidChange();
 #if ENABLE(DOM_AUDIO_SESSION)
     void setAudioSessionType(DOMAudioSessionType);
     DOMAudioSessionType NODELETE audioSessionType() const;
@@ -657,7 +655,7 @@ public:
     void willChangeLocationInCompletelyLoadedSubframe();
 
     bool delegatesScaling() const { return m_delegatesScaling; }
-    WEBCORE_EXPORT void setDelegatesScaling(bool);
+    WEBCORE_EXPORT void NODELETE setDelegatesScaling(bool);
 
     // The view scale factor is multiplied into the page scale factor by all
     // callers of setPageScaleFactor.
@@ -972,10 +970,6 @@ public:
     const FixedContainerEdges& fixedContainerEdges() const LIFETIME_BOUND { return m_fixedContainerEdgesAndElements.first; }
     Element* NODELETE lastFixedContainer(BoxSide) const;
 
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-    void invalidateColorsSampledFromPaintedContent();
-#endif
-
 #if HAVE(APP_ACCENT_COLORS) && PLATFORM(MAC)
     WEBCORE_EXPORT void NODELETE setAppUsesCustomAccentColor(bool);
     WEBCORE_EXPORT bool NODELETE appUsesCustomAccentColor() const;
@@ -1097,7 +1091,7 @@ public:
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
     void addPlaybackTargetPickerClient(PlaybackTargetClientContextIdentifier);
     void removePlaybackTargetPickerClient(PlaybackTargetClientContextIdentifier);
-    void showPlaybackTargetPicker(PlaybackTargetClientContextIdentifier, const IntPoint& positionInMainFrameView, bool, RouteSharingPolicy, const String&);
+    void showPlaybackTargetPicker(PlaybackTargetClientContextIdentifier, FrameIdentifier, const IntPoint&, bool, RouteSharingPolicy, const String&);
     void playbackTargetPickerClientStateDidChange(PlaybackTargetClientContextIdentifier, MediaProducerMediaStateFlags);
     WEBCORE_EXPORT void setMockMediaPlaybackTargetPickerEnabled(bool);
     WEBCORE_EXPORT void setMockMediaPlaybackTargetPickerState(const String&, MediaPlaybackTargetMockState);
@@ -1192,8 +1186,6 @@ public:
     bool shouldBuildInteractionRegions() const;
     WEBCORE_EXPORT void setInteractionRegionsEnabled(bool);
 #endif
-
-    WEBCORE_EXPORT void devicePostureTypeChanged();
 
 #if ENABLE(DEVICE_ORIENTATION) && PLATFORM(IOS_FAMILY)
     DeviceOrientationUpdateProvider* deviceOrientationUpdateProvider() const { return m_deviceOrientationUpdateProvider.get(); }
@@ -1308,11 +1300,6 @@ public:
 
     std::optional<std::pair<uint16_t, uint16_t>> NODELETE portsForUpgradingInsecureSchemeForTesting() const;
     WEBCORE_EXPORT void NODELETE setPortsForUpgradingInsecureSchemeForTesting(uint16_t upgradeFromInsecurePort, uint16_t upgradeToSecurePort);
-
-    const URL& NODELETE quirksSubframeURLForTesting() const LIFETIME_BOUND { return m_quirksSubframeURLForTesting; }
-    WEBCORE_EXPORT void setQuirksSubframeURLForTesting(URL&&);
-    const String& NODELETE quirksTopDocumentHostForTesting() const LIFETIME_BOUND { return m_quirksTopDocumentHostForTesting; }
-    WEBCORE_EXPORT void setQuirksTopDocumentHostForTesting(String&&);
 
 #if PLATFORM(IOS_FAMILY) && ENABLE(WEBXR)
     WEBCORE_EXPORT bool hasActiveImmersiveSession() const;
@@ -1600,7 +1587,6 @@ private:
     bool m_shouldSuppressHDR { false };
 
     float m_pageScaleFactor { 1 };
-    float m_pageScaleFactorViewsWereSizedFor { 1 };
     float m_zoomedOutPageScaleFactor { 0 };
     float m_deviceScaleFactor { 1 };
     float m_viewScaleFactor { 1 };
@@ -1846,9 +1832,6 @@ private:
     mutable Markable<MediaSessionGroupIdentifier> m_mediaSessionGroupIdentifier;
 
     std::optional<std::pair<uint16_t, uint16_t>> m_portsForUpgradingInsecureSchemeForTesting;
-
-    URL m_quirksSubframeURLForTesting;
-    String m_quirksTopDocumentHostForTesting;
 
     RefPtr<StringCallback> m_consoleMessageListenerForTesting;
 

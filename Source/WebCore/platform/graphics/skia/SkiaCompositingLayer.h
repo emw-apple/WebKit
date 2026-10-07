@@ -236,8 +236,8 @@ private:
 #endif
     bool stopPaintingIntoBackdropIfNeeded(PaintContext&);
     void paintSelfAndChildren(SkCanvas&, PaintContext&);
-    void paintWithIntermediateSurface(SkCanvas&, PaintContext&, const IntRect&, SkPaint*, NOESCAPE const PaintFunction&);
-    void paintWithFilter(SkCanvas&, PaintContext&, const TransformationMatrix& layerTransform, const TransformationMatrix& inverseLayerTransform, const FloatRect& localBounds, const SkPaint&, FilterSurfaceAlignment, NOESCAPE const PaintFunction&);
+    void paintWithIntermediateSurface(SkCanvas&, PaintContext&, const IntRect&, SkPaint*, PaintFunction&&);
+    void paintWithFilter(SkCanvas&, PaintContext&, const TransformationMatrix& layerTransform, const TransformationMatrix& inverseLayerTransform, const FloatRect& localBounds, const SkPaint&, FilterSurfaceAlignment, PaintFunction&&);
     FloatSize filterSurfaceScale(const PaintContext&) const;
     void paintWith3DRenderingContext(SkCanvas&, PaintContext&);
     void paintBackdrop(SkCanvas&, PaintContext&);
@@ -299,7 +299,6 @@ private:
     float opacity() const;
     float opacityForAnimationsState(const AnimationsState*) const;
     const std::optional<Filter> filter() const;
-    bool hasFilter() const;
     IntOutsets unclippedFilterOutsets() const;
 
     struct DebugBorder {
@@ -361,7 +360,6 @@ private:
     std::optional<Filter> m_filter;
     struct {
         sk_sp<SkImageFilter> filter;
-        FilterOperations filterOperations;
         FloatRoundedRect clipRect;
         std::optional<SkPath> clipPath;
     } m_backdrop;

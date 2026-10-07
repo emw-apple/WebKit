@@ -168,7 +168,6 @@ class CheckoutRoute(AuthedBlueprint):
 
         self.checkout = checkout
         self.database = database or Database()
-        self.latest_origin_identifier_by_branch = dict()
 
         if not redirectors:
             redirectors = [Redirector(self.checkout.url)]
@@ -231,15 +230,12 @@ class CheckoutRoute(AuthedBlueprint):
                 pass
             return None
 
-        if not commit.branch or not commit.identifier or self.latest_origin_identifier_by_branch.get(commit.branch, 0) < commit.identifier:
-            if not commit.branch or run([
-                self.checkout.repository.executable(), 'merge-base', '--is-ancestor',
-                commit.hash, 'remotes/origin/{}'.format(commit.branch),
-            ], capture_output=True, cwd=self.checkout.repository.root_path).returncode:
-                commit.message = None
-                commit.author = None
-            else:
-                self.latest_origin_identifier_by_branch[commit.branch] = max(commit.identifier, self.latest_origin_identifier_by_branch.get(commit.branch, 0))
+        if run([
+            self.checkout.repository.executable(), 'merge-base', '--is-ancestor',
+            commit.hash, 'remotes/origin/{}'.format(commit.branch),
+        ], capture_output=True, cwd=self.checkout.repository.root_path).returncode:
+            commit.message = None
+            commit.author = None
 
         encoded = json.dumps(commit, cls=Commit.Encoder)
         self.database.set(commit.hash, encoded)

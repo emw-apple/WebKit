@@ -70,12 +70,19 @@ public:
     WEBCORE_EXPORT static bool supportsType(const String&);
 
     virtual bool isBitmapImage() const { return false; }
+    virtual bool isGeneratedImage() const { return false; }
+    virtual bool isCrossfadeGeneratedImage() const { return false; }
+    virtual bool isNamedImageGeneratedImage() const { return false; }
+    virtual bool isGradientImage() const { return false; }
     virtual bool NODELETE isSVGImage() const { return false; }
+    virtual bool NODELETE isSVGImageForContainer() const { return false; }
+    virtual bool isSVGResourceImage() const { return false; }
     virtual bool isPDFDocumentImage() const { return false; }
+    virtual bool isCustomPaintImage() const { return false; }
 
     virtual void subresourcesAreFinished(Document*, CompletionHandler<void()>&&);
 
-    bool NODELETE drawsSVGImage() const { return isSVGImage(); }
+    bool NODELETE drawsSVGImage() const { return isSVGImage() || isSVGImageForContainer(); }
 
     virtual unsigned frameCount() const { return 1; }
 
@@ -89,10 +96,20 @@ public:
     virtual bool renderingTaintsOrigin() const { return false; }
 
     WEBCORE_EXPORT static Image& nullImage();
+    bool isNull() const { return size().isEmpty(); }
 
-    virtual bool hasSomethingToDraw() const = 0;
+    virtual void setContainerSize(const FloatSize&) { }
+    virtual bool usesContainerSize() const { return false; }
+    virtual bool hasIntrinsicWidth() const { return true; }
+    virtual bool hasIntrinsicHeight() const { return true; }
+    // FIXME: hasRelativeWidth/Height should be deduplicated with hasIntrinsicWidth/Height.
+    virtual bool hasRelativeWidth() const { return false; }
+    virtual bool hasRelativeHeight() const { return false; }
+    virtual void computeIntrinsicDimensions(float& intrinsicWidth, float& intrinsicHeight, FloatSize& intrinsicRatio);
+    virtual bool hasNaturalAspectRatio() const { return true; }
 
     virtual FloatSize size(ImageOrientation = ImageOrientation::Orientation::FromImage) const = 0;
+    virtual FloatSize sourceSize(ImageOrientation = ImageOrientation::Orientation::FromImage) const;
     virtual bool hasDensityCorrectedSize() const { return false; }
     FloatRect rect() const { return FloatRect(FloatPoint(), size()); }
     float width() const { return size().width(); }
@@ -182,16 +199,19 @@ public:
     WEBCORE_EXPORT RefPtr<ShareableBitmap> toShareableBitmap(ConcreteObjectSize) const;
     WEBCORE_EXPORT RefPtr<ShareableBitmap> toShareableBitmap() const;
 
-    // Supporting tiled drawing
-    static void fillWithSolidColor(GraphicsContext&, const FloatRect& dstRect, const Color&, CompositeOperator);
-    virtual std::optional<Color> singlePixelSolidColor() const;
-
 protected:
     WEBCORE_EXPORT Image(ImageObserver* = nullptr);
+
+    static void fillWithSolidColor(GraphicsContext&, const FloatRect& dstRect, const Color&, CompositeOperator);
 
     virtual bool shouldDrawFromCachedSubimage(GraphicsContext&) const { return false; }
     virtual bool mustDrawFromCachedSubimage(GraphicsContext&) const { return false; }
     virtual ImageDrawResult draw(GraphicsContext&, ConcreteObjectSize, const FloatRect& dstRect, const FloatRect& srcRect, ImagePaintingOptions = { }, const ImageDrawingExtras* = nullptr) = 0;
+    ImageDrawResult drawTiled(GraphicsContext&, const FloatRect& dstRect, const FloatPoint& srcPoint, const FloatSize& tileSize, const FloatSize& spacing, ImagePaintingOptions = { });
+    ImageDrawResult drawTiled(GraphicsContext&, const FloatRect& dstRect, const FloatRect& srcRect, const FloatSize& tileScaleFactor, TileRule hRule, TileRule vRule, ImagePaintingOptions = { });
+
+    // Supporting tiled drawing
+    virtual std::optional<Color> singlePixelSolidColor() const;
 
     virtual bool canReplaceData() const { return false; }
     virtual void dataReplaced() { }

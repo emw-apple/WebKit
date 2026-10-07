@@ -167,7 +167,7 @@ public:
     WEBCORE_EXPORT void pauseAnimation(const String& animationName, double timeOffset) override;
     WEBCORE_EXPORT void removeAnimation(const String& animationName, std::optional<AnimatedProperty>) override;
     WEBCORE_EXPORT void transformRelatedPropertyDidChange() override;
-    WEBCORE_EXPORT void setContentsToNativeImage(NativeImage*) override;
+    WEBCORE_EXPORT void setContentsToImage(Image*) override;
     WEBCORE_EXPORT void setContentsToImageBuffer(ImageBuffer*) override;
 #if PLATFORM(IOS_FAMILY)
     WEBCORE_EXPORT PlatformLayer* contentsLayerForMedia() const override;
@@ -199,7 +199,7 @@ public:
 
     WEBCORE_EXPORT void setDebugBackgroundColor(const Color&) override;
     WEBCORE_EXPORT void setDebugBorder(const Color&, float borderWidth) override;
-    WEBCORE_EXPORT void setShowFrameProcessBorders(bool, unsigned frameDepth, FrameIdentifier) override;
+    WEBCORE_EXPORT void setShowFrameProcessBorders(bool, unsigned frameDepth = 0) override;
 
     WEBCORE_EXPORT void setCustomAppearance(CustomAppearance) override;
 
@@ -218,7 +218,6 @@ public:
         bool ancestorHasTransformAnimation { false };
         bool ancestorStartedOrEndedTransformAnimation { false };
         bool ancestorWithTransformAnimationIntersectsCoverageRect { false };
-        bool ancestorIsNonAxisAligned { false };
         bool backdropRootIsOpaque { false };
     };
     bool needsCommit(const CommitState&);
@@ -332,8 +331,6 @@ private:
     virtual Ref<PlatformCAAnimation> createPlatformCAAnimation(PlatformCAAnimation::AnimationType, const String& keyPath);
 
     virtual void setLayerContentsToImageBuffer(PlatformCALayer&, ImageBuffer*) { }
-    // Overridden for images whose pixels are not in this process, which have no platform image.
-    virtual void setLayerContentsToNativeImage(PlatformCALayer&, NativeImage&);
 
     PlatformCALayer* primaryLayer() const { return m_structuralLayer.get() ? m_structuralLayer.get() : m_layer.get(); }
     PlatformCALayer* NODELETE hostLayerForSublayers() const;
@@ -402,7 +399,7 @@ private:
     ASCIILiteral purposeNameForInnerLayer(PlatformCALayer&) const;
 
     void computePixelAlignment(float contentsScale, const FloatPoint& positionRelativeToBase,
-        FloatPoint& position, FloatSize&, FloatPoint3D& anchorPoint, FloatSize& alignmentOffset) const;
+        FloatPoint& position, FloatPoint3D& anchorPoint, FloatSize& alignmentOffset) const;
 
     TransformationMatrix layerTransform(const FloatPoint& position, const TransformationMatrix* customTransform = nullptr) const;
     TransformationMatrix transformByApplyingAnchorPoint(const TransformationMatrix&) const;
@@ -535,7 +532,6 @@ private:
     void updateTiles();
     void updateRootRelativeScale();
     void updateContentsScale(float pageScaleFactor);
-    void updateAntialiasesEdges(CommitState&, float pageScaleFactor);
     void updateCustomAppearance();
 
     void updateOpacityOnLayer();

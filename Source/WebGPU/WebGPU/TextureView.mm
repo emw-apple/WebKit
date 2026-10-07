@@ -34,7 +34,7 @@ namespace WebGPU::Metal {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(TextureView);
 
-TextureView::TextureView(id<MTLTexture> texture, const ResolvedTextureViewDescriptor& descriptor, const std::optional<WGPUExtent3D>& renderExtent, Texture& parentTexture, Device& device)
+TextureView::TextureView(id<MTLTexture> texture, const WGPUTextureViewDescriptor& descriptor, const std::optional<WGPUExtent3D>& renderExtent, Texture& parentTexture, Device& device)
     : m_texture(texture)
     , m_format(descriptor.format)
     , m_dimension(descriptor.dimension)
@@ -104,7 +104,7 @@ uint32_t TextureView::depthOrArrayLayers() const
     return m_parentTexture->physicalMiplevelSpecificTextureExtent(baseMipLevel()).depthOrArrayLayers;
 }
 
-OptionSet<WebGPU::TextureUsage> TextureView::usage() const
+WGPUTextureUsage TextureView::usage() const
 {
     // The descriptor's usage was resolved to the parent texture's usage when the view was created
     // if the view did not narrow it, so this is the set of usages the view itself allows.
@@ -128,7 +128,7 @@ WGPUTextureFormat TextureView::parentFormat() const
 
 WGPUTextureFormat TextureView::format() const
 {
-    return m_format ? toAPI(*m_format) : WGPUTextureFormat_Undefined;
+    return m_format;
 }
 
 uint32_t TextureView::parentMipLevelCount() const
@@ -148,7 +148,7 @@ uint32_t TextureView::baseMipLevel() const
 
 WGPUTextureAspect TextureView::aspect() const
 {
-    return toAPI(m_aspect);
+    return m_aspect;
 }
 
 uint32_t TextureView::arrayLayerCount() const
@@ -163,7 +163,7 @@ uint32_t TextureView::baseArrayLayer() const
 
 WGPUTextureViewDimension TextureView::dimension() const
 {
-    return m_dimension ? toAPI(*m_dimension) : WGPUTextureViewDimension_Undefined;
+    return m_dimension;
 }
 
 bool TextureView::isDestroyed() const

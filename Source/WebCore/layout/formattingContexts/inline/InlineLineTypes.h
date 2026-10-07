@@ -26,7 +26,6 @@
 #pragma once
 
 #include <WebCore/LayoutUnits.h>
-#include <wtf/text/AtomString.h>
 
 namespace WebCore {
 namespace Layout {
@@ -52,13 +51,6 @@ enum class LineEndingTruncationPolicy : uint8_t {
     NoTruncation,
     WhenContentOverflowsInInlineDirection,
     WhenContentOverflowsInBlockDirection
-};
-
-struct BlockOverflowEllipsis {
-    AtomString text;
-    // The space the ellipsis takes on the line, and the trailing punctuation that hangs past the end of the line.
-    InlineLayoutUnit logicalWidth { 0.f };
-    InlineLayoutUnit hangingWidth { 0.f };
 };
 
 struct ExpansionInfo {

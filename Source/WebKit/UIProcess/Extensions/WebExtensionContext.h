@@ -616,12 +616,6 @@ public:
 
     CocoaMenuItem *singleMenuItemOrExtensionItemWithSubmenu(const WebExtensionMenuItemContextParameters&) const;
 
-#if ENABLE(WK_WEB_EXTENSIONS_NOTIFICATIONS)
-    void fireNotificationsClickedEventIfNeeded(const String& identifier);
-    void fireNotificationsButtonClickedEventIfNeeded(const String& identifier, size_t buttonIndex);
-    void fireNotificationsClosedEventIfNeeded(const String& identifier, UserTriggered);
-#endif
-
 #if PLATFORM(MAC)
     void addItemsToContextMenu(WebPageProxy&, const ContextMenuContextData&, NSMenu *);
 #endif
@@ -699,7 +693,7 @@ public:
     void addExtensionTabPage(WebPageProxy&, WebExtensionTab&);
     void addPopupPage(WebPageProxy&, WebExtensionAction&);
 
-    void enumerateExtensionPages(NOESCAPE const Function<void(WebPageProxy&, bool& stop)>&);
+    void enumerateExtensionPages(NOESCAPE Function<void(WebPageProxy&, bool& stop)>&&);
 
     WebViewClass *relatedWebView();
     String processDisplayName();
@@ -726,7 +720,7 @@ public:
         return processes(WTF::move(typeSet), ContentWorldTypeSet { contentWorldType });
     }
 
-    HashSet<Ref<WebProcessProxy>> processes(EventListenerTypeSet&&, ContentWorldTypeSet&&, NOESCAPE const Function<bool(WebProcessProxy&, WebPageProxy&, WebFrameProxy&)>& predicate = nullptr) const;
+    HashSet<Ref<WebProcessProxy>> processes(EventListenerTypeSet&&, ContentWorldTypeSet&&, Function<bool(WebProcessProxy&, WebPageProxy&, WebFrameProxy&)>&& predicate = nullptr) const;
 
     const UserContentControllerProxySet& NODELETE userContentControllers() const LIFETIME_BOUND;
 
@@ -817,7 +811,7 @@ private:
 #if ENABLE(INSPECTOR_EXTENSIONS)
     URL inspectorBackgroundPageURL() const;
 
-    InspectorTabVector openInspectors(NOESCAPE const Function<bool(WebExtensionTab&, WebInspectorUIProxy&)>& = nullptr) const;
+    InspectorTabVector openInspectors(Function<bool(WebExtensionTab&, WebInspectorUIProxy&)>&& = nullptr) const;
     InspectorTabVector loadedInspectors() const;
 
     bool isInspectorBackgroundPage(WKWebView *) const;
@@ -993,9 +987,6 @@ private:
 
     void notificationsCreate(const WebExtensionNotificationParameters&, CompletionHandler<void(std::expected<void, WebExtensionError>&&)>&&);
     void notificationsUpdate(const String& identifier, const WebExtensionNotificationParameters&, CompletionHandler<void(std::expected<bool, WebExtensionError>&&)>&&);
-    void notificationsClear(const String& identifier, CompletionHandler<void(std::expected<bool, WebExtensionError>&&)>&&);
-    void notificationsGetAll(CompletionHandler<void(Vector<String>&&)>&&);
-    void notificationsGetPermissionLevel(CompletionHandler<void(std::expected<String, WebExtensionError>&&)>&&);
 #endif
 
 #if ENABLE(WK_WEB_EXTENSIONS_OFFSCREEN)

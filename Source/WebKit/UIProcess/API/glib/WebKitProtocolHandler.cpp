@@ -43,7 +43,6 @@
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/URL.h>
 #include <wtf/WorkQueue.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GMallocString.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GUniquePtr.h>
@@ -67,7 +66,6 @@
 #include "WPEUtilities.h"
 #if ENABLE(WPE_PLATFORM)
 #include "DisplayVBlankMonitorWPE.h"
-#include "WebKitSettingsPrivate.h"
 #include <wpe/wpe-platform.h>
 #endif
 #endif
@@ -128,13 +126,6 @@ static inline ASCIILiteral webkitPortName()
 static ASCIILiteral hardwareAccelerationPolicy(WebKitURISchemeRequest* request)
 {
 #if PLATFORM(WPE)
-#if ENABLE(WPE_PLATFORM)
-    if (WKWPE::isUsingWPEPlatformAPI()) {
-        auto* webView = webkit_uri_scheme_request_get_web_view(request);
-        ASSERT(webView);
-        return webkitSettingsGetPreferences(webkit_web_view_get_settings(webView))->hardwareAccelerationEnabled() ? "always"_s : "never"_s;
-    }
-#endif
     return "always"_s;
 #elif PLATFORM(GTK)
     auto* webView = webkit_uri_scheme_request_get_web_view(request);
@@ -839,9 +830,9 @@ void WebKitProtocolHandler::handleGPU(WebKitURISchemeRequest* request, RenderPro
 
     htmlBuilder.append(tablesBuilder.toString(), "</body></html>"_s);
 
-    GMallocString html { htmlBuilder.toString().utf8() };
-    auto streamLength = html.lengthInBytes();
-    GRefPtr stream = gMemoryInputStreamNewFromData(WTF::move(html));
+    auto html = htmlBuilder.toString().utf8();
+    gsize streamLength = html.length();
+    GRefPtr<GInputStream> stream = adoptGRef(g_memory_input_stream_new_from_data(g_strdup(html.legacyCStringPointer()), streamLength, g_free));
     webkit_uri_scheme_request_finish(request, stream.get(), streamLength, "text/html");
 
     if (requestURL.path() == "/stdout"_s)

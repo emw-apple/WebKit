@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2026 Apple Inc. All rights reserved.
+ * Copyright (C) 2009-2023 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -59,7 +59,6 @@
 #include "HTMLNames.h"
 #include "HTMLPlugInElement.h"
 #include "HTMLVideoElement.h"
-#include "ImageObserver.h"
 #include "InspectorInstrumentation.h"
 #include "LayerAncestorClippingStack.h"
 #include "LocalFrame.h"
@@ -158,10 +157,7 @@ using namespace HTMLNames;
 CanvasCompositingStrategy canvasCompositingStrategy(const RenderObject& renderer)
 {
     ASSERT(renderer.isRenderHTMLCanvas());
-    CheckedRef canvasRenderer = downcast<RenderHTMLCanvas>(renderer);
-    RefPtr context = canvasRenderer->canvasElement().renderingContext();
-    if (canvasRenderer->hasDrawableContent() && !(context && context->delegatesDisplay()))
-        return CanvasPaintedToLayer;
+    RefPtr context = downcast<RenderHTMLCanvas>(renderer).canvasElement().renderingContext();
     if (!context)
         return CanvasPaintedToEnclosingLayer;
     if (context->delegatesDisplay())
@@ -604,7 +600,7 @@ void RenderLayerBacking::updateDebugIndicators(bool showBorder, bool showRepaint
         // depth() is 1-based and counts through cross-process ancestor frames, so subtract 1 to keep the
         // mainframe's indicator unstaggered while nested frames offset further with each level of nesting.
         unsigned frameNestingDepth = showFrameProcessBorders ? renderer().frame().tree().depth() - 1 : 0;
-        m_childContainmentLayer->setShowFrameProcessBorders(showFrameProcessBorders, frameNestingDepth, renderer().frame().frameID());
+        m_childContainmentLayer->setShowFrameProcessBorders(showFrameProcessBorders, frameNestingDepth);
     }
 
     if (m_backgroundLayer) {
@@ -638,35 +634,6 @@ void RenderLayerBacking::updateDebugIndicators(bool showBorder, bool showRepaint
         m_overflowControlsContainer->setShowDebugBorder(showBorder);
 }
 
-void RenderLayerBacking::updateAppliesPageScale()
-{
-    // Only the root frame's RenderView layer applies page scale to its own geometry, and only when scaling
-    // isn't delegated. The compositor's root contents layer does it otherwise, see ensureRootLayer().
-    if (!m_isRootFrameRenderViewLayer)
-        return;
-
-#if PLATFORM(IOS_FAMILY)
-    // iOS always delegates scaling. Page::delegatesScaling() isn't set until didCommitLoad, so it would read
-    // false for layers created before then.
-    bool appliesPageScale = false;
-#else
-    // updateConfiguration() calls this again, since delegatesScaling is set at didCommitLoad, which can
-    // happen after this layer is created.
-    bool appliesPageScale = !renderer().page().delegatesScaling();
-#endif
-
-    // A fixed root background splits the RenderView's layers, and the contents containment layer carries the
-    // flag for the pair. Only one of the two may apply the scale, and neither may when the root contents layer
-    // above already does, or we scale twice.
-    if (m_contentsContainmentLayer) {
-        m_contentsContainmentLayer->setAppliesPageScale(appliesPageScale);
-        m_graphicsLayer->setAppliesPageScale(false);
-        return;
-    }
-
-    m_graphicsLayer->setAppliesPageScale(appliesPageScale);
-}
-
 void RenderLayerBacking::createPrimaryGraphicsLayer()
 {
     String layerName = m_owningLayer.name();
@@ -683,8 +650,10 @@ void RenderLayerBacking::createPrimaryGraphicsLayer()
 #if !PLATFORM(IOS_FAMILY)
     if (m_isMainFrameRenderViewLayer)
         m_graphicsLayer->setContentsOpaque(!compositor().viewHasTransparentBackground());
+    // Page scale is applied above the RenderView on iOS.
+    if (m_isRootFrameRenderViewLayer)
+        m_graphicsLayer->setAppliesPageScale();
 #endif
-    updateAppliesPageScale();
 
 #if USE(CA)
     if (!compositor().acceleratedDrawingEnabled() && renderer().isRenderHTMLCanvas()) {
@@ -843,9 +812,9 @@ void RenderLayerBacking::updateChildrenTransformAndAnchorPoint(const LayoutRect&
         return;
     }
 
-    const auto pixelSnappingScaleFactor = this->pixelSnappingScaleFactor();
+    const auto deviceScaleFactor = this->deviceScaleFactor();
     auto transformOrigin = m_owningLayer.transformOriginPixelSnappedIfNeeded();
-    auto layerOffset = roundPointToDevicePixels(toLayoutPoint(offsetFromParentGraphicsLayer), pixelSnappingScaleFactor);
+    auto layerOffset = roundPointToDevicePixels(toLayoutPoint(offsetFromParentGraphicsLayer), deviceScaleFactor);
     auto anchor = FloatPoint3D {
         primaryGraphicsLayerRect.width() ? ((layerOffset.x() - primaryGraphicsLayerRect.x()) + transformOrigin.x()) / primaryGraphicsLayerRect.width() : 0.5f,
         primaryGraphicsLayerRect.height() ? ((layerOffset.y() - primaryGraphicsLayerRect.y())+ transformOrigin.y()) / primaryGraphicsLayerRect.height() : 0.5f,
@@ -938,10 +907,10 @@ void RenderLayerBacking::updateBackdropFiltersGeometry()
         auto borderShape = BorderShape::shapeForBorderRect(renderBox->style(), renderBox->borderBoxRect());
         auto roundedBoxRect = borderShape.deprecatedRoundedRect();
         roundedBoxRect.move(contentOffsetInCompositingLayer());
-        backdropFiltersRect = roundedBoxRect.pixelSnappedRoundedRectForPainting(pixelSnappingScaleFactor());
+        backdropFiltersRect = roundedBoxRect.pixelSnappedRoundedRectForPainting(deviceScaleFactor());
 
         if (renderBox->style().border().hasNonRoundCornerShape()) {
-            auto shapePath = borderShape.pathForOuterShape(pixelSnappingScaleFactor());
+            auto shapePath = borderShape.pathForOuterShape(deviceScaleFactor());
             shapePath.translate(FloatSize { contentOffsetInCompositingLayer() });
             m_graphicsLayer->setBackdropFiltersShapePath(shapePath);
         } else
@@ -951,7 +920,7 @@ void RenderLayerBacking::updateBackdropFiltersGeometry()
         if (renderBox->hasClip())
             boxRect.intersect(renderBox->clipRect({ }));
         boxRect.move(contentOffsetInCompositingLayer());
-        backdropFiltersRect = FloatRoundedRect(snapRectToDevicePixels(boxRect, pixelSnappingScaleFactor()));
+        backdropFiltersRect = FloatRoundedRect(snapRectToDevicePixels(boxRect, deviceScaleFactor()));
         m_graphicsLayer->setBackdropFiltersShapePath({ });
     }
 
@@ -1056,7 +1025,7 @@ void RenderLayerBacking::updateAppleVisualEffect(const Style::ComputedStyle& sty
                 auto borderShape = BorderShape::shapeForBorderRect(renderBox->style(), renderBox->borderBoxRect());
                 auto roundedBoxRect = borderShape.deprecatedRoundedRect();
                 roundedBoxRect.move(contentOffsetInCompositingLayer());
-                visualEffectData.borderRect = roundedBoxRect.pixelSnappedRoundedRectForPainting(pixelSnappingScaleFactor());
+                visualEffectData.borderRect = roundedBoxRect.pixelSnappedRoundedRectForPainting(deviceScaleFactor());
             }
         }
     }
@@ -1193,7 +1162,7 @@ void RenderLayerBacking::updateAfterWidgetResize()
 
     if (auto* innerCompositor = RenderLayerCompositor::frameContentsCompositor(*renderWidget)) {
         innerCompositor->frameViewDidChangeSize();
-        auto snappedContentOrigin = roundPointToDevicePixels(contentsBox().location(), pixelSnappingScaleFactor());
+        auto snappedContentOrigin = roundPointToDevicePixels(contentsBox().location(), deviceScaleFactor());
         innerCompositor->frameViewDidChangeLocation(snappedContentOrigin);
     }
 
@@ -1278,10 +1247,6 @@ bool RenderLayerBacking::updateConfiguration(const RenderLayer* compositingAnces
     if (updateBackgroundLayer(m_backgroundLayerPaintsFixedRootBackground || m_requiresBackgroundLayer))
         layerConfigChanged = true;
 
-    // Page::delegatesScaling() is set at didCommitLoad, which can be after this backing was created. Has to
-    // come after updateBackgroundLayer(), which decides whether there's a contents containment layer.
-    updateAppliesPageScale();
-
     if (updateForegroundLayer(compositor.needsContentsCompositingLayer(m_owningLayer)))
         layerConfigChanged = true;
 
@@ -1305,7 +1270,7 @@ bool RenderLayerBacking::updateConfiguration(const RenderLayer* compositingAnces
         // If it's scrollable, it has to be a box.
         auto& renderBox = downcast<RenderBox>(renderer());
         auto borderShape = BorderShape::shapeForBorderRect(renderBox.style(), renderBox.borderBoxRect());
-        FloatRoundedRect contentsClippingRect = borderShape.deprecatedPixelSnappedInnerRoundedRect(pixelSnappingScaleFactor());
+        FloatRoundedRect contentsClippingRect = borderShape.deprecatedPixelSnappedInnerRoundedRect(deviceScaleFactor());
         needsDescendantsClippingLayer = contentsClippingRect.hasNonZeroRadii();
     } else
         needsDescendantsClippingLayer = RenderLayerCompositor::clipsCompositingDescendants(m_owningLayer);
@@ -1471,10 +1436,10 @@ bool RenderLayerBacking::updateConfiguration(const RenderLayer* compositingAnces
     return layerConfigChanged;
 }
 
-static bool subpixelOffsetFromRendererChanged(const LayoutSize& oldSubpixelOffsetFromRenderer, const LayoutSize& newSubpixelOffsetFromRenderer, float pixelSnappingScaleFactor)
+static bool subpixelOffsetFromRendererChanged(const LayoutSize& oldSubpixelOffsetFromRenderer, const LayoutSize& newSubpixelOffsetFromRenderer, float deviceScaleFactor)
 {
-    FloatSize previous = snapSizeToDevicePixel(oldSubpixelOffsetFromRenderer, LayoutPoint(), pixelSnappingScaleFactor);
-    FloatSize current = snapSizeToDevicePixel(newSubpixelOffsetFromRenderer, LayoutPoint(), pixelSnappingScaleFactor);
+    FloatSize previous = snapSizeToDevicePixel(oldSubpixelOffsetFromRenderer, LayoutPoint(), deviceScaleFactor);
+    FloatSize current = snapSizeToDevicePixel(newSubpixelOffsetFromRenderer, LayoutPoint(), deviceScaleFactor);
     return previous != current;
 }
 
@@ -1493,10 +1458,10 @@ struct OffsetFromRenderer {
     LayoutSize m_subpixelOffset;
 };
 
-static OffsetFromRenderer computeOffsetFromRenderer(const LayoutSize& offset, float pixelSnappingScaleFactor)
+static OffsetFromRenderer computeOffsetFromRenderer(const LayoutSize& offset, float deviceScaleFactor)
 {
     OffsetFromRenderer offsetFromRenderer;
-    offsetFromRenderer.m_subpixelOffset = LayoutSize(subpixelForLayerPainting(toLayoutPoint(offset), pixelSnappingScaleFactor));
+    offsetFromRenderer.m_subpixelOffset = LayoutSize(subpixelForLayerPainting(toLayoutPoint(offset), deviceScaleFactor));
     offsetFromRenderer.m_devicePixelOffset = offset - offsetFromRenderer.m_subpixelOffset;
     return offsetFromRenderer;
 }
@@ -1515,7 +1480,7 @@ static SnappedRectInfo snappedGraphicsLayer(const LayoutSize& offset, const Layo
     return snappedGraphicsLayer;
 }
 
-static LayoutSize computeOffsetFromAncestorGraphicsLayer(const RenderLayer* compositedAncestor, const LayoutPoint& location, float pixelSnappingScaleFactor)
+static LayoutSize computeOffsetFromAncestorGraphicsLayer(const RenderLayer* compositedAncestor, const LayoutPoint& location, float deviceScaleFactor)
 {
     if (!compositedAncestor)
         return toLayoutSize(location);
@@ -1524,7 +1489,7 @@ static LayoutSize computeOffsetFromAncestorGraphicsLayer(const RenderLayer* comp
     // could be stale when a dynamic composited state change triggers a pre-order updateGeometry() traversal.
     LayoutSize ancestorSubpixelOffsetFromRenderer = compositedAncestor->backing()->subpixelOffsetFromRenderer();
     LayoutRect ancestorCompositedBounds = compositedAncestor->backing()->compositedBounds();
-    LayoutSize floored = toLayoutSize(LayoutPoint(floorPointToDevicePixels(ancestorCompositedBounds.location() - ancestorSubpixelOffsetFromRenderer, pixelSnappingScaleFactor)));
+    LayoutSize floored = toLayoutSize(LayoutPoint(floorPointToDevicePixels(ancestorCompositedBounds.location() - ancestorSubpixelOffsetFromRenderer, deviceScaleFactor)));
     LayoutSize ancestorRendererOffsetFromAncestorGraphicsLayer = -(floored + ancestorSubpixelOffsetFromRenderer);
     return ancestorRendererOffsetFromAncestorGraphicsLayer + toLayoutSize(location);
 }
@@ -1537,7 +1502,7 @@ public:
         , m_location(localRect.location())
         , m_parentGraphicsLayerOffset(toLayoutSize(parentGraphicsLayerRect.location()))
         , m_primaryGraphicsLayerOffset(toLayoutSize(primaryGraphicsLayerRect.location()))
-        , m_pixelSnappingScaleFactor(renderLayer.renderer().document().pixelSnappingScaleFactor())
+        , m_deviceScaleFactor(renderLayer.renderer().document().deviceScaleFactor())
     {
     }
 
@@ -1560,7 +1525,7 @@ private:
     {
         if (!m_fromAncestorGraphicsLayer) {
             LayoutPoint localPointInAncestorRenderLayerCoords = m_renderLayer.convertToLayerCoords(m_compositingAncestor, m_location, RenderLayer::AdjustForColumns);
-            m_fromAncestorGraphicsLayer = computeOffsetFromAncestorGraphicsLayer(m_compositingAncestor, localPointInAncestorRenderLayerCoords, m_pixelSnappingScaleFactor);
+            m_fromAncestorGraphicsLayer = computeOffsetFromAncestorGraphicsLayer(m_compositingAncestor, localPointInAncestorRenderLayerCoords, m_deviceScaleFactor);
         }
         return m_fromAncestorGraphicsLayer.value();
     }
@@ -1575,14 +1540,14 @@ private:
     const LayoutPoint m_location;
     const LayoutSize m_parentGraphicsLayerOffset;
     const LayoutSize m_primaryGraphicsLayerOffset;
-    float m_pixelSnappingScaleFactor;
+    float m_deviceScaleFactor;
 };
 
 LayoutRect RenderLayerBacking::computePrimaryGraphicsLayerRect(const RenderLayer* compositedAncestor, const LayoutRect& parentGraphicsLayerRect) const
 {
     ComputedOffsets compositedBoundsOffset(m_owningLayer, compositedAncestor, compositedBounds(), parentGraphicsLayerRect, { });
     return LayoutRect(encloseRectToDevicePixels(LayoutRect(toLayoutPoint(compositedBoundsOffset.fromParentGraphicsLayer()), compositedBounds().size()),
-        pixelSnappingScaleFactor()));
+        deviceScaleFactor()));
 }
 
 // FIXME: See if we need this now that updateGeometry() is always called in post-order traversal.
@@ -1607,7 +1572,7 @@ LayoutRect RenderLayerBacking::computeParentGraphicsLayerRect(const RenderLayer*
     if (ancestorBacking->hasClippingLayer()) {
         // If the compositing ancestor has a layer to clip children, we parent in that, and therefore position relative to it.
         LayoutRect clippingBox = clippingLayerBox(*ancestorRenderBox);
-        LayoutSize clippingBoxOffset = computeOffsetFromAncestorGraphicsLayer(compositedAncestor, clippingBox.location(), pixelSnappingScaleFactor());
+        LayoutSize clippingBoxOffset = computeOffsetFromAncestorGraphicsLayer(compositedAncestor, clippingBox.location(), deviceScaleFactor());
         parentGraphicsLayerRect = snappedGraphicsLayer(clippingBoxOffset, clippingBox.size(), renderer()).m_snappedRect;
     }
 
@@ -1631,7 +1596,7 @@ static FloatRoundedRect contentsClippingRectForCornerShape(const FloatRoundedRec
     return clippingRect;
 }
 
-static void setContentsClipShapePath(GraphicsLayer& graphicsLayer, const Style::ComputedStyle& style, const BorderShape& borderShape, float pixelSnappingScaleFactor, const FloatSize& offset)
+static void setContentsClipShapePath(GraphicsLayer& graphicsLayer, const Style::ComputedStyle& style, const BorderShape& borderShape, float deviceScaleFactor, const FloatSize& offset)
 {
     if (!style.border().hasCornerShapeOutsideRoundedRect()) {
         if (!graphicsLayer.contentsClipShapePath().isEmpty())
@@ -1639,7 +1604,7 @@ static void setContentsClipShapePath(GraphicsLayer& graphicsLayer, const Style::
         return;
     }
 
-    auto shapePath = borderShape.pathForInnerShape(pixelSnappingScaleFactor);
+    auto shapePath = borderShape.pathForInnerShape(deviceScaleFactor);
     shapePath.translate(offset);
     graphicsLayer.setContentsClipShapePath(shapePath);
 }
@@ -1666,7 +1631,7 @@ void RenderLayerBacking::updateGeometry(const RenderLayer* compositedAncestor)
     ASSERT(!renderer().view().needsLayout());
 
     const Style::ComputedStyle& style = renderer().style();
-    const auto pixelSnappingScaleFactor = this->pixelSnappingScaleFactor();
+    const auto deviceScaleFactor = this->deviceScaleFactor();
 
     updateTransform(style);
     updateOpacity(style);
@@ -1769,7 +1734,7 @@ void RenderLayerBacking::updateGeometry(const RenderLayer* compositedAncestor)
     // the same as the ancestor graphics layer.
     OffsetFromRenderer primaryGraphicsLayerOffsetFromRenderer;
     LayoutSize oldSubpixelOffsetFromRenderer = m_subpixelOffsetFromRenderer;
-    primaryGraphicsLayerOffsetFromRenderer = computeOffsetFromRenderer(-rendererOffset.fromPrimaryGraphicsLayer(), pixelSnappingScaleFactor);
+    primaryGraphicsLayerOffsetFromRenderer = computeOffsetFromRenderer(-rendererOffset.fromPrimaryGraphicsLayer(), deviceScaleFactor);
     m_subpixelOffsetFromRenderer = primaryGraphicsLayerOffsetFromRenderer.m_subpixelOffset;
     m_hasSubpixelRounding = !m_subpixelOffsetFromRenderer.isZero() || compositedBounds().size() != primaryGraphicsLayerRect.size();
 
@@ -1791,7 +1756,7 @@ void RenderLayerBacking::updateGeometry(const RenderLayer* compositedAncestor)
         auto computeMasksToBoundsRect = [&] {
             if ((renderer().hasClipPath() || renderer().style().border().hasBorderRadius())) {
                 auto borderShape = BorderShape::shapeForBorderRect(renderer().style(), m_owningLayer.rendererBorderBoxRect());
-                auto contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(pixelSnappingScaleFactor), renderer().style());
+                auto contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(deviceScaleFactor), renderer().style());
                 contentsClippingRect.move(LayoutSize(-clipLayer->offsetFromRenderer()));
                 return contentsClippingRect;
             }
@@ -1935,7 +1900,7 @@ void RenderLayerBacking::updateGeometry(const RenderLayer* compositedAncestor)
 
     positionOverflowControlsLayers();
 
-    if (subpixelOffsetFromRendererChanged(oldSubpixelOffsetFromRenderer, m_subpixelOffsetFromRenderer, pixelSnappingScaleFactor) && canIssueSetNeedsDisplay())
+    if (subpixelOffsetFromRendererChanged(oldSubpixelOffsetFromRenderer, m_subpixelOffsetFromRenderer, deviceScaleFactor) && canIssueSetNeedsDisplay())
         setContentsNeedDisplay();
 
 #if ENABLE(MODEL_ELEMENT)
@@ -2051,7 +2016,7 @@ void RenderLayerBacking::updateMaskingLayerGeometry()
                 return;
 
             auto borderShape = BorderShape::shapeForBorderRect(box->style(), box->borderBoxRect());
-            auto shapePath = borderShape.pathForOuterShape(pixelSnappingScaleFactor());
+            auto shapePath = borderShape.pathForOuterShape(deviceScaleFactor());
             shapePath.translate(-m_maskLayer->offsetFromRenderer());
             m_maskLayer->setShapeLayerPath(shapePath);
             m_maskLayer->setShapeLayerWindRule(WindRule::NonZero);
@@ -2064,7 +2029,7 @@ void RenderLayerBacking::updateMaskingLayerGeometry()
             // FIXME: Use correct reference box for inlines: https://bugs.webkit.org/show_bug.cgi?id=129047, https://github.com/w3c/csswg-drafts/issues/6383
             LayoutRect boundingBox = m_owningLayer.boundingBox(&m_owningLayer);
             LayoutRect referenceBoxForClippedInline = LayoutRect(snapRectToDevicePixelsIfNeeded(boundingBox, renderer()));
-            LayoutSize offset = LayoutSize(snapSizeToDevicePixel(-m_subpixelOffsetFromRenderer, LayoutPoint(), pixelSnappingScaleFactor()));
+            LayoutSize offset = LayoutSize(snapSizeToDevicePixel(-m_subpixelOffsetFromRenderer, LayoutPoint(), deviceScaleFactor()));
             auto [clipPath, windRule] = ClipPathPaintScope::computeClipPath(renderer(), offset, referenceBoxForClippedInline);
 
             FloatSize pathOffset = m_maskLayer->offsetFromRenderer();
@@ -2208,10 +2173,10 @@ void RenderLayerBacking::updateContentsRects()
 #if HAVE(CORE_ANIMATION_SEPARATED_LAYERS)
         if (RenderLayerCompositor::isSeparated(renderer())) {
             auto borderShape = BorderShape::shapeForBorderRect(renderVideo->style(), renderVideo->borderBoxRect());
-            auto contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(pixelSnappingScaleFactor()), renderVideo->style());
+            auto contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(deviceScaleFactor()), renderVideo->style());
             contentsClippingRect.move(contentOffsetInCompositingLayer());
             m_graphicsLayer->setContentsClippingRect(contentsClippingRect);
-            setContentsClipShapePath(*m_graphicsLayer, renderVideo->style(), borderShape, pixelSnappingScaleFactor(), contentOffsetInCompositingLayer());
+            setContentsClipShapePath(*m_graphicsLayer, renderVideo->style(), borderShape, deviceScaleFactor(), contentOffsetInCompositingLayer());
             return;
         }
 #endif
@@ -2225,11 +2190,11 @@ void RenderLayerBacking::updateContentsRects()
             contentsClippingRect = FloatRoundedRect(m_graphicsLayer->contentsRect());
         } else {
             auto borderShape = renderVideo->borderShapeForContentClipping(renderVideo->borderBoxRect());
-            contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(pixelSnappingScaleFactor()), renderVideo->style());
+            contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(deviceScaleFactor()), renderVideo->style());
             // Intersect with the (small) destination rect so the oversized contents layer is clipped to what's actually visible.
             contentsClippingRect = FloatRoundedRect(intersection(contentsClippingRect.rect(), FloatRect(renderVideo->videoBox())), contentsClippingRect.radii());
             contentsClippingRect.move(contentOffsetInCompositingLayer());
-            setContentsClipShapePath(*m_graphicsLayer, renderVideo->style(), borderShape, pixelSnappingScaleFactor(), contentOffsetInCompositingLayer());
+            setContentsClipShapePath(*m_graphicsLayer, renderVideo->style(), borderShape, deviceScaleFactor(), contentOffsetInCompositingLayer());
         }
         m_graphicsLayer->setContentsClippingRect(contentsClippingRect);
         return;
@@ -2252,10 +2217,10 @@ void RenderLayerBacking::updateContentsRects()
     if (needsContentsClippingRectUpdate) {
         if (CheckedPtr renderBox = dynamicDowncast<RenderBox>(renderer())) {
             auto borderShape = BorderShape::shapeForBorderRect(renderBox->style(), renderBox->borderBoxRect());
-            auto contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(pixelSnappingScaleFactor()), renderBox->style());
+            auto contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(deviceScaleFactor()), renderBox->style());
             contentsClippingRect.move(contentOffsetInCompositingLayer());
             m_graphicsLayer->setContentsClippingRect(contentsClippingRect);
-            setContentsClipShapePath(*m_graphicsLayer, renderBox->style(), borderShape, pixelSnappingScaleFactor(), contentOffsetInCompositingLayer());
+            setContentsClipShapePath(*m_graphicsLayer, renderBox->style(), borderShape, deviceScaleFactor(), contentOffsetInCompositingLayer());
             return;
         }
     }
@@ -2267,10 +2232,10 @@ void RenderLayerBacking::updateContentsRects()
         else {
             // FIXME: Support visible overflow for replaced content.
             auto borderShape = renderReplaced->borderShapeForContentClipping(renderReplaced->borderBoxRect());
-            auto contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(pixelSnappingScaleFactor()), renderReplaced->style());
+            auto contentsClippingRect = contentsClippingRectForCornerShape(borderShape.deprecatedPixelSnappedInnerRoundedRect(deviceScaleFactor()), renderReplaced->style());
             contentsClippingRect.move(contentOffsetInCompositingLayer());
             m_graphicsLayer->setContentsClippingRect(contentsClippingRect);
-            setContentsClipShapePath(*m_graphicsLayer, renderReplaced->style(), borderShape, pixelSnappingScaleFactor(), contentOffsetInCompositingLayer());
+            setContentsClipShapePath(*m_graphicsLayer, renderReplaced->style(), borderShape, deviceScaleFactor(), contentOffsetInCompositingLayer());
         }
     }
 }
@@ -2544,7 +2509,7 @@ void RenderLayerBacking::updateSeparatedProperties()
             return false;
         if (!renderImage->cachedImage() || renderImage->cachedImage()->errorOccurred())
             return false;
-        RefPtr bitmapImage = dynamicDowncast<BitmapImage>(renderImage->cachedImage()->image());
+        RefPtr bitmapImage = dynamicDowncast<BitmapImage>(renderImage->cachedImage()->imageForRenderer(renderImage));
         if (!bitmapImage)
             return false;
         if (bitmapImage.get() == &BitmapImage::nullImage())
@@ -2684,11 +2649,11 @@ void RenderLayerBacking::updateClippingStackLayerGeometry(LayerAncestorClippingS
     auto offsetFromCompositedAncestor = toLayoutSize(m_owningLayer.convertToLayerCoords(compositedAncestor, { }, RenderLayer::AdjustForColumns));
     LayoutRect lastClipLayerRect = parentGraphicsLayerRect;
 
-    auto pixelSnappingScaleFactor = this->pixelSnappingScaleFactor();
+    auto deviceScaleFactor = this->deviceScaleFactor();
     for (auto& entry : clippingStack.stack()) {
         auto roundedClipRect = entry.clipData.clipRect;
         auto clipRect = roundedClipRect.rect();
-        LayoutSize clippingOffset = computeOffsetFromAncestorGraphicsLayer(compositedAncestor, clipRect.location() + offsetFromCompositedAncestor, pixelSnappingScaleFactor);
+        LayoutSize clippingOffset = computeOffsetFromAncestorGraphicsLayer(compositedAncestor, clipRect.location() + offsetFromCompositedAncestor, deviceScaleFactor);
         LayoutRect snappedClippingLayerRect = snappedGraphicsLayer(clippingOffset, clipRect.size(), renderer()).m_snappedRect;
         
         auto clippingLayerPosition = toLayoutPoint(snappedClippingLayerRect.location() - lastClipLayerRect.location());
@@ -2702,7 +2667,7 @@ void RenderLayerBacking::updateClippingStackLayerGeometry(LayerAncestorClippingS
             entry.clippingLayer->setContentsClippingRect(contentsClippingRectForCornerShape(FloatRoundedRect(roundedClipRect), box->style()));
 
             auto borderShape = BorderShape::shapeForBorderRect(box->style(), box->borderBoxRect());
-            auto shapePath = borderShape.pathForInnerShape(pixelSnappingScaleFactor);
+            auto shapePath = borderShape.pathForInnerShape(deviceScaleFactor);
             auto clipOffsetInBox = box->overflowClipRect(LayoutPoint { }).location();
             shapePath.translate(FloatSize { -clipOffsetInBox.x().toFloat(), -clipOffsetInBox.y().toFloat() });
 
@@ -3208,7 +3173,7 @@ void RenderLayerBacking::updateSystemPreviewBadgeLayerGeometry()
         return;
 
     auto contentRect = renderModel->replacedContentRect();
-    auto snapped = snapRectToDevicePixels(contentRect, renderModel->modelElement().document().pixelSnappingScaleFactor());
+    auto snapped = snapRectToDevicePixels(contentRect, renderModel->modelElement().document().deviceScaleFactor());
     m_systemPreviewBadgeLayer->setPosition(snapped.location());
     m_systemPreviewBadgeLayer->setSize(snapped.size());
     m_systemPreviewBadgeLayer->setNeedsDisplay();
@@ -3543,20 +3508,6 @@ void RenderLayerBacking::updateDirectlyCompositedBackgroundColor(PaintedContents
     didUpdateContentsRect = true;
 }
 
-// Only bitmap images are directly composited, so the layer shows the image's current frame at its natural size.
-static RefPtr<NativeImage> nativeImageForDirectlyCompositedImage(Image& image)
-{
-    // Showing the image in a layer uses its decoded data, as drawing it would.
-    if (RefPtr observer = image.imageObserver())
-        observer->didDraw(image);
-
-    RefPtr bitmapImage = dynamicDowncast<BitmapImage>(image);
-    if (!bitmapImage)
-        return nullptr;
-
-    return bitmapImage->currentNativeImage();
-}
-
 void RenderLayerBacking::updateDirectlyCompositedBackgroundImage(PaintedContentsInfo& contentsInfo, bool& didUpdateContentsRect)
 {
     if (!GraphicsLayer::supportsContentsTiling())
@@ -3566,13 +3517,13 @@ void RenderLayerBacking::updateDirectlyCompositedBackgroundImage(PaintedContents
         return;
 
     if (!contentsInfo.isSimpleContainer()) {
-        m_graphicsLayer->setContentsToNativeImage(nullptr);
+        m_graphicsLayer->setContentsToImage(nullptr);
         return;
     }
 
     auto& backgroundLayers = renderer().style().backgroundLayers();
     if (!Style::hasImageInAnyLayer(backgroundLayers)) {
-        m_graphicsLayer->setContentsToNativeImage(nullptr);
+        m_graphicsLayer->setContentsToImage(nullptr);
         return;
     }
 
@@ -3585,8 +3536,7 @@ void RenderLayerBacking::updateDirectlyCompositedBackgroundImage(PaintedContents
     m_graphicsLayer->setContentsTilePhase(geometry.phase);
     m_graphicsLayer->setContentsRect(geometry.destinationRect);
     m_graphicsLayer->setContentsClippingRect(FloatRoundedRect(geometry.destinationRect));
-    if (RefPtr nativeImage = nativeImageForDirectlyCompositedImage(Ref { *backgroundLayer.image().tryStyleImage()->cachedImage()->image() }))
-        m_graphicsLayer->setContentsToNativeImage(nativeImage.get());
+    m_graphicsLayer->setContentsToImage(backgroundLayer.image().tryStyleImage()->cachedImage()->image());
 
     didUpdateContentsRect = true;
 }
@@ -3948,14 +3898,14 @@ bool RenderLayerBacking::isDirectlyCompositedImage() const
         if (!cachedImage->hasImage())
             return false;
 
-        RefPtr image = dynamicDowncast<BitmapImage>(cachedImage->image());
+        RefPtr image = dynamicDowncast<BitmapImage>(cachedImage->imageForRenderer(imageRenderer.get()));
         if (!image)
             return false;
 
         if (image->currentFrameOrientation() != ImageOrientation::Orientation::None)
             return false;
 
-        return m_graphicsLayer->canDirectlyCompositeNativeImage();
+        return m_graphicsLayer->shouldDirectlyCompositeImage(image);
     }
 
     return false;
@@ -3993,7 +3943,7 @@ bool RenderLayerBacking::isUnscaledBitmapOnly() const
             if (!cachedImage->hasImage())
                 return false;
 
-            RefPtr image = dynamicDowncast<BitmapImage>(cachedImage->image());
+            RefPtr image = dynamicDowncast<BitmapImage>(cachedImage->imageForRenderer(imageRenderer.get()));
             if (!image)
                 return false;
 
@@ -4085,7 +4035,7 @@ void RenderLayerBacking::updateImageContents(PaintedContentsInfo& contentsInfo)
         if (!cachedImage)
             return;
 
-        RefPtr image = cachedImage->image();
+        RefPtr image = cachedImage->imageForRenderer(&imageRenderer);
         if (!image)
             return;
 
@@ -4093,8 +4043,8 @@ void RenderLayerBacking::updateImageContents(PaintedContentsInfo& contentsInfo)
         if (!cachedImage->isLoaded())
             return;
 
-        if (RefPtr nativeImage = nativeImageForDirectlyCompositedImage(*image))
-            m_graphicsLayer->setContentsToNativeImage(nativeImage.get());
+
+        m_graphicsLayer->setContentsToImage(image);
 
         // Image animation is "lazy", in that it automatically stops unless someone is drawing
         // the image. So we have to kick the animation each time; this has the downside that the
@@ -4180,7 +4130,7 @@ FloatRect RenderLayerBacking::backgroundBoxForSimpleContainerPainting() const
 
     LayoutRect backgroundBox = backgroundRectForBox(*box);
     backgroundBox.move(contentOffsetInCompositingLayer());
-    return snapRectToDevicePixels(backgroundBox, pixelSnappingScaleFactor());
+    return snapRectToDevicePixels(backgroundBox, deviceScaleFactor());
 }
 
 GraphicsLayer* RenderLayerBacking::parentForSublayers() const
@@ -4896,11 +4846,6 @@ float RenderLayerBacking::zoomedOutPageScaleFactor() const
     return compositor().zoomedOutPageScaleFactor();
 }
 
-bool RenderLayerBacking::delegatesScaling() const
-{
-    return compositor().delegatesScaling();
-}
-
 FloatSize RenderLayerBacking::enclosingFrameViewVisibleSize() const
 {
     return compositor().enclosingFrameViewVisibleSize();
@@ -4909,11 +4854,6 @@ FloatSize RenderLayerBacking::enclosingFrameViewVisibleSize() const
 float RenderLayerBacking::deviceScaleFactor() const
 {
     return compositor().deviceScaleFactor();
-}
-
-float RenderLayerBacking::pixelSnappingScaleFactor() const
-{
-    return renderer().document().pixelSnappingScaleFactor();
 }
 
 float RenderLayerBacking::contentsScaleMultiplierForNewTiles(const GraphicsLayer* layer) const
@@ -5238,14 +5178,18 @@ void RenderLayerBacking::updateAcceleratedEffectsAndBaseValues(HashSet<Ref<Accel
     // Now let's prune any effect that only animates a non-interpolating property.
     auto nonInterpolatingProperties = allAcceleratedProperties ^ interpolatingProperties ^ disallowedAcceleratedProperties;
     if (!nonInterpolatingProperties.isEmpty()) {
-        // Remove effects that are only animating non-interpolating properties and
-        // re-populate the set of timelines from the remaining effects.
-        acceleratedEffects.removeAllMatching([&](auto& acceleratedEffect) {
-            return nonInterpolatingProperties.containsAll(acceleratedEffect->animatedProperties());
-        });
+        // Make a copy of our current list of effects and clear the the original list as well
+        // as the set of timelines. We'll re-populate both without effects that are only animating
+        // non-interpolating properties.
+        auto effectsIncludingNonInterpolating = acceleratedEffects;
+        acceleratedEffects.clear();
         effectTimelines.clear();
-        for (auto& acceleratedEffect : acceleratedEffects)
+        for (auto& acceleratedEffect : effectsIncludingNonInterpolating) {
+            if (nonInterpolatingProperties.containsAll(acceleratedEffect->animatedProperties()))
+                continue;
+            acceleratedEffects.append(acceleratedEffect);
             effectTimelines.add(Ref { *acceleratedEffect->timeline() });
+        }
     }
 
     // If all of the effects in the stack are either idle, paused or filling, then the

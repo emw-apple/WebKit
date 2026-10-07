@@ -38,6 +38,7 @@
 #include "ReportingClient.h"
 #include "ResourceResponse.h"
 #include "ScriptExecutionContext.h"
+#include "SecurityOrigin.h"
 #include "Settings.h"
 #include "ViolationReportType.h"
 #include <wtf/persistence/PersistentCoders.h>
@@ -46,7 +47,7 @@
 namespace WebCore {
 
 // https://html.spec.whatwg.org/multipage/origin.html#obtain-an-embedder-policy
-CrossOriginEmbedderPolicy obtainCrossOriginEmbedderPolicy(const ResourceResponse& response, IsSecureContext isSecureContext, const ScriptExecutionContext* context)
+CrossOriginEmbedderPolicy obtainCrossOriginEmbedderPolicy(const ResourceResponse& response, const ScriptExecutionContext* context)
 {
     auto parseCOEPHeader = [&response](HTTPHeaderName headerName, auto& value, auto& reportingEndpoint) {
         auto coepParsingResult = RFC8941::parseItemStructuredFieldValue(response.httpHeaderField(headerName));
@@ -64,7 +65,7 @@ CrossOriginEmbedderPolicy obtainCrossOriginEmbedderPolicy(const ResourceResponse
     CrossOriginEmbedderPolicy policy;
     if (context && !context->settingsValues().crossOriginEmbedderPolicyEnabled)
         return policy;
-    if (isSecureContext == IsSecureContext::No)
+    if (!SecurityOrigin::create(response.url())->isPotentiallyTrustworthy())
         return policy;
 
     parseCOEPHeader(HTTPHeaderName::CrossOriginEmbedderPolicy, policy.value, policy.reportingEndpoint);

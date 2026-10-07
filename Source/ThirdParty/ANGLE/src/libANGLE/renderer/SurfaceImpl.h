@@ -93,8 +93,10 @@ class SurfaceImpl : public FramebufferAttachmentObjectImpl
     virtual EGLint isPostSubBufferSupported() const;
     virtual EGLint getSwapBehavior() const = 0;
 
-    virtual void attachToFramebuffer(const gl::Context *context, gl::Framebuffer *framebuffer);
-    virtual void detachFromFramebuffer(gl::Framebuffer *framebuffer);
+    virtual egl::Error attachToFramebuffer(const gl::Context *context,
+                                           gl::Framebuffer *framebuffer)   = 0;
+    virtual egl::Error detachFromFramebuffer(const gl::Context *context,
+                                             gl::Framebuffer *framebuffer) = 0;
 
     // Used to query color format from pbuffers created from D3D and WebGPU textures.
     virtual const angle::Format *getClientBufferTextureColorFormat() const;

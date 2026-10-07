@@ -53,7 +53,6 @@ class LowPowerModeNotifier;
 class ResourceRequest;
 class SharedBuffer;
 class ThermalMitigationNotifier;
-class URLPattern;
 enum class AdvancedPrivacyProtections : uint16_t;
 }
 
@@ -219,8 +218,7 @@ public:
         CompressionDictionaryHash hash;
         String id;
     };
-    std::optional<CompressionDictionaryMatch> bestCompressionDictionaryMatch(const WebCore::ResourceRequest&, WebCore::FetchOptions::Destination);
-    Vector<Key> compressionDictionaryKeys(const String& partition) const;
+    void retrieveCompressionDictionaryBestMatch(WebCore::ResourceRequest&&, WebCore::FetchOptions::Destination, Function<void(WebCore::ResourceRequest&&, std::optional<CompressionDictionaryMatch>&&)>&&);
     void retrieveCompressionDictionary(const Key&, const CompressionDictionaryHash&, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
 
     std::unique_ptr<Entry> update(const WebCore::ResourceRequest&, const Entry&, const WebCore::ResourceResponse& validatingResponse, PrivateRelayed);
@@ -237,7 +235,7 @@ public:
 
     void remove(const Key&);
     void remove(const WebCore::ResourceRequest&);
-    void remove(const Vector<Key>&, Function<void()>&&, WallTime dictionariesRegisteredNotAfter = WallTime::infinity());
+    void remove(const Vector<Key>&, Function<void()>&&);
 
     void clear();
     void clear(WallTime modifiedSince, Function<void()>&&);
@@ -291,33 +289,6 @@ private:
     HashMap<GlobalFrameID, WeakHashSet<AsyncRevalidation>> m_pendingAsyncRevalidationByPage;
 
     unsigned m_traverseCount { 0 };
-
-    // A storage shrink does not report evictions, so an entry can outlive its record.
-    struct CompressionDictionaryIndexEntry {
-        CompressionDictionaryMatch match;
-        RefPtr<WebCore::URLPattern> pattern;
-        CompressionDictionaryEntry::DestinationSet matchDest;
-        unsigned matchLength { 0 };
-        WallTime expirationTime;
-        WallTime timeStamp;
-    };
-    static bool isBetterCompressionDictionaryMatch(const CompressionDictionaryIndexEntry& candidate, const CompressionDictionaryIndexEntry& best);
-    void populateCompressionDictionaryIndex();
-    void addToCompressionDictionaryIndex(const CompressionDictionaryEntry&);
-    // Returns false, keeping the entry, if it was registered after registeredNotAfter.
-    bool removeFromCompressionDictionaryIndex(const Key&, WallTime registeredNotAfter = WallTime::infinity());
-
-    HashMap<String, Vector<CompressionDictionaryIndexEntry>> m_compressionDictionaryIndex;
-    // What changed while the startup scan ran, so records it delivers late can be skipped.
-    struct CompressionDictionaryIndexPopulation {
-        CompressionDictionaryIndexPopulation()
-            : clearedSince(WallTime::infinity())
-        {
-        }
-        HashMap<Key, WallTime> removedKeys;
-        WallTime clearedSince;
-    };
-    std::optional<CompressionDictionaryIndexPopulation> m_compressionDictionaryIndexPopulation;
     PAL::SessionID m_sessionID;
     String m_storageDirectory;
 };

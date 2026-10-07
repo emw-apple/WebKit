@@ -65,7 +65,6 @@
 #include "ContentSecurityPolicy.h"
 #include "ContentVisibilityDocumentState.h"
 #include "ContentfulPaintChecker.h"
-#include "Cookie.h"
 #include "CookieJar.h"
 #include "CryptoClient.h"
 #include "ContainerNodeInlines.h"
@@ -1073,12 +1072,6 @@ Quirks& Document::ensureQuirks()
     return *m_quirks;
 }
 
-void Document::urlsAffectingQuirksDidChange()
-{
-    if (m_quirks)
-        m_quirks->urlsDidChange();
-}
-
 CachedResourceLoader& Document::ensureCachedResourceLoader()
 {
     ASSERT(m_constructionDidFinish);
@@ -1159,29 +1152,6 @@ SecurityOrigin& Document::topOrigin() const
         return frame->topOrigin();
 
     return SecurityOrigin::opaqueOrigin();
-}
-
-void Document::updateHasUnpartitionedStorageAccess(const DocumentLoader* loader)
-{
-    m_hasUnpartitionedStorageAccess = computeHasUnpartitionedStorageAccess(loader);
-}
-
-bool Document::computeHasUnpartitionedStorageAccess(const DocumentLoader* loader) const
-{
-    RefPtr frame = m_frame.get();
-    if (!frame || frame->isMainFrame())
-        return false;
-
-    RefPtr origin = SecurityContext::securityOrigin();
-    if (!origin || origin->isOpaque())
-        return false;
-
-    if (SecurityPolicy::shouldInheritSecurityOriginFromOwner(m_url)) {
-        RefPtr parentDocument = this->parentDocument();
-        return parentDocument && parentDocument->hasUnpartitionedStorageAccess() && protect(parentDocument->securityOrigin())->isSameOriginAs(*origin);
-    }
-
-    return loader && loader->hasUnpartitionedStorageAccess(origin->toURL());
 }
 
 inline DocumentFontLoader& Document::fontLoader()
@@ -4757,10 +4727,6 @@ void Document::setURL(URL&& url)
     m_documentURI = m_url.url();
     m_adjustedURL = adjustedURL();
     updateBaseURL();
-
-    urlsAffectingQuirksDidChange();
-    if (RefPtr page = this->page(); page && isTopDocument())
-        page->topDocumentURLDidChange();
 }
 
 const URL& Document::urlForBindings()
@@ -5473,13 +5439,6 @@ void Document::processViewport(const String& features, ViewportArguments::Type o
     });
 
     updateViewportArguments();
-
-    // Follow viewport-fit for as long as the document is still parsing, and stop afterwards: a page
-    // rewriting its own meta tag once loaded does not make the platform start honoring the safe area
-    // insets. HTMLPreloadScanner calls us during tokenization, ahead of the main parser and ahead of
-    // script, so on a typical page this settles before Element.prototype even exists.
-    if (parsing())
-        updateSafeAreaInsetOptIn();
 }
 
 ViewportArguments Document::viewportArguments() const
@@ -5518,22 +5477,6 @@ void Document::updateViewportArguments()
 
     page->chrome().dispatchViewportPropertiesDidChange(viewportArguments());
     page->chrome().didReceiveDocType(protect(frame()).releaseNonNull());
-}
-
-void Document::updateSafeAreaInsetOptIn()
-{
-    auto optIn = viewportArguments().viewportFit == ViewportFit::Cover
-        ? SafeAreaInsetOptIn::OptedIn
-        : SafeAreaInsetOptIn::NotOptedIn;
-    if (optIn == m_safeAreaInsetOptIn)
-        return;
-
-    m_safeAreaInsetOptIn = optIn;
-
-    if (m_quirks)
-        m_quirks->determineRelevantQuirks();
-    if (RefPtr frame = this->frame())
-        frame->script().reevaluateQuirkDependentProperties();
 }
 
 void Document::metaElementThemeColorChanged(HTMLMetaElement& metaElement)
@@ -7482,7 +7425,7 @@ ExceptionOr<void> Document::setCookie(const String& value)
 
     invalidateDOMCookieCache();
     if (RefPtr page = this->page())
-        page->cookieJar().setCookies(*this, cookieURL, CookieUtil::cookieStringForStorage(value));
+        page->cookieJar().setCookies(*this, cookieURL, value);
     return { };
 }
 
@@ -8384,10 +8327,6 @@ void Document::finishedParsing()
 
     Ref protectedThis { *this };
 
-    // Covers documents that never called processViewport at all, which have therefore not opted in.
-    // Runs before deferred scripts and DOMContentLoaded so script does not observe the change.
-    updateSafeAreaInsetOptIn();
-
     if (RefPtr scriptRunner = m_scriptRunner.get())
         scriptRunner->documentFinishedParsing();
 
@@ -8579,8 +8518,6 @@ void Document::initSecurityContext()
         setBaseURLOverride(parentDocument->baseURL());
     }
 
-    m_isSecureContext = computeIsSecureContext();
-
     if (!SecurityPolicy::shouldInheritSecurityOriginFromOwner(m_url))
         return;
 
@@ -8603,9 +8540,7 @@ void Document::initSecurityContext()
     contentSecurityPolicy->updateSourceSelf(protect(ownerFrame->document()->securityOrigin()));
 
     setCrossOriginEmbedderPolicy(ownerFrame->document()->crossOriginEmbedderPolicy());
-    setDocumentIsolationPolicy(ownerFrame->document()->documentIsolationPolicy());
     setIsOriginKeyed(ownerFrame->document()->isOriginKeyed());
-    m_isSecureContext = ownerFrame->document()->m_isSecureContext;
 
     // https://html.spec.whatwg.org/multipage/browsers.html#creating-a-new-browsing-context (Step 12)
     // If creator is non-null and creator's origin is same origin with creator's relevant settings object's top-level origin, then set coop
@@ -8713,45 +8648,36 @@ static inline bool isDocumentSecure(const Document& document)
     return document.securityOrigin().isPotentiallyTrustworthy();
 }
 
-void Document::setLoadSourceOriginOverrideForTesting(RefPtr<SecurityOrigin>&& origin)
-{
-    m_loadSourceOriginOverrideForTesting = WTF::move(origin);
-}
-
 // https://w3c.github.io/webappsec-secure-contexts/#is-settings-object-contextually-secure
-bool Document::computeIsSecureContext() const
-{
-    // A provisional frame is not in the frame tree yet.
-    RefPtr parentFrame = m_frame->tree().parent();
-    if (!parentFrame)
-        parentFrame = m_frame->loader().client().provisionalParentFrame();
-    if (!parentFrame)
-        return isDocumentSecure(*this);
-
-    auto parentSecurityPolicy = parentFrame->frameDocumentSecurityPolicy();
-    if (!parentSecurityPolicy || parentSecurityPolicy->isSecureContext == IsSecureContext::No)
-        return false;
-
-    return isDocumentSecure(*this);
-}
-
 bool Document::isSecureContext() const
 {
+    if (!m_frame)
+        return true;
     if (!settings().secureContextChecksEnabled())
         return true;
     if (page() && page()->isServiceWorkerPage())
         return true;
-    return m_isSecureContext;
-}
 
-bool Document::isInCrossOriginIsolatedAgentCluster() const
-{
-    return crossOriginOpenerPolicy().value == CrossOriginOpenerPolicyValue::SameOriginPlusCOEP;
+    for (Ref frame : ancestorFrames(*m_frame)) {
+        if (RefPtr localFrame = dynamicDowncast<LocalFrame>(frame.get())) {
+            Ref<Document> ancestorDocument = *localFrame->document();
+            if (!isDocumentSecure(ancestorDocument))
+                return false;
+        } else if (RefPtr securityOrigin = frame->frameDocumentSecurityOrigin()) {
+            if (!securityOrigin->isPotentiallyTrustworthy())
+                return false;
+        }
+    }
+
+    return isDocumentSecure(*this);
 }
 
 bool Document::crossOriginIsolated() const
 {
-    return isInCrossOriginIsolatedAgentCluster() && PermissionsPolicy::isFeatureEnabled(PermissionsPolicy::Feature::CrossOriginIsolated, *this, PermissionsPolicy::ShouldReportViolation::No);
+    RefPtr mainDocument = mainFrameDocument();
+    if (!mainDocument)
+        return false;
+    return mainDocument->crossOriginOpenerPolicy().value == CrossOriginOpenerPolicyValue::SameOriginPlusCOEP;
 }
 
 String Document::agentClusterID() const
@@ -8763,7 +8689,7 @@ String Document::agentClusterID() const
         auto opaqueID = data.opaqueOriginIdentifier();
         return makeString(browsingContextGroupIdentifier, "-opaque-"_s, opaqueID ? opaqueID->toString() : String { });
     }
-    if (isInCrossOriginIsolatedAgentCluster())
+    if (crossOriginIsolated())
         return makeString(browsingContextGroupIdentifier, "-coi-"_s, data.toString());
     if (m_isOriginKeyed == OriginKeyed::Yes)
         return makeString(browsingContextGroupIdentifier, "-oac-"_s, data.toString());
@@ -8775,7 +8701,7 @@ bool Document::originAgentCluster() const
 {
     if (securityOrigin().isOpaque())
         return true;
-    if (isInCrossOriginIsolatedAgentCluster())
+    if (crossOriginIsolated())
         return true;
     return m_isOriginKeyed == OriginKeyed::Yes;
 }
@@ -9162,50 +9088,23 @@ void Document::transferViewTransitionParams(Document& newDocument)
     newDocument.m_inboundViewTransitionParams = std::exchange(m_inboundViewTransitionParams, nullptr);
 }
 
-// https://html.spec.whatwg.org/multipage/browsing-the-web.html#deactivate-a-document-for-a-cross-document-navigation
-void Document::dispatchPageswapEvent(CanTriggerCrossDocumentViewTransition canTriggerCrossDocumentViewTransition, RefPtr<NavigationActivation>&& activation, CompletionHandler<void()>&& proceedWithNavigation)
+void Document::dispatchPageswapEvent(CanTriggerCrossDocumentViewTransition canTriggerCrossDocumentViewTransition, RefPtr<NavigationActivation>&& activation)
 {
     RefPtr<ViewTransition> oldViewTransition;
-    bool navigationWaitsForCapture = !!proceedWithNavigation;
 
     auto startTime = MonotonicTime::now();
     PageSwapEvent::Init swapInit;
     swapInit.activation = WTF::move(activation);
     if (canTriggerCrossDocumentViewTransition == CanTriggerCrossDocumentViewTransition::Yes && globalObject()) {
-        ViewTransition::OutboundPostCaptureSteps outboundPostCaptureSteps;
-        if (navigationWaitsForCapture) {
-            outboundPostCaptureSteps = [weakThis = WeakPtr<Document, WeakPtrImplWithEventTargetData> { *this }, startTime, proceedWithNavigation = std::exchange(proceedWithNavigation, nullptr)](std::unique_ptr<ViewTransitionParams>&& params) mutable {
-                if (RefPtr protectedThis = weakThis.get(); protectedThis && params) {
-                    params->startTime = startTime;
-                    params->oldDocumentOrigin = &protectedThis->securityOrigin();
-                    // FIXME: This should set the params on the new Document, but it doesn't exist yet.
-                    // Store it on the old, and we'll call transferViewTransitionParams soon.
-                    protectedThis->m_inboundViewTransitionParams = WTF::move(params);
-                }
-                // Not from within whatever skipped or completed the capture, which may be script.
-                callOnMainThread(WTF::move(proceedWithNavigation));
-            };
-        }
-        oldViewTransition = ViewTransition::setupCrossDocumentViewTransition(*this, WTF::move(outboundPostCaptureSteps));
+        oldViewTransition = ViewTransition::setupCrossDocumentViewTransition(*this);
         swapInit.viewTransition = oldViewTransition;
     }
 
     dispatchWindowEvent(PageSwapEvent::create(eventNames().pageswapEvent, WTF::move(swapInit)), this);
 
-    // Proceeds from the transition's outbound post-capture steps instead, if there is one.
-    if (navigationWaitsForCapture) {
-        if (proceedWithNavigation) {
-            proceedWithNavigation();
-            return;
-        }
-        // FIXME: This should capture in the next rendering update, but there is none until the new
-        // document paints: the layer tree is frozen from when the provisional load started.
-        if (oldViewTransition && oldViewTransition->phase() == ViewTransitionPhase::PendingCapture)
-            oldViewTransition->setupViewTransition();
-        return;
-    }
-
-    // The navigation cannot wait, so capture now.
+    // FIXME: This should actually defer the navigation, and run the setupViewTransition
+    // (capture the old state) on the next rendering update.
+    // https://html.spec.whatwg.org/multipage/browsing-the-web.html#deactivate-a-document-for-a-cross-document-navigation
     if (oldViewTransition && oldViewTransition->phase() != ViewTransitionPhase::Done) {
         oldViewTransition->setupViewTransition();
 
@@ -9434,7 +9333,7 @@ void Document::didPaintText(const RenderBlockFlow& formattingContextRoot, FloatR
     largestContentfulPaintData().didPaintText(formattingContextRoot, localRect, isOnlyTextBoxForElement);
 }
 
-unsigned Document::requestAnimationFrame(Ref<RequestAnimationFrameCallback>&& callback)
+int Document::requestAnimationFrame(Ref<RequestAnimationFrameCallback>&& callback)
 {
     if (!m_scriptedAnimationController) {
         m_scriptedAnimationController = ScriptedAnimationController::create(*this);
@@ -9452,7 +9351,7 @@ unsigned Document::requestAnimationFrame(Ref<RequestAnimationFrameCallback>&& ca
     return m_scriptedAnimationController->registerCallback(WTF::move(callback));
 }
 
-void Document::cancelAnimationFrame(unsigned id)
+void Document::cancelAnimationFrame(int id)
 {
     if (!m_scriptedAnimationController)
         return;
@@ -9509,14 +9408,14 @@ void Document::processInternalResourceLinks(Element* element)
     }
 }
 
-unsigned Document::requestIdleCallback(Ref<IdleRequestCallback>&& callback, Seconds timeout)
+int Document::requestIdleCallback(Ref<IdleRequestCallback>&& callback, Seconds timeout)
 {
     if (!m_idleCallbackController)
         lazyInitialize(m_idleCallbackController, makeUnique<IdleCallbackController>(*this));
     return m_idleCallbackController->queueIdleCallback(WTF::move(callback), timeout);
 }
 
-void Document::cancelIdleCallback(unsigned id)
+void Document::cancelIdleCallback(int id)
 {
     if (!m_idleCallbackController)
         return;
@@ -10215,21 +10114,6 @@ float Document::deviceScaleFactor() const
     return deviceScaleFactor;
 }
 
-float Document::pixelSnappingScaleFactor() const
-{
-    auto* documentPage = page();
-    if (!documentPage)
-        return 1;
-    float scaleFactor = documentPage->deviceScaleFactor();
-#if PLATFORM(MAC)
-    // With scaling delegated to the UI process the page scale lives on the layer, so the backing store
-    // grid is deviceScaleFactor * pageScaleFactor rather than deviceScaleFactor alone.
-    if (documentPage->delegatesScaling())
-        scaleFactor *= documentPage->pageScaleFactor();
-#endif
-    return scaleFactor;
-}
-
 #if ENABLE(DARK_MODE_CSS)
 OptionSet<ColorScheme> Document::resolvedColorScheme(const Style::ComputedStyle* style) const
 {
@@ -10415,9 +10299,7 @@ Element* Document::activeElement()
 {
     if (Element* element = treeScope().focusedElementInScope())
         return element;
-    if (Element* body = bodyOrFrameset())
-        return body;
-    return documentElement();
+    return bodyOrFrameset();
 }
 
 bool Document::hasFocus() const
@@ -10481,12 +10363,12 @@ void Document::showPlaybackTargetPicker(MediaPlaybackTargetClient& client, bool 
     if (it == m_clientToIDMap.end())
         return;
 
-    RefPtr view = frame()->view();
-    if (!view)
+    RefPtr localRootView = frame()->rootFrame().view();
+    if (!localRootView)
         return;
 
-    auto positionInMainFrameView = view->contentsToMainFrameView(view->windowToContents(flooredIntPoint(frame()->eventHandler().lastKnownMousePosition())));
-    page->showPlaybackTargetPicker(it->value, positionInMainFrameView, isVideo, routeSharingPolicy, routingContextUID);
+    auto position = localRootView->contentsToRootView(localRootView->windowToContents(flooredIntPoint(frame()->eventHandler().lastKnownMousePosition())));
+    page->showPlaybackTargetPicker(it->value, frame()->rootFrame().frameID(), position, isVideo, routeSharingPolicy, routingContextUID);
 }
 
 void Document::playbackTargetPickerClientStateDidChange(MediaPlaybackTargetClient& client, MediaProducerMediaStateFlags state)
@@ -12539,14 +12421,6 @@ void Document::securityOriginDidChange()
 {
     m_syncData->documentSecurityOrigin = SecurityContext::securityOrigin();
     m_permissionsPolicy = nullptr;
-    if (m_hasUnpartitionedStorageAccess) {
-        if (RefPtr origin = SecurityContext::securityOrigin(); !origin || origin->isOpaque()) {
-            m_hasUnpartitionedStorageAccess = false;
-            m_siteForCookies = { };
-            if (RefPtr frame = m_frame.get(); frame && frame->document() == this)
-                protect(frame->loader())->updateFirstPartyForCookies();
-        }
-    }
     if (m_frame && m_frame->document() == this)
         m_frame->documentURLOrOriginDidChange();
 }

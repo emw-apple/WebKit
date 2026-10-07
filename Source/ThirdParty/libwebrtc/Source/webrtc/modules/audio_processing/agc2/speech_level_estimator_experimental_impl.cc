@@ -40,8 +40,7 @@ SpeechLevelEstimatorExperimentalImpl::SpeechLevelEstimatorExperimentalImpl(
       initial_speech_level_dbfs_(GetInitialSpeechLevelEstimateDbfs(config)),
       adjacent_speech_frames_threshold_(adjacent_speech_frames_threshold),
       level_dbfs_(initial_speech_level_dbfs_),
-      is_confident_(false),
-      is_background_speaker_(false) {
+      is_confident_(false) {
   RTC_DCHECK(apm_data_dumper_);
   RTC_DCHECK_GE(adjacent_speech_frames_threshold_, 1);
   Reset();
@@ -49,7 +48,7 @@ SpeechLevelEstimatorExperimentalImpl::SpeechLevelEstimatorExperimentalImpl(
 
 void SpeechLevelEstimatorExperimentalImpl::Update(float rms_dbfs,
                                                   float speech_probability) {
-  constexpr float kBackgroundSpeakerOffsetDbfs = 10.0f;
+  constexpr float kMaxReductionDbfs = 10.0f;
   constexpr int kFramesPerUpdate = 100;
 
   if (speech_probability < kVadConfidenceThreshold) {
@@ -73,11 +72,8 @@ void SpeechLevelEstimatorExperimentalImpl::Update(float rms_dbfs,
         // estimation.
         const float reliable_level_dbfs = ClampLevelEstimateDbfs(
             reliable_state_.sum_of_levels_dbfs / reliable_state_.num_frames);
-        if (is_confident_ &&
-            reliable_level_dbfs < level_dbfs_ - kBackgroundSpeakerOffsetDbfs) {
-          is_background_speaker_ = true;
-        } else {
-          is_background_speaker_ = false;
+        if (!is_confident_ ||
+            reliable_level_dbfs >= level_dbfs_ - kMaxReductionDbfs) {
           level_dbfs_ = reliable_level_dbfs;
           is_confident_ = true;
         }
@@ -96,7 +92,6 @@ void SpeechLevelEstimatorExperimentalImpl::Reset() {
   num_adjacent_speech_frames_ = 0;
   tracking_level_dbfs_ = initial_speech_level_dbfs_;
   is_confident_ = false;
-  is_background_speaker_ = false;
 }
 
 void SpeechLevelEstimatorExperimentalImpl::ResetLevelEstimatorState(
@@ -110,8 +105,6 @@ void SpeechLevelEstimatorExperimentalImpl::DumpDebugData() const {
     return;
   apm_data_dumper_->DumpRaw("agc2_speech_level_dbfs", level_dbfs_);
   apm_data_dumper_->DumpRaw("agc2_speech_level_is_confident", is_confident_);
-  apm_data_dumper_->DumpRaw("agc2_speech_level_is_background_speaker",
-                            is_background_speaker_);
   apm_data_dumper_->DumpRaw(
       "agc2_adaptive_level_estimator_num_adjacent_speech_frames",
       num_adjacent_speech_frames_);

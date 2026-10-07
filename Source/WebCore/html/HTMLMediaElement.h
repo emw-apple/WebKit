@@ -134,7 +134,7 @@ template<typename, typename> class PODInterval;
 class RemotePlayback;
 #endif
 
-using CueInterval = PODInterval<MediaTime, CheckedPtr<TextTrackCue>>;
+using CueInterval = PODInterval<MediaTime, TextTrackCue*>;
 using CueList = Vector<CueInterval>;
 using PlatformDisplayID = uint32_t;
 
@@ -854,10 +854,6 @@ private:
 
     void createMediaPlayer();
 
-#if ENABLE(VIDEO_PRESENTATION_MODE)
-    void updatePlayerVideoFullscreenLayer(MediaPlayer&);
-#endif
-
     bool supportsFocus() const override;
     bool rendererIsNeeded(const Style::ComputedStyle&) override;
     bool childShouldCreateRenderer(const Node&) const override;
@@ -1035,8 +1031,6 @@ private:
     void playInternal();
     void pauseInternal(bool dispatchPauseEvent = true);
     void completePlayInternal();
-
-    void playIfPermitted(MediaElementSession::ForAutoplay);
 
     enum class IsExplicitLoad : bool { No, Yes };
     void prepareForLoad(IsExplicitLoad = IsExplicitLoad::No);

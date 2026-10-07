@@ -82,20 +82,6 @@ WI.SpreadsheetStyleProperty = class SpreadsheetStyleProperty extends WI.Object
         }
     }
 
-    // Static
-
-    static calculateDuplicateProperties(enabledProperties)
-    {
-        let duplicateProperties = new Set;
-        let lastPropertyForName = new Map;
-        for (let property of enabledProperties) {
-            if (lastPropertyForName.has(property.name))
-                duplicateProperties.add(lastPropertyForName.get(property.name));
-            lastPropertyForName.set(property.name, property);
-        }
-        return duplicateProperties;
-    }
-
     // Public
 
     get element() { return this._element; }
@@ -276,8 +262,21 @@ WI.SpreadsheetStyleProperty = class SpreadsheetStyleProperty extends WI.Object
         this.updateStatus();
     }
 
-    updateStatus({duplicateProperties} = {})
+    updateStatus()
     {
+        let duplicatePropertyExistsBelow = (cssProperty) => {
+            let propertyFound = false;
+
+            for (let property of this._property.ownerStyle.enabledProperties) {
+                if (property === cssProperty)
+                    propertyFound = true;
+                else if (property.name === cssProperty.name && propertyFound)
+                    return true;
+            }
+
+            return false;
+        };
+
         let classNames = [WI.SpreadsheetStyleProperty.StyleClassName];
         let elementTitle = "";
 
@@ -299,9 +298,7 @@ WI.SpreadsheetStyleProperty = class SpreadsheetStyleProperty extends WI.Object
             }
 
             classNames.push("overridden");
-
-            duplicateProperties ||= WI.SpreadsheetStyleProperty.calculateDuplicateProperties(this._property.ownerStyle.enabledProperties);
-            if (duplicateProperties.has(this._property)) {
+            if (duplicatePropertyExistsBelow(this._property)) {
                 classNames.push("has-warning");
                 elementTitle = WI.UIString("Duplicate property");
             }

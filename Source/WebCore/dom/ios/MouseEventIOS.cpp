@@ -28,7 +28,6 @@
 
 #if ENABLE(TOUCH_EVENTS) && PLATFORM(IOS_FAMILY)
 
-#import "DocumentView.h"
 #import "EventNames.h"
 #import "LocalFrame.h"
 #import "LocalFrameView.h"

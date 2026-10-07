@@ -357,7 +357,7 @@ WI.RecordingActionTreeElement = class RecordingActionTreeElement extends WI.Gene
         case "copyBufferSubData":
         case "copyBufferToBuffer":
         case "copyBufferToTexture":
-        case "drawElementImageToTexture":
+        case "copyElementImageToTexture":
         case "copyExternalImageToTexture":
         case "copyTexImage2D":
         case "copyTexSubImage2D":
@@ -702,7 +702,7 @@ WI.RecordingActionTreeElement = class RecordingActionTreeElement extends WI.Gene
         case "sampleCount":
         case "samplerParameterf":
         case "samplerParameteri":
-        case "texElementSubImage2D":
+        case "texElementImage2D":
         case "texImage2D":
         case "texImage3D":
         case "texParameterf":

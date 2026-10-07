@@ -396,7 +396,6 @@ static void addParametersShared(const LocalFrame* frame, NetworkResourceLoadPara
 
     if (RefPtr document = frame->document()) {
         parameters.crossOriginEmbedderPolicy = document->crossOriginEmbedderPolicy();
-        parameters.documentIsolationPolicy = document->documentIsolationPolicy();
         parameters.isClearSiteDataHeaderEnabled = document->settings().clearSiteDataHTTPHeaderEnabled();
         parameters.isClearSiteDataExecutionContextEnabled = document->settings().clearSiteDataExecutionContextsSupportEnabled();
         parameters.globalPrivacyControlEnabled = document->settings().globalPrivacyControlEnabled().value_or(false);
@@ -542,8 +541,6 @@ void WebLoaderStrategy::scheduleLoadFromNetworkProcess(ResourceLoader& resourceL
 
     if (!loadParameters.sourceOrigin && document)
         loadParameters.sourceOrigin = document->securityOrigin();
-    if (RefPtr origin = document ? document->loadSourceOriginOverrideForTesting() : nullptr)
-        loadParameters.sourceOrigin = WTF::move(origin);
     if (!loadParameters.sourceOrigin) {
         auto origin = request.httpOrigin();
         if (!origin.isNull())

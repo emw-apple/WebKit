@@ -14,7 +14,6 @@ Clipboard
 CloseWatcher
 CookieStore
 DedicatedWorkerGlobalScope
-DevicePosture
 DOMAudioSession conditional=DOM_AUDIO_SESSION
 DOMWindow
 EventSource

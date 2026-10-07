@@ -29,7 +29,6 @@
 #include <WebCore/platform/LegacySchemeRegistry.h>
 #include <glib/gi18n.h>
 #include <wtf/URLParser.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GWeakPtr.h>
 #include <wtf/glib/WTFGType.h>
 
@@ -492,8 +491,8 @@ void webkit_web_extension_context_load_background_content(WebKitWebExtensionCont
 
     context->priv->context->loadBackgroundContent([task = WTF::move(task)](RefPtr<API::Error> error) {
         if (error) {
-            SAFE_G_TASK_RETURN_NEW_ERROR(task.get(), webkit_web_extension_context_error_quark(),
-                toWebKitWebExtensionContextError(error->errorCode()), "%s", error->localizedDescription().utf8());
+            g_task_return_new_error(task.get(), webkit_web_extension_context_error_quark(),
+                toWebKitWebExtensionContextError(error->errorCode()), "%s", error->localizedDescription().utf8().legacyCStringPointer());
         } else
             g_task_return_boolean(task.get(), TRUE);
     });

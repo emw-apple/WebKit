@@ -45,9 +45,10 @@ public:
     unsigned NODELETE totalCharacters() const;
     float totalLength() const;
     float totalAnchorShift() const;
+    AffineTransform transformationForTextBox(InlineIterator::SVGTextBoxIterator) const;
 
-    void buildTextChunks(const Vector<InlineIterator::SVGTextBoxIterator>& lineLayoutBoxes, const SVGTextChunkStarts&, SVGTextFragmentMap&);
-    void layoutTextChunks(const Vector<InlineIterator::SVGTextBoxIterator>& lineLayoutBoxes, const SVGTextChunkStarts&, SVGTextFragmentMap&);
+    void buildTextChunks(const Vector<InlineIterator::SVGTextBoxIterator>& lineLayoutBoxes, const HashSet<InlineIterator::SVGTextBox::Key>& chunkStarts, SVGTextFragmentMap&);
+    void layoutTextChunks(const Vector<InlineIterator::SVGTextBoxIterator>& lineLayoutBoxes, const HashSet<InlineIterator::SVGTextBox::Key>& chunkStarts, SVGTextFragmentMap&);
 
 private:
     // SVG2 §11.10: applies 'textLength' across all chunks of an owning element when
@@ -57,6 +58,7 @@ private:
     void applyElementLevelTextLength();
 
     Vector<SVGTextChunk> m_textChunks;
+    SVGChunkTransformMap m_textBoxTransformations;
 };
 
 } // namespace WebCore

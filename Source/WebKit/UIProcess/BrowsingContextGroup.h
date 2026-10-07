@@ -62,12 +62,10 @@ enum class BrowsingContextGroupUpdate : uint8_t { None, AddProcess, AddProcessAn
 
 class BrowsingContextGroup : public RefCountedAndCanMakeWeakPtr<BrowsingContextGroup> {
 public:
-    static Ref<BrowsingContextGroup> create(WebCore::CrossOriginMode crossOriginMode) { return adoptRef(*new BrowsingContextGroup(crossOriginMode)); }
+    static Ref<BrowsingContextGroup> create() { return adoptRef(*new BrowsingContextGroup()); }
     ~BrowsingContextGroup();
 
     WebCore::BrowsingContextGroupIdentifier identifier() const { return m_identifier; }
-
-    WebCore::CrossOriginMode crossOriginMode() const { return m_crossOriginMode; }
 
     void sharedProcessForSite(WebsiteDataStore&, API::WebsitePolicies*, const WebPreferences&, const WebCore::Site&, const WebCore::Site& mainFrameSite, WebProcessProxy::LockdownMode, EnhancedSecurity, API::PageConfiguration&, IsMainFrame, CompletionHandler<void(FrameProcess*)>&&);
     Ref<FrameProcess> ensureProcessForSite(const WebCore::Site&, const WebCore::Site& mainFrameSite, WebProcessProxy&, const WebPreferences&, LoadedWebArchive = LoadedWebArchive::No, BrowsingContextGroupUpdate = BrowsingContextGroupUpdate::AddProcessAndInjectBrowsingContext);
@@ -84,7 +82,7 @@ public:
     void closeRemotePagesForPage(WebPageProxy&);
     bool hasMultiplePages() const;
     bool hasVisiblePage() const;
-    void forEachRemotePage(const WebPageProxy&, NOESCAPE const Function<void(RemotePageProxy&)>&);
+    void forEachRemotePage(const WebPageProxy&, Function<void(RemotePageProxy&)>&&);
 
     RefPtr<RemotePageProxy> remotePageInProcess(const WebPageProxy&, const WebProcessProxy&);
 
@@ -99,13 +97,12 @@ public:
     void clearBrowsingContextGroupForTesting();
 
 private:
-    explicit BrowsingContextGroup(WebCore::CrossOriginMode);
+    BrowsingContextGroup();
 
     RefPtr<FrameProcess> liveSharedProcess();
     void clearSharedProcess();
 
     WebCore::BrowsingContextGroupIdentifier m_identifier { WebCore::BrowsingContextGroupIdentifier::generate() };
-    const WebCore::CrossOriginMode m_crossOriginMode;
 
     WeakPtr<FrameProcess> m_sharedProcess;
     HashSet<WebCore::Site> m_sharedProcessSites;
@@ -116,11 +113,10 @@ private:
     WeakHashMap<WebPageProxy, HashSet<Ref<RemotePageProxy>>> m_remotePages;
 
     HashMap<WebCore::SecurityOriginData, WebCore::OriginKeyed> m_historicalAgentClusterKeyMap;
-} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(refBrowsingContextGroup, derefBrowsingContextGroup);
+} SWIFT_SHARED_REFERENCE(refBrowsingContextGroup, derefBrowsingContextGroup) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
 }
 
-#if !ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
 inline void refBrowsingContextGroup(WebKit::BrowsingContextGroup* WTF_NONNULL obj)
 {
     obj->ref();
@@ -130,4 +126,3 @@ inline void derefBrowsingContextGroup(WebKit::BrowsingContextGroup* WTF_NONNULL 
 {
     obj->deref();
 }
-#endif

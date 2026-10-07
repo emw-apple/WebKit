@@ -528,11 +528,7 @@ WI.DOMTreeElement = class DOMTreeElement extends WI.TreeElement
             return;
 
         this._closeTagTreeElement = null;
-
         this._updateChildrenInProgress = true;
-        using resetUpdateChildrenInProgress = new ScopeExit(() => {
-            this._updateChildrenInProgress = false;
-        });
 
         var node = this.representedObject;
         var selectedNode = this.treeOutline.selectedDOMNode();
@@ -552,6 +548,7 @@ WI.DOMTreeElement = class DOMTreeElement extends WI.TreeElement
             if (!hasVisibleChildren) {
                 this.hasChildren = false;
                 this.updateTitle();
+                this._updateChildrenInProgress = false;
                 return;
             }
         }
@@ -614,6 +611,8 @@ WI.DOMTreeElement = class DOMTreeElement extends WI.TreeElement
             if (treeOutlineContainerElement && originalScrollTop <= treeOutlineContainerElement.scrollHeight)
                 treeOutlineContainerElement.scrollTop = originalScrollTop;
         }
+
+        this._updateChildrenInProgress = false;
     }
 
     adjustCollapsedRange()

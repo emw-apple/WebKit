@@ -1,5 +1,6 @@
 // This creates a serialized <script> element that is useful for blob/data/srcdoc-style tests.
-function createScript(sameOrigin, crossOrigin, type="parent", id="", useDispatcher=false) {
+
+function createScript(sameOrigin, crossOrigin, type="parent", id="") {
   return `const data = { id: "${id}",
                opener: !!window.opener,
                origin: window.origin,
@@ -22,8 +23,6 @@ Promise.all(records).then(() => {
   if ("${type}" === "channel") {
     const bc = new BroadcastChannel("${id}");
     bc.postMessage(data);
-  } else if (${useDispatcher}) {
-    send("${id}", JSON.stringify(data));
   } else {
     window.${type}.postMessage(data, "*");
   }

@@ -290,7 +290,6 @@ enum class AXProperty : uint16_t {
     RowIndex,
     RowIndexRange,
     ScreenRelativePosition,
-    SelectedOptionCheckmark,
     SelectedTextRange,
     SetSize,
     SortDirection,

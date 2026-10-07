@@ -47,10 +47,10 @@ WEBCORE_EXPORT @interface WebAVPlayerLayerView : __AVPlayerLayerView
 
 namespace WebCore {
 
-WEBCORE_EXPORT WebAVPlayerLayerView *allocWebAVPlayerLayerViewInstance() NS_RETURNS_RETAINED;
+WEBCORE_EXPORT WebAVPlayerLayerView *allocWebAVPlayerLayerViewInstance();
 
 #if HAVE(PICTUREINPICTUREPLAYERLAYERVIEW)
-WEBCORE_EXPORT WebAVPictureInPicturePlayerLayerView *allocWebAVPictureInPicturePlayerLayerViewInstance() NS_RETURNS_RETAINED;
+WEBCORE_EXPORT WebAVPictureInPicturePlayerLayerView *allocWebAVPictureInPicturePlayerLayerViewInstance();
 #endif
 
 }

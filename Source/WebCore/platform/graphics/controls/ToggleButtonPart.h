@@ -46,7 +46,7 @@ private:
 
     std::unique_ptr<PlatformControl> createPlatformControl() final
     {
-        return protect(controlFactory())->createPlatformToggleButton(*this);
+        return controlFactory().createPlatformToggleButton(*this);
     }
 };
 

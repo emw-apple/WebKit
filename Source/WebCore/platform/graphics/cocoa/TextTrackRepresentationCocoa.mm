@@ -69,12 +69,12 @@
 - (void)setParent:(WebCore::TextTrackRepresentationCocoa*)parent
 {
     if (_parent)
-        [protect(protect(_parent)->platformLayer()) removeObserver:self forKeyPath:@"bounds"];
+        [_parent->platformLayer() removeObserver:self forKeyPath:@"bounds"];
 
     _parent = parent;
 
     if (_parent)
-        [protect(protect(_parent)->platformLayer()) addObserver:self forKeyPath:@"bounds" options:0 context:0];
+        [_parent->platformLayer() addObserver:self forKeyPath:@"bounds" options:0 context:0];
 }
 
 - (WebCore::TextTrackRepresentationCocoa*)parent
@@ -88,14 +88,12 @@
     UNUSED_PARAM(context);
 #if PLATFORM(IOS_FAMILY)
     WebThreadRun(^{
-        CheckedPtr parent = _parent;
-        if (parent && [keyPath isEqual:@"bounds"] && object == parent->platformLayer())
-            parent->client().textTrackRepresentationBoundsChanged(parent->bounds());
+        if (_parent && [keyPath isEqual:@"bounds"] && object == _parent->platformLayer())
+            _parent->client().textTrackRepresentationBoundsChanged(_parent->bounds());
     });
 #else
-    CheckedPtr parent = _parent;
-    if (parent && [keyPath isEqual:@"bounds"] && object == parent->platformLayer())
-        parent->boundsChanged();
+    if (_parent && [keyPath isEqual:@"bounds"] && object == _parent->platformLayer())
+        CheckedPtr { _parent }->boundsChanged();
 #endif
 }
 

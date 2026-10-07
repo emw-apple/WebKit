@@ -40,7 +40,7 @@ namespace Corpse {
 
 void Error::report(const char* format, ...)
 {
-    SAFE_FPRINTF(stderr, "%s: ", Client::name());
+    fprintf(stderr, "%s: ", Client::name().characters());
 
     va_list args;
     va_start(args, format);

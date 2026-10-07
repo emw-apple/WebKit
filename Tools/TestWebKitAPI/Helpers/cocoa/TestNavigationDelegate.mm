@@ -100,12 +100,6 @@
         didFinishNavigation(webView, navigation);
 }
 
-- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
-{
-    if (auto didFailNavigation = makeBlockPtr(_didFailNavigation))
-        didFailNavigation(webView, navigation, error);
-}
-
 - (void)_webView:(WKWebView *)webView didFinishLoadWithRequest:(NSURLRequest *)request inFrame:(WKFrameInfo *)frame
 {
     if (_didFinishLoadWithRequestInFrame)
@@ -476,33 +470,6 @@
     }];
     TestWebKitAPI::Util::run(&presentationUpdateHappened);
 #endif
-}
-
-- (void)_test_waitForDidFinishNavigationWhileIgnoringSSLErrorsWithCompletionHandler:(void (^)(NSError *))completionHandler
-{
-    RetainPtr<id<WKNavigationDelegate>> oldNavigationDelegate = self.navigationDelegate;
-
-    RetainPtr navigationDelegate = adoptNS([[TestNavigationDelegate alloc] init]);
-    navigationDelegate.get().didReceiveAuthenticationChallenge = ^(WKWebView *, NSURLAuthenticationChallenge *challenge, void (^completionHandler)(NSURLSessionAuthChallengeDisposition, NSURLCredential *)) {
-        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-    };
-    self.navigationDelegate = navigationDelegate.get();
-
-    // The temporary delegate keeps itself alive until the navigation finishes.
-    [navigationDelegate waitForDidFinishNavigationWithCompletionHandler:^(NSError *error) {
-        self.navigationDelegate = oldNavigationDelegate.get();
-
-#if PLATFORM(IOS_FAMILY)
-        // Nothing was painted if the load failed, so there is no update to wait for.
-        if (!error) {
-            [self _doAfterNextPresentationUpdateWithoutWaitingForAnimatedResizeForTesting:^{
-                completionHandler(nil);
-            }];
-            return;
-        }
-#endif
-        completionHandler(error);
-    }];
 }
 
 - (_WKProcessTerminationReason)_test_waitForWebContentProcessDidTerminate

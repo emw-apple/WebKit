@@ -39,7 +39,6 @@
 #include "PropertyInlineCache.h"
 #include "PropertyInlineCacheClearingWatchpoint.h"
 #include "SharedJITStubSet.h"
-#include <wtf/TZoneMallocInlines.h>
 
 namespace JSC {
 

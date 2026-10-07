@@ -33,7 +33,7 @@ WI.QuickConsole = class QuickConsole extends WI.View
         this._toggleOrFocusKeyboardShortcut.implicitlyPreventsDefault = false;
         this._keyboardShortcutDisabled = false;
 
-        this._automaticallyPickExecutionContext = true;
+        this._useExecutionContextOfInspectedNode = this._canUseExecutionContextOfInspectedNode();
         this._restoreSelectedExecutionContextForFrame = null;
 
         this.element.classList.add("quick-console");
@@ -131,8 +131,6 @@ WI.QuickConsole = class QuickConsole extends WI.View
 
     _displayNameForExecutionContext(context, maxLength = Infinity)
     {
-        console.assert(context instanceof WI.ExecutionContext, context);
-
         function truncate(string, length) {
             if (!Number.isFinite(maxLength))
                 return string;
@@ -170,27 +168,19 @@ WI.QuickConsole = class QuickConsole extends WI.View
         return truncate(context.name, maxLength);
     }
 
-    _displayNameForCallFrame(callFrame, maxLength = Infinity)
-    {
-        console.assert(callFrame instanceof WI.CallFrame, callFrame);
-
-        let displayName = WI.UIString("%s \u2014 %s").format(callFrame.target.displayName, callFrame.displayName);
-        if (!Number.isFinite(maxLength))
-            return displayName;
-        return displayName.trim().truncateMiddle(maxLength);
-    }
-
-    _resolveDesiredActiveExecutionContext()
+    _resolveDesiredActiveExecutionContext(forceInspectedNode)
     {
         let executionContext = null;
 
-        let inspectedNode = WI.domManager.inspectedNode;
-        if (inspectedNode) {
-            let frame = inspectedNode.frame;
-            if (frame) {
-                let pageExecutionContext = frame.pageExecutionContext;
-                if (pageExecutionContext)
-                    executionContext = pageExecutionContext;
+        if (this._useExecutionContextOfInspectedNode || forceInspectedNode) {
+            let inspectedNode = WI.domManager.inspectedNode;
+            if (inspectedNode) {
+                let frame = inspectedNode.frame;
+                if (frame) {
+                    let pageExecutionContext = frame.pageExecutionContext;
+                    if (pageExecutionContext)
+                        executionContext = pageExecutionContext;
+                }
             }
         }
 
@@ -202,12 +192,9 @@ WI.QuickConsole = class QuickConsole extends WI.View
 
     _setActiveExecutionContext(context)
     {
-        let useActiveCallFrame = this._automaticallyPickExecutionContext;
-
-        let wasActive = WI.runtimeManager.activeExecutionContext === context && WI.runtimeManager.useActiveCallFrame === useActiveCallFrame;
+        let wasActive = WI.runtimeManager.activeExecutionContext === context;
 
         WI.runtimeManager.activeExecutionContext = context;
-        WI.runtimeManager.useActiveCallFrame = useActiveCallFrame;
 
         if (wasActive)
             this._updateActiveExecutionContextDisplay();
@@ -220,18 +207,20 @@ WI.QuickConsole = class QuickConsole extends WI.View
             this._activeExecutionContextNavigationItem.hidden = hidden;
         };
 
+        if (WI.debuggerManager.activeCallFrame) {
+            toggleHidden(true);
+            return;
+        }
+
         if (!WI.runtimeManager.activeExecutionContext || !WI.networkManager.mainFrame) {
             toggleHidden(true);
             return;
         }
 
-        let activeCallFrame = WI.runtimeManager.useActiveCallFrame ? WI.debuggerManager.activeCallFrame : null;
-        let activeContext = activeCallFrame || WI.runtimeManager.activeExecutionContext;
-
         // Check if we should show the picker: multiple frames, workers, or frame targets
         let frameTargets = this._frameTargetsWithExecutionContext();
 
-        if (!WI.debuggerManager.activeCallFrame && WI.networkManager.frames.length === 1 && !WI.targetManager.workerTargets.length && !frameTargets.length) {
+        if (WI.networkManager.frames.length === 1 && !WI.targetManager.workerTargets.length && !frameTargets.length) {
             let mainFrameContexts = WI.networkManager.mainFrame.executionContextList.contexts;
             let contextsToShow = mainFrameContexts.filter((context) => context.type !== WI.ExecutionContext.Type.Internal || WI.settings.engineeringShowInternalExecutionContexts.value);
             if (contextsToShow.length <= 1) {
@@ -241,25 +230,15 @@ WI.QuickConsole = class QuickConsole extends WI.View
         }
 
         const maxLength = 40;
-        let displayName = activeCallFrame ? this._displayNameForCallFrame(activeCallFrame, maxLength) : this._displayNameForExecutionContext(activeContext, maxLength);
 
-        if (this._automaticallyPickExecutionContext) {
+        if (this._useExecutionContextOfInspectedNode) {
             this._activeExecutionContextNavigationItem.element.classList.add("automatic");
-            this._activeExecutionContextNavigationItem.element.textContent = WI.UIString("Auto \u2014 %s").format(displayName);
-            if (!activeCallFrame)
-                this._activeExecutionContextNavigationItem.tooltip = WI.UIString("Execution context for %s").format(WI.RuntimeManager.preferredSavedResultPrefix() + "0");
+            this._activeExecutionContextNavigationItem.element.textContent = WI.UIString("Auto \u2014 %s").format(this._displayNameForExecutionContext(WI.runtimeManager.activeExecutionContext, maxLength));
+            this._activeExecutionContextNavigationItem.tooltip = WI.UIString("Execution context for %s").format(WI.RuntimeManager.preferredSavedResultPrefix() + "0");
         } else {
             this._activeExecutionContextNavigationItem.element.classList.remove("automatic");
-            this._activeExecutionContextNavigationItem.element.textContent = displayName;
-            if (!activeCallFrame)
-                this._activeExecutionContextNavigationItem.tooltip = this._displayNameForExecutionContext(activeContext);
-        }
-
-        if (activeCallFrame) {
-            let tooltip = this._displayNameForCallFrame(activeCallFrame);
-            if (activeCallFrame.sourceCodeLocation)
-                tooltip += "\n" + activeCallFrame.sourceCodeLocation.tooltipString();
-            this._activeExecutionContextNavigationItem.tooltip = tooltip;
+            this._activeExecutionContextNavigationItem.element.textContent = this._displayNameForExecutionContext(WI.runtimeManager.activeExecutionContext, maxLength);
+            this._activeExecutionContextNavigationItem.tooltip = this._displayNameForExecutionContext(WI.runtimeManager.activeExecutionContext);
         }
 
         this._activeExecutionContextNavigationItem.element.appendChild(WI.ImageUtilities.useSVGSymbol("Images/UpDownArrows.svg", "selector-arrows"));
@@ -272,16 +251,16 @@ WI.QuickConsole = class QuickConsole extends WI.View
         const maxLength = 120;
 
         let activeExecutionContext = WI.runtimeManager.activeExecutionContext;
-        let activeCallFrame = WI.debuggerManager.activeCallFrame;
 
-        let automaticContext = this._resolveDesiredActiveExecutionContext();
-        let automaticContextDisplayName = activeCallFrame ? this._displayNameForCallFrame(activeCallFrame, maxLength) : this._displayNameForExecutionContext(automaticContext, maxLength);
-        contextMenu.appendCheckboxItem(WI.UIString("Auto \u2014 %s").format(automaticContextDisplayName), () => {
-            this._automaticallyPickExecutionContext = true;
-            this._setActiveExecutionContext(automaticContext);
-        }, this._automaticallyPickExecutionContext);
+        if (this._canUseExecutionContextOfInspectedNode()) {
+            let executionContextForInspectedNode = this._resolveDesiredActiveExecutionContext(true);
+            contextMenu.appendCheckboxItem(WI.UIString("Auto \u2014 %s").format(this._displayNameForExecutionContext(executionContextForInspectedNode, maxLength)), () => {
+                this._useExecutionContextOfInspectedNode = true;
+                this._setActiveExecutionContext(executionContextForInspectedNode);
+            }, this._useExecutionContextOfInspectedNode);
 
-        contextMenu.appendSeparator();
+            contextMenu.appendSeparator();
+        }
 
         let addExecutionContext = (context, indent) => {
             if (context.type === WI.ExecutionContext.Type.Internal && !WI.settings.engineeringShowInternalExecutionContexts.value)
@@ -291,9 +270,9 @@ WI.QuickConsole = class QuickConsole extends WI.View
 
             // Mimic macOS `-[NSMenuItem setIndentationLevel]`.
             contextMenu.appendCheckboxItem("   ".repeat(indent + additionalIndent) + this._displayNameForExecutionContext(context, maxLength), () => {
-                this._automaticallyPickExecutionContext = false;
+                this._useExecutionContextOfInspectedNode = false;
                 this._setActiveExecutionContext(context);
-            }, activeExecutionContext === context && (!activeCallFrame || !WI.runtimeManager.useActiveCallFrame));
+            }, activeExecutionContext === context);
         };
 
         let addExecutionContextsForFrame = (frame, indent) => {
@@ -422,7 +401,7 @@ WI.QuickConsole = class QuickConsole extends WI.View
         if (WI.runtimeManager.activeExecutionContext.type !== WI.ExecutionContext.Type.Internal)
             return;
 
-        this._automaticallyPickExecutionContext = true;
+        this._useExecutionContextOfInspectedNode = this._canUseExecutionContextOfInspectedNode();
         this._setActiveExecutionContext(this._resolveDesiredActiveExecutionContext());
     }
 
@@ -435,7 +414,7 @@ WI.QuickConsole = class QuickConsole extends WI.View
 
         this._restoreSelectedExecutionContextForFrame = null;
 
-        this._automaticallyPickExecutionContext = false;
+        this._useExecutionContextOfInspectedNode = false;
         this._setActiveExecutionContext(frame.pageExecutionContext);
     }
 
@@ -455,8 +434,8 @@ WI.QuickConsole = class QuickConsole extends WI.View
         }
 
         // If this frame is navigating and it is selected in the UI we want to reselect its new item after navigation,
-        // however when `_automaticallyPickExecutionContext` is true, we should keep the execution context set to `Auto`.
-        if (committingProvisionalLoad && !this._restoreSelectedExecutionContextForFrame && !this._automaticallyPickExecutionContext) {
+        // however when `_useExecutionContextOfInspectedNode` is true, we should keep the execution context set to `Auto`.
+        if (committingProvisionalLoad && !this._restoreSelectedExecutionContextForFrame && !this._useExecutionContextOfInspectedNode) {
             this._restoreSelectedExecutionContextForFrame = event.target;
 
             // As a fail safe, if the frame never gets an execution context, clear the restore value.
@@ -465,13 +444,13 @@ WI.QuickConsole = class QuickConsole extends WI.View
                     return;
                 this._restoreSelectedExecutionContextForFrame = null;
 
-                this._automaticallyPickExecutionContext = true;
+                this._useExecutionContextOfInspectedNode = this._canUseExecutionContextOfInspectedNode();
                 this._setActiveExecutionContext(this._resolveDesiredActiveExecutionContext());
             }, 100);
             return;
         }
 
-        this._automaticallyPickExecutionContext = true;
+        this._useExecutionContextOfInspectedNode = this._canUseExecutionContextOfInspectedNode();
         this._setActiveExecutionContext(this._resolveDesiredActiveExecutionContext());
     }
 
@@ -498,18 +477,18 @@ WI.QuickConsole = class QuickConsole extends WI.View
     _handleTargetRemoved(event)
     {
         let {target} = event.data;
-        if (target !== WI.runtimeManager.activeExecutionContext?.target) {
+        if (target !== WI.runtimeManager.activeExecutionContext) {
             this._updateActiveExecutionContextDisplay();
             return;
         }
 
-        this._automaticallyPickExecutionContext = true;
+        this._useExecutionContextOfInspectedNode = this._canUseExecutionContextOfInspectedNode();
         this._setActiveExecutionContext(this._resolveDesiredActiveExecutionContext());
     }
 
     _handleInspectedNodeChanged(event)
     {
-        if (!this._automaticallyPickExecutionContext)
+        if (!this._useExecutionContextOfInspectedNode)
             return;
 
         this._setActiveExecutionContext(this._resolveDesiredActiveExecutionContext());
@@ -518,6 +497,11 @@ WI.QuickConsole = class QuickConsole extends WI.View
     _handleFrameTargetExecutionContextAdded(event)
     {
         this._updateActiveExecutionContextDisplay();
+    }
+
+    _canUseExecutionContextOfInspectedNode()
+    {
+        return InspectorBackend.hasDomain("DOM");
     }
 
     _frameTargetsWithExecutionContext()

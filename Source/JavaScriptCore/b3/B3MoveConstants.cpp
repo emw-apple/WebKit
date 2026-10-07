@@ -67,7 +67,7 @@ public:
 
 private:
     template<typename Filter>
-    void hoistConstants(NOESCAPE const Filter& filter)
+    void hoistConstants(const Filter& filter)
     {
         Dominators& dominators = m_proc.dominators();
         UncheckedKeyHashMap<ValueKey, Value*> valueForConstant;

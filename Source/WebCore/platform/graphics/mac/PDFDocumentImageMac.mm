@@ -48,7 +48,7 @@ namespace WebCore {
 
 void PDFDocumentImage::createPDFDocument()
 {
-    m_document = adoptNS([allocPDFDocumentInstance() initWithData:protect(data())->makeContiguous()->createNSData().get()]);
+    m_document = adoptNS([allocPDFDocumentInstance() initWithData:data()->makeContiguous()->createNSData().get()]);
 }
 
 void PDFDocumentImage::computeBoundsForCurrentPage()
@@ -70,12 +70,11 @@ void PDFDocumentImage::drawPDFPage(GraphicsContext& context)
 
     // This state can be mutated by PDFKit but is not saved
     // on the context's state stack. (<rdar://35738181>)
-    RetainPtr cgContext = context.platformContext();
-    bool allowsSubpixelPositioning = CGContextGetAllowsFontSubpixelPositioning(cgContext);
+    bool allowsSubpixelPositioning = CGContextGetAllowsFontSubpixelPositioning(context.platformContext());
 
-    [[m_document pageAtIndex:0] drawWithBox:kPDFDisplayBoxCropBox toContext:cgContext];
+    [[m_document pageAtIndex:0] drawWithBox:kPDFDisplayBoxCropBox toContext:context.platformContext()];
 
-    CGContextSetAllowsFontSubpixelPositioning(cgContext, allowsSubpixelPositioning);
+    CGContextSetAllowsFontSubpixelPositioning(context.platformContext(), allowsSubpixelPositioning);
 }
 
 }

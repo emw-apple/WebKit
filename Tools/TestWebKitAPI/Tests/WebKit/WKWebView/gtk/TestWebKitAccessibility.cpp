@@ -21,7 +21,6 @@
 
 #include "WebViewTest.h"
 #include <wtf/MonotonicTime.h>
-#include <wtf/glib/GLibExtras.h>
 
 // The libatspi headers don't use G_BEGIN_DECLS
 extern "C" {
@@ -844,7 +843,7 @@ static void testAccessibleEventListener(AccessibilityTest* test, gconstpointer)
 
 static void testAccessibleListMarkers(AccessibilityTest* test, gconstpointer)
 {
-    GUniquePtr<char> baseDir(SAFE_G_STRDUP_PRINTF("file://%s/", Test::getResourcesDir()));
+    GUniquePtr<char> baseDir(g_strdup_printf("file://%s/", Test::getResourcesDir().legacyCStringPointer()));
     test->showInWindow(800, 600);
     test->loadHtml(
         "<html>"
@@ -914,7 +913,7 @@ static void testAccessibleListMarkers(AccessibilityTest* test, gconstpointer)
 static void testComponentHitTest(AccessibilityTest* test, gconstpointer)
 {
     test->showInWindow();
-    GUniquePtr<char> baseDir(SAFE_G_STRDUP_PRINTF("file://%s/", Test::getResourcesDir()));
+    GUniquePtr<char> baseDir(g_strdup_printf("file://%s/", Test::getResourcesDir().legacyCStringPointer()));
     test->loadHtml(
         "<html>"
         "  <body>"
@@ -959,7 +958,7 @@ static void testComponentHitTest(AccessibilityTest* test, gconstpointer)
 static void testComponentScrollTo(AccessibilityTest* test, gconstpointer)
 {
     test->showInWindow(640, 480);
-    GUniquePtr<char> baseDir(SAFE_G_STRDUP_PRINTF("file://%s/", Test::getResourcesDir()));
+    GUniquePtr<char> baseDir(g_strdup_printf("file://%s/", Test::getResourcesDir().legacyCStringPointer()));
     test->loadHtml(
         "<html>"
         "  <body>"
@@ -2641,7 +2640,7 @@ static void testDocumentLoadEvents(AccessibilityTest* test, gconstpointer)
 static void testImageBasic(AccessibilityTest* test, gconstpointer)
 {
     test->showInWindow(800, 600);
-    GUniquePtr<char> baseDir(SAFE_G_STRDUP_PRINTF("file://%s/", Test::getResourcesDir()));
+    GUniquePtr<char> baseDir(g_strdup_printf("file://%s/", Test::getResourcesDir().legacyCStringPointer()));
     test->loadHtml(
         "<html>"
         "  <body>"

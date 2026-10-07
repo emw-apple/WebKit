@@ -243,7 +243,7 @@ void HTMLDocumentParser::runScriptsForPausedTreeBuilder()
             RefPtr document = this->document();
             ThrowOnDynamicMarkupInsertionCountIncrementer incrementer(*document);
 
-            protect(document->eventLoop())->performMicrotaskCheckpoint(document->vm());
+            document->eventLoop().performMicrotaskCheckpoint(document->vm());
 
             CustomElementReactionStack reactionStack(document->globalObject());
             Ref elementInterface = constructionData->elementInterface.get();
@@ -616,9 +616,8 @@ void HTMLDocumentParser::notifyFinished(PendingScript& pendingScript)
             // If we're currently in a microtask checkpoint, schedule end() as a regular task.
             // This ensures it runs after ALL microtasks (including any created during execution) complete.
             RefPtr document = this->document();
-            CheckedRef eventLoop = document->eventLoop();
-            if (eventLoop->microtaskQueue().isPerformingCheckpoint()) {
-                eventLoop->queueTask(TaskSource::InternalAsyncTask, [protectedThis = Ref { *this }] {
+            if (document->eventLoop().microtaskQueue().isPerformingCheckpoint()) {
+                protect(document->eventLoop())->queueTask(TaskSource::InternalAsyncTask, [protectedThis = Ref { *this }] {
                     if (protectedThis->isStopped())
                         return;
                     protectedThis->attemptToRunDeferredScriptsAndEnd();

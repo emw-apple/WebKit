@@ -54,7 +54,7 @@ public:
 
 private:
     explicit AudioDecoderCocoa(OutputCallback&&);
-    Ref<DecodePromise> decode(AudioEncodedData&&) final;
+    Ref<DecodePromise> decode(EncodedData&&) final;
     Ref<GenericPromise> flush() final;
     void reset() final;
     void close() final;

@@ -1,3 +1,0 @@
-
-PASS A selectedcontent element inside a nested select is disabled and never updated.
-

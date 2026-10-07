@@ -298,9 +298,8 @@ private:
     void broadcastFrameTreeSyncDataToOtherProcesses(WebCore::FrameTreeSyncSerializationData&&) final;
     void broadcastFrameViewportInfoToOtherProcessesIfNeeded(const WebCore::FrameViewportInfo&, bool hasOnScreenRemoteDescendant) final;
 
-    void didNotifyUserActivation(MonotonicTime, std::optional<WebCore::UserGestureTokenIdentifier> forcedActivationToken) final;
+    void didNotifyUserActivation(MonotonicTime) final;
     void didConsumeUserActivation() final;
-    void didRevokeForcedUserActivation(WebCore::UserGestureTokenIdentifier) final;
     void didHandleFirstUserGesture(MonotonicTime) final;
 
     void dispatchDecidePolicyForBackForwardNavigationAction(WebCore::FrameLoadRequest&&, const String& referer, WebCore::FrameLoadType);

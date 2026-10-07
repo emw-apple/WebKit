@@ -27,10 +27,7 @@
 #include "InspectorCSSAgent.h"
 
 #include "CSSComputedStyleDeclaration.h"
-#include "CSSGroupingRule.h"
 #include "CSSImportRule.h"
-#include "CSSKeyframeRule.h"
-#include "CSSKeyframesRule.h"
 #include "CSSNestedDeclarations.h"
 #include "CSSParserContext.h"
 #include "CSSPropertyNames.h"
@@ -81,7 +78,6 @@
 #include "StylePropertyShorthand.h"
 #include "StyleResolver.h"
 #include "StyleRule.h"
-#include "StyleScope.h"
 #include "StyleSheetContents.h"
 #include "StyleSheetList.h"
 #include <JavaScriptCore/InspectorProtocolObjects.h>
@@ -294,7 +290,7 @@ std::optional<Inspector::Protocol::CSS::PseudoId> InspectorCSSAgent::protocolVal
     }
 }
 
-Inspector::Protocol::ErrorStringOr<std::tuple<RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::RuleMatch>>, RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::PseudoIdMatches>>, RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::InheritedStyleEntry>>, RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::CSSRule>>>> InspectorCSSAgent::getMatchedStylesForNode(Inspector::Protocol::DOM::NodeId nodeId, std::optional<bool>&& includePseudo, std::optional<bool>&& includeInherited, std::optional<bool>&& includeKeyframes)
+Inspector::Protocol::ErrorStringOr<std::tuple<RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::RuleMatch>>, RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::PseudoIdMatches>>, RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::InheritedStyleEntry>>>> InspectorCSSAgent::getMatchedStylesForNode(Inspector::Protocol::DOM::NodeId nodeId, std::optional<bool>&& includePseudo, std::optional<bool>&& includeInherited)
 {
     Inspector::Protocol::ErrorString errorString;
 
@@ -325,7 +321,7 @@ Inspector::Protocol::ErrorStringOr<std::tuple<RefPtr<JSON::ArrayOf<Inspector::Pr
             pseudoElements = JSON::ArrayOf<Inspector::Protocol::CSS::PseudoIdMatches>::create();
             for (auto pseudoElementType : allPseudoElementTypes) {
                 // `*::marker` selectors are only applicable to elements with `display: list-item`.
-                if (pseudoElementType == PseudoElementType::Marker && !protect(element->computedStyle())->isListItemType())
+                if (pseudoElementType == PseudoElementType::Marker && !element->computedStyle()->isListItemType())
                     continue;
 
                 if (pseudoElementType == PseudoElementType::Backdrop && !element->isInTopLayer())
@@ -347,10 +343,6 @@ Inspector::Protocol::ErrorStringOr<std::tuple<RefPtr<JSON::ArrayOf<Inspector::Pr
                             .setPseudoId(protocolPseudoId.value())
                             .setMatches(buildArrayForMatchedRuleList(matchedRules, styleResolver, *element, pseudoElementIdentifier))
                             .release();
-                        if (!includeKeyframes || *includeKeyframes) {
-                            if (CheckedPtr pseudoComputedStyle = element->computedStyle(pseudoElementIdentifier))
-                                matches->setKeyframes(buildArrayForKeyframes(*element, *pseudoComputedStyle));
-                        }
                         pseudoElements->addItem(WTF::move(matches));
                     }
                 }
@@ -374,13 +366,7 @@ Inspector::Protocol::ErrorStringOr<std::tuple<RefPtr<JSON::ArrayOf<Inspector::Pr
         }
     }
 
-    RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::CSSRule>> keyframes;
-    if (!includeKeyframes || *includeKeyframes) {
-        if (CheckedPtr elementComputedStyle = element->computedStyle(elementPseudoId))
-            keyframes = buildArrayForKeyframes(*element, *elementComputedStyle);
-    }
-
-    return { { WTF::move(matchedCSSRules), WTF::move(pseudoElements), WTF::move(inherited), WTF::move(keyframes) } };
+    return { { WTF::move(matchedCSSRules), WTF::move(pseudoElements), WTF::move(inherited) } };
 }
 
 Inspector::Protocol::ErrorStringOr<std::tuple<RefPtr<Inspector::Protocol::CSS::CSSStyle> /* inlineStyle */, RefPtr<Inspector::Protocol::CSS::CSSStyle> /* attributesStyle */>> InspectorCSSAgent::getInlineStylesForNode(Inspector::Protocol::DOM::NodeId nodeId)
@@ -456,7 +442,7 @@ Inspector::Protocol::ErrorStringOr<Ref<Inspector::Protocol::CSS::Font>> Inspecto
     if (!computedStyle)
         return makeUnexpected("No computed style for node."_s);
     
-    return buildObjectForFont(protect(protect(computedStyle->fontCascade())->primaryFont()));
+    return buildObjectForFont(protect(computedStyle->fontCascade().primaryFont()));
 }
 
 Inspector::Protocol::ErrorStringOr<Ref<JSON::ArrayOf<Inspector::Protocol::CSS::CSSStyleSheetHeader>>> InspectorCSSAgent::getAllStyleSheets()
@@ -787,7 +773,7 @@ Inspector::Protocol::ErrorStringOr<Ref<JSON::ArrayOf<String>>> InspectorCSSAgent
 {
     auto fontFamilyNames = JSON::ArrayOf<String>::create();
 
-    Vector<String> systemFontFamilies = protect(FontCache::forCurrentThread())->systemFontFamilies();
+    Vector<String> systemFontFamilies = FontCache::forCurrentThread().systemFontFamilies();
     for (const auto& familyName : systemFontFamilies)
         fontFamilyNames->addItem(familyName);
 
@@ -997,7 +983,7 @@ static void pushChildrenNodesToFrontendIfLayoutFlagIsRelevant(InspectorDOMAgent&
     for (auto& child : childrenOfType<Element>(node))
         pushChildrenNodesToFrontendIfLayoutFlagIsRelevant(domAgent, child);
     
-    if (layoutFlagContextType(protect(node.renderer())))
+    if (layoutFlagContextType(node.renderer()))
         domAgent.pushNodeToFrontend(&node);
 }
 
@@ -1199,13 +1185,13 @@ RefPtr<Inspector::Protocol::CSS::CSSRule> InspectorCSSAgent::buildObjectForRule(
     // Since the inspector wants to walk the parent chain, we construct the full wrappers here.
     if (auto* extensionStyleSheets = styleResolver.document().extensionStyleSheetsIfExists())
         styleResolver.inspectorCSSOMWrappers().collectDocumentWrappers(*extensionStyleSheets);
-    styleResolver.inspectorCSSOMWrappers().collectScopeWrappers(protect(Style::Scope::forNode(element)));
+    styleResolver.inspectorCSSOMWrappers().collectScopeWrappers(Style::Scope::forNode(element));
 
     // Possiblity of :host styles if this element has a shadow root.
     if (RefPtr shadowRoot = element.shadowRoot())
-        styleResolver.inspectorCSSOMWrappers().collectScopeWrappers(protect(shadowRoot->styleScope()));
+        styleResolver.inspectorCSSOMWrappers().collectScopeWrappers(shadowRoot->styleScope());
 
-    if (RefPtr cssomWrapper = styleResolver.inspectorCSSOMWrappers().getWrapperForStyleRuleInSheets(styleRule))
+    if (RefPtr cssomWrapper = styleResolver.inspectorCSSOMWrappers().getWrapperForRuleInSheets(styleRule))
         return buildObjectForRule(cssomWrapper.get());
 
     RefPtr nestedDeclarationsWrapper = styleResolver.inspectorCSSOMWrappers().getWrapperForNestedDeclarationsRuleInSheets(styleRule);
@@ -1250,46 +1236,6 @@ Ref<JSON::ArrayOf<Inspector::Protocol::CSS::RuleMatch>> InspectorCSSAgent::build
             .setMatchingSelectors(WTF::move(matchingSelectors))
             .release();
         result->addItem(WTF::move(match));
-    }
-
-    return result;
-}
-
-Ref<JSON::ArrayOf<Inspector::Protocol::CSS::CSSRule>> InspectorCSSAgent::buildArrayForKeyframes(Element& element, const Style::ComputedStyle& computedStyle)
-{
-    auto result = JSON::ArrayOf<Inspector::Protocol::CSS::CSSRule>::create();
-
-    if (computedStyle.animations().isInitial())
-        return result;
-
-    HashSet<CSSKeyframesRule*> seenKeyframesRules;
-    for (auto& animation : computedStyle.animations().usedValues()) {
-        auto keyframesName = animation.name().tryKeyframesName();
-        if (!keyframesName || keyframesName->name.isEmpty())
-            continue;
-
-        CheckedPtr styleScope = Style::Scope::forOrdinal(element, keyframesName->scopeOrdinal);
-        if (!styleScope)
-            continue;
-
-        Ref styleResolver = styleScope->resolver();
-        RefPtr styleRule = styleResolver->keyframesRuleForName(keyframesName->name);
-        if (!styleRule)
-            continue;
-
-        auto& wrappers = styleResolver->inspectorCSSOMWrappers();
-        if (auto* extensionStyleSheets = styleResolver->document().extensionStyleSheetsIfExists())
-            wrappers.collectDocumentWrappers(*extensionStyleSheets);
-        wrappers.collectScopeWrappers(*styleScope);
-
-        RefPtr keyframesRule = wrappers.getWrapperForKeyframesRuleInSheets(styleRule.get());
-        if (!keyframesRule || !seenKeyframesRules.add(keyframesRule.get()).isNewEntry)
-            continue;
-
-        for (unsigned i = 0; i < keyframesRule->length(); ++i) {
-            if (auto protocolKeyframe = buildObjectForRule(protect(keyframesRule->item(i))))
-                result->addItem(protocolKeyframe.releaseNonNull());
-        }
     }
 
     return result;

@@ -22,7 +22,6 @@
 #include <string>
 #include <type_traits>
 
-#include "absl/base/config.h"
 #include "absl/base/internal/errno_saver.h"
 
 namespace absl {
@@ -62,7 +61,7 @@ std::string StrErrorInternal(int errnum) {
 }
 
 // kSysNerr is the number of errors from a recent glibc. `StrError()` falls back
-// to `StrErrorInternal()` if the value is larger than this.
+// to `StrErrorAdaptor()` if the value is larger than this.
 constexpr int kSysNerr = 135;
 
 std::array<std::string, kSysNerr>* NewStrErrorTable() {

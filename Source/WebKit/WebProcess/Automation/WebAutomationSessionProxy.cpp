@@ -863,28 +863,28 @@ static WebCore::Element* containerElementForElement(WebCore::Element& element)
     return &element;
 }
 
-static WebCore::FloatRect convertRectFromFrameClientToMainFrameView(WebCore::LocalFrameView* frameView, WebCore::FloatRect clientRect)
+static WebCore::FloatRect convertRectFromFrameClientToRootView(WebCore::LocalFrameView* frameView, WebCore::FloatRect clientRect)
 {
     if (!frameView->delegatesScrollingToNativeView())
-        return frameView->contentsToMainFrameView(frameView->clientToDocumentRect(clientRect));
+        return frameView->contentsToRootView(frameView->clientToDocumentRect(clientRect));
 
-    // If the frame delegates scrolling, contentsToMainFrameView doesn't take into account scroll/zoom/scale.
+    // If the frame delegates scrolling, contentsToRootView doesn't take into account scroll/zoom/scale.
     Ref frame = frameView->frame();
     clientRect.scale(frame->pageZoomFactor() * frame->frameScaleFactor());
     clientRect.moveBy(frameView->contentsScrollPosition());
-    return frameView->convertToRootViewAcrossIsolatedFrames(clientRect);
+    return clientRect;
 }
 
-static WebCore::FloatPoint convertPointFromFrameClientToMainFrameView(WebCore::LocalFrameView* frameView, WebCore::FloatPoint clientPoint)
+static WebCore::FloatPoint convertPointFromFrameClientToRootView(WebCore::LocalFrameView* frameView, WebCore::FloatPoint clientPoint)
 {
     if (!frameView->delegatesScrollingToNativeView())
-        return frameView->contentsToMainFrameView(frameView->clientToDocumentPoint(clientPoint));
+        return frameView->contentsToRootView(frameView->clientToDocumentPoint(clientPoint));
 
-    // If the frame delegates scrolling, contentsToMainFrameView doesn't take into account scroll/zoom/scale.
+    // If the frame delegates scrolling, contentsToRootView doesn't take into account scroll/zoom/scale.
     Ref frame = frameView->frame();
     clientPoint.scale(frame->pageZoomFactor() * frame->frameScaleFactor());
     clientPoint.moveBy(frameView->contentsScrollPosition());
-    return frameView->convertToRootViewAcrossIsolatedFrames(clientPoint);
+    return clientPoint;
 }
 
 void WebAutomationSessionProxy::computeElementLayout(WebCore::PageIdentifier pageID, std::optional<WebCore::FrameIdentifier> frameID, String nodeHandle, bool scrollIntoViewIfNeeded, CoordinateSystem coordinateSystem, CompletionHandler<void(std::optional<String>, WebCore::FloatRect, std::optional<WebCore::IntPoint>, bool)>&& completionHandler)
@@ -926,13 +926,23 @@ void WebAutomationSessionProxy::computeElementLayout(WebCore::PageIdentifier pag
         // FIXME: Wait in an implementation-specific way up to the session implicit wait timeout for the element to become in view.
     }
 
-    Ref mainFrame = coreLocalFrame->mainFrame();
-    RefPtr mainFrameView = mainFrame->virtualView();
-    if (!mainFrameView) {
+    // Convert through this frame's local root rather than the page's main frame.
+    // Under site isolation, an out-of-process iframe's main frame is a RemoteFrame in this process
+    // and has no LocalFrameView, so the local root is the deepest frame reachable here.
+    // Without site isolation the local root is the main frame, so this preserves behavior.
+    Ref localRootFrame = coreLocalFrame->rootFrame();
+    RefPtr rootView = localRootFrame->view();
+    if (!rootView) {
         String windowNotFoundErrorType = Inspector::Protocol::AutomationHelpers::getEnumConstantValue(Inspector::Protocol::Automation::ErrorMessage::WindowNotFound);
         completionHandler(windowNotFoundErrorType, { }, std::nullopt, false);
         return;
     }
+
+    // When the local root is not the page's main frame, this process doesn't know where the frame
+    // sits within the page, so it cannot produce main-frame-relative coordinates. Stop at local
+    // root contents coordinates and let WebAutomationSession::computeElementLayout() finish the
+    // conversion in the UI process, which can walk the frame tree across processes.
+    bool localRootIsMainFrame = localRootFrame->isMainFrame();
 
     WebCore::FloatRect resultElementBounds;
     std::optional<WebCore::IntPoint> resultInViewCenterPoint;
@@ -943,8 +953,9 @@ void WebAutomationSessionProxy::computeElementLayout(WebCore::PageIdentifier pag
         resultElementBounds = coreElement->boundingClientRect();
         break;
     case CoordinateSystem::LayoutViewport: {
-        auto elementBoundsInMainFrameView = convertRectFromFrameClientToMainFrameView(frameView.get(), coreElement->boundingClientRect());
-        resultElementBounds = mainFrameView->absoluteToLayoutViewportRect(mainFrameView->rootViewToContents(elementBoundsInMainFrameView));
+        auto elementBoundsInRootCoordinates = convertRectFromFrameClientToRootView(frameView.get(), coreElement->boundingClientRect());
+        auto elementBoundsInLocalRootContents = rootView->rootViewToContents(elementBoundsInRootCoordinates);
+        resultElementBounds = localRootIsMainFrame ? rootView->absoluteToLayoutViewportRect(elementBoundsInLocalRootContents) : elementBoundsInLocalRootContents;
         break;
     }
     }
@@ -1003,8 +1014,9 @@ void WebAutomationSessionProxy::computeElementLayout(WebCore::PageIdentifier pag
         resultInViewCenterPoint = flooredIntPoint(elementInViewCenterPoint);
         break;
     case CoordinateSystem::LayoutViewport: {
-        auto inViewCenterPointInMainFrameView = convertPointFromFrameClientToMainFrameView(frameView.get(), elementInViewCenterPoint);
-        resultInViewCenterPoint = flooredIntPoint(mainFrameView->absoluteToLayoutViewportPoint(mainFrameView->rootViewToContents(inViewCenterPointInMainFrameView)));
+        auto inViewCenterPointInRootCoordinates = convertPointFromFrameClientToRootView(frameView.get(), elementInViewCenterPoint);
+        auto inViewCenterPointInLocalRootContents = rootView->rootViewToContents(inViewCenterPointInRootCoordinates);
+        resultInViewCenterPoint = flooredIntPoint(localRootIsMainFrame ? rootView->absoluteToLayoutViewportPoint(inViewCenterPointInLocalRootContents) : inViewCenterPointInLocalRootContents);
         break;
     }
     }

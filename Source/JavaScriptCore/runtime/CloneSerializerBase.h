@@ -486,7 +486,7 @@ protected:
         if (auto* regExp = dynamicDowncast<RegExpObject>(obj)) {
             write(RegExpTag);
             write(regExp->regExp()->pattern());
-            write(String { JSC::Yarr::flagsString(regExp->regExp()->flags()).span() });
+            write(String::fromLatin1(JSC::Yarr::flagsString(regExp->regExp()->flags()).data()));
             return true;
         }
         if (auto* booleanObject = dynamicDowncast<BooleanObject>(obj)) {

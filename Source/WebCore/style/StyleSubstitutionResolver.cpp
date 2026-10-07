@@ -54,9 +54,11 @@
 #include "Document.h"
 #include "Element.h"
 #include "ElementInlines.h"
+#include "HTMLSelectElement.h"
 #include "IfConditionEvaluator.h"
 #include "MatchResult.h"
 #include "MutableStyleProperties.h"
+#include "SelectPopoverElement.h"
 #include "StyleBuilder.h"
 #include "StyleComputedStyle+GettersInlines.h"
 #include "StyleComputedStyle+SettersInlines.h"
@@ -1326,12 +1328,13 @@ RefPtr<CSSVariableData> SubstitutionResolver::trySimpleSubstitution(const CSSSub
 bool SubstitutionResolver::isBaseAppearance()
 {
     auto& state = m_styleBuilder.state();
-    auto appearance = state.style().appearance();
-    if (auto* element = state.element(); element && !state.style().pseudoElementType() && element->supportsBaseAppearance(StyleAppearance::Base))
-        return element->supportsBaseAppearance(appearance);
-    if (appearance == StyleAppearance::Base)
+    if (state.style().appearance() == StyleAppearance::Base)
         return true;
-    return state.style().inBaseAppearanceSubtree();
+    if (state.style().appearance() == StyleAppearance::BaseSelect) {
+        CheckedPtr element = state.element();
+        return element && isAnyOf<HTMLSelectElement, SelectPopoverElement>(*element);
+    }
+    return false;
 }
 
 RefPtr<CSSVariableData> SubstitutionResolver::substitute(const CSSSubstitutionValue& value)

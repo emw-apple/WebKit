@@ -24,7 +24,6 @@
 #include "TestMain.h"
 #include <WebKitWebExtensionInternal.h>
 #include <wtf/HashMap.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuilder.h>
 #include <wtf/text/StringHash.h>
@@ -32,12 +31,13 @@
 
 static GRefPtr<GBytes> createGBytes(const gchar* string)
 {
-    return gBytesNewStatic(unsafeSpan(string));
+    return adoptGRef(g_bytes_new_static(string, strlen(string)));
 }
 
 static GRefPtr<GBytes> createGBytes(const UTF8CString& string)
 {
-    return gBytesNew(string.span());
+    auto span = string.span();
+    return adoptGRef(g_bytes_new(span.data(), span.size()));
 }
 
 static void testContentScriptsParsing(Test* test, gconstpointer)

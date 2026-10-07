@@ -47,8 +47,6 @@ struct ImageBufferParameters {
     RenderingPurpose purpose;
 
     IntSize backendSize() const { return calculateImageBufferBackendSize(logicalSize, resolutionScale); }
-
-    friend bool operator==(const ImageBufferParameters&, const ImageBufferParameters&) = default;
 };
 
 } // namespace WebCore

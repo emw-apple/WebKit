@@ -62,36 +62,36 @@
 #if PLATFORM(IOS_FAMILY)
 #import <WebCore/WebCoreThreadMessage.h>
 
-NSString * const WebViewportInitialScaleKey = @"initial-scale";
-NSString * const WebViewportMinimumScaleKey = @"minimum-scale";
-NSString * const WebViewportMaximumScaleKey = @"maximum-scale";
-NSString * const WebViewportUserScalableKey = @"user-scalable";
-NSString * const WebViewportShrinkToFitKey  = @"shrink-to-fit";
-NSString * const WebViewportFitKey          = @"viewport-fit";
-NSString * const WebViewportWidthKey        = @"width";
-NSString * const WebViewportHeightKey       = @"height";
+NSString *WebViewportInitialScaleKey = @"initial-scale";
+NSString *WebViewportMinimumScaleKey = @"minimum-scale";
+NSString *WebViewportMaximumScaleKey = @"maximum-scale";
+NSString *WebViewportUserScalableKey = @"user-scalable";
+NSString *WebViewportShrinkToFitKey  = @"shrink-to-fit";
+NSString *WebViewportFitKey          = @"viewport-fit";
+NSString *WebViewportWidthKey        = @"width";
+NSString *WebViewportHeightKey       = @"height";
 
-NSString * const WebViewportFitAutoValue    = @"auto";
-NSString * const WebViewportFitContainValue = @"contain";
-NSString * const WebViewportFitCoverValue   = @"cover";
+NSString *WebViewportFitAutoValue    = @"auto";
+NSString *WebViewportFitContainValue = @"contain";
+NSString *WebViewportFitCoverValue   = @"cover";
 
-static NSString * const scaleKey = @"scale";
-static NSString * const scaleIsInitialKey = @"scaleIsInitial";
-static NSString * const scrollPointXKey = @"scrollPointX";
-static NSString * const scrollPointYKey = @"scrollPointY";
+static NSString *scaleKey = @"scale";
+static NSString *scaleIsInitialKey = @"scaleIsInitial";
+static NSString *scrollPointXKey = @"scrollPointX";
+static NSString *scrollPointYKey = @"scrollPointY";
 #endif
 
 // Private keys used in the WebHistoryItem's dictionary representation.
 // see 3245793 for explanation of "lastVisitedDate"
-static NSString * const lastVisitedTimeIntervalKey = @"lastVisitedDate";
-static NSString * const titleKey = @"title";
-static NSString * const childrenKey = @"children";
-static NSString * const displayTitleKey = @"displayTitle";
-static NSString * const lastVisitWasFailureKey = @"lastVisitWasFailure";
-static NSString * const redirectURLsKey = @"redirectURLs";
+static NSString *lastVisitedTimeIntervalKey = @"lastVisitedDate";
+static NSString *titleKey = @"title";
+static NSString *childrenKey = @"children";
+static NSString *displayTitleKey = @"displayTitle";
+static NSString *lastVisitWasFailureKey = @"lastVisitWasFailure";
+static NSString *redirectURLsKey = @"redirectURLs";
 
 // Notification strings.
-NSString * const WebHistoryItemChangedNotification = @"WebHistoryItemChangedNotification";
+NSString *WebHistoryItemChangedNotification = @"WebHistoryItemChangedNotification";
 
 
 @implementation WebHistoryItemPrivate
@@ -149,6 +149,8 @@ void WKNotifyHistoryItemChanged()
         return;
 
     historyItemWrappers().remove(protect(*_private->_historyItem));
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_private release];
 
     [super dealloc];
 }
@@ -287,7 +289,7 @@ WebHistoryItem *kit(WebCore::HistoryItem* item)
     if (!(self = [super init]))
         return nil;
 
-    _private = adoptNS([[WebHistoryItemPrivate alloc] init]);
+    _private = [[WebHistoryItemPrivate alloc] init];
     _private->_historyItem = WTF::move(item);
 
     ASSERT(!historyItemWrappers().get(*core(_private)));

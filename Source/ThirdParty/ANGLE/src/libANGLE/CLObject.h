@@ -24,9 +24,9 @@ class Object
 
     cl_uint getRefCount() const noexcept { return mRefCount; }
 
-    void retain() const noexcept { ++mRefCount; }
+    void retain() noexcept { ++mRefCount; }
 
-    bool release() const
+    bool release()
     {
         if (mRefCount == 0u)
         {
@@ -44,7 +44,7 @@ class Object
     }
 
   private:
-    mutable std::atomic<cl_uint> mRefCount;
+    std::atomic<cl_uint> mRefCount;
 };
 
 }  // namespace cl

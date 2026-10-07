@@ -1,3 +1,4 @@
 
-PASS CSS module should be loaded as utf-8 even if it is encoded in windows-1250 and served with a windows-1250 charset response header, and this document's encoding is windows-1250
+Harness Error (FAIL), message = TypeError: Import attribute type "css" is not valid
+
 

@@ -65,17 +65,10 @@ messages -> GPUProcess : AuxiliaryProcess {
 #endif
 
 #if PLATFORM(COCOA)
-    SinkCompletedSnapshotToPDF(WebKit::RemoteSnapshotIdentifier identifier, WebCore::FrameIdentifier rootFrameIdentifier) -> (RefPtr<WebCore::SharedBuffer> result) ReplyCanDispatchOutOfOrder
+    SinkCompletedSnapshotToPDF(WebKit::RemoteSnapshotIdentifier identifier, WebCore::FloatSize size, WebCore::FrameIdentifier rootFrameIdentifier) -> (RefPtr<WebCore::SharedBuffer> result)
 #endif
-    SinkCompletedSnapshotToBitmap(WebKit::RemoteSnapshotIdentifier identifier, WebCore::FrameIdentifier rootFrameIdentifier) -> (std::optional<WebCore::ShareableBitmapHandle> image) ReplyCanDispatchOutOfOrder
-#if HAVE(IOSURFACE)
-    SinkCompletedSnapshotToIOSurface(WebKit::RemoteSnapshotIdentifier identifier, float scale, WebCore::ColorSpace colorSpace, WebCore::FrameIdentifier rootFrameIdentifier) -> (std::optional<WebKit::ImageBufferBackendHandle> handle)
-#endif
+    SinkCompletedSnapshotToBitmap(WebKit::RemoteSnapshotIdentifier identifier, WebCore::FloatSize size, WebCore::FrameIdentifier rootFrameIdentifier) -> (std::optional<WebCore::ShareableBitmapHandle> image)
     ReleaseSnapshot(WebKit::RemoteSnapshotIdentifier identifier)
-    AbandonSnapshotFrame(WebKit::RemoteSnapshotIdentifier identifier, WebCore::FrameIdentifier frameIdentifier)
-    SnapshotFrameWillBeDrawnByProcess(WebKit::RemoteSnapshotIdentifier identifier, WebCore::FrameIdentifier frameIdentifier, WebCore::ProcessIdentifier processIdentifier)
-    AbandonSnapshotFramesOwnedBy(WebCore::ProcessIdentifier processIdentifier)
-    WaitForSnapshot(WebKit::RemoteSnapshotIdentifier identifier) -> () Synchronous
 
 #if HAVE(SCREEN_CAPTURE_KIT)
     PromptForGetDisplayMedia(enum:uint8_t WebCore::DisplayCapturePromptType type) -> (std::optional<WebCore::CaptureDevice> device)
@@ -126,7 +119,6 @@ messages -> GPUProcess : AuxiliaryProcess {
     WithdrawNowPlayingCandidate(WebCore::QualifiedPageIdentifier page)
 
     HandOverTransferredImageBuffers(Vector<WebCore::ImageBufferTransferIdentifier> transferIdentifiers, WebCore::ProcessIdentifier destinationProcess)
-    ReleaseTransferredImageBuffers(Vector<WebCore::ImageBufferTransferIdentifier> transferIdentifiers)
 }
 
 #endif // ENABLE(GPU_PROCESS)

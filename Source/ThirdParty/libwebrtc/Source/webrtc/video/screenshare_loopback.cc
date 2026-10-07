@@ -11,7 +11,6 @@
 #include <cstdio>
 #include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "absl/flags/flag.h"
@@ -380,9 +379,7 @@ int main(int argc, char* argv[]) {
   ::testing::InitGoogleTest(&argc, argv);
   absl::ParseCommandLine(argc, argv);
 
-  webrtc::LoggingConfig config;
-  config.set_log_to_stderr(absl::GetFlag(FLAGS_logs));
-  webrtc::InitializeLogging(std::move(config));
+  webrtc::LogMessage::SetLogToStderr(absl::GetFlag(FLAGS_logs));
 
   webrtc::test::RunTest(Loopback);
   return 0;

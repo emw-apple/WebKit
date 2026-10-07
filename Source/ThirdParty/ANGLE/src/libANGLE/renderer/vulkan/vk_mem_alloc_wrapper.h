@@ -61,13 +61,6 @@ void DestroyAllocator(VmaAllocator allocator);
 
 void FreeMemory(VmaAllocator allocator, VmaAllocation allocation);
 
-VkResult CreatePool(VmaAllocator allocator,
-                    uint32_t memoryTypeIndex,
-                    VkDeviceSize blockSize,
-                    VmaPool *pPoolOut);
-
-void DestroyPool(VmaAllocator allocator, VmaPool pool);
-
 VkResult CreateBuffer(VmaAllocator allocator,
                       const VkBufferCreateInfo *pBufferCreateInfo,
                       VkMemoryPropertyFlags requiredFlags,
@@ -87,13 +80,6 @@ VkResult AllocateAndBindMemoryForImage(VmaAllocator allocator,
                                        uint32_t *pMemoryTypeIndexOut,
                                        VkDeviceSize *sizeOut);
 
-VkResult AllocateAndBindMemoryForImageFromPool(VmaAllocator allocator,
-                                               VkImage *pImage,
-                                               VmaPool pool,
-                                               VmaAllocation *pAllocationOut,
-                                               uint32_t *pMemoryTypeIndexOut,
-                                               VkDeviceSize *sizeOut);
-
 VkResult FindMemoryTypeIndexForBufferInfo(VmaAllocator allocator,
                                           const VkBufferCreateInfo *pBufferCreateInfo,
                                           VkMemoryPropertyFlags requiredFlags,
@@ -105,7 +91,6 @@ VkResult FindMemoryTypeIndexForImageInfo(VmaAllocator allocator,
                                          const VkImageCreateInfo *pImageCreateInfo,
                                          VkMemoryPropertyFlags requiredFlags,
                                          VkMemoryPropertyFlags preferredFlags,
-                                         uint32_t memoryTypeBits,
                                          bool allocateDedicatedMemory,
                                          uint32_t *pMemoryTypeIndexOut);
 

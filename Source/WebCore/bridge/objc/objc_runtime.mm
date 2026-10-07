@@ -47,13 +47,13 @@ namespace Bindings {
 
 static JSC_DECLARE_HOST_FUNCTION(convertObjCFallbackObjectToPrimitive);
 
-ClassStructPtr webScriptObjectClassSingleton()
+ClassStructPtr webScriptObjectClass()
 {
     static ClassStructPtr<WebScriptObject> webScriptObjectClass = NSClassFromString(@"WebScriptObject");
     return webScriptObjectClass;
 }
 
-ClassStructPtr webUndefinedClassSingleton()
+ClassStructPtr webUndefinedClass()
 {
     static ClassStructPtr<WebUndefined> webUndefinedClass = NSClassFromString(@"WebUndefined");
     return webUndefinedClass;
@@ -128,7 +128,7 @@ static id convertValueToObjcObject(JSGlobalObject* lexicalGlobalObject, JSValue 
     RefPtr<RootObject> rootObject = findRootObject(vm.deprecatedVMEntryGlobalObject(lexicalGlobalObject));
     if (!rootObject)
         return nil;
-    return [webScriptObjectClassSingleton() _convertValueToObjcValue:value originRootObject:rootObject.get() rootObject:rootObject.get()];
+    return [protect(webScriptObjectClass()) _convertValueToObjcValue:value originRootObject:rootObject.get() rootObject:rootObject.get()];
 }
 
 bool ObjcField::setValueToInstance(JSGlobalObject* lexicalGlobalObject, const Instance* instance, JSValue aValue) const

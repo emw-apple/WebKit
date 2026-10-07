@@ -174,8 +174,7 @@ if (rtc_include_tests) {
         "//rtc_base:rtc_event",
       ]
 
-      data = [ "../../third_party/wireplumber" ]
-      data_deps = [ "//third_party/pipewire:all" ]
+      data = [ "../../third_party/pipewire" ]
       public_configs = [ "../portal:pipewire_config" ]
     }
   }

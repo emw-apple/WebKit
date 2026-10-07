@@ -338,14 +338,11 @@ public:
 #endif
     static void didCreateWebGPUDevice(GPUDevice&);
     static void willDestroyWebGPUDevice(GPUDevice&);
-    static void didChangeWebGPUDeviceLabel(GPUDevice&);
     static void didChangeGPUDeviceClientNodes(GPUDevice&);
     static void didChangeWebGPUMemory(GPUDevice&);
     static void didCreateWebGPUComputePipeline(GPUDevice&, GPUComputePipeline&);
     static void willDestroyWebGPUComputePipeline(GPUComputePipeline&);
-    static void didChangeWebGPUComputePipelineLabel(GPUComputePipeline&);
     static void didCreateWebGPURenderPipeline(GPUDevice&, GPURenderPipeline&);
-    static void didChangeWebGPURenderPipelineLabel(GPURenderPipeline&);
     static void willDestroyWebGPURenderPipeline(GPURenderPipeline&);
     static bool isWebGPURenderPipelineDisabled(GPURenderPipeline&);
     static RefPtr<WebGPU::RenderPipeline> renderPipelineForWebGPUHighlighting(GPURenderPipeline&, unsigned canvasColorAttachmentMask);
@@ -527,7 +524,7 @@ private:
     static void willFireObserverCallbackImpl(InstrumentingAgents&, const String&);
     static void didFireObserverCallbackImpl(InstrumentingAgents&);
 
-    static void didDispatchDOMStorageEventImpl(InstrumentingAgents&, Page&, const String& key, const String& oldValue, const String& newValue, StorageType, const SecurityOrigin&);
+    static void didDispatchDOMStorageEventImpl(InstrumentingAgents&, const String& key, const String& oldValue, const String& newValue, StorageType, const SecurityOrigin&);
 
     static bool shouldWaitForDebuggerOnStartImpl(InstrumentingAgents&);
     static void workerStartedImpl(InstrumentingAgents&, WorkerInspectorProxy&);
@@ -560,15 +557,12 @@ private:
 #endif
     static void didCreateWebGPUDeviceImpl(InstrumentingAgents&, GPUDevice&);
     static void willDestroyWebGPUDeviceImpl(InstrumentingAgents&, GPUDevice&);
-    static void didChangeWebGPUDeviceLabelImpl(InstrumentingAgents&, GPUDevice&);
     static void didChangeGPUDeviceClientNodesImpl(InstrumentingAgents&, GPUDevice&);
     static void didChangeWebGPUMemoryImpl(InstrumentingAgents&, GPUDevice&);
     static void didCreateWebGPUComputePipelineImpl(InstrumentingAgents&, GPUDevice&, GPUComputePipeline&);
     static void willDestroyWebGPUComputePipelineImpl(InstrumentingAgents&, GPUComputePipeline&);
-    static void didChangeWebGPUComputePipelineLabelImpl(InstrumentingAgents&, GPUComputePipeline&);
     static void didCreateWebGPURenderPipelineImpl(InstrumentingAgents&, GPUDevice&, GPURenderPipeline&);
     static void willDestroyWebGPURenderPipelineImpl(InstrumentingAgents&, GPURenderPipeline&);
-    static void didChangeWebGPURenderPipelineLabelImpl(InstrumentingAgents&, GPURenderPipeline&);
     static bool isWebGPURenderPipelineDisabledImpl(InstrumentingAgents&, GPURenderPipeline&);
     static RefPtr<WebGPU::RenderPipeline> renderPipelineForWebGPUHighlightingImpl(InstrumentingAgents&, GPURenderPipeline&, unsigned canvasColorAttachmentMask);
 
@@ -1388,7 +1382,7 @@ inline void InspectorInstrumentation::interceptResponse(const LocalFrame& frame,
 inline void InspectorInstrumentation::didDispatchDOMStorageEvent(Page& page, const String& key, const String& oldValue, const String& newValue, StorageType storageType, const SecurityOrigin& securityOrigin)
 {
     FAST_RETURN_IF_NO_FRONTENDS(void());
-    didDispatchDOMStorageEventImpl(protect(instrumentingAgents(page)), page, key, oldValue, newValue, storageType, securityOrigin);
+    didDispatchDOMStorageEventImpl(protect(instrumentingAgents(page)), key, oldValue, newValue, storageType, securityOrigin);
 }
 
 inline bool InspectorInstrumentation::shouldWaitForDebuggerOnStart(ScriptExecutionContext& context)
@@ -1558,13 +1552,6 @@ inline void InspectorInstrumentation::willDestroyWebGPUDevice(GPUDevice& device)
         willDestroyWebGPUDeviceImpl(*agents, device);
 }
 
-inline void InspectorInstrumentation::didChangeWebGPUDeviceLabel(GPUDevice& device)
-{
-    FAST_RETURN_IF_NO_FRONTENDS(void());
-    if (RefPtr agents = instrumentingAgents(protect(device.scriptExecutionContext())))
-        didChangeWebGPUDeviceLabelImpl(*agents, device);
-}
-
 inline void InspectorInstrumentation::didChangeGPUDeviceClientNodes(GPUDevice& device)
 {
     FAST_RETURN_IF_NO_FRONTENDS(void());
@@ -1595,15 +1582,6 @@ inline void InspectorInstrumentation::willDestroyWebGPUComputePipeline(GPUComput
     }
 }
 
-inline void InspectorInstrumentation::didChangeWebGPUComputePipelineLabel(GPUComputePipeline& pipeline)
-{
-    FAST_RETURN_IF_NO_FRONTENDS(void());
-    if (RefPtr device = pipeline.device()) {
-        if (RefPtr agents = instrumentingAgents(protect(device->scriptExecutionContext())))
-            didChangeWebGPUComputePipelineLabelImpl(*agents, pipeline);
-    }
-}
-
 inline void InspectorInstrumentation::didCreateWebGPURenderPipeline(GPUDevice& device, GPURenderPipeline& pipeline)
 {
     FAST_RETURN_IF_NO_FRONTENDS(void());
@@ -1617,15 +1595,6 @@ inline void InspectorInstrumentation::willDestroyWebGPURenderPipeline(GPURenderP
     if (RefPtr device = pipeline.device()) {
         if (RefPtr agents = instrumentingAgents(protect(device->scriptExecutionContext())))
             willDestroyWebGPURenderPipelineImpl(*agents, pipeline);
-    }
-}
-
-inline void InspectorInstrumentation::didChangeWebGPURenderPipelineLabel(GPURenderPipeline& pipeline)
-{
-    FAST_RETURN_IF_NO_FRONTENDS(void());
-    if (RefPtr device = pipeline.device()) {
-        if (RefPtr agents = instrumentingAgents(protect(device->scriptExecutionContext())))
-            didChangeWebGPURenderPipelineLabelImpl(*agents, pipeline);
     }
 }
 

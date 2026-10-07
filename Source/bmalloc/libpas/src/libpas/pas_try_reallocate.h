@@ -45,6 +45,7 @@ PAS_BEGIN_EXTERN_C;
 typedef pas_allocation_result
 (*pas_try_reallocate_allocate_callback)(pas_heap* heap,
                                         size_t new_size,
+                                        pas_allocation_mode allocation_mode,
                                         void* arg);
 
 static PAS_ALWAYS_INLINE bool
@@ -68,6 +69,7 @@ pas_try_allocate_for_reallocate_and_copy(
     void* old_ptr,
     size_t old_size,
     size_t new_size,
+    pas_allocation_mode allocation_mode,
     pas_reallocate_heap_teleport_rule teleport_rule,
     pas_try_reallocate_allocate_callback allocate_callback,
     void* allocate_callback_arg)
@@ -108,7 +110,7 @@ pas_try_allocate_for_reallocate_and_copy(
         break;
     } }
     
-    result = allocate_callback(target_heap, new_size, allocate_callback_arg);
+    result = allocate_callback(target_heap, new_size, allocation_mode, allocate_callback_arg);
 
     if (result.begin) {
         if (verbose)
@@ -131,6 +133,7 @@ pas_try_reallocate_table_segregated_case(pas_page_base* page_base,
                                          uintptr_t begin,
                                          pas_heap* heap,
                                          size_t new_size,
+                                         pas_allocation_mode allocation_mode,
                                          pas_segregated_page_config segregated_config,
                                          pas_reallocate_heap_teleport_rule teleport_rule,
                                          pas_reallocate_free_mode free_mode,
@@ -156,7 +159,7 @@ pas_try_reallocate_table_segregated_case(pas_page_base* page_base,
     }
 
     result = pas_try_allocate_for_reallocate_and_copy(
-        old_heap, heap, (void*)begin, old_size, new_size, teleport_rule,
+        old_heap, heap, (void*)begin, old_size, new_size, allocation_mode, teleport_rule,
         allocate_callback, allocate_callback_arg);
     if (result.begin || free_mode == pas_reallocate_free_always)
         pas_deallocate_known_segregated((void*)begin, segregated_config);
@@ -168,6 +171,7 @@ pas_try_reallocate_table_bitfit_case(pas_page_base* page_base,
                                      uintptr_t begin,
                                      pas_heap* heap,
                                      size_t new_size,
+                                     pas_allocation_mode allocation_mode,
                                      pas_bitfit_page_config bitfit_config,
                                      pas_reallocate_heap_teleport_rule teleport_rule,
                                      pas_reallocate_free_mode free_mode,
@@ -193,7 +197,7 @@ pas_try_reallocate_table_bitfit_case(pas_page_base* page_base,
     }
 
     result = pas_try_allocate_for_reallocate_and_copy(
-        old_heap, heap, (void*)begin, old_size, new_size, teleport_rule,
+        old_heap, heap, (void*)begin, old_size, new_size, allocation_mode, teleport_rule,
         allocate_callback, allocate_callback_arg);
     if (result.begin || free_mode == pas_reallocate_free_always) {
         bitfit_config.specialized_page_deallocate_with_page(page, begin);
@@ -206,6 +210,7 @@ static PAS_ALWAYS_INLINE pas_allocation_result
 pas_try_reallocate(void* old_ptr,
                    pas_heap* heap,
                    size_t new_size,
+                   pas_allocation_mode allocation_mode,
                    pas_heap_config config,
                    pas_reallocate_heap_teleport_rule teleport_rule,
                    pas_reallocate_free_mode free_mode,
@@ -237,7 +242,7 @@ pas_try_reallocate(void* old_ptr,
         }
 
         result = pas_try_allocate_for_reallocate_and_copy(
-            old_heap, heap, old_ptr, old_size, new_size, teleport_rule,
+            old_heap, heap, old_ptr, old_size, new_size, allocation_mode, teleport_rule,
             allocate_callback, allocate_callback_arg);
         if (result.begin || free_mode == pas_reallocate_free_always) {
             pas_deallocate_known_segregated(old_ptr, config.small_segregated_config);
@@ -250,7 +255,7 @@ pas_try_reallocate(void* old_ptr,
         switch (page_and_kind.page_kind) {
         case pas_small_bitfit_page_kind:
             return pas_try_reallocate_table_bitfit_case(
-                page_and_kind.page_base, begin, heap, new_size, config.small_bitfit_config,
+                page_and_kind.page_base, begin, heap, new_size, allocation_mode, config.small_bitfit_config,
                 teleport_rule, free_mode, allocate_callback, allocate_callback_arg);
         default:
             PAS_ASSERT_NOT_REACHED();
@@ -263,7 +268,6 @@ pas_try_reallocate(void* old_ptr,
         pas_large_map_entry entry;
         pas_allocation_result result;
         pas_page_base* page_base;
-        bool source_is_pgm;
 
         page_base = config.page_header_func(begin);
         if (page_base) {
@@ -272,30 +276,30 @@ pas_try_reallocate(void* old_ptr,
             case pas_small_exclusive_segregated_page_kind:
                 PAS_ASSERT(!config.small_segregated_is_in_megapage);
                 return pas_try_reallocate_table_segregated_case(
-                    page_base, begin, heap, new_size, config.small_segregated_config,
+                    page_base, begin, heap, new_size, allocation_mode, config.small_segregated_config,
                     teleport_rule, free_mode, allocate_callback,
                     allocate_callback_arg);
 
             case pas_small_bitfit_page_kind:
                 PAS_ASSERT(!config.small_bitfit_is_in_megapage);
                 return pas_try_reallocate_table_bitfit_case(
-                    page_base, begin, heap, new_size, config.small_bitfit_config,
+                    page_base, begin, heap, new_size, allocation_mode, config.small_bitfit_config,
                     teleport_rule, free_mode, allocate_callback, allocate_callback_arg);
 
             case pas_medium_exclusive_segregated_page_kind:
                 return pas_try_reallocate_table_segregated_case(
-                    page_base, begin, heap, new_size, config.medium_segregated_config,
+                    page_base, begin, heap, new_size, allocation_mode, config.medium_segregated_config,
                     teleport_rule, free_mode, allocate_callback,
                     allocate_callback_arg);
 
             case pas_medium_bitfit_page_kind:
                 return pas_try_reallocate_table_bitfit_case(
-                    page_base, begin, heap, new_size, config.medium_bitfit_config,
+                    page_base, begin, heap, new_size, allocation_mode, config.medium_bitfit_config,
                     teleport_rule, free_mode, allocate_callback, allocate_callback_arg);
 
             case pas_marge_bitfit_page_kind:
                 return pas_try_reallocate_table_bitfit_case(
-                    page_base, begin, heap, new_size, config.marge_bitfit_config,
+                    page_base, begin, heap, new_size, allocation_mode, config.marge_bitfit_config,
                     teleport_rule, free_mode, allocate_callback, allocate_callback_arg);
             }
             
@@ -304,17 +308,16 @@ pas_try_reallocate(void* old_ptr,
         }
 
         if (!begin)
-            return allocate_callback(heap, new_size, allocate_callback_arg);
+            return allocate_callback(heap, new_size, allocation_mode, allocate_callback_arg);
 
         if (PAS_UNLIKELY(pas_system_heap_should_supplant_bmalloc(config.kind))) {
             void* raw_result;
             
             PAS_ASSERT(free_mode == pas_reallocate_free_if_successful);
 
-            if (config.allow_mte_tagging)
-                raw_result = pas_system_heap_realloc(old_ptr, new_size);
-            else
-                raw_result = pas_system_heap_realloc_untagged(old_ptr, new_size);
+            raw_result = allocation_mode == pas_non_compact_allocation_mode
+                ? pas_system_heap_realloc(old_ptr, new_size)
+                : pas_system_heap_realloc_compact(old_ptr, new_size);
 
             result = pas_allocation_result_create_failure();
 
@@ -329,17 +332,12 @@ pas_try_reallocate(void* old_ptr,
         pas_heap_lock_lock();
 
         // Check for PGM case for slow path if object is using PGM large heap
-        if (config.pgm_enabled && pas_probabilistic_guard_malloc_check_exists(begin)) {
+        if (config.pgm_enabled && pas_probabilistic_guard_malloc_check_exists(begin))
             entry = pas_probabilistic_guard_malloc_return_as_large_map_entry(begin);
-            source_is_pgm = true;
-        } else {
+        else {
             entry = pas_large_map_find(begin);
-            if (pas_large_map_entry_is_empty(entry)) {
-                pas_reallocation_did_fail(
-                    "Source object not allocated, or belongs to a different heap config",
-                    NULL, heap, old_ptr, 0, new_size);
-            }
-            source_is_pgm = false;
+            if (pas_large_map_entry_is_empty(entry))
+                pas_reallocation_did_fail("Source object not allocated", NULL, heap, old_ptr, 0, new_size);
         }
 
         PAS_PROFILE(LARGE_MAP_FOUND_ENTRY, &config, entry.begin, entry.end);
@@ -347,29 +345,13 @@ pas_try_reallocate(void* old_ptr,
         PAS_ASSERT(entry.begin == begin);
         PAS_ASSERT(entry.end > begin);
         PAS_ASSERT(entry.heap);
-
+        
         old_size = entry.end - begin;
         source_heap = pas_heap_for_large_heap(entry.heap);
         pas_heap_lock_unlock();
-
-        /* The large map is global, so the entry we just found may belong to a different
-           heap config than the one we are reallocating into.
-           But reallocating across heap configs is never legal, regardless of the heap's
-           teleport_rule; rather than dying in pas_large_heap_try_deallocate, fail here
-           for a better stack trace.
-
-           PGM allocations are exempt: they belong to the global PGM registry rather than to
-           a heap config, and pas_try_deallocate_pgm_large below frees them without consulting
-           one, so reallocating one through any config works. */
-        if (!source_is_pgm
-            && pas_heap_config_kind_get_config(source_heap->config_kind) != config.config_ptr) {
-            pas_reallocation_did_fail(
-                "Source object belongs to a different heap config",
-                source_heap, heap, old_ptr, old_size, new_size);
-        }
-
+        
         result = pas_try_allocate_for_reallocate_and_copy(
-            source_heap, heap, old_ptr, old_size, new_size, teleport_rule,
+            source_heap, heap, old_ptr, old_size, new_size, allocation_mode, teleport_rule,
             allocate_callback, allocate_callback_arg);
         
         if (result.begin || free_mode == pas_reallocate_free_always) {
@@ -379,6 +361,7 @@ pas_try_reallocate(void* old_ptr,
                 return result;
             }
             pas_deallocate_known_large(old_ptr, config.config_ptr);
+            pas_msl_free_logging(old_ptr); /* This will not go to TLC, thus, we need to record deallocation here. */
         }
         
         return result;
@@ -396,6 +379,7 @@ static PAS_ALWAYS_INLINE pas_allocation_result
 pas_try_reallocate_intrinsic_allocate_callback(
     pas_heap* heap,
     size_t new_size,
+    pas_allocation_mode allocation_mode,
     void* arg)
 {
     pas_try_reallocate_intrinsic_allocate_data* data;
@@ -404,7 +388,7 @@ pas_try_reallocate_intrinsic_allocate_callback(
     
     data = (pas_try_reallocate_intrinsic_allocate_data*)arg;
     
-    return data->try_allocate_intrinsic(new_size);
+    return data->try_allocate_intrinsic(new_size, allocation_mode);
 }
 
 static PAS_ALWAYS_INLINE pas_allocation_result
@@ -412,6 +396,7 @@ pas_try_reallocate_intrinsic(
     void* old_ptr,
     pas_heap* heap,
     size_t new_size,
+    pas_allocation_mode allocation_mode,
     pas_heap_config config,
     pas_try_allocate_intrinsic_for_realloc try_allocate_intrinsic,
     pas_reallocate_heap_teleport_rule teleport_rule,
@@ -426,6 +411,7 @@ pas_try_reallocate_intrinsic(
         old_ptr,
         heap,
         new_size,
+        allocation_mode,
         config,
         teleport_rule,
         free_mode,
@@ -443,6 +429,7 @@ static PAS_ALWAYS_INLINE pas_allocation_result
 pas_try_reallocate_single_allocate_callback(
     pas_heap* heap,
     size_t new_size,
+    pas_allocation_mode allocation_mode,
     void* arg)
 {
     pas_try_reallocate_single_allocate_data* data;
@@ -454,13 +441,14 @@ pas_try_reallocate_single_allocate_callback(
     PAS_TESTING_ASSERT(
         new_size == pas_heap_config_kind_get_config(heap->config_kind)->get_type_size(heap->type));
     
-    return data->try_allocate(data->heap_ref);
+    return data->try_allocate(data->heap_ref, allocation_mode);
 }
 
 static PAS_ALWAYS_INLINE pas_allocation_result
 pas_try_reallocate_single(
     void* old_ptr,
     pas_heap_ref* heap_ref,
+    pas_allocation_mode allocation_mode,
     pas_heap_config config,
     pas_try_allocate try_allocate,
     pas_heap_runtime_config* runtime_config,
@@ -480,6 +468,7 @@ pas_try_reallocate_single(
                         config.config_ptr,
                         runtime_config),
         config.get_type_size(heap_ref->type),
+        allocation_mode,
         config,
         teleport_rule,
         free_mode,
@@ -497,6 +486,7 @@ static PAS_ALWAYS_INLINE pas_allocation_result
 pas_try_reallocate_array_allocate_callback(
     pas_heap* heap,
     size_t new_size,
+    pas_allocation_mode allocation_mode,
     void* arg)
 {
     pas_try_reallocate_array_allocate_data* data;
@@ -504,7 +494,7 @@ pas_try_reallocate_array_allocate_callback(
     
     data = (pas_try_reallocate_array_allocate_data*)arg;
     
-    result = data->try_allocate_array(data->heap_ref, heap, new_size);
+    result = data->try_allocate_array(data->heap_ref, heap, new_size, allocation_mode);
     
     return result;
 }
@@ -514,6 +504,7 @@ pas_try_reallocate_array_by_size(
     void* old_ptr,
     pas_heap_ref* heap_ref,
     size_t new_size,
+    pas_allocation_mode allocation_mode,
     pas_heap_config config,
     pas_try_allocate_array_for_realloc try_allocate_array,
     pas_heap_runtime_config* runtime_config,
@@ -533,6 +524,7 @@ pas_try_reallocate_array_by_size(
                         config.config_ptr,
                         runtime_config),
         new_size,
+        allocation_mode,
         config,
         teleport_rule,
         free_mode,
@@ -546,6 +538,7 @@ pas_try_reallocate_array_by_count(
     void* old_ptr,
     pas_heap_ref* heap_ref,
     size_t new_count,
+    pas_allocation_mode allocation_mode,
     pas_heap_config config,
     pas_try_allocate_array_for_realloc try_allocate_array,
     pas_heap_runtime_config* runtime_config,
@@ -564,7 +557,7 @@ pas_try_reallocate_array_by_count(
         return pas_allocation_result_create_failure();
 
     return pas_try_reallocate_array_by_size(
-        old_ptr, heap_ref, new_size, config, try_allocate_array, runtime_config, teleport_rule, free_mode, result_filter);
+        old_ptr, heap_ref, new_size, allocation_mode, config, try_allocate_array, runtime_config, teleport_rule, free_mode, result_filter);
 }
 
 typedef struct {
@@ -576,6 +569,7 @@ static PAS_ALWAYS_INLINE pas_allocation_result
 pas_try_reallocate_primitive_allocate_callback(
     pas_heap* heap,
     size_t new_size,
+    pas_allocation_mode allocation_mode,
     void* arg)
 {
     static const bool verbose = PAS_SHOULD_LOG(PAS_LOG_OTHER);
@@ -587,7 +581,7 @@ pas_try_reallocate_primitive_allocate_callback(
     
     data = (pas_try_reallocate_primitive_allocate_data*)arg;
 
-    result = data->try_allocate_primitive(data->heap_ref, new_size);
+    result = data->try_allocate_primitive(data->heap_ref, new_size, allocation_mode);
 
     if (verbose)
         pas_log("in realloc - result.begin = %p\n", (void*)result.begin);
@@ -600,6 +594,7 @@ pas_try_reallocate_primitive(
     void* old_ptr,
     pas_primitive_heap_ref* heap_ref,
     size_t new_size,
+    pas_allocation_mode allocation_mode,
     pas_heap_config config,
     pas_try_allocate_primitive_for_realloc try_allocate_primitive,
     pas_heap_runtime_config* runtime_config,
@@ -619,6 +614,7 @@ pas_try_reallocate_primitive(
                         config.config_ptr,
                         runtime_config),
         new_size,
+        allocation_mode,
         config,
         teleport_rule,
         free_mode,

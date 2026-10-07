@@ -109,8 +109,7 @@ static void contextCommitCallback(WebKitInputMethodContextImplGtk* context, cons
 static gboolean contextRetrieveSurrounding(WebKitInputMethodContextImplGtk* context)
 {
     auto* priv = context->priv;
-    auto surroundingTextCharacters = byteCast<char>(priv->surroundingText.span());
-    gtk_im_context_set_surrounding(priv->context.get(), surroundingTextCharacters.data(), surroundingTextCharacters.size(), priv->surroundingCursorIndex);
+    gtk_im_context_set_surrounding(priv->context.get(), priv->surroundingText.legacyCStringPointer(), priv->surroundingText.length(), priv->surroundingCursorIndex);
     return TRUE;
 }
 
@@ -205,7 +204,7 @@ static void webkitInputMethodContextImplGtkNotifyCursorArea(WebKitInputMethodCon
 static void webkitInputMethodContextImplGtkNotifySurrounding(WebKitInputMethodContext* context, const gchar* text, unsigned length, unsigned cursorIndex, unsigned)
 {
     auto* priv = WEBKIT_INPUT_METHOD_CONTEXT_IMPL_GTK(context)->priv;
-    priv->surroundingText = UTF8CString::fromUTF8(unsafeMakeSpan(text, length));
+    priv->surroundingText = UTF8CString { byteCast<char8_t>(unsafeMakeSpan(text, length)) };
     priv->surroundingCursorIndex = cursorIndex;
 }
 

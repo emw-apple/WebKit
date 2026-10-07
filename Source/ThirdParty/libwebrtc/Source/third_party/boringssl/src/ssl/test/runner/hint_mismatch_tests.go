@@ -17,18 +17,23 @@ package runner
 import "strconv"
 
 func addHintMismatchTests() {
-	// These tests do not specify -handshake-hints directly. Instead,  we define
-	// normal tests, that run even without a handshaker, and rely on
-	// convertToHandshakeHintTests to generate a handshaker hints variant. This
+	// Each of these tests skips split handshakes because split handshakes does
+	// not handle a mismatch between shim and handshaker. Handshake hints,
+	// however, are designed to tolerate the mismatch.
+	//
+	// Note also these tests do not specify -handshake-hints directly. Instead,
+	// we define normal tests, that run even without a handshaker, and rely on
+	// convertToSplitHandshakeTests to generate a handshaker hints variant. This
 	// avoids repeating the -is-handshaker-supported and -handshaker-path logic.
 	// (While not useful, the tests will still pass without a handshaker.)
 	for _, protocol := range []protocol{tls, quic} {
 		// If the signing payload is different, the handshake still completes
 		// successfully. Different ALPN preferences will trigger a mismatch.
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-SignatureInput",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-SignatureInput",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -47,9 +52,10 @@ func addHintMismatchTests() {
 
 		// The shim and handshaker may have different curve preferences.
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-KeyShare",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-KeyShare",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -68,9 +74,10 @@ func addHintMismatchTests() {
 		})
 		if protocol != quic {
 			testCases = append(testCases, testCase{
-				name:     protocol.String() + "-HintMismatch-ECDHE-Group",
-				testType: serverTest,
-				protocol: protocol,
+				name:               protocol.String() + "-HintMismatch-ECDHE-Group",
+				testType:           serverTest,
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion:    VersionTLS12,
 					MaxVersion:    VersionTLS12,
@@ -90,9 +97,10 @@ func addHintMismatchTests() {
 		// If the handshaker does HelloRetryRequest, it will omit most hints.
 		// The shim should still work.
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-HandshakerHelloRetryRequest",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-HandshakerHelloRetryRequest",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion:    VersionTLS13,
 				MaxVersion:    VersionTLS13,
@@ -112,9 +120,10 @@ func addHintMismatchTests() {
 		// will be ignored. This is not reported as a mismatch because hints
 		// would not have helped the shim anyway.
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-ShimHelloRetryRequest",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-ShimHelloRetryRequest",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion:    VersionTLS13,
 				MaxVersion:    VersionTLS13,
@@ -132,9 +141,10 @@ func addHintMismatchTests() {
 		// The shim and handshaker may have different signature algorithm
 		// preferences.
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-SignatureAlgorithm-TLS13",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-SignatureAlgorithm-TLS13",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -152,9 +162,10 @@ func addHintMismatchTests() {
 		})
 		if protocol != quic {
 			testCases = append(testCases, testCase{
-				name:     protocol.String() + "-HintMismatch-SignatureAlgorithm-TLS12",
-				testType: serverTest,
-				protocol: protocol,
+				name:               protocol.String() + "-HintMismatch-SignatureAlgorithm-TLS12",
+				testType:           serverTest,
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion: VersionTLS12,
 					MaxVersion: VersionTLS12,
@@ -180,9 +191,10 @@ func addHintMismatchTests() {
 			DNSNames:   []string{"test"},
 		}).ToCredential()
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-Certificate-TLS13",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-Certificate-TLS13",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -196,9 +208,10 @@ func addHintMismatchTests() {
 		})
 		if protocol != quic {
 			testCases = append(testCases, testCase{
-				name:     protocol.String() + "-HintMismatch-Certificate-TLS12",
-				testType: serverTest,
-				protocol: protocol,
+				name:               protocol.String() + "-HintMismatch-Certificate-TLS12",
+				testType:           serverTest,
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion: VersionTLS12,
 					MaxVersion: VersionTLS12,
@@ -216,9 +229,10 @@ func addHintMismatchTests() {
 		// We run the first connection with tickets enabled, so the client is
 		// issued a ticket, then disable tickets on the second connection.
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-NoTickets1-TLS13",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-NoTickets1-TLS13",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -231,9 +245,10 @@ func addHintMismatchTests() {
 			expectResumeRejected: true,
 		})
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-NoTickets2-TLS13",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-NoTickets2-TLS13",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -246,9 +261,10 @@ func addHintMismatchTests() {
 		})
 		if protocol != quic {
 			testCases = append(testCases, testCase{
-				name:     protocol.String() + "-HintMismatch-NoTickets1-TLS12",
-				testType: serverTest,
-				protocol: protocol,
+				name:               protocol.String() + "-HintMismatch-NoTickets1-TLS12",
+				testType:           serverTest,
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion: VersionTLS12,
 					MaxVersion: VersionTLS12,
@@ -261,9 +277,10 @@ func addHintMismatchTests() {
 				expectResumeRejected: true,
 			})
 			testCases = append(testCases, testCase{
-				name:     protocol.String() + "-HintMismatch-NoTickets2-TLS12",
-				testType: serverTest,
-				protocol: protocol,
+				name:               protocol.String() + "-HintMismatch-NoTickets2-TLS12",
+				testType:           serverTest,
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion: VersionTLS12,
 					MaxVersion: VersionTLS12,
@@ -279,9 +296,10 @@ func addHintMismatchTests() {
 		// The shim and handshaker may disagree on whether to request a client
 		// certificate.
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-CertificateRequest",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-CertificateRequest",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -296,9 +314,10 @@ func addHintMismatchTests() {
 		// The shim and handshaker may negotiate different versions altogether.
 		if protocol != quic {
 			testCases = append(testCases, testCase{
-				name:     protocol.String() + "-HintMismatch-Version1",
-				testType: serverTest,
-				protocol: protocol,
+				name:               protocol.String() + "-HintMismatch-Version1",
+				testType:           serverTest,
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion: VersionTLS12,
 					MaxVersion: VersionTLS13,
@@ -313,9 +332,10 @@ func addHintMismatchTests() {
 				},
 			})
 			testCases = append(testCases, testCase{
-				name:     protocol.String() + "-HintMismatch-Version2",
-				testType: serverTest,
-				protocol: protocol,
+				name:               protocol.String() + "-HintMismatch-Version2",
+				testType:           serverTest,
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion: VersionTLS12,
 					MaxVersion: VersionTLS13,
@@ -335,9 +355,10 @@ func addHintMismatchTests() {
 		// algorithm, whether to enable certificate compression, or certificate
 		// compression inputs.
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-CertificateCompression-ShimOnly",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-CertificateCompression-ShimOnly",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -354,9 +375,10 @@ func addHintMismatchTests() {
 			},
 		})
 		testCases = append(testCases, testCase{
-			name:     protocol.String() + "-HintMismatch-CertificateCompression-HandshakerOnly",
-			testType: serverTest,
-			protocol: protocol,
+			name:               protocol.String() + "-HintMismatch-CertificateCompression-HandshakerOnly",
+			testType:           serverTest,
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -373,9 +395,10 @@ func addHintMismatchTests() {
 			},
 		})
 		testCases = append(testCases, testCase{
-			testType: serverTest,
-			name:     protocol.String() + "-HintMismatch-CertificateCompression-AlgorithmMismatch",
-			protocol: protocol,
+			testType:           serverTest,
+			name:               protocol.String() + "-HintMismatch-CertificateCompression-AlgorithmMismatch",
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -395,9 +418,10 @@ func addHintMismatchTests() {
 			},
 		})
 		testCases = append(testCases, testCase{
-			testType: serverTest,
-			name:     protocol.String() + "-HintMismatch-CertificateCompression-InputMismatch",
-			protocol: protocol,
+			testType:           serverTest,
+			name:               protocol.String() + "-HintMismatch-CertificateCompression-InputMismatch",
+			protocol:           protocol,
+			skipSplitHandshake: true,
 			config: Config{
 				MinVersion: VersionTLS13,
 				MaxVersion: VersionTLS13,
@@ -427,9 +451,10 @@ func addHintMismatchTests() {
 		// selects ECDHE_RSA (hints are useful).
 		if protocol != quic {
 			testCases = append(testCases, testCase{
-				testType: serverTest,
-				name:     protocol.String() + "-HintMismatch-CipherMismatch1",
-				protocol: protocol,
+				testType:           serverTest,
+				name:               protocol.String() + "-HintMismatch-CipherMismatch1",
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion: VersionTLS12,
 					MaxVersion: VersionTLS12,
@@ -444,9 +469,10 @@ func addHintMismatchTests() {
 				},
 			})
 			testCases = append(testCases, testCase{
-				testType: serverTest,
-				name:     protocol.String() + "-HintMismatch-CipherMismatch2",
-				protocol: protocol,
+				testType:           serverTest,
+				name:               protocol.String() + "-HintMismatch-CipherMismatch2",
+				protocol:           protocol,
+				skipSplitHandshake: true,
 				config: Config{
 					MinVersion: VersionTLS12,
 					MaxVersion: VersionTLS12,

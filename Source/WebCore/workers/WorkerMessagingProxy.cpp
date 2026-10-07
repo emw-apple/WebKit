@@ -113,7 +113,7 @@ static ScriptExecutionContextIdentifier loaderContextIdentifierFromContext(const
 {
     if (is<Document>(context))
         return context.identifier();
-    return protect(downcast<WorkerGlobalScope>(context).thread()->workerLoaderProxy())->loaderContextIdentifier();
+    return downcast<WorkerGlobalScope>(context).thread()->workerLoaderProxy()->loaderContextIdentifier();
 }
 
 WorkerMessagingProxy::WorkerMessagingProxy(Worker& workerObject)
@@ -171,8 +171,7 @@ void WorkerMessagingProxy::startWorkerGlobalScope(const URL& scriptURL, PAL::Ses
         scriptExecutionContext->advancedPrivacyProtections(),
         scriptExecutionContext->noiseInjectionHashSalt(),
         WTF::move(agentClusterID),
-        scriptExecutionContext->networkLoadPolicy(),
-        scriptExecutionContext->isSecureContext() ? IsSecureContext::Yes : IsSecureContext::No
+        scriptExecutionContext->networkLoadPolicy()
     };
     auto thread = DedicatedWorkerThread::create(params, sourceCode, *this, *this, *this, *this, startMode, protect(scriptExecutionContext->topOrigin()), proxy.get(), socketProvider.get(), runtimeFlags);
 

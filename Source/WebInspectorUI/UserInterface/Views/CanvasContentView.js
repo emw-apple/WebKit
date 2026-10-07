@@ -97,9 +97,9 @@ WI.CanvasContentView = class CanvasContentView extends WI.ContentView
             let titles = header.appendChild(document.createElement("div"));
             titles.className = "titles";
 
-            this._titleElement = titles.appendChild(document.createElement("span"));
-            this._titleElement.className = "title";
-            this._titleElement.textContent = this.representedObject.displayName;
+            let title = titles.appendChild(document.createElement("span"));
+            title.className = "title";
+            title.textContent = this.representedObject.displayName;
 
             let subtitle = titles.appendChild(document.createElement("span"));
             subtitle.className = "subtitle";
@@ -175,9 +175,6 @@ WI.CanvasContentView = class CanvasContentView extends WI.ContentView
     {
         super.layout();
 
-        if (this._titleElement)
-            this._titleElement.textContent = this.representedObject.displayName;
-
         if (this._pendingContent) {
             if (this._errorElement) {
                 this._errorElement.remove();
@@ -207,7 +204,6 @@ WI.CanvasContentView = class CanvasContentView extends WI.ContentView
     {
         super.attached();
 
-        this.representedObject.addEventListener(WI.Canvas.Event.NameChanged, this.needsLayout, this);
         this.representedObject.addEventListener(WI.Canvas.Event.SizeChanged, this._updateSize, this);
         this.representedObject.addEventListener(WI.Canvas.Event.MemoryChanged, this._updateMemoryCost, this);
         this.representedObject.addEventListener(WI.Canvas.Event.NodesChanged, this._updateCanvasNode, this);
@@ -228,7 +224,6 @@ WI.CanvasContentView = class CanvasContentView extends WI.ContentView
 
     detached()
     {
-        this.representedObject.removeEventListener(WI.Canvas.Event.NameChanged, this.needsLayout, this);
         this.representedObject.removeEventListener(WI.Canvas.Event.SizeChanged, this._updateSize, this);
         this.representedObject.removeEventListener(WI.Canvas.Event.MemoryChanged, this._updateMemoryCost, this);
         this.representedObject.removeEventListener(WI.Canvas.Event.NodesChanged, this._updateCanvasNode, this);

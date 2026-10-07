@@ -290,7 +290,7 @@ public:
     }
 
     template<typename Functor>
-    bool removeIf(NOESCAPE const Functor& functor)
+    bool removeIf(NOESCAPE Functor&& functor)
     {
         bool result = m_set.removeIf([&](const KeyType& item) {
             auto* pointer = item.get();

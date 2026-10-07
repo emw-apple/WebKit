@@ -23,10 +23,6 @@
         },
         "AllowShared": {
             "contextsAllowed": ["type"],
-            "typesAllowed": ["buffer source types"],
-            "supportsNullableTypes": true,
-            "supportsUnionTypes": true,
-            "notes": "FIXME: Only buffer view types should be allowed, and not union types. Until SharedArrayBuffer is a type of its own, [AllowShared] on ArrayBuffer stands in for it, including on the AllowSharedBufferSource union.",
             "standard": {
                 "url": "https://webidl.spec.whatwg.org/#AllowShared"
             }
@@ -79,8 +75,6 @@
         },
         "Clamp": {
             "contextsAllowed": ["type"],
-            "typesAllowed": ["integer types"],
-            "supportsNullableTypes": true,
             "standard": {
                 "url": "https://webidl.spec.whatwg.org/#Clamp"
             }
@@ -226,8 +220,6 @@
         },
         "EnforceRange": {
             "contextsAllowed": ["type"],
-            "typesAllowed": ["integer types"],
-            "supportsNullableTypes": true,
             "standard": {
                 "url": "https://webidl.spec.whatwg.org/#EnforceRange"
             }
@@ -408,7 +400,6 @@
         },
         "LegacyNullToEmptyString": {
             "contextsAllowed": ["type"],
-            "typesAllowed": ["DOMString", "USVString"],
             "standard": {
                 "url": "https://webidl.spec.whatwg.org/#LegacyNullToEmptyString"
             }
@@ -498,10 +489,6 @@
                 "url": "https://webidl.spec.whatwg.org/#PutForwards"
             }
         },
-        "QuirksCanChangeAtRuntime": {
-            "contextsAllowed": ["interface", "attribute", "operation", "constant"],
-            "note": "The quirks gating this member are not known when the interface prototype is first created. Emits JS<Interface>::reevaluateQuirkDependentPrototypeProperties(), which ScriptController::reevaluateQuirkDependentProperties() calls whenever the quirks change. Re-evaluation removes the member when it becomes disabled and reinstates it when it becomes enabled again, but never overwrites a value the page installed itself."
-        },
         "RaisesException": {
             "contextsAllowed": ["operation"],
             "notes": "Should only be used on indexed getters that have to throw an exception in some cases"
@@ -569,7 +556,8 @@
             "contextsAllowed": ["interface"],
             "standard": {
                 "url": "https://html.spec.whatwg.org/multipage/structured-data.html#serializable"
-            }
+            },
+            "unsupported": true
         },
         "SetterCallWith": {
             "contextsAllowed": ["attribute"],
@@ -595,7 +583,8 @@
             "contextsAllowed": ["interface"],
             "standard": {
                 "url": "https://html.spec.whatwg.org/multipage/structured-data.html#transferable"
-            }
+            },
+            "unsupported": true
         },
         "URL": {
             "contextsAllowed": ["attribute"]

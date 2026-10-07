@@ -76,7 +76,7 @@ void ScrollingCoordinatorMac::willStartPlatformRenderingUpdate()
 
 void ScrollingCoordinatorMac::didCompletePlatformRenderingUpdate()
 {
-    protect(downcast<ScrollingTreeMac>(scrollingTree()))->didCompletePlatformRenderingUpdate();
+    downcast<ScrollingTreeMac>(scrollingTree())->didCompletePlatformRenderingUpdate();
     PlatformCALayerContentsDelayedReleaser::singleton().mainThreadCommitDidEnd();
 }
 

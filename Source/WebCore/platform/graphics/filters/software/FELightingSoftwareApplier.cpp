@@ -109,7 +109,7 @@ void FELightingSoftwareApplier::applyPlatform(const LightingData& data) const
     auto [r, g, b, a] = data.lightingColor.toResolvedColorComponentsInColorSpace(*data.operatingColorSpace);
     paintingData.initialLightingData.colorVector = FloatPoint3D(r, g, b);
 
-    data.lightSource->initPaintingData(*data.filter, *data.result, paintingData);
+    data.lightSource->initPaintingData(Ref { *data.filter }, Ref { *data.result }, paintingData);
 
     // Top left.
     int offset = 0;
@@ -194,22 +194,22 @@ bool FELightingSoftwareApplier::apply(const Filter& filter, std::span<const Ref<
     if (size.width() <= 2 || size.height() <= 2)
         return true;
 
-    LightingData data {
-        .filter = &filter,
-        .result = &result,
-        .filterType = m_effect->filterType(),
-        .lightingColor = m_effect->lightingColor(),
-        .surfaceScale = m_effect->surfaceScale() / 255.0f,
-        .diffuseConstant = m_effect->diffuseConstant(),
-        .specularConstant = m_effect->specularConstant(),
-        .specularExponent = m_effect->specularExponent(),
-        .lightSource = &m_effect->lightSource(),
-        .operatingColorSpace = &m_effect->operatingColorSpace(),
-        .pixels = destinationPixelBuffer.get(),
-        .widthMultipliedByPixelSize = size.width() * cPixelSize,
-        .width = size.width(),
-        .height = size.height(),
-    };
+    LightingData data;
+    data.filter = &filter;
+    data.result = &result;
+    data.filterType = m_effect->filterType();
+    data.lightingColor = m_effect->lightingColor();
+    data.surfaceScale = m_effect->surfaceScale() / 255.0f;
+    data.diffuseConstant = m_effect->diffuseConstant();
+    data.specularConstant = m_effect->specularConstant();
+    data.specularExponent = m_effect->specularExponent();
+    data.lightSource = &m_effect->lightSource();
+    data.operatingColorSpace = &m_effect->operatingColorSpace();
+
+    data.pixels = destinationPixelBuffer.get();
+    data.widthMultipliedByPixelSize = size.width() * cPixelSize;
+    data.width = size.width();
+    data.height = size.height();
 
     applyPlatform(data);
     return true;

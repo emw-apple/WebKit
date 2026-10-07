@@ -29,9 +29,7 @@
 
 #include "AuxiliaryProcess.h"
 #include "GPUProcessPreferences.h"
-#include "ImageBufferBackendHandle.h"
 #include "RemoteSerializedImageBufferIdentifier.h"
-#include <WebCore/ColorSpace.h>
 #include <WebCore/ImageBufferTransferIdentifier.h>
 #include "RemoteSnapshotIdentifier.h"
 #include "SandboxExtension.h"
@@ -181,15 +179,8 @@ public:
     void setPresentingApplicationAuditToken(WebCore::ProcessIdentifier, WebCore::PageIdentifier, std::optional<CoreIPCAuditToken>&&);
 #endif
 
-    // Created by the process painting its root, or by whoever asks to draw it if that comes first.
-    // Neither can come after it is released. A frame recording into one that does not exist records
-    // into nothing, so none can bring back a snapshot that was released.
-    void createSnapshot(RemoteSnapshotIdentifier, WebCore::FrameIdentifier rootFrameIdentifier, const WebCore::FloatSize&, WebCore::ProcessIdentifier rootProcessIdentifier);
-    // For a root that could not be recorded.
-    void failSnapshot(RemoteSnapshotIdentifier);
-    Ref<RemoteSnapshot> snapshotForRecorder(RemoteSnapshotIdentifier);
+    Ref<RemoteSnapshot> getOrCreateSnapshot(RemoteSnapshotIdentifier);
     RefPtr<RemoteSnapshot> snapshot(RemoteSnapshotIdentifier);
-    void abandonSnapshotFrame(RemoteSnapshotIdentifier, WebCore::FrameIdentifier);
 
     // Hands an ImageBuffer from one web process's rendering backend to another's. Unlike
     // m_snapshots, the identifier is minted here and unguessable, so only a process it was given
@@ -197,7 +188,6 @@ public:
     // brokering delivery hands it on, which only decides whose exit discards it.
     WebCore::ImageBufferTransferIdentifier depositTransferredImageBuffer(WebCore::ProcessIdentifier owner, Ref<WebCore::ImageBuffer>&&);
     RefPtr<WebCore::ImageBuffer> takeTransferredImageBuffer(WebCore::ImageBufferTransferIdentifier);
-    void releaseTransferredImageBuffer(WebCore::ImageBufferTransferIdentifier);
     void removeTransferredImageBuffersForProcess(WebCore::ProcessIdentifier);
 
 #if PLATFORM(VISION) && ENABLE(MODEL_PROCESS)
@@ -218,8 +208,6 @@ public:
     void terminateWebProcess(WebCore::ProcessIdentifier, IPC::MessageName);
 
     void handOverTransferredImageBuffers(Vector<WebCore::ImageBufferTransferIdentifier>&&, WebCore::ProcessIdentifier destinationProcess);
-    // For buffers the UI process was relaying and will not deliver.
-    void releaseTransferredImageBuffers(Vector<WebCore::ImageBufferTransferIdentifier>&&);
 
 private:
     GPUProcess();
@@ -241,7 +229,6 @@ private:
 
     // IPC::Connection::Client
     void didReceiveMessage(IPC::Connection&, IPC::Decoder&) override;
-    void didReceiveSyncMessage(IPC::Connection&, IPC::Decoder&, UniqueRef<IPC::Encoder>&) override;
 
     // Message Handlers
     void initializeGPUProcess(GPUProcessCreationParameters&&, CompletionHandler<void()>&&);
@@ -282,21 +269,10 @@ private:
     void updateProcessName();
 #endif
 #if PLATFORM(COCOA)
-    void sinkCompletedSnapshotToPDF(RemoteSnapshotIdentifier, WebCore::FrameIdentifier, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
+    void sinkCompletedSnapshotToPDF(RemoteSnapshotIdentifier, WebCore::FloatSize, WebCore::FrameIdentifier, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&&);
 #endif
-    void sinkCompletedSnapshotToBitmap(RemoteSnapshotIdentifier, WebCore::FrameIdentifier, CompletionHandler<void(std::optional<WebCore::ShareableBitmap::Handle>&&)>&&);
-#if HAVE(IOSURFACE)
-    void sinkCompletedSnapshotToIOSurface(RemoteSnapshotIdentifier, float scale, const WebCore::ColorSpace&, WebCore::FrameIdentifier, CompletionHandler<void(std::optional<ImageBufferBackendHandle>&&)>&&);
-#endif
+    void sinkCompletedSnapshotToBitmap(WebKit::RemoteSnapshotIdentifier, const WebCore::FloatSize&, WebCore::FrameIdentifier, CompletionHandler<void(std::optional<WebCore::ShareableBitmap::Handle>&&)>&&);
     void releaseSnapshot(RemoteSnapshotIdentifier);
-    void snapshotFrameWillBeDrawnByProcess(RemoteSnapshotIdentifier, WebCore::FrameIdentifier, WebCore::ProcessIdentifier);
-    void waitForSnapshot(RemoteSnapshotIdentifier, CompletionHandler<void()>&&);
-    Ref<RemoteSnapshot> ensureSnapshot(RemoteSnapshotIdentifier, std::optional<WebCore::FrameIdentifier> rootFrameIdentifier);
-    void snapshotDeadlineExpired(RemoteSnapshotIdentifier);
-    // Takes the snapshot once it is complete, or passes null if it failed.
-    void takeSnapshotWhenComplete(RemoteSnapshotIdentifier, WebCore::FrameIdentifier rootFrameIdentifier, CompletionHandler<void(RefPtr<RemoteSnapshot>&&)>&&);
-    void abandonSnapshotFramesOwnedBy(WebCore::ProcessIdentifier);
-    void removeSnapshotsForProcess(WebCore::ProcessIdentifier);
 
 #if USE(OS_STATE)
     RetainPtr<NSDictionary> additionalStateForDiagnosticReport() const final;

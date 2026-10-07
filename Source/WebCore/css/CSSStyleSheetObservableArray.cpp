@@ -67,7 +67,7 @@ bool CSSStyleSheetObservableArray::setValueAt(JSC::JSGlobalObject* lexicalGlobal
     else
         m_sheets[index] = sheetConversionResult.returnValue();
 
-    didAddSheet(protect(sheetConversionResult.returnValue()));
+    didAddSheet(sheetConversionResult.releaseReturnValue());
     return true;
 }
 

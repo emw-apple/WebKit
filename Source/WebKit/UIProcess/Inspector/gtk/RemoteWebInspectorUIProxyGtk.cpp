@@ -64,8 +64,6 @@ WebPageProxy* RemoteWebInspectorUIProxy::platformCreateFrontendPageAndWindow()
     preferences->setDeveloperExtrasEnabled(true);
     preferences->setLogsPageMessagesToSystemConsoleEnabled(true);
 #endif
-    // The Find banner and Search sidebar use the legacy results=N attribute for recent searches.
-    preferences->setSearchInputResultsAttributeEnabled(true);
 
     // If hardware acceleration is available and not forced already, force it always for the remote inspector view.
     const auto& hardwareAccelerationManager = HardwareAccelerationManager::singleton();

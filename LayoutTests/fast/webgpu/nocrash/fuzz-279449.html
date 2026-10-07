@@ -13,7 +13,6 @@ async function run() {
     device.createBindGroup({ layout: bindGroupLayout, entries: [{ binding: 4, resource: externalTexture }] });
     device.createBindGroup({ layout: bindGroupLayout, entries: [{ binding: 4, resource: externalTexture }] });
     await device.queue.onSubmittedWorkDone();
-    videoFrame.close();
     debug('Pass')
     globalThis.testRunner?.notifyDone();
 }

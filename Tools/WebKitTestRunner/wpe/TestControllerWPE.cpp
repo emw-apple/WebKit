@@ -27,7 +27,6 @@
 #include "TestController.h"
 
 #include "PlatformWebView.h"
-#include "StringFunctions.h"
 #include "TestCommand.h"
 #include "WPTFunctions.h"
 #include <WebKit/WKTextCheckerGLib.h>
@@ -182,7 +181,7 @@ WKRetainPtr<WKStringRef> TestController::takeViewPortSnapshot()
     sk_sp<SkImage> image(mainWebView()->windowSnapshotImage());
     auto data = SkPngEncoder::Encode(nullptr, image.get(), { });
     auto uri = makeString("data:image/png;base64,"_s, base64Encoded(std::span { static_cast<const uint8_t*>(data->data()), data->size() }));
-    return toWK(uri);
+    return adoptWK(WKStringCreateWithUTF8CString(uri.utf8().legacyCStringPointer()));
 }
 
 } // namespace WTR

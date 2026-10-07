@@ -29,7 +29,6 @@
 #import <Metal/Metal.h>
 #import <WebGPU/WebGPUCpp.h>
 #import <bmalloc/CompactAllocationMode.h>
-#import <expected>
 #import <wtf/Assertions.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/FastMalloc.h>
@@ -63,13 +62,11 @@ public:
 
     ~Adapter();
 
-    Vector<WebGPU::FeatureName> features() const;
-    const WebGPU::Limits& limits() const LIFETIME_BOUND { return m_capabilities.limits; }
-    WebGPU::AdapterInfo info();
-    // The C API adapter info, which has members that WebGPU::AdapterInfo does not have.
+    size_t enumerateFeatures(WGPUFeatureName* features);
+    bool NODELETE getLimits(WGPUSupportedLimits&);
     void getInfo(WGPUAdapterInfo&);
     bool hasFeature(WGPUFeatureName);
-    void requestDevice(const WebGPU::DeviceDescriptor&, CompletionHandler<void(std::expected<Ref<Device>, String>&&)>&&);
+    void requestDevice(const WGPUDeviceDescriptor&, CompletionHandler<void(WGPURequestDeviceStatus, Ref<Device>&&, String&&)>&& callback);
 
     void setLabel(String&&) final { }
     bool isValid() const final { return m_device; }

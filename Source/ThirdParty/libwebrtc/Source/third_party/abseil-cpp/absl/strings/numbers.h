@@ -23,6 +23,14 @@
 #ifndef ABSL_STRINGS_NUMBERS_H_
 #define ABSL_STRINGS_NUMBERS_H_
 
+#ifdef __SSSE3__
+#include <tmmintrin.h>
+#endif
+
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -41,14 +49,6 @@
 #include "absl/numeric/bits.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/string_view.h"
-
-#ifdef __SSSE3__
-#include <tmmintrin.h>
-#endif
-
-#ifdef _MSC_VER
-#include <intrin.h>
-#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

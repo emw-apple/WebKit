@@ -2148,11 +2148,6 @@ static NSArray *accessibleElementsForObjects(const AXCoreObject::AccessibilityCh
     AXCoreObject::AccessibilityChildrenVector accessibleElements;
     for (const auto& object : objects) {
         Accessibility::enumerateUnignoredDescendants<AXCoreObject>(object.get(), true, [&accessibleElements] (AXCoreObject& descendant) {
-            if (std::optional representativeID = descendant.stitchedIntoID(); representativeID && *representativeID != descendant.objectID()) {
-                // Stitched into a neighbor, so already read as part of that neighbor's label.
-                return;
-            }
-
             RetainPtr wrapper = descendant.wrapper();
             if (wrapper && [wrapper.get() isAccessibilityElement])
                 accessibleElements.append(descendant);
@@ -2262,7 +2257,7 @@ static NSArray *accessibleElementsForObjects(const AXCoreObject::AccessibilityCh
         return nil;
 
     AX_ASSERT([self isAttachment]);
-    RefPtr widget = protect(self.axBackingObject)->widgetForAttachmentView();
+    Widget* widget = protect(self.axBackingObject)->widgetForAttachmentView();
     if (!widget)
         return nil;
     return widget->platformWidget();

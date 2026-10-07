@@ -26,7 +26,6 @@
 #include "config.h"
 #include <wtf/FileSystem.h>
 #include <wtf/SoftLinking.h>
-#include <wtf/posix/POSIXExtras.h>
 
 namespace WebKit {
 
@@ -47,7 +46,7 @@ void* WebKitSwiftLibrary(bool isOptional)
                 return library;
             auto webkitFrameworkDirectory = WTF::FileSystemImpl::parentPath(dliPath);
             auto dylibPath = WTF::FileSystemImpl::pathByAppendingComponent(webkitFrameworkDirectory, "Frameworks/libWebKitSwift.dylib"_s);
-            if ((library = posixDlopen(dylibPath.utf8(), RTLD_NOW)))
+            if ((library = dlopen(dylibPath.utf8().legacyCStringPointer(), RTLD_NOW)))
                 return library;
         }
 

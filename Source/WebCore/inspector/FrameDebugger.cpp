@@ -35,7 +35,6 @@
 #include "JSWindowProxy.h"
 #include "LocalFrame.h"
 #include "LocalFrameInlines.h"
-#include "Page.h"
 #include "ScriptController.h"
 #include "Timer.h"
 #include "WindowProxy.h"
@@ -53,18 +52,10 @@ using namespace JSC;
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(FrameDebugger);
 
-static FrameDebugger* s_pausedFrameDebugger;
-
 FrameDebugger::FrameDebugger(LocalFrame& frame)
     : Debugger(WebCore::commonVM())
     , m_frame(frame)
 {
-}
-
-FrameDebugger::~FrameDebugger()
-{
-    if (s_pausedFrameDebugger == this)
-        s_pausedFrameDebugger = nullptr;
 }
 
 void FrameDebugger::attachDebugger()
@@ -105,6 +96,10 @@ void FrameDebugger::detachDebugger(bool isBeingDestroyed)
 
 void FrameDebugger::recompileAllJSFunctions()
 {
+    // NOTE: Debugger::recompileAllJSFunctions() is VM-wide — it recompiles all JS functions in the VM,
+    // not just the frame's. Under site isolation each cross-origin iframe is alone in its process, so
+    // this is effectively correct. If process reuse is ever introduced for multiple cross-origin iframes,
+    // this would over-recompile.
     JSLockHolder lock(vm());
     Debugger::recompileAllJSFunctions();
 }
@@ -113,25 +108,18 @@ void FrameDebugger::didPause(JSGlobalObject* globalObject)
 {
     JSC::Debugger::didPause(globalObject);
 
-    ASSERT(!s_pausedFrameDebugger);
-    s_pausedFrameDebugger = this;
-
-    setJavaScriptPausedInAllPages(true);
+    RefPtr frame = m_frame.get();
+    if (frame)
+        setJavaScriptPaused(*frame, true);
 }
 
 void FrameDebugger::didContinue(JSGlobalObject* globalObject)
 {
     JSC::Debugger::didContinue(globalObject);
 
-    setJavaScriptPausedInAllPages(false);
-
-    if (s_pausedFrameDebugger == this)
-        s_pausedFrameDebugger = nullptr;
-}
-
-bool FrameDebugger::isPauseBlockedByAnotherDebugger() const
-{
-    return s_pausedFrameDebugger && s_pausedFrameDebugger != this;
+    RefPtr frame = m_frame.get();
+    if (frame)
+        setJavaScriptPaused(*frame, false);
 }
 
 void FrameDebugger::runEventLoopWhilePaused()
@@ -188,15 +176,10 @@ void FrameDebugger::reportException(JSGlobalObject* state, JSC::Exception* excep
     WebCore::reportException(state, exception);
 }
 
-void FrameDebugger::setJavaScriptPausedInAllPages(bool paused)
-{
-    Page::forEachPage([&](Page& page) {
-        page.forEachLocalFrame([&](LocalFrame& frame) {
-            setJavaScriptPaused(frame, paused);
-        });
-    });
-}
-
+// Unlike PageDebugger which pauses all frames in the page group, FrameDebugger only pauses
+// its single frame. Under site isolation, cross-origin iframes run in their own process where
+// this frame is the only web content — other frames are in different processes and cannot be
+// paused from here.
 void FrameDebugger::setJavaScriptPaused(LocalFrame& frame, bool paused)
 {
     Ref protectedFrame = frame;

@@ -33,7 +33,7 @@ struct EnsureCGLContextIsCurrent : angle::NonCopyable
     bool mResetContext;
 };
 
-class DisplayCGL : public DisplayGL, public ThreadSafeDisplayGL
+class DisplayCGL : public DisplayGL
 {
   public:
     DisplayCGL(const egl::DisplayState &state);
@@ -69,6 +69,9 @@ class DisplayCGL : public DisplayGL, public ThreadSafeDisplayGL
 
     egl::ConfigSet generateConfigs() override;
 
+    bool testDeviceLost() override;
+    egl::Error restoreLostDevice(const egl::Display *display) override;
+
     bool isValidNativeWindow(EGLNativeWindowType window) const override;
     egl::Error validateClientBuffer(const egl::Config *configuration,
                                     EGLenum buftype,
@@ -98,8 +101,6 @@ class DisplayCGL : public DisplayGL, public ThreadSafeDisplayGL
     egl::Error unreferenceDiscreteGPU();
     egl::Error handleGPUSwitch() override;
     egl::Error forceGPUSwitch(EGLint gpuIDHigh, EGLint gpuIDLow) override;
-
-    ThreadSafeDisplayImpl *getThreadSafeDisplayImpl() override { return this; }
 
   private:
     egl::Error makeCurrentSurfaceless(gl::Context *context) override;

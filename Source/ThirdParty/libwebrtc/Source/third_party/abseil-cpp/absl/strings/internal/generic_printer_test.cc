@@ -17,8 +17,6 @@
 #include <array>
 #include <cinttypes>
 #include <clocale>
-#include <cmath>
-#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <map>
@@ -27,7 +25,6 @@
 #include <ostream>
 #include <sstream>
 #include <string>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <variant>
@@ -43,7 +40,6 @@
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#include "absl/strings/string_view.h"
 #include "absl/strings/substitute.h"
 
 namespace generic_logging_test {

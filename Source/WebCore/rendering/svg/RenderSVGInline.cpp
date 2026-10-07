@@ -24,7 +24,6 @@
 #include "RenderSVGInline.h"
 
 #include "FrameSelection.h"
-#include "InlineIteratorInlineBox.h"
 #include "LegacyRenderSVGResource.h"
 #include "LocalFrame.h"
 #include "RenderBoxModelObjectInlines.h"
@@ -178,11 +177,8 @@ void RenderSVGInline::absoluteQuads(Vector<FloatQuad>& quads, bool* wasFixed) co
         return;
 
     FloatRect textBoundingBox = textAncestor->strokeBoundingBox();
-    for (auto box = InlineIterator::lineLeftmostInlineBoxFor(*this); box; box.traverseInlineBoxLineRightward()) {
-        auto boxRect = box->visualRectIgnoringBlockDirection();
-        boxRect.moveBy(textBoundingBox.location());
-        quads.append(localToAbsoluteQuad(boxRect, MapCoordinatesMode::UseTransforms, wasFixed));
-    }
+    for (auto* box = firstLegacyInlineBox(); box; box = box->nextLineBox())
+        quads.append(localToAbsoluteQuad(FloatRect(textBoundingBox.x() + box->x(), textBoundingBox.y() + box->y(), box->logicalWidth(), box->logicalHeight()), MapCoordinatesMode::UseTransforms, wasFixed));
 }
 
 #if PLATFORM(IOS_FAMILY)

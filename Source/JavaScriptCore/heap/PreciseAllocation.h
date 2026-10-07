@@ -146,7 +146,7 @@ public:
     void assertValidCell(VM&, HeapCell*) const { }
 #endif
     
-    JS_EXPORT_PRIVATE void sweep();
+    void sweep();
     
     void destroy();
     

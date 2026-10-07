@@ -223,7 +223,7 @@ void ScreenCaptureKitCaptureSource::stop()
                 protectedThis->sessionFailedWithError(WTF::move(error), "-[SCStream stopCaptureWithCompletionHandler:] failed"_s);
         });
     });
-    [protect(contentStream()) stopCaptureWithCompletionHandler:stopHandler.get()];
+    [contentStream() stopCaptureWithCompletionHandler:stopHandler.get()];
 
     // We do not nullify m_sessionSource to keep the picker active since it is helping capture for some fullscreen cases.
     if (m_sessionSource)
@@ -304,7 +304,7 @@ void ScreenCaptureKitCaptureSource::sessionFilterDidChange(SCContentFilter* cont
             });
         });
 
-        [protect(contentStream()) updateContentFilter:contentFilter completionHandler:completionHandler.get()];
+        [contentStream() updateContentFilter:contentFilter completionHandler:completionHandler.get()];
     }
 
     configurationChanged();
@@ -395,10 +395,9 @@ void ScreenCaptureKitCaptureSource::startContentStream()
     }
 
 #if HAVE(WINDOW_CAPTURE)
-    RetainPtr contentFilter = this->contentFilter();
-    switch ([contentFilter style]) {
+    switch (contentFilter().style) {
     case SCShareableContentStyleWindow: {
-        RetainPtr windows = [contentFilter includedWindows];
+        RetainPtr windows = retainPtr(contentFilter().includedWindows);
         ASSERT([windows count] == 1);
         if (![windows count])
             return;
@@ -407,7 +406,7 @@ void ScreenCaptureKitCaptureSource::startContentStream()
         break;
     }
     case SCShareableContentStyleDisplay: {
-        RetainPtr displays = [contentFilter includedDisplays];
+        RetainPtr displays = retainPtr(contentFilter().includedDisplays);
         ASSERT([displays count] == 1);
         if (![displays count])
             return;
@@ -424,9 +423,8 @@ void ScreenCaptureKitCaptureSource::startContentStream()
     }
 #endif
 
-    RetainPtr contentStream = this->contentStream();
     NSError *error;
-    if (![contentStream addStreamOutput:m_captureHelper.get() type:SCStreamOutputTypeScreen sampleHandlerQueue:protect(captureQueue()) error:&error]) {
+    if (![contentStream() addStreamOutput:m_captureHelper.get() type:SCStreamOutputTypeScreen sampleHandlerQueue:captureQueue() error:&error]) {
         sessionFailedWithError(WTF::move(error), "-[SCStream addStreamOutput:type:sampleHandlerQueue:error:] failed"_s);
         return;
     }
@@ -448,7 +446,7 @@ void ScreenCaptureKitCaptureSource::startContentStream()
         });
     });
 
-    [contentStream startCaptureWithCompletionHandler:completionHandler.get()];
+    [contentStream() startCaptureWithCompletionHandler:completionHandler.get()];
 
     m_isRunning = true;
 }
@@ -500,7 +498,7 @@ void ScreenCaptureKitCaptureSource::updateStreamConfiguration()
         });
     });
 
-    [protect(contentStream()) updateConfiguration:streamConfiguration().get() completionHandler:completionHandler.get()];
+    [contentStream() updateConfiguration:streamConfiguration().get() completionHandler:completionHandler.get()];
 }
 
 void ScreenCaptureKitCaptureSource::commitConfiguration(const RealtimeMediaSourceSettings& settings)
@@ -611,7 +609,7 @@ void ScreenCaptureKitCaptureSource::streamDidOutputVideoSampleBuffer(RetainPtr<C
         updateStreamConfiguration();
     }
 
-    auto intrinsicSize = FloatSize(PAL::CMVideoFormatDescriptionGetPresentationDimensions(protect(PAL::CMSampleBufferGetFormatDescription(m_currentFrame.get())), true, true));
+    auto intrinsicSize = FloatSize(PAL::CMVideoFormatDescriptionGetPresentationDimensions(PAL::CMSampleBufferGetFormatDescription(m_currentFrame.get()), true, true));
 
     if (!contentRect.size().isEmpty() && !intrinsicSize.isEmpty()) {
         if (!areSizesRoughlyEqual(contentRect.size(), intrinsicSize)) {
@@ -621,7 +619,7 @@ void ScreenCaptureKitCaptureSource::streamDidOutputVideoSampleBuffer(RetainPtr<C
             m_transferSession->setCroppingRectangle(contentRect, intrinsicSize);
             if (auto newFrame = m_transferSession->convertCMSampleBuffer(m_currentFrame.get(), IntSize { contentRect.size() })) {
                 m_currentFrame = WTF::move(newFrame);
-                intrinsicSize = FloatSize(PAL::CMVideoFormatDescriptionGetPresentationDimensions(protect(PAL::CMSampleBufferGetFormatDescription(m_currentFrame.get())), true, true));
+                intrinsicSize = FloatSize(PAL::CMVideoFormatDescriptionGetPresentationDimensions(PAL::CMSampleBufferGetFormatDescription(m_currentFrame.get()), true, true));
             }
         }
     }

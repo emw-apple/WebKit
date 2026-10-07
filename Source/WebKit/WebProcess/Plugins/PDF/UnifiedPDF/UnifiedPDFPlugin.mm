@@ -72,7 +72,6 @@
 #include <WebCore/ColorCocoa.h>
 #include <WebCore/ContainerNodeInlines.h>
 #include <WebCore/DataDetectorElementInfo.h>
-#include <WebCore/DevicePostureType.h>
 #include <WebCore/DictionaryLookup.h>
 #include <WebCore/DictionaryPopupInfo.h>
 #include <WebCore/DocumentView.h>
@@ -241,16 +240,7 @@ UnifiedPDFPlugin::UnifiedPDFPlugin(HTMLPlugInElement& element)
     annotationContainer->appendChild(annotationStyleElement);
     installAnnotationContainer();
 
-    auto initialDisplayMode = PDFPluginDisplayMode::SinglePageContinuous;
-#if PLATFORM(IOS_FAMILY)
-    if (isFullMainFramePlugin()) {
-        if (RefPtr frame = m_frame.get()) {
-            if (RefPtr webPage = frame->page())
-                initialDisplayMode = webPage->initialPDFDisplayMode();
-        }
-    }
-#endif
-    setDisplayMode(initialDisplayMode);
+    setDisplayMode(PDFPluginDisplayMode::SinglePageContinuous);
 
     lazyInitialize(m_accessibilityDocumentObject, adoptNS([[WKAccessibilityPDFDocumentObject alloc] initWithPDFDocument:m_pdfDocument andElement:&element]));
     [m_accessibilityDocumentObject setPDFPlugin:this];
@@ -1458,10 +1448,8 @@ void UnifiedPDFPlugin::updateLayout(AdjustScaleAfterLayout shouldAdjustScale, st
     auto layoutSize = availableContentsRect().size();
     auto autoSizeMode = shouldUpdateAutoSizeScaleOverride.value_or(m_didLayoutWithValidDocument ? m_shouldUpdateAutoSizeScale : ShouldUpdateAutoSizeScale::Yes);
 
-    bool shouldLeftAlignTrailingTwoUpPage = false;
-    if (RefPtr webPage = this->webPage())
-        shouldLeftAlignTrailingTwoUpPage = webPage->devicePostureType() != WebCore::DevicePostureType::Continuous;
-    m_documentLayout.setShouldLeftAlignTrailingTwoUpPage(shouldLeftAlignTrailingTwoUpPage);
+    if (RefPtr corePage = page())
+        m_documentLayout.setShouldLeftAlignTrailingTwoUpPage(corePage->settings().twoUpPDFTrailingPageLeftAlignmentEnabled());
 
     Ref presentationController = *m_presentationController;
     auto computeAnchoringInfo = [&] {
@@ -2622,8 +2610,12 @@ auto UnifiedPDFPlugin::toContextMenuItemTag(int tagValue) -> ContextMenuItemTag
 
 std::optional<PDFContextMenu> UnifiedPDFPlugin::createContextMenu(const IntPoint& contextMenuEventRootViewPoint, WebEventInputSource inputSource) const
 {
-    RefPtr page = this->page();
-    if (!page)
+    RefPtr frame = m_frame.get();
+    if (!frame || !frame->coreLocalFrame())
+        return std::nullopt;
+
+    RefPtr frameView = frame->coreLocalFrame()->view();
+    if (!frameView)
         return std::nullopt;
 
     Vector<PDFContextMenuItem> menuItems;
@@ -2659,9 +2651,7 @@ std::optional<PDFContextMenu> UnifiedPDFPlugin::createContextMenu(const IntPoint
     auto contextMenuEventDocumentPoint = convertDown<FloatPoint>(CoordinateSpace::Plugin, CoordinateSpace::PDFDocumentLayout, contextMenuEventPluginPoint);
     menuItems.appendVector(navigationContextMenuItemsForPageAtIndex(protect(m_presentationController)->nearestPageIndexForDocumentPoint(contextMenuEventDocumentPoint)));
 
-    // Chrome::rootViewToScreen() expects main frame view coordinates.
-    auto contextMenuPointInMainFrameView = convertFromRootViewToMainFrameView(FloatPoint { contextMenuEventRootViewPoint });
-    auto contextMenuPoint = page->chrome().rootViewToScreen(roundedIntPoint(contextMenuPointInMainFrameView));
+    auto contextMenuPoint = frameView->contentsToScreen(IntRect(frameView->windowToContents(contextMenuEventRootViewPoint), IntSize())).location();
 
     return PDFContextMenu {
         contextMenuPoint,
@@ -3821,17 +3811,14 @@ RefPtr<TextIndicator> UnifiedPDFPlugin::textIndicatorForPageRect(FloatRect pageR
     if (highlightColor)
         context.fillRect({ { 0, 0 }, bufferSize }, *highlightColor, CompositeOperator::SourceOver, BlendMode::Multiply);
 
-    // Like TextIndicator::createWithRange(), the rects are relative to the main frame's view.
-    auto rectInMainFrameViewCoordinates = convertFromRootViewToMainFrameView(rectInRootViewCoordinates);
-
     RefPtr textIndicator = TextIndicator::create();
     textIndicator->setContentImage(BitmapImage::create(ImageBuffer::sinkIntoNativeImage(WTF::move(buffer))));
     textIndicator->setContentImageScaleFactor(deviceScaleFactor);
     textIndicator->setContentImageWithoutSelection(protect(textIndicator->contentImage()).get());
-    textIndicator->setContentImageWithoutSelectionRectInRootViewCoordinates(rectInMainFrameViewCoordinates);
-    textIndicator->setSelectionRectInMainFrameViewCoordinates(rectInMainFrameViewCoordinates);
-    textIndicator->setTextBoundingRectInRootViewCoordinates(rectInMainFrameViewCoordinates);
-    textIndicator->setTextRectsInBoundingRectCoordinates({ { { 0, 0, }, rectInMainFrameViewCoordinates.size() } });
+    textIndicator->setContentImageWithoutSelectionRectInRootViewCoordinates(rectInRootViewCoordinates);
+    textIndicator->setSelectionRectInMainFrameViewCoordinates(rectInRootViewCoordinates);
+    textIndicator->setTextBoundingRectInRootViewCoordinates(rectInRootViewCoordinates);
+    textIndicator->setTextRectsInBoundingRectCoordinates({ { { 0, 0, }, rectInRootViewCoordinates.size() } });
 
     return textIndicator;
 }
@@ -3930,13 +3917,6 @@ bool UnifiedPDFPlugin::showDefinitionForSelection(PDFSelection *selection)
         return false;
 
     auto dictionaryPopupInfo = dictionaryPopupInfoForSelection(selection, TextIndicatorPresentationTransition::Bounce);
-
-    // The text indicator is already relative to the main frame's view. The origin is converted here,
-    // not in dictionaryPopupInfoForSelection(), because the force touch path converts it separately
-    // with RemoteDictionaryPopupInfoToRootView.
-    // FIXME(https://bugs.webkit.org/show_bug.cgi?id=326008): Produce the origin in main frame view coordinates and remove RemoteDictionaryPopupInfoToRootView.
-    dictionaryPopupInfo.origin = convertFromRootViewToMainFrameView(dictionaryPopupInfo.origin);
-
     page->send(Messages::WebPageProxy::DidPerformDictionaryLookup(dictionaryPopupInfo));
     return true;
 }

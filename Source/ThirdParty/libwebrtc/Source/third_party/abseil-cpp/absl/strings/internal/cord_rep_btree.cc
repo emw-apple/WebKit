@@ -14,12 +14,9 @@
 
 #include "absl/strings/internal/cord_rep_btree.h"
 
-#include <algorithm>
 #include <atomic>
 #include <cassert>
-#include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <iostream>
 #include <ostream>
 #include <string>
@@ -34,7 +31,6 @@
 #include "absl/strings/internal/cord_rep_flat.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
-#include "absl/types/span.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -282,7 +278,7 @@ struct StackOperations {
         return tree;
       case CordRepBtree::kCopied:
         CordRep::Unref(tree);
-        [[fallthrough]];
+        ABSL_FALLTHROUGH_INTENDED;
       case CordRepBtree::kSelf:
         return result.tree;
     }

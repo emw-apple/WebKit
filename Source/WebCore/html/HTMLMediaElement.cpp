@@ -273,7 +273,7 @@ struct LogArgument<URL> {
 
 namespace WebCore {
 
-using TextTrackCueIntervalTree = PODIntervalTree<MediaTime, CheckedPtr<TextTrackCue>>;
+typedef PODIntervalTree<MediaTime, TextTrackCue*> TextTrackCueIntervalTree;
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(HTMLMediaElement);
 
@@ -735,9 +735,6 @@ void HTMLMediaElement::initializeMediaSession()
 
     if (document->settings().requiresPageVisibilityToPlayAudio())
         mediaSession->addBehaviorRestriction(MediaElementSession::RequirePageVisibilityToPlayAudio);
-
-    if (document->settings().requiresUserGestureToStartAudiblePlaybackWhenHidden())
-        mediaSession->addBehaviorRestriction(MediaElementSession::RequireUserGestureToStartAudiblePlaybackWhenHidden);
 
     if (document->ownerElement() || !document->isMediaDocument()) {
         if (m_shouldVideoPlaybackRequireUserGesture) {
@@ -1737,7 +1734,6 @@ void HTMLMediaElement::prepareForLoad(IsExplicitLoad isExplicitLoad)
     m_autoplaying = true;
     Ref mediaSession = this->mediaSession();
     mediaSession->clientWillBeginAutoplaying();
-    mediaSession->loadWillStart(autoplay());
 
     if (!MediaPlayer::isAvailable())
         noneSupported();
@@ -2243,7 +2239,7 @@ static bool eventTimeCueCompare(const std::pair<MediaTime, RefPtr<TextTrackCue>>
 
 static bool compareCueInterval(const CueInterval& one, const CueInterval& two)
 {
-    return protect(one.data())->isOrderedBefore(protect(two.data()));
+    return RefPtr { one.data() }->isOrderedBefore(RefPtr { two.data() }.get());
 }
 
 static bool compareCueIntervalEndTime(const CueInterval& one, const CueInterval& two)
@@ -3295,7 +3291,7 @@ std::expected<void, MediaPlaybackDenialExplanation> HTMLMediaElement::canTransit
     if (document().isSandboxed(SandboxFlag::AutomaticFeatures))
         return makeUnexpectedDenial(MediaPlaybackDenialReason::PageConsentRequired, "isSandboxed"_s);
 
-    return mediaSession->playbackStateChangePermitted(MediaPlaybackState::Playing, MediaElementSession::ForAutoplay::Yes);
+    return mediaSession->playbackStateChangePermitted(MediaPlaybackState::Playing);
 }
 
 void HTMLMediaElement::dispatchPlayPauseEventsIfNeedsQuirks()
@@ -4612,14 +4608,9 @@ void HTMLMediaElement::play(DOMPromiseDeferred<void>&& promise)
 
 void HTMLMediaElement::play()
 {
-    playIfPermitted(MediaElementSession::ForAutoplay::No);
-}
-
-void HTMLMediaElement::playIfPermitted(MediaElementSession::ForAutoplay forAutoplay)
-{
     HTMLMEDIAELEMENT_RELEASE_LOG(Play);
 
-    auto permitted = protect(mediaSession())->playbackStateChangePermitted(MediaPlaybackState::Playing, forAutoplay);
+    auto permitted = protect(mediaSession())->playbackStateChangePermitted(MediaPlaybackState::Playing);
     if (!permitted) {
         ERROR_LOG(LOGIDENTIFIER, "playback not permitted: ", permitted.error());
         if (permitted.error().reason == MediaPlaybackDenialReason::UserGestureRequired)
@@ -5057,8 +5048,7 @@ void HTMLMediaElement::setVolumeLocked(bool volumeLocked)
 
     Style::PseudoClassChangeInvalidation styleInvalidation(*this, CSSSelector::PseudoClass::VolumeLocked, volumeLocked);
     m_volumeLocked = volumeLocked;
-    if (RefPtr player = m_player)
-        player->setVolumeLocked(volumeLocked);
+    protect(player())->setVolumeLocked(volumeLocked);
 }
 
 void HTMLMediaElement::updateBufferingState()
@@ -6587,7 +6577,7 @@ void HTMLMediaElement::mediaEngineWasUpdated()
     if (RefPtr player = m_player) {
         player->setVideoFullscreenFrame(m_videoFullscreenFrame);
         player->setVideoFullscreenGravity(m_videoFullscreenGravity);
-        updatePlayerVideoFullscreenLayer(*player);
+        player->setVideoFullscreenLayer(m_videoFullscreenLayer.get());
     }
 #endif
 
@@ -7935,7 +7925,7 @@ void HTMLMediaElement::enterFullscreen(VideoFullscreenMode mode)
     if (videoUsesElementFullscreen() && page->isDocumentFullscreenEnabled() && isInWindowOrStandardFullscreen(mode)) {
         m_temporarilyAllowingInlinePlaybackAfterFullscreen = false;
         m_waitingToEnterFullscreen = true;
-        auto fullscreenCheckType = m_ignoreFullscreenPermissionsPolicy ? DocumentFullscreen::FullscreenCheckType::ExemptIFrameAllowFullscreenRequirement : DocumentFullscreen::FullscreenCheckType::EnforceIFrameAllowFullscreenRequirement;
+        auto fullscreenCheckType = m_ignoreFullscreenPermissionsPolicy ? DocumentFullscreen::ExemptIFrameAllowFullscreenRequirement : DocumentFullscreen::EnforceIFrameAllowFullscreenRequirement;
         m_ignoreFullscreenPermissionsPolicy = false;
         protect(protect(document())->fullscreen())->requestFullscreen(*this, fullscreenCheckType, [weakThis = WeakPtr { *this }](ExceptionOr<void> result) {
             RefPtr protectedThis = weakThis.get();
@@ -8474,8 +8464,8 @@ void HTMLMediaElement::configureMediaControls()
 {
     bool requireControls = controls();
 
-    // Create controls for a video in fullscreen when fullscreen playback is required.
-    if (isVideo() && isFullscreen() && protect(mediaSession())->requiresFullscreenForVideoPlayback())
+    // Always create controls for video when fullscreen playback is required.
+    if (isVideo() && protect(mediaSession())->requiresFullscreenForVideoPlayback())
         requireControls = true;
 
     if (shouldForceControlsDisplay())
@@ -9623,7 +9613,7 @@ void HTMLMediaElement::resumeAutoplaying()
     auto canTransition = canTransitionFromAutoplayToPlay();
     if (canTransition) {
         ALWAYS_LOG(LOGIDENTIFIER, "paused = ", paused());
-        playIfPermitted(MediaElementSession::ForAutoplay::Yes);
+        play();
     } else
         ALWAYS_LOG(LOGIDENTIFIER, "paused = ", paused(), ", blocked with reason: ", canTransition.error());
 }
@@ -10212,7 +10202,7 @@ void HTMLMediaElement::updateShouldPlay()
     auto canTransition = canTransitionFromAutoplayToPlay();
     if (canTransition) {
         HTMLMEDIAELEMENT_RELEASE_LOG(UpdateShouldPlay);
-        playIfPermitted(MediaElementSession::ForAutoplay::Yes);
+        play();
     } else
         ALWAYS_LOG(LOGIDENTIFIER, "autoplay blocked with reason: ", canTransition.error());
 }
@@ -10456,7 +10446,7 @@ void HTMLMediaElement::mediaStreamCaptureStarted()
     auto canTransition = canTransitionFromAutoplayToPlay();
     if (canTransition) {
         HTMLMEDIAELEMENT_RELEASE_LOG(MediaStreamCaptureStarted);
-        playIfPermitted(MediaElementSession::ForAutoplay::Yes);
+        play();
     } else
         ALWAYS_LOG(LOGIDENTIFIER, "autoplay blocked with reason: ", canTransition.error());
 }

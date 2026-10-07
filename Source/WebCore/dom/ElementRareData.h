@@ -235,7 +235,6 @@ private:
     int m_unusualTabIndex { 0 }; // Keep on top for better bit packing with NodeRareData.
 
     std::optional<OptionSet<ContentRelevancy>> m_contentRelevancy;
-    OptionSet<VisibilityAdjustment> m_visibilityAdjustment; // Keep next to m_contentRelevancy for better bit packing.
     ScrollPosition m_savedLayerScrollPosition;
 
     String m_userInfo;
@@ -280,6 +279,8 @@ private:
     WeakPtr<Element, WeakPtrImplWithEventTargetData> m_invokedPopover;
 
     const RefPtr<CustomStateSet> m_customStateSet;
+
+    OptionSet<VisibilityAdjustment> m_visibilityAdjustment;
 
 #if ENABLE(SPATIAL_PORTAL)
     std::unique_ptr<SpatialPortalController> m_spatialPortalController;

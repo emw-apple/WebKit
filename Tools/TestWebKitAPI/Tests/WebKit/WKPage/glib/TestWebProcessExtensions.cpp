@@ -22,7 +22,6 @@
 #include "WebViewTest.h"
 #include <gio/gunixfdlist.h>
 #include <wtf/URL.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 
 static GUniquePtr<char> scriptDialogResult;
@@ -452,10 +451,9 @@ static void testWebProcessExtensionPageID(WebViewTest* test, gconstpointer)
         [](WebKitURISchemeRequest* request, gpointer) {
             URL url = URL(String::fromLatin1(webkit_uri_scheme_request_get_uri(request)));
             GRefPtr<GInputStream> inputStream = adoptGRef(g_memory_input_stream_new());
-            auto html = GMallocString::unsafeAdoptFromUTF8(g_strdup_printf("<html><head><title>%s</title></head><body></body></html>", url.host() == "host5"_s ? "Title5" : "Title6"));
-            auto htmlLength = html.lengthInBytes();
-            gMemoryInputStreamAddData(G_MEMORY_INPUT_STREAM(inputStream.get()), WTF::move(html));
-            webkit_uri_scheme_request_finish(request, inputStream.get(), htmlLength, "text/html");
+            char* html = g_strdup_printf("<html><head><title>%s</title></head><body></body></html>", url.host() == "host5"_s ? "Title5" : "Title6");
+            g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(inputStream.get()), html, strlen(html), g_free);
+            webkit_uri_scheme_request_finish(request, inputStream.get(), strlen(html), "text/html");
         }, nullptr, nullptr);
 
     test->loadURI("foo://host5/");
@@ -552,7 +550,7 @@ public:
         if (m_expectedViewMessageNames.isEmpty())
             return false;
 
-        if (m_expectedViewMessageNames.contains(UTF8CString::unsafeFromUTF8(webkit_user_message_get_name(message)))) {
+        if (m_expectedViewMessageNames.contains(UTF8CString { byteCast<char8_t>(webkit_user_message_get_name(message)) })) {
             m_receivedViewMessages.append(message);
             if (m_receivedViewMessages.size() == m_expectedViewMessageNames.size())
                 quitMainLoop();
@@ -567,7 +565,7 @@ public:
         if (m_expectedContextMessageNames.isEmpty())
             return false;
 
-        if (m_expectedContextMessageNames.contains(UTF8CString::unsafeFromUTF8(webkit_user_message_get_name(message)))) {
+        if (m_expectedContextMessageNames.contains(UTF8CString { byteCast<char8_t>(webkit_user_message_get_name(message)) })) {
             m_receivedContextMessages.append(message);
             if (m_receivedContextMessages.size() == m_expectedContextMessageNames.size())
                 quitMainLoop();
@@ -588,7 +586,7 @@ public:
 
     WebKitUserMessage* waitUntilViewMessageReceived(const char* messageName)
     {
-        return waitUntilViewMessagesReceived({ UTF8CString::unsafeFromUTF8(messageName) }).first().get();
+        return waitUntilViewMessagesReceived({ UTF8CString { byteCast<char8_t>(messageName) } }).first().get();
     }
 
     const Vector<GRefPtr<WebKitUserMessage>>& waitUntilContextMessagesReceived(Vector<UTF8CString>&& messageNames)
@@ -602,7 +600,7 @@ public:
 
     WebKitUserMessage* waitUntilContextMessageReceived(const char* messageName)
     {
-        return waitUntilContextMessagesReceived({ UTF8CString::unsafeFromUTF8(messageName) }).first().get();
+        return waitUntilContextMessagesReceived({ UTF8CString { byteCast<char8_t>(messageName) } }).first().get();
     }
 
     Vector<UTF8CString> m_expectedViewMessageNames;
@@ -689,8 +687,8 @@ static void testWebProcessExtensionUserMessages(UserMessageTest* test, gconstpoi
     g_assert_cmpstr(parameter, ==, "NULL");
 
     // Message with file descriptors.
-    auto filename = gBuildFilename(Test::getResourcesDir(), "simple.json");
-    reply = test->sendMessage(webkit_user_message_new("Test.OpenFile", gVariantNew("s", filename)));
+    GUniquePtr<char> filename(g_build_filename(Test::getResourcesDir().legacyCStringPointer(), "simple.json", nullptr));
+    reply = test->sendMessage(webkit_user_message_new("Test.OpenFile", g_variant_new("s", filename.get())));
     g_assert_true(WEBKIT_IS_USER_MESSAGE(reply));
     parameters = webkit_user_message_get_parameters(reply);
     g_assert_nonnull(parameters);
@@ -711,7 +709,7 @@ static void testWebProcessExtensionUserMessages(UserMessageTest* test, gconstpoi
     close(fd);
     GUniqueOutPtr<char> fileContents;
     gsize fileContentsLength;
-    g_assert_true(g_file_get_contents(filename.utf8(), &fileContents.outPtr(), &fileContentsLength, nullptr));
+    g_assert_true(g_file_get_contents(filename.get(), &fileContents.outPtr(), &fileContentsLength, nullptr));
     g_assert_cmpmem(fdContents.get(), fdContentsLength, fileContents.get(), fileContentsLength);
 
     // Unhandled message.

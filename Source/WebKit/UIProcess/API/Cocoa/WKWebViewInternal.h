@@ -482,8 +482,6 @@ struct LiveResizeSnapshotState {
     std::optional<std::pair<WebKit::TransactionID, LiveResizeSnapshotState>> _liveResizeSnapshotState;
 #endif
     CGFloat _lastAdjustmentForScroller;
-    BOOL _didAdjustScrollViewForKeyboardInCurrentRunLoopIteration;
-    RetainPtr<NSDictionary> _pendingKeyboardInfoForScrollViewAdjustment;
 
     std::pair<CGSize, UIInterfaceOrientation> _lastKnownWindowSizeAndOrientation;
     RetainPtr<NSTimer> _endLiveResizeTimer;
@@ -543,10 +541,6 @@ struct LiveResizeSnapshotState {
     std::unique_ptr<WebKit::PointerTouchCompatibilitySimulator> _pointerTouchCompatibilitySimulator;
 
     WebCore::HistoricalVelocityData _historicalKinematicData;
-
-#if ENABLE(UNIFIED_PDF) && HAVE(UIVIEW_RESERVED_REGION)
-    BOOL _shouldUseTwoUpPDFDisplayModeWithDivisionRegion;
-#endif
 #endif // PLATFORM(IOS_FAMILY)
 
 #if PLATFORM(VISION)

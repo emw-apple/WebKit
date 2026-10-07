@@ -47,7 +47,7 @@ private:
 
     std::unique_ptr<PlatformControl> createPlatformControl() final
     {
-        return protect(controlFactory())->createPlatformImageControlsButton(*this);
+        return controlFactory().createPlatformImageControlsButton(*this);
     }
 };
 

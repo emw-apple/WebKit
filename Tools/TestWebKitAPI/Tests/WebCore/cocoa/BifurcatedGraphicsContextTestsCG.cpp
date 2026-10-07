@@ -28,16 +28,14 @@
 #if USE(CG)
 
 #include <WebCore/BifurcatedGraphicsContext.h>
-#include <WebCore/BitmapImage.h>
 #include <WebCore/ColorSpace.h>
 #include <WebCore/DisplayList.h>
 #include <WebCore/DisplayListItems.h>
 #include <WebCore/DisplayListRecorderImpl.h>
 #include <WebCore/FontCascade.h>
 #include <WebCore/FontSelector.h>
+#include <WebCore/GradientImage.h>
 #include <WebCore/GraphicsContextCG.h>
-#include <WebCore/ImageBuffer.h>
-#include <WebCore/NativeImage.h>
 #include <WebCore/TextRun.h>
 #include <numbers>
 
@@ -55,7 +53,7 @@ TEST(BifurcatedGraphicsContextTests, Basic)
     RetainPtr primaryCGContext = adoptCF(CGBitmapContextCreate(nullptr, contextWidth, contextHeight, 8, 4 * contextWidth, colorSpace.platformColorSpace(), kCGImageAlphaPremultipliedLast));
 
     GraphicsContextCG primaryContext(primaryCGContext.get());
-    Ref secondaryContext = RecorderImpl::create({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
+    RecorderImpl secondaryContext({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
 
     BifurcatedGraphicsContext ctx(primaryContext, secondaryContext);
 
@@ -67,7 +65,7 @@ TEST(BifurcatedGraphicsContextTests, Basic)
     EXPECT_EQ(primaryData[0], 255);
     EXPECT_EQ(primaryData[1], 0);
     EXPECT_EQ(primaryData[2], 0);
-    Ref displayList = secondaryContext->takeDisplayList();
+    Ref displayList = secondaryContext.takeDisplayList();
     // The secondary context should have a red FillRectWithColor.
     EXPECT_FALSE(displayList->items().empty());
     bool sawFillRect = false;
@@ -85,8 +83,8 @@ TEST(BifurcatedGraphicsContextTests, Basic)
 
 TEST(BifurcatedGraphicsContextTests, Text)
 {
-    Ref primaryContext = RecorderImpl::create({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
-    Ref secondaryContext = RecorderImpl::create({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
+    RecorderImpl primaryContext({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
+    RecorderImpl secondaryContext({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
 
     BifurcatedGraphicsContext ctx(primaryContext, secondaryContext);
 
@@ -112,26 +110,11 @@ TEST(BifurcatedGraphicsContextTests, Text)
     };
 
     // Ensure that both contexts have text painting commands.
-    runTest(primaryContext->takeDisplayList());
-    runTest(secondaryContext->takeDisplayList());
+    runTest(primaryContext.takeDisplayList());
+    runTest(secondaryContext.takeDisplayList());
 }
 
-static RefPtr<BitmapImage> createRedImage()
-{
-    auto imageBuffer = ImageBuffer::create({ 1, 1 }, RenderingMode::Unaccelerated, RenderingPurpose::Unspecified, 1, ColorSpace::SRGB(), PixelFormat::BGRA8);
-    if (!imageBuffer)
-        return nullptr;
-
-    imageBuffer->context().fillRect(FloatRect { 0, 0, 1, 1 }, Color::red);
-
-    RefPtr nativeImage = imageBuffer->copyNativeImage();
-    if (!nativeImage)
-        return nullptr;
-
-    return BitmapImage::create(nativeImage.releaseNonNull());
-}
-
-TEST(BifurcatedGraphicsContextTests, DrawPattern)
+TEST(BifurcatedGraphicsContextTests, DrawTiledGradientImage)
 {
     auto colorSpace = ColorSpace::SRGB();
     RetainPtr primaryCGContext = adoptCF(CGBitmapContextCreate(nullptr, contextWidth, contextHeight, 8, 4 * contextWidth, colorSpace.platformColorSpace(), kCGImageAlphaPremultipliedLast));
@@ -141,14 +124,12 @@ TEST(BifurcatedGraphicsContextTests, DrawPattern)
     GraphicsContextCG secondaryContext(secondaryCGContext.get());
     BifurcatedGraphicsContext ctx(primaryContext, secondaryContext);
 
-    auto redImage = createRedImage();
-    ASSERT_TRUE(redImage);
+    auto gradient = Gradient::create(Gradient::LinearData { { 0, 0 }, { 1, 1 } }, { ColorInterpolationMethod::SRGB { }, AlphaPremultiplication::Unpremultiplied });
+    gradient->addColorStop({ 0, Color::red });
 
-    // Tiling reaches a context as a pattern.
-    RefPtr nativeImage = redImage->currentNativeImage(WebCore::ConcreteObjectSize::fixed(FloatSize { 1, 1 }));
-    ASSERT_TRUE(nativeImage);
+    auto gradientImage = GradientImage::create(gradient, FloatSize { 1, 1 });
 
-    ctx.drawPattern(*nativeImage, FloatRect { 0, 0, 100, 100 }, FloatRect { 0, 0, 1, 1 }, AffineTransform { }, FloatPoint { }, FloatSize { });
+    ctx.drawTiledImage(gradientImage.get(), FloatRect { 0, 0, 100, 100 }, FloatRect { 0, 0, 1, 1 }, FloatSize { 1, 1 }, Image::RepeatTile, Image::RepeatTile);
 
     // The primary context should be red.
     CGContextFlush(primaryCGContext.get());
@@ -165,7 +146,7 @@ TEST(BifurcatedGraphicsContextTests, DrawPattern)
     EXPECT_EQ(secondaryData[2], 0);
 }
 
-TEST(BifurcatedGraphicsContextTests, DrawImage)
+TEST(BifurcatedGraphicsContextTests, DrawGradientImage)
 {
     auto colorSpace = ColorSpace::SRGB();
     RetainPtr primaryCGContext = adoptCF(CGBitmapContextCreate(nullptr, contextWidth, contextHeight, 8, 4 * contextWidth, colorSpace.platformColorSpace(), kCGImageAlphaPremultipliedLast));
@@ -175,10 +156,12 @@ TEST(BifurcatedGraphicsContextTests, DrawImage)
     GraphicsContextCG secondaryContext(secondaryCGContext.get());
     BifurcatedGraphicsContext ctx(primaryContext, secondaryContext);
 
-    auto redImage = createRedImage();
-    ASSERT_TRUE(redImage);
+    auto gradient = Gradient::create(Gradient::LinearData { { 0, 0 }, { 1, 1 } }, { ColorInterpolationMethod::SRGB { }, AlphaPremultiplication::Unpremultiplied });
+    gradient->addColorStop({ 0, Color::red });
 
-    ctx.drawImage(*redImage, WebCore::ConcreteObjectSize::fixed(FloatSize { 1, 1 }), FloatRect { 0, 0, 100, 100 }, FloatRect { 0, 0, 1, 1 });
+    auto gradientImage = GradientImage::create(gradient, FloatSize { 1, 1 });
+
+    ctx.drawImage(gradientImage.get(), ConcreteObjectSize::fixed(gradientImage->size()), FloatRect { 0, 0, 100, 100 }, FloatRect { 0, 0, 1, 1 });
 
     // The primary context should be red.
     CGContextFlush(primaryCGContext.get());
@@ -201,7 +184,7 @@ TEST(BifurcatedGraphicsContextTests, Borders)
     RetainPtr primaryCGContext = adoptCF(CGBitmapContextCreate(nullptr, contextWidth, contextHeight, 8, 4 * contextWidth, colorSpace.platformColorSpace(), kCGImageAlphaPremultipliedLast));
 
     GraphicsContextCG primaryContext(primaryCGContext.get());
-    Ref secondaryContext = RecorderImpl::create({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
+    RecorderImpl secondaryContext({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
 
     BifurcatedGraphicsContext ctx(primaryContext, secondaryContext);
 
@@ -227,7 +210,7 @@ TEST(BifurcatedGraphicsContextTests, TransformedClip)
     GraphicsContextCG primaryContextCG(primaryCGContext.get());
     GraphicsContext& primaryContext = primaryContextCG;
 
-    Ref secondaryContextDL = RecorderImpl::create({ }, FloatRect(0, 0, 100, 100), { });
+    RecorderImpl secondaryContextDL({ }, FloatRect(0, 0, 100, 100), { });
     GraphicsContext& secondaryContext = secondaryContextDL;
 
     BifurcatedGraphicsContext ctx(primaryContext, secondaryContext);
@@ -285,7 +268,7 @@ TEST(BifurcatedGraphicsContextTests, ApplyDeviceScaleFactor)
     GraphicsContextCG primaryContextCG(primaryCGContext.get());
     GraphicsContext& primaryContext = primaryContextCG;
 
-    Ref secondaryContextDL = RecorderImpl::create({ }, FloatRect(0, 0, 100, 100), { });
+    RecorderImpl secondaryContextDL({ }, FloatRect(0, 0, 100, 100), { });
     GraphicsContext& secondaryContext = secondaryContextDL;
 
     BifurcatedGraphicsContext ctx(primaryContext, secondaryContext);
@@ -304,8 +287,8 @@ TEST(BifurcatedGraphicsContextTests, ApplyDeviceScaleFactor)
 
 TEST(BifurcatedGraphicsContextTests, ClipToImageBuffer)
 {
-    Ref primaryContext = RecorderImpl::create({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
-    Ref secondaryContext = RecorderImpl::create({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
+    RecorderImpl primaryContext({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
+    RecorderImpl secondaryContext({ }, FloatRect(0, 0, contextWidth, contextHeight), { });
 
     BifurcatedGraphicsContext ctx(primaryContext, secondaryContext);
 
@@ -325,8 +308,8 @@ TEST(BifurcatedGraphicsContextTests, ClipToImageBuffer)
     };
 
     // Ensure that both contexts have clip-to-image-buffer commands.
-    runTest(primaryContext->takeDisplayList());
-    runTest(secondaryContext->takeDisplayList());
+    runTest(primaryContext.takeDisplayList());
+    runTest(secondaryContext.takeDisplayList());
 }
 
 } // namespace TestWebKitAPI

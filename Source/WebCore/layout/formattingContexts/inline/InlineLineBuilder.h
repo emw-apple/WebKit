@@ -75,10 +75,8 @@ private:
 
     void commitCandidateContent(LineCandidate&, std::optional<InlineContentBreaker::Result::PartialTrailingContent>);
     size_t rebuildLineWithInlineContent(const InlineItemRange& needsLayoutRange, const InlineItem& lastInlineItemToAdd);
-    bool unplaceFloatBox(const Box&);
     size_t rebuildLineForTrailingSoftHyphen(const InlineItemRange& layoutRange);
-    void revertLineToStart(const InlineItemRange& layoutRange, size_t placedInlineItemEnd);
-    void initialize(const InlineRect& initialLineLogicalRect, const InlineItemRange& needsLayoutRange, const std::optional<BlockOverflowEllipsis>&, const std::optional<PreviousLine>&, bool isFirstFormattedLineCandidate);
+    void initialize(const InlineRect& initialLineLogicalRect, const InlineItemRange& needsLayoutRange, const std::optional<PreviousLine>&, bool isFirstFormattedLineCandidate);
     void createLineSpanningInlineBoxes(const InlineItemRange& needsLayoutRange);
     UniqueRef<LineContent> placeInlineAndFloatContent(const InlineItemRange&);
     struct InitialLetterOffsets {
@@ -87,7 +85,6 @@ private:
     };
     std::optional<InitialLetterOffsets> adjustLineRectForInitialLetterIfApplicable(const Box& floatBox);
     bool isLastLineWithInlineContent(const LineContent&, size_t needsLayoutEnd, const Line::RunList&) const;
-    const InlineItem* nextContentfulInlineItem(size_t index, size_t needsLayoutEnd) const;
     InlineContentBreaker::Result handleInlineContentWithClonedDecoration(const LineCandidate&, InlineContentBreaker::LineStatus);
     InlineLayoutUnit clonedDecorationAtBreakingPosition(const InlineContentBreaker::ContinuousContent::RunList&, const InlineContentBreaker::Result::PartialTrailingContent&) const;
     InlineLayoutUnit placedClonedDecorationWidth(const InlineContentBreaker::ContinuousContent::RunList&) const;
@@ -112,12 +109,6 @@ private:
     OptionSet<UsedFloat> m_lineIsConstrainedByFloat { };
     std::optional<InlineLayoutUnit> m_initialLetterClearGap;
     TextSpacingContext m_textSpacingContext { };
-    struct LineClamp {
-        std::optional<BlockOverflowEllipsis> blockEllipsis;
-        bool blockEllipsisContentOnly { false };
-        bool isLastLineWithoutBlockEllipsis { false };
-    };
-    LineClamp m_lineClamp;
 };
 
 }

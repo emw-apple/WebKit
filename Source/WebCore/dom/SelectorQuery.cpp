@@ -134,41 +134,41 @@ SelectorDataList::SelectorDataList(const CSSSelectorList& selectorList)
         if (!selector.precedingInComplexSelector()) {
             switch (selector.match()) {
             case CSSSelector::Match::Tag:
-                m_matchType = MatchType::TagNameMatch;
+                m_matchType = TagNameMatch;
                 break;
             case CSSSelector::Match::Class:
-                m_matchType = MatchType::ClassNameMatch;
+                m_matchType = ClassNameMatch;
                 break;
             case CSSSelector::Match::Exact:
                 if (canBeUsedForIdFastPath(selector))
-                    m_matchType = MatchType::RightMostWithIdMatch; // [id="name"] pattern goes here.
+                    m_matchType = RightMostWithIdMatch; // [id="name"] pattern goes here.
                 else if (canOptimizeSingleAttributeExactMatch(selector))
-                    m_matchType = MatchType::AttributeExactMatch;
+                    m_matchType = AttributeExactMatch;
                 else
-                    m_matchType = MatchType::CompilableSingle;
+                    m_matchType = CompilableSingle;
                 break;
             default:
                 if (canBeUsedForIdFastPath(selector))
-                    m_matchType = MatchType::RightMostWithIdMatch;
+                    m_matchType = RightMostWithIdMatch;
                 else
-                    m_matchType = MatchType::CompilableSingle;
+                    m_matchType = CompilableSingle;
                 break;
             }
         } else {
             switch (findIdMatchingType(selector)) {
             case IdMatchingType::None:
-                m_matchType = MatchType::CompilableSingle;
+                m_matchType = CompilableSingle;
                 break;
             case IdMatchingType::Rightmost:
-                m_matchType = MatchType::RightMostWithIdMatch;
+                m_matchType = RightMostWithIdMatch;
                 break;
             case IdMatchingType::Filter:
-                m_matchType = MatchType::CompilableSingleWithRootFilter;
+                m_matchType = CompilableSingleWithRootFilter;
                 break;
             }
         }
     } else
-        m_matchType = MatchType::CompilableMultipleSelectorMatch;
+        m_matchType = CompilableMultipleSelectorMatch;
 }
 
 inline bool SelectorDataList::selectorMatches(const SelectorData& selectorData, Element& element, const ContainerNode& rootNode, Style::SelectorMatchingState* selectorMatchingState) const
@@ -561,7 +561,7 @@ ALWAYS_INLINE void SelectorDataList::execute(ContainerNode& rootNode, OutputType
 {
     RefPtr<ContainerNode> searchRootNode = &rootNode;
     switch (m_matchType) {
-    case MatchType::RightMostWithIdMatch:
+    case RightMostWithIdMatch:
         {
         const SelectorData& selectorData = m_selectors.first();
         if (const CSSSelector* idSelector = selectorForIdLookup(*searchRootNode, selectorData.selector)) {
@@ -576,39 +576,39 @@ ALWAYS_INLINE void SelectorDataList::execute(ContainerNode& rootNode, OutputType
         ASSERT_NOT_REACHED();
         }
 
-    case MatchType::CompilableSingleWithRootFilter:
-    case MatchType::CompilableSingle:
+    case CompilableSingleWithRootFilter:
+    case CompilableSingle:
         {
 #if ENABLE(CSS_SELECTOR_JIT)
         const SelectorData& selectorData = m_selectors.first();
         ASSERT(selectorData.compiledSelector.status == SelectorCompilationStatus::NotCompiled);
-        ASSERT(m_matchType == MatchType::CompilableSingle || m_matchType == MatchType::CompilableSingleWithRootFilter);
+        ASSERT(m_matchType == CompilableSingle || m_matchType == CompilableSingleWithRootFilter);
         if (compileSelector(selectorData)) {
-            if (m_matchType == MatchType::CompilableSingle) {
-                m_matchType = MatchType::CompiledSingle;
+            if (m_matchType == CompilableSingle) {
+                m_matchType = CompiledSingle;
                 goto CompiledSingleCase;
             }
-            ASSERT(m_matchType == MatchType::CompilableSingleWithRootFilter);
-            m_matchType = MatchType::CompiledSingleWithRootFilter;
+            ASSERT(m_matchType == CompilableSingleWithRootFilter);
+            m_matchType = CompiledSingleWithRootFilter;
             goto CompiledSingleWithRootFilterCase;
         }
 #endif // ENABLE(CSS_SELECTOR_JIT)
-        if (m_matchType == MatchType::CompilableSingle) {
-            m_matchType = MatchType::SingleSelector;
+        if (m_matchType == CompilableSingle) {
+            m_matchType = SingleSelector;
             goto SingleSelectorCase;
         }
-        ASSERT(m_matchType == MatchType::CompilableSingleWithRootFilter);
-        m_matchType = MatchType::SingleSelectorWithRootFilter;
+        ASSERT(m_matchType == CompilableSingleWithRootFilter);
+        m_matchType = SingleSelectorWithRootFilter;
         goto SingleSelectorWithRootFilterCase;
         ASSERT_NOT_REACHED();
         }
 
 #if ENABLE(CSS_SELECTOR_JIT)
-    case MatchType::CompiledSingleWithRootFilter:
+    case CompiledSingleWithRootFilter:
         CompiledSingleWithRootFilterCase:
         searchRootNode = filterRootById(*searchRootNode, m_selectors.first().selector);
         [[fallthrough]];
-    case MatchType::CompiledSingle:
+    case CompiledSingle:
         {
         CompiledSingleCase:
         const SelectorData& selectorData = m_selectors.first();
@@ -625,58 +625,58 @@ ALWAYS_INLINE void SelectorDataList::execute(ContainerNode& rootNode, OutputType
         break;
         }
 #else
-    case MatchType::CompiledSingleWithRootFilter:
-    case MatchType::CompiledSingle:
+    case CompiledSingleWithRootFilter:
+    case CompiledSingle:
         ASSERT_NOT_REACHED();
 #if !ASSERT_ENABLED
         [[fallthrough]];
 #endif
 #endif // ENABLE(CSS_SELECTOR_JIT)
 
-    case MatchType::SingleSelectorWithRootFilter:
+    case SingleSelectorWithRootFilter:
         SingleSelectorWithRootFilterCase:
         searchRootNode = filterRootById(*searchRootNode, m_selectors.first().selector);
         [[fallthrough]];
-    case MatchType::SingleSelector:
+    case SingleSelector:
         SingleSelectorCase:
         executeSingleSelectorData(rootNode, *searchRootNode, m_selectors.first(), output);
         break;
 
-    case MatchType::TagNameMatch:
+    case TagNameMatch:
         executeSingleTagNameSelectorData(*searchRootNode, m_selectors.first(), output);
         break;
-    case MatchType::ClassNameMatch:
+    case ClassNameMatch:
         executeSingleClassNameSelectorData(*searchRootNode, m_selectors.first(), output);
         break;
-    case MatchType::AttributeExactMatch:
+    case AttributeExactMatch:
         executeSingleAttributeExactSelectorData(*searchRootNode, m_selectors.first(), output);
         break;
-    case MatchType::CompilableMultipleSelectorMatch:
+    case CompilableMultipleSelectorMatch:
 #if ENABLE(CSS_SELECTOR_JIT)
         {
         for (auto& selector : m_selectors) {
             if (!compileSelector(selector)) {
-                m_matchType = MatchType::MultipleSelectorMatch;
-                goto MultipleSelectorMatchCase;
+                m_matchType = MultipleSelectorMatch;
+                goto MultipleSelectorMatch;
             }
         }
-        m_matchType = MatchType::CompiledMultipleSelectorMatch;
-        goto CompiledMultipleSelectorMatchCase;
+        m_matchType = CompiledMultipleSelectorMatch;
+        goto CompiledMultipleSelectorMatch;
         }
 #else
         [[fallthrough]];
 #endif // ENABLE(CSS_SELECTOR_JIT)
-    case MatchType::CompiledMultipleSelectorMatch:
+    case CompiledMultipleSelectorMatch:
 #if ENABLE(CSS_SELECTOR_JIT)
-        CompiledMultipleSelectorMatchCase:
+        CompiledMultipleSelectorMatch:
         executeCompiledSingleMultiSelectorData(*searchRootNode, output);
         break;
 #else
         [[fallthrough]];
 #endif // ENABLE(CSS_SELECTOR_JIT)
-    case MatchType::MultipleSelectorMatch:
+    case MultipleSelectorMatch:
 #if ENABLE(CSS_SELECTOR_JIT)
-        MultipleSelectorMatchCase:
+        MultipleSelectorMatch:
 #endif
         executeSingleMultiSelectorData(*searchRootNode, output);
         break;

@@ -29,7 +29,6 @@
 #include "Logging.h"
 #include <libsoup/soup.h>
 #include <wtf/Function.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GUniquePtr.h>
 
 namespace WebDriver {
@@ -45,7 +44,7 @@ static bool soupServerListen(SoupServer* server, const std::optional<String>& ho
 
     GRefPtr<GSocketAddress> address = adoptGRef(g_inet_socket_address_new_from_string(host.value().utf8().legacyCStringPointer(), port));
     if (!address) {
-        SAFE_G_SET_ERROR(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "Invalid host IP address '%s'", host.value().utf8());
+        g_set_error(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "Invalid host IP address '%s'", host.value().utf8().legacyCStringPointer());
         return false;
     }
 

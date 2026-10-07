@@ -102,8 +102,16 @@ SOFT_LINK_CONSTANT_MAY_FAIL(SymptomPresentationLite, kSymptomAnalyticsServiceEnd
 void WebKit::NetworkSessionCocoa::removeNetworkWebsiteData(std::optional<WallTime>, std::optional<HashSet<WebCore::RegistrableDomain>>&&, CompletionHandler<void()>&& completionHandler) { completionHandler(); }
 #endif
 
-#if HAVE(NW_PROXY_CONFIG) && __has_include(<Network/NSURLSession+Network.h>)
+#if HAVE(NW_PROXY_CONFIG)
+#if __has_include(<Network/NSURLSession+Network.h>)
 #include <Network/NSURLSession+Network.h>
+#endif
+SOFT_LINK_LIBRARY_OPTIONAL(libnetwork)
+#define WebKit_libnetworkLibrary_SoftLinked
+SOFT_LINK_OPTIONAL(libnetwork, nw_context_add_proxy, void, __cdecl, (nw_context_t, nw_proxy_config_t))
+SOFT_LINK_OPTIONAL(libnetwork, nw_context_clear_proxies, void, __cdecl, (nw_context_t))
+SOFT_LINK_OPTIONAL(libnetwork, nw_proxy_config_create_with_agent_data, nw_proxy_config_t, __cdecl, (const uint8_t*, size_t, const uuid_t))
+SOFT_LINK_OPTIONAL(libnetwork, nw_proxy_config_stack_requires_http_protocols, bool, __cdecl, (nw_proxy_config_t))
 #endif
 
 #import "DeviceManagementSoftLink.h"
@@ -669,21 +677,21 @@ static NSDictionary<NSString *, id> *extractResolutionReport(NSError *error)
     if (!report)
         return nil;
 
+    OSObjectPtr path = dynamicOSObjectCast<nw_path_t>(error.userInfo[@"_NSURLErrorNWPathKey"]);
+    if (!path)
+        return nil;
+
     auto interfaces = adoptNS([[NSMutableArray alloc] initWithCapacity:1]);
     if (!interfaces.get())
         return nil;
-
-    // The path may be a Swift NWPath that is not an nw_path_t; the report is still useful without interfaces.
-    if (OSObjectPtr path = dynamicOSObjectCast<nw_path_t>(error.userInfo[@"_NSURLErrorNWPathKey"])) {
-        nw_path_enumerate_interfaces(path.get(), ^bool(nw_interface_t interface) {
-            String name = String::fromUTF8(nw_interface_get_name(interface));
-            [interfaces addObject:@{
-                @"type" : description(nw_interface_get_type(interface)),
-                @"name" : name.createNSString().get() ?: @"",
-            }];
-            return true;
-        });
-    }
+    nw_path_enumerate_interfaces(path.get(), ^bool(nw_interface_t interface) {
+        String name = String::fromUTF8(nw_interface_get_name(interface));
+        [interfaces addObject:@{
+            @"type" : description(nw_interface_get_type(interface)),
+            @"name" : name.createNSString().get() ?: @"",
+        }];
+        return true;
+    });
 
     String provider = String::fromUTF8(nw_resolution_report_get_provider_name(report.get()));
     String extraText = String::fromUTF8(nw_resolution_report_get_extended_dns_error_extra_text(report.get()));
@@ -2063,6 +2071,10 @@ void NetworkSessionCocoa::forEachSessionWrapper(NOESCAPE const Function<void(Ses
 #if HAVE(NW_PROXY_CONFIG)
 void NetworkSessionCocoa::clearProxyConfigData()
 {
+    auto* clearProxies = nw_context_clear_proxiesPtr();
+    if (!clearProxies)
+        return;
+
     m_nwProxyConfigs.clear();
 
     RetainPtr<NSMutableSet> contexts = adoptNS([[NSMutableSet alloc] init]);
@@ -2073,11 +2085,18 @@ void NetworkSessionCocoa::clearProxyConfigData()
     });
 
     for (nw_context_t context in contexts.get())
-        nw_context_clear_proxies(context);
+        clearProxies(context);
 }
 
 void NetworkSessionCocoa::setProxyConfigData(const Vector<std::pair<Vector<uint8_t>, std::optional<WTF::UUID>>>& proxyConfigurations)
 {
+    auto* clearProxies = nw_context_clear_proxiesPtr();
+    auto* addProxy = nw_context_add_proxyPtr();
+    auto* createProxyConfig = nw_proxy_config_create_with_agent_dataPtr();
+    auto* requiresHTTPProtocols = nw_proxy_config_stack_requires_http_protocolsPtr();
+    if (!clearProxies || !addProxy || !createProxyConfig || !requiresHTTPProtocols)
+        return;
+
     m_nwProxyConfigs.clear();
 
     // If any of the proxies pass the `nw_proxy_config_stack_requires_http_protocols` check,
@@ -2090,9 +2109,11 @@ void NetworkSessionCocoa::setProxyConfigData(const Vector<std::pair<Vector<uint8
         else
             zeroBytes(identifier);
 
-        RetainPtr nwProxyConfig = adoptNS(nw_proxy_config_create_with_agent_data(config.first.span().data(), config.first.size(), identifier));
+        // This is correct but static analysis does not seem to recognize that `createProxyConfig` returns
+        // a +1 value.
+        SUPPRESS_RETAINPTR_CTOR_ADOPT auto nwProxyConfig = adoptNS(createProxyConfig(config.first.span().data(), config.first.size(), identifier));
 
-        if (nw_proxy_config_stack_requires_http_protocols(nwProxyConfig.get()))
+        if (requiresHTTPProtocols(nwProxyConfig.get()))
             recreateSessions = true;
 
         m_nwProxyConfigs.append(WTF::move(nwProxyConfig));
@@ -2114,10 +2135,10 @@ void NetworkSessionCocoa::setProxyConfigData(const Vector<std::pair<Vector<uint8
     });
 
     for (nw_context_t context in contexts.get()) {
-        nw_context_clear_proxies(context);
+        clearProxies(context);
 
         for (auto& proxyConfig : m_nwProxyConfigs)
-            nw_context_add_proxy(context, proxyConfig.get());
+            addProxy(context, proxyConfig.get());
     }
 }
 

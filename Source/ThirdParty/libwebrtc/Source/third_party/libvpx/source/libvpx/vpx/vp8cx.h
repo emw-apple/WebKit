@@ -777,7 +777,7 @@ enum vp8e_enc_control_id {
    */
   VP9E_SET_KEY_FRAME_FILTERING,
 
-  /*!\brief Codec control function to validate HBD input, int parameter.
+  /*!\brief Codec control function to validate HBD input.
    *
    * VP9 allows the encoder to validate the high bitdepth (HBD) input and
    * ensure that every pixel is within the valid range. To disable/enable,

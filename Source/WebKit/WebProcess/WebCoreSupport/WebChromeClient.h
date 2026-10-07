@@ -38,7 +38,6 @@ class HTMLVideoElement;
 class RegistrableDomain;
 enum class BroadcastFocusedElement : bool;
 enum class ContentChange : uint8_t;
-enum class DevicePostureType : uint8_t;
 enum class DidFilterLinkDecoration : bool;
 enum class IsLoggedIn : uint8_t;
 enum class PointerLockRequestResult : uint8_t;
@@ -156,12 +155,6 @@ private:
     void setHasModelElement(bool) final;
 #endif
 
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-    void enterVolumetricSceneForElement(WebCore::Element&, CompletionHandler<void(bool)>&&) final;
-    void exitVolumetricSceneForElement(WebCore::Element&) final;
-    void reconnectVolumetricSceneForElement(WebCore::Element&) final;
-#endif
-
     PlatformPageClient platformPageClient() const final;
     void contentsSizeChanged(WebCore::LocalFrame&, const WebCore::IntSize&) const final;
     void intrinsicContentsSizeChanged(const WebCore::IntSize&) const final;
@@ -201,6 +194,7 @@ private:
     void didLayout(LayoutType = NormalLayout) final;
     void didStartOverflowScroll() final;
     void didEndOverflowScroll() final;
+    bool hasStablePageScaleFactor() const final;
 
     // FIXME: See <rdar://problem/5975559>
     void suppressFormNotifications() final;
@@ -226,8 +220,6 @@ private:
 #if ENABLE(ORIENTATION_EVENTS)
     WebCore::IntDegrees deviceOrientation() const final;
 #endif
-
-    WebCore::DevicePostureType devicePostureType() const final;
 
     void runOpenPanel(WebCore::LocalFrame&, WebCore::FileChooser&) final;
     void transcodeChosenFiles(Vector<String>&&, String&& destinationUTI, String&& destinationExtension, CompletionHandler<void(Vector<String>&&)>&&) final;
@@ -289,13 +281,6 @@ private:
     RefPtr<WebCore::ImageBuffer> createImageBuffer(const WebCore::FloatSize&, WebCore::RenderingMode, WebCore::RenderingPurpose, float resolutionScale, const WebCore::ColorSpace&, WebCore::ImageBufferFormat) const final;
     RefPtr<WebCore::ImageBuffer> sinkIntoImageBuffer(std::unique_ptr<WebCore::SerializedImageBuffer>) final;
     RefPtr<WebCore::ImageBuffer> createImageBufferFromTransferHandle(const WebCore::ImageBufferTransferHandle&) final;
-#if ENABLE(OFFSCREEN_CANVAS)
-    RefPtr<WebCore::PlaceholderRenderingContextSource> createPlaceholderRenderingContextSource(const WebCore::RemotePlaceholderRenderingContextIdentifier&) final;
-    void offscreenCanvasPlaceholderLayerChanged(WebCore::PlaceholderRenderingContextIdentifier, std::optional<WebCore::PlatformLayerIdentifier>) final;
-#endif
-#if HAVE(IOSURFACE)
-    RefPtr<NativePromise<Ref<WebCore::NativeImage>, void>> createDisplayOnlyImage(WebCore::FrameIdentifier, const WebCore::FloatSize&, float scale, const WebCore::ColorSpace&, NOESCAPE const Function<void(WebCore::GraphicsContext&)>& paint) final;
-#endif
 #endif
     std::unique_ptr<WebCore::WorkerClient> createWorkerClient(SerialFunctionDispatcher&) final;
 
@@ -377,8 +362,6 @@ private:
     void elementDidRefocus(WebCore::Element&, const WebCore::FocusOptions&) final;
     void focusedElementDidChangeInputMode(WebCore::Element&, WebCore::InputMode) final;
     void focusedSelectElementDidChangeOptions(const WebCore::HTMLSelectElement&) final;
-
-    bool hasStablePageScaleFactor() const final;
 
     void makeFirstResponder() final;
     void assistiveTechnologyMakeFirstResponder() final;
@@ -474,7 +457,7 @@ private:
 #if ENABLE(WIRELESS_PLAYBACK_TARGET) && !PLATFORM(IOS_FAMILY)
     void addPlaybackTargetPickerClient(WebCore::PlaybackTargetClientContextIdentifier) final;
     void removePlaybackTargetPickerClient(WebCore::PlaybackTargetClientContextIdentifier) final;
-    void showPlaybackTargetPicker(WebCore::PlaybackTargetClientContextIdentifier, const WebCore::IntPoint& positionInMainFrameView, bool) final;
+    void showPlaybackTargetPicker(WebCore::PlaybackTargetClientContextIdentifier, WebCore::FrameIdentifier, const WebCore::IntPoint&, bool) final;
     void playbackTargetPickerClientStateDidChange(WebCore::PlaybackTargetClientContextIdentifier, WebCore::MediaProducerMediaStateFlags) final;
     void setMockMediaPlaybackTargetPickerEnabled(bool) final;
     void setMockMediaPlaybackTargetPickerState(const String&, WebCore::MediaPlaybackTargetMockState) final;

@@ -10,7 +10,6 @@
 
 #include <cstdio>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "absl/flags/flag.h"
@@ -45,10 +44,10 @@ int main(int argc, char* argv[]) {
   std::vector<char*> args = absl::ParseCommandLine(argc, argv);
 
   // Print RTC_LOG warnings and errors even in release builds.
-  webrtc::LoggingConfig config;
-  config.set_min_severity(webrtc::LS_WARNING);
-  config.set_debug_severity(webrtc::LS_WARNING);
-  webrtc::InitializeLogging(std::move(config));
+  if (webrtc::LogMessage::GetLogToDebug() > webrtc::LS_WARNING) {
+    webrtc::LogMessage::LogToDebug(webrtc::LS_WARNING);
+  }
+  webrtc::LogMessage::SetLogToStderr(true);
 
   webrtc::ParsedRtcEventLog::UnconfiguredHeaderExtensions header_extensions =
       webrtc::ParsedRtcEventLog::UnconfiguredHeaderExtensions::kDontParse;

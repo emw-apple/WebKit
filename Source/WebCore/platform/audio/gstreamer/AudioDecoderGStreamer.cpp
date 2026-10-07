@@ -59,7 +59,7 @@ public:
     }
     ~GStreamerInternalAudioDecoder() = default;
 
-    Ref<AudioDecoder::DecodePromise> decode(AudioEncodedData&&);
+    Ref<AudioDecoder::DecodePromise> decode(Ref<SharedBuffer>&&, bool isKeyFrame, int64_t timestamp, std::optional<uint64_t> duration);
     void flush();
     void close() { m_isClosed = true; }
     bool isConfigured() const { return !!m_inputCaps; }
@@ -124,10 +124,10 @@ GStreamerAudioDecoder::~GStreamerAudioDecoder()
     close();
 }
 
-Ref<AudioDecoder::DecodePromise> GStreamerAudioDecoder::decode(AudioEncodedData&& data)
+Ref<AudioDecoder::DecodePromise> GStreamerAudioDecoder::decode(EncodedData&& data)
 {
-    return invokeAsync(gstDecoderWorkQueue(), [data = WTF::move(data).isolatedCopy(), decoder = m_internalDecoder] mutable {
-        return decoder->decode(WTF::move(data));
+    return invokeAsync(gstDecoderWorkQueue(), [buffer = WTF::move(data.data), isKeyFrame = data.isKeyFrame, timestamp = data.timestamp, duration = data.duration, decoder = m_internalDecoder]() mutable {
+        return decoder->decode(WTF::move(buffer), isKeyFrame, timestamp, duration);
     });
 }
 
@@ -278,17 +278,17 @@ GStreamerInternalAudioDecoder::GStreamerInternalAudioDecoder(const String& codec
     }));
 }
 
-Ref<AudioDecoder::DecodePromise> GStreamerInternalAudioDecoder::decode(AudioEncodedData&& data)
+Ref<AudioDecoder::DecodePromise> GStreamerInternalAudioDecoder::decode(Ref<SharedBuffer>&& frameData, [[maybe_unused]] bool isKeyFrame, int64_t timestamp, std::optional<uint64_t> duration)
 {
-    GST_DEBUG_OBJECT(m_harness->element(), "Decoding%s frame with size %zu bytes", data.isKeyFrame ? " key" : "", data.data->size());
+    GST_DEBUG_OBJECT(m_harness->element(), "Decoding%s frame with size %zu bytes", isKeyFrame ? " key" : "", frameData->size());
 
-    auto encodedData = wrapSharedBuffer(WTF::move(data.data));
+    auto encodedData = wrapSharedBuffer(WTF::move(frameData));
     if (!encodedData)
         return AudioDecoder::DecodePromise::createAndResolve();
 
     GstSegment segment;
     gst_segment_init(&segment, GST_FORMAT_TIME);
-    if (data.timestamp < 0)
+    if (timestamp < 0)
         segment.rate = -1.0;
 
     if (m_header) {
@@ -297,9 +297,9 @@ Ref<AudioDecoder::DecodePromise> GStreamerInternalAudioDecoder::decode(AudioEnco
         m_harness->pushBuffer(WTF::move(m_header));
     }
 
-    GST_BUFFER_PTS(encodedData.get()) = abs(data.timestamp) * 1000;
-    if (data.duration)
-        GST_BUFFER_DURATION(encodedData.get()) = *data.duration;
+    GST_BUFFER_PTS(encodedData.get()) = abs(timestamp) * 1000;
+    if (duration)
+        GST_BUFFER_DURATION(encodedData.get()) = *duration;
 
     auto result = m_harness->pushSample(adoptGRef(gst_sample_new(encodedData.get(), m_inputCaps.get(), &segment, nullptr)));
     if (!result)

@@ -215,7 +215,7 @@ bool AVAudioSessionCaptureDeviceManager::setPreferredAudioSessionDeviceIDs()
         }
     }
     {
-        RELEASE_LOG_INFO(WebRTC, "AVAudioSessionCaptureDeviceManager setting preferred input to '%{public}s'", m_preferredMicrophoneID.utf8());
+        RELEASE_LOG_INFO(WebRTC, "AVAudioSessionCaptureDeviceManager setting preferred input to '%{public}s'", m_preferredMicrophoneID.ascii().data());
 
         NSError *error = nil;
         if (![[PAL::getAVAudioSessionClassSingleton() sharedInstance] setPreferredInput:preferredInputPort error:&error]) {

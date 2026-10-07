@@ -99,13 +99,10 @@ JSC_DEFINE_HOST_FUNCTION(errorConstructorCaptureStackTrace, (JSGlobalObject* glo
 
     vm.interpreter.getStackTrace(object, stackTrace, framesToSkip, globalObject->stackTraceLimit().value_or(0), caller);
 
-    if (auto* errorInstance = dynamicDowncast<ErrorInstance>(object)) {
-        errorInstance->setStackPropertyProvidedByCapturedStackTrace();
-        if (errorInstance->trySaveCapturedStackTraceForLazyMaterialization(vm, stackTrace))
-            return encodedJSUndefined();
-    }
-
     object->putDirect(vm, vm.propertyNames->stack, jsString(vm, Interpreter::stackTraceAsString(vm, stackTrace)), static_cast<unsigned>(PropertyAttribute::DontEnum));
+
+    if (auto* errorInstance = dynamicDowncast<ErrorInstance>(object))
+        errorInstance->setStackPropertyAlreadyMaterialized();
 
     return encodedJSUndefined();
 }

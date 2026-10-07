@@ -61,7 +61,6 @@ use crate::{errors::PkiError, ffi::Bio};
 bssl_enum! {
     /// EVP public key algorithm types.
     #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-    #[non_exhaustive]
     pub enum PrivateKeyAlgorithm: i32 {
         /// RSA
         Rsa = bssl_sys::EVP_PKEY_RSA as i32,

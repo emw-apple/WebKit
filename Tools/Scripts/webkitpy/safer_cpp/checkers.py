@@ -32,24 +32,15 @@ EXPECTATIONS_PATH = PROJECT_PATH + '/SaferCPPExpectations/{checker}Expectations'
 DERIVED_SOURCES_DIR = '../../../../../WebKitBuild/{configuration}/DerivedSources/{project}'
 PROJECTS = ['JavaScriptCore', 'PAL', 'WebCore', 'WebDriver', 'WebGPU', 'WebInspectorUI', 'WebKit', 'WebKitLegacy', 'WTF']
 
-# The analyzer's checker categories, disabled before the WebKit checkers are enabled one by one.
-# FIXME: Disable clang-tidy bugprone-* checkers with -analyzer-tidy-checker=-* when that works.
-# See: <https://clang.llvm.org/docs/analyzer/checkers.html>
-ANALYZER_DISABLED_CATEGORIES = ['alpha', 'apiModeling', 'core', 'cplusplus', 'deadcode', 'debug', 'fuchsia', 'nullability', 'optin', 'osx', 'security', 'unix', 'webkit']
-
 
 class Checker(object):
-    def __init__(self, name, description, new_description=None, package='alpha.webkit'):
+    def __init__(self, name, description, new_description=None):
         self._name = name
         self._description = description
         self._new_description = new_description
-        self._package = package
 
     def name(self):
         return self._name
-
-    def analyzer_name(self):
-        return '{}.{}'.format(self._package, self._name)
 
     def description(self):
         return self._description
@@ -90,10 +81,6 @@ class Checker(object):
         return sorted(CHECKERS, key=lambda checker: checker.name())
 
     @classmethod
-    def analyzer_names(cls):
-        return sorted(checker.analyzer_name() for checker in CHECKERS)
-
-    @classmethod
     def projects(cls):
         return sorted(PROJECTS)
 
@@ -103,14 +90,14 @@ CHECKERS = [
     Checker('MemoryUnsafeCastChecker', 'Unsafe cast'),
     Checker('NoDeleteChecker', 'Incorrect [[clang::annotate_type("webkit.nodelete")]] annotation'),
     Checker('NoUncheckedPtrMemberChecker', 'Member variable is a raw-pointer/reference to checked-pointer capable type'),
-    Checker('NoUncountedMemberChecker', 'Member variable is a raw-pointer/reference to reference-countable type', package='webkit'),
+    Checker('NoUncountedMemberChecker', 'Member variable is a raw-pointer/reference to reference-countable type'),
     Checker('NoUnretainedMemberChecker', 'Member variable is a raw-pointer/reference to retainable type'),
-    Checker('RefCntblBaseVirtualDtor', 'Reference-countable base class doesn\'t have virtual destructor', package='webkit'),
+    Checker('RefCntblBaseVirtualDtor', 'Reference-countable base class doesn\'t have virtual destructor'),
     Checker('RetainPtrCtorAdoptChecker', 'Correct use of RetainPtr, adoptNS, and adoptCF'),
     Checker('UncheckedCallArgsChecker', 'Unchecked call argument for a raw pointer/reference parameter'),
     Checker('UncheckedLocalVarsChecker', 'Unchecked raw pointer or reference not provably backed by checked variable'),
     Checker('UncountedCallArgsChecker', 'Uncounted call argument for a raw pointer/reference parameter'),
-    Checker('UncountedLambdaCapturesChecker', 'Lambda capture of uncounted or unchecked variable', 'Lambda capture of uncounted variable', package='webkit'),
+    Checker('UncountedLambdaCapturesChecker', 'Lambda capture of uncounted or unchecked variable', 'Lambda capture of uncounted variable'),
     Checker('UncheckedLambdaCapturesChecker', 'Lambda capture of unchecked variable'),
     Checker('UncountedLocalVarsChecker', 'Uncounted raw pointer or reference not provably backed by ref-counted variable'),
     Checker('UnretainedCallArgsChecker', 'Unretained call argument for a raw pointer/reference parameter'),

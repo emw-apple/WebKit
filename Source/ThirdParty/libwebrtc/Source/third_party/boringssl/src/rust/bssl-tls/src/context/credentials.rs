@@ -26,10 +26,7 @@ use crate::{
     context::{
         CertificateCache,
         SupportedMode,
-        methods::{
-            HasPrivateKeyMethods,
-            RustContextMethods, //
-        }, //
+        methods::HasPrivateKeyMethods, //
     },
     credentials::{
         CertificateType,
@@ -42,13 +39,8 @@ use crate::{
         cert_cb,
         early_callback::{
             EarlyCallback,
-            early_cb, //
+            early_select_cert_cb, //
         }, //
-        select_cert::{
-            ClientCertificateSelector,
-            ServerCertificateSelector,
-            select_cert_cb, //
-        },
     },
     errors::Error,
     ffi::slice_into_ffi_raw_parts,
@@ -184,7 +176,7 @@ where
             // Safety: we only install our own vtable.
             bssl_sys::SSL_CTX_set_select_certificate_cb(
                 ctx,
-                Some(early_cb::<M, super::methods::RustContextMethods<M>>),
+                Some(early_select_cert_cb::<M, super::methods::RustContextMethods<M>>),
             );
         }
         self.get_context_methods().early_callback_handler = Some(Box::new(handler) as _);
@@ -245,47 +237,6 @@ where
             bssl_sys::SSL_CTX_set1_available_client_cert_types(self.ptr(), ptr as *const _, len)
         });
         Ok(self)
-    }
-}
-
-/// # Certificate selection
-impl<M: SupportedMode> TlsContextBuilder<M> {
-    /// Set certificate selection callback on **client** side.
-    pub fn with_client_side_certificate_callback<T: 'static + ClientCertificateSelector<M>>(
-        &mut self,
-        cb: T,
-    ) -> &mut Self {
-        let ctx = self.ptr();
-        let methods = self.get_context_methods();
-        methods.client_cert_cb = Some(Box::new(cb) as _);
-        unsafe {
-            // Safety: we only install our own vtable.
-            bssl_sys::SSL_CTX_set_cert_cb(
-                ctx,
-                Some(select_cert_cb::<RustContextMethods<M>, M>),
-                null_mut(),
-            );
-        }
-        self
-    }
-
-    /// Set certificate selection callback on **server** side.
-    pub fn with_server_side_certificate_callback<T: 'static + ServerCertificateSelector<M>>(
-        &mut self,
-        cb: T,
-    ) -> &mut Self {
-        let ctx = self.ptr();
-        let methods = self.get_context_methods();
-        methods.server_cert_cb = Some(Box::new(cb) as _);
-        unsafe {
-            // Safety: we only install our own vtable.
-            bssl_sys::SSL_CTX_set_cert_cb(
-                ctx,
-                Some(select_cert_cb::<RustContextMethods<M>, M>),
-                null_mut(),
-            );
-        }
-        self
     }
 }
 

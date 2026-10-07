@@ -36,14 +36,10 @@
 #import "JSWebExtensionWrapper.h"
 #import "MessageSenderInlines.h"
 #import "WebExtensionAPIKeys.h"
-#import "WebExtensionAPINamespace.h"
 #import "WebExtensionContextMessages.h"
-#import "WebExtensionContextProxy.h"
 #import "WebExtensionNotificationParameters.h"
 #import "WebExtensionUtilities.h"
-#import "WebFrame.h"
 #import "WebProcess.h"
-#import <WebCore/LocalFrameInlines.h>
 #import <wtf/UUID.h>
 
 namespace WebKit {
@@ -147,47 +143,6 @@ void WebExtensionAPINotifications::update(const String& identifier, NSDictionary
     }, extensionContext().identifier());
 }
 
-void WebExtensionAPINotifications::clear(const String& identifier, Ref<WebExtensionCallbackHandler>&& callback)
-{
-    // Documentation: https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/notifications/clear
-
-    WebProcess::singleton().sendWithAsyncReply(Messages::WebExtensionContext::NotificationsClear(identifier), [protectedThis = Ref { *this }, callback = WTF::move(callback)](std::expected<bool, WebExtensionError>&& result) {
-        if (!result) {
-            callback->reportError(result.error().createNSString().get());
-            return;
-        }
-
-        callback->call(JSValueMakeBoolean(callback->globalContext(), result.value()));
-    }, extensionContext().identifier());
-}
-
-void WebExtensionAPINotifications::getAll(Ref<WebExtensionCallbackHandler>&& callback)
-{
-    // Documentation: https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/notifications/getAll
-
-    WebProcess::singleton().sendWithAsyncReply(Messages::WebExtensionContext::NotificationsGetAll(), [protectedThis = Ref { *this }, callback = WTF::move(callback)](Vector<String> identifiers) {
-        NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:identifiers.size()];
-        for (auto& identifier : identifiers)
-            result[identifier.createNSString().get()] = @YES;
-
-        callback->call(toJSValueRef(callback->globalContext(), result));
-    }, extensionContext().identifier());
-}
-
-void WebExtensionAPINotifications::getPermissionLevel(Ref<WebExtensionCallbackHandler>&& callback)
-{
-    // Documentation: https://developer.chrome.com/docs/extensions/reference/api/notifications#method-getPermissionLevel
-
-    WebProcess::singleton().sendWithAsyncReply(Messages::WebExtensionContext::NotificationsGetPermissionLevel(), [protectedThis = Ref { *this }, callback = WTF::move(callback)](std::expected<String, WebExtensionError>&& result) {
-        if (!result) {
-            callback->reportError(result.error().createNSString().get());
-            return;
-        }
-
-        callback->call(toJSValueRef(callback->globalContext(), result.value()));
-    }, extensionContext().identifier());
-}
-
 #endif
 
 WebExtensionAPIEvent& WebExtensionAPINotifications::onClicked()
@@ -209,54 +164,6 @@ WebExtensionAPIEvent& WebExtensionAPINotifications::onButtonClicked()
 
     return *m_onButtonClicked;
 }
-
-WebExtensionAPIEvent& WebExtensionAPINotifications::onClosed()
-{
-    // Documentation: https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/notifications/onClosed
-
-    if (!m_onClosed)
-        lazyInitialize(m_onClosed, WebExtensionAPIEvent::create(*this, WebExtensionEventListenerType::NotificationsOnClosed));
-
-    return *m_onClosed;
-}
-
-#if ENABLE(WK_WEB_EXTENSIONS_NOTIFICATIONS)
-
-void WebExtensionContextProxy::dispatchNotificationsClickedEvent(const String& identifier)
-{
-    // Documentation: https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/notifications/onClicked
-
-    RetainPtr nsIdentifier = identifier.createNSString();
-    enumerateFramesAndNamespaceObjects([&](auto& frame, auto& namespaceObject) {
-        RefPtr coreFrame = frame.coreLocalFrame();
-        WebCore::UserGestureIndicator gestureIndicator(WebCore::IsProcessingUserGesture::Yes, protect(coreFrame ? coreFrame->document() : nullptr));
-        namespaceObject.notifications().onClicked().invokeListenersWithArgument(nsIdentifier.get());
-    });
-}
-
-void WebExtensionContextProxy::dispatchNotificationsButtonClickedEvent(const String& identifier, uint64_t buttonIndex)
-{
-    // Documentation: https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/notifications/onButtonClicked
-
-    RetainPtr nsIdentifier = identifier.createNSString();
-    enumerateFramesAndNamespaceObjects([&](auto& frame, auto& namespaceObject) {
-        RefPtr coreFrame = frame.coreLocalFrame();
-        WebCore::UserGestureIndicator gestureIndicator(WebCore::IsProcessingUserGesture::Yes, protect(coreFrame ? coreFrame->document() : nullptr));
-        namespaceObject.notifications().onButtonClicked().invokeListenersWithArgument(nsIdentifier.get(), @(buttonIndex));
-    });
-}
-
-void WebExtensionContextProxy::dispatchNotificationsClosedEvent(const String& identifier, bool byUser)
-{
-    // Documentation: https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/notifications/onClosed
-
-    RetainPtr nsIdentifier = identifier.createNSString();
-    enumerateNamespaceObjects([&](auto& namespaceObject) {
-        namespaceObject.notifications().onClosed().invokeListenersWithArgument(nsIdentifier.get(), @(byUser));
-    });
-}
-
-#endif
 
 } // namespace WebKit
 

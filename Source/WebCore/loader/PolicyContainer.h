@@ -28,7 +28,6 @@
 #include <WebCore/ContentSecurityPolicyResponseHeaders.h>
 #include <WebCore/CrossOriginEmbedderPolicy.h>
 #include <WebCore/CrossOriginOpenerPolicy.h>
-#include <WebCore/DocumentIsolationPolicy.h>
 #include <WebCore/IPAddressSpace.h>
 #include <WebCore/ReferrerPolicy.h>
 
@@ -40,7 +39,6 @@ struct PolicyContainer {
     ContentSecurityPolicyResponseHeaders contentSecurityPolicyResponseHeaders;
     CrossOriginEmbedderPolicy crossOriginEmbedderPolicy;
     CrossOriginOpenerPolicy crossOriginOpenerPolicy;
-    DocumentIsolationPolicy documentIsolationPolicy = DocumentIsolationPolicy::None;
     ReferrerPolicy referrerPolicy = ReferrerPolicy::Default;
     IPAddressSpace ipAddressSpace = IPAddressSpace::Public;
 

@@ -564,7 +564,6 @@ WEBDRIVER_BIDI_PROTOCOL_INPUT_FILES = \
     $(WebKit2)/UIProcess/Automation/protocol/BidiBrowser.json \
     $(WebKit2)/UIProcess/Automation/protocol/BidiBrowsingContext.json \
     $(WebKit2)/UIProcess/Automation/protocol/BidiDigitalCredentials.json \
-    $(WebKit2)/UIProcess/Automation/protocol/BidiInput.json \
     $(WebKit2)/UIProcess/Automation/protocol/BidiLog.json \
     $(WebKit2)/UIProcess/Automation/protocol/BidiPermissions.json \
     $(WebKit2)/UIProcess/Automation/protocol/BidiScript.json \
@@ -742,6 +741,7 @@ SERIALIZATION_DESCRIPTION_FILES = \
 	Shared/Cocoa/CoreIPCPKShippingMethod.serialization.in \
 	Shared/Cocoa/CoreIPCPlist.serialization.in \
 	Shared/Cocoa/CoreIPCPresentationIntent.serialization.in \
+	Shared/Cocoa/CoreIPCSecureCoding.serialization.in \
 	Shared/Cocoa/CoreIPCString.serialization.in \
 	Shared/Cocoa/CoreIPCStringSet.serialization.in \
 	Shared/Cocoa/CoreIPCURL.serialization.in \
@@ -861,7 +861,6 @@ SERIALIZATION_DESCRIPTION_FILES = \
 	Shared/WebCompiledContentRuleListData.serialization.in \
 	Shared/ViewWindowCoordinates.serialization.in \
 	Shared/VisibleContentRectUpdateInfo.serialization.in \
-	Shared/VolumetricSceneContentContext.serialization.in \
 	Shared/WTFArgumentCoders.serialization.in \
 	Shared/WebBackForwardListCounts.serialization.in \
 	Shared/WebContextMenuItemData.serialization.in \

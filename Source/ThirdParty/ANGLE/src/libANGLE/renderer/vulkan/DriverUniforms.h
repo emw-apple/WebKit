@@ -51,7 +51,6 @@ void UpdateAtomicCounterBufferOffset(vk::Renderer *renderer,
         renderer->getPhysicalDeviceProperties().limits.minStorageBufferOffsetAlignment;
 
     ASSERT(atomicCounterBufferCount <= offsetsOut.size() * 4);
-    std::fill(offsetsOut.begin(), offsetsOut.end(), 0);
 
     for (uint32_t bufferIndex = 0; bufferIndex < atomicCounterBufferCount; ++bufferIndex)
     {

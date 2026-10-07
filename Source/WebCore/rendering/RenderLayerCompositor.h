@@ -363,7 +363,6 @@ public:
     float contentsScaleMultiplierForNewTiles(const GraphicsLayer*) const override;
     float pageScaleFactor() const override;
     float zoomedOutPageScaleFactor() const override;
-    bool delegatesScaling() const override;
     FloatSize enclosingFrameViewVisibleSize() const override;
     void didChangePlatformLayerForLayer(const GraphicsLayer*) override { }
 
@@ -425,7 +424,6 @@ public:
     const Color& rootExtendedBackgroundColor() const LIFETIME_BOUND { return m_rootExtendedBackgroundColor; }
 
     void updateRootContentLayerClipping();
-    void updateRootContentsLayerAppliesPageScale();
 
     void setRootElementCapturedInViewTransition(bool);
 
@@ -472,7 +470,7 @@ private:
     bool updateExplicitBacking(RenderLayer&, RequiresCompositingData&, BackingRequired = BackingRequired::Unknown);
     bool updateReflectionCompositingState(RenderLayer&, const RenderLayer* compositingAncestor, RequiresCompositingData&);
 
-    template<typename ApplyFunctionType> void applyToCompositedLayerIncludingDescendants(RenderLayer&, NOESCAPE const ApplyFunctionType&);
+    template<typename ApplyFunctionType> void applyToCompositedLayerIncludingDescendants(RenderLayer&, const ApplyFunctionType&);
 
     // Repaint this and its child layers.
     void recursiveRepaintLayer(RenderLayer&);

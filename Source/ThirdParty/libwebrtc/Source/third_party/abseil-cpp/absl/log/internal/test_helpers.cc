@@ -16,13 +16,6 @@
 
 #include <csignal>
 
-#include "gtest/gtest.h"
-#include "absl/base/config.h"
-#include "absl/base/log_severity.h"
-#include "absl/log/globals.h"
-#include "absl/log/initialize.h"
-#include "absl/log/internal/globals.h"
-
 #ifdef __Fuchsia__
 #include <zircon/syscalls.h>
 #endif
@@ -30,6 +23,13 @@
 #if defined(ABSL_HAVE_ALARM)
 #include <signal.h>
 #endif
+
+#include "gtest/gtest.h"
+#include "absl/base/config.h"
+#include "absl/base/log_severity.h"
+#include "absl/log/globals.h"
+#include "absl/log/initialize.h"
+#include "absl/log/internal/globals.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

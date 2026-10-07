@@ -11,7 +11,6 @@
 #include "modules/rtp_rtcp/source/rtcp_packet/fir.h"
 
 #include <cstdint>
-#include <tuple>
 
 #include "rtc_base/buffer.h"
 #include "test/gmock.h"
@@ -23,6 +22,7 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::make_tuple;
 using webrtc::rtcp::Fir;
 
 namespace webrtc {
@@ -55,7 +55,7 @@ TEST(RtcpPacketFirTest, Create) {
 
   Buffer packet = fir.Build();
 
-  EXPECT_THAT(std::make_tuple(packet.data(), packet.size()),
+  EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kPacket));
 }
 

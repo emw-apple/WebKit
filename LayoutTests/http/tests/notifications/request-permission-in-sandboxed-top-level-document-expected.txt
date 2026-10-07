@@ -1,2 +1,0 @@
-PASS: a sandboxed top level document was prompted for notification permission without crashing the UI process
-

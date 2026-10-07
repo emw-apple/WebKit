@@ -11,9 +11,7 @@
 #ifndef INCLUDE_LIBYUV_COMPARE_ROW_H_
 #define INCLUDE_LIBYUV_COMPARE_ROW_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include "libyuv/basic_types.h"
 #include "libyuv/cpu_support.h"
 
 #ifdef __cplusplus

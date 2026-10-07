@@ -93,7 +93,7 @@ static Ref<SharedCursor> loadCursorByName(const char* name, int x, int y)
 {
     IntPoint hotSpot(x, y);
     Ref cursorImage = ImageAdapter::loadPlatformResource(name);
-    if (cursorImage->hasSomethingToDraw())
+    if (!cursorImage->isNull())
         return createSharedCursor(cursorImage.ptr(), hotSpot);
     return loadSharedCursor(0, IDC_ARROW);
 }
@@ -220,7 +220,7 @@ void Cursor::ensurePlatformCursor() const
         m_platformCursor = loadCursorByName("zoomOutCursor", 7, 7);
         break;
     case Type::Custom:
-        if (!m_image->hasSomethingToDraw())
+        if (m_image->isNull())
             m_platformCursor = loadSharedCursor(0, IDC_ARROW);
         else
             m_platformCursor = createSharedCursor(m_image.get(), m_hotSpot);

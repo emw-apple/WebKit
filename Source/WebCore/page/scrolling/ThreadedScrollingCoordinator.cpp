@@ -80,14 +80,14 @@ WheelEventHandlingResult ThreadedScrollingCoordinator::handleWheelEventForScroll
     ASSERT(page());
     ASSERT(scrollingTree());
 
-    RefPtr<ThreadedScrollingTree> threadedScrollingTree = downcast<ThreadedScrollingTree>(scrollingTree());
-    if (threadedScrollingTree->willWheelEventStartSwipeGesture(wheelEvent))
+    if (scrollingTree()->willWheelEventStartSwipeGesture(wheelEvent))
         return WheelEventHandlingResult::unhandled();
 
     LOG_WITH_STREAM(Scrolling, stream << "ThreadedScrollingCoordinator::handleWheelEventForScrolling " << wheelEvent << " - sending event to scrolling thread, node " << targetNodeID << " gestureState " << gestureState);
 
     auto deferrer = WheelEventTestMonitorCompletionDeferrer { page()->wheelEventTestMonitor().get(), targetNodeID, WheelEventTestMonitor::DeferReason::PostMainThreadWheelEventHandling };
 
+    RefPtr<ThreadedScrollingTree> threadedScrollingTree = downcast<ThreadedScrollingTree>(scrollingTree());
     ScrollingThread::dispatch([threadedScrollingTree, wheelEvent, targetNodeID, gestureState, deferrer = WTF::move(deferrer)] {
         threadedScrollingTree->handleWheelEventAfterMainThread(wheelEvent, targetNodeID, gestureState);
     });
@@ -126,14 +126,13 @@ void ThreadedScrollingCoordinator::willStartRenderingUpdate()
 
 void ThreadedScrollingCoordinator::didCompleteRenderingUpdate()
 {
-    RefPtr threadedScrollingTree = downcast<ThreadedScrollingTree>(scrollingTree());
-    threadedScrollingTree->didCompleteRenderingUpdate();
+    downcast<ThreadedScrollingTree>(scrollingTree())->didCompleteRenderingUpdate();
 
     // When scroll animations are running on the scrolling thread, we need something to continually tickle the
     // DisplayRefreshMonitor so that ThreadedScrollingTree::displayDidRefresh() will get called to service those animations.
     // We can achieve this by scheduling a rendering update; this won't cause extra work, since scrolling thread scrolls
     // will end up triggering these anyway.
-    if (threadedScrollingTree->hasNodeWithActiveScrollAnimations())
+    if (scrollingTree()->hasNodeWithActiveScrollAnimations())
         scheduleRenderingUpdate();
 }
 
@@ -150,7 +149,7 @@ void ThreadedScrollingCoordinator::startMonitoringWheelEvents(bool clearLatching
     // setIsMonitoringWheelEvents() is called on the root node via AsyncScrollingCoordinator::frameViewLayoutUpdated().
 
     if (clearLatchingState)
-        protect(scrollingTree())->clearLatchedNode();
+        scrollingTree()->clearLatchedNode();
 }
 
 } // namespace WebCore

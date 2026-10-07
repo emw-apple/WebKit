@@ -39,6 +39,7 @@
 #include "SVGElementTypeHelpers.h"
 #include "SVGFontElement.h"
 #include "SVGFontFaceSrcElement.h"
+#include "SVGGlyphElement.h"
 #include "SVGNames.h"
 #include "SVGPropertyOwnerRegistry.h"
 #include "StyleDocumentScope.h"
@@ -54,7 +55,7 @@ WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGFontFaceElement);
 using namespace SVGNames;
 
 inline SVGFontFaceElement::SVGFontFaceElement(const QualifiedName& tagName, Document& document)
-    : SVGElement(tagName, document, PropertyRegistry::singleton())
+    : SVGElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
     , m_fontFaceRule(StyleRuleFontFace::create(MutableStyleProperties::create(HTMLStandardMode)))
 {
     LOG(Fonts, "SVGFontFaceElement %p ctor", this);

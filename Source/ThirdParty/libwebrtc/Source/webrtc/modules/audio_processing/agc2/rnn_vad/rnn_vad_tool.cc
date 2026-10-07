@@ -12,7 +12,6 @@
 #include <cstddef>
 #include <cstdio>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "absl/flags/flag.h"
@@ -37,10 +36,7 @@ namespace test {
 
 int main(int argc, char* argv[]) {
   absl::ParseCommandLine(argc, argv);
-  LoggingConfig config;
-  config.set_min_severity(LS_INFO);
-  config.set_debug_severity(LS_INFO);
-  InitializeLogging(std::move(config));
+  LogMessage::LogToDebug(LS_INFO);
 
   // Open wav input file and check properties.
   const std::string input_wav_file = absl::GetFlag(FLAGS_i);

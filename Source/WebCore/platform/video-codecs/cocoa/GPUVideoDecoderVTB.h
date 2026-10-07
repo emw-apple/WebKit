@@ -30,32 +30,36 @@
 #include "VideoDecoderVTBSession.h"
 #include <WebCore/GPUVideoDecoder.h>
 #include <wtf/BlockPtr.h>
-#include <wtf/TZoneMalloc.h>
 
 namespace WebCore {
 
 class VideoInfo;
 class GPUVideoDecoderVTBQueue;
 
-class GPUVideoDecoderVTB final : public GPUVideoDecoder {
-    WTF_MAKE_TZONE_ALLOCATED(GPUVideoDecoderVTB);
+class GPUVideoDecoderVTB : public GPUVideoDecoder {
 public:
-    GPUVideoDecoderVTB(GPUVideoDecoderCallback, Ref<WorkQueue>&&, std::optional<PlatformVideoColorSpace>&&);
     ~GPUVideoDecoderVTB();
+
+protected:
+    GPUVideoDecoderVTB(GPUVideoDecoderCallback, Ref<WorkQueue>&&, std::optional<PlatformVideoColorSpace>&&);
+
+    int32_t decodeFrameInternal(int64_t timeStamp, std::span<const uint8_t> data);
+    void setVideoInfo(Ref<VideoInfo>&&, uint8_t reorderSize = 0);
+
+    uint16_t width() const WTF_REQUIRES_CAPABILITY(queue()) { return m_width; }
+    uint16_t height() const WTF_REQUIRES_CAPABILITY(queue()) { return m_height; }
+    void setFrameSize(uint16_t width, uint16_t height) final;
+
+    WorkQueue& queue() const { return m_workQueue; }
 
 private:
     void flush() final;
-    void setFormat(std::span<const uint8_t>, uint16_t width, uint16_t height, RefPtr<VideoInfo>&&) final;
-    int32_t decodeFrame(int64_t timeStamp, std::span<const uint8_t>, RefPtr<VideoInfo>&&) final;
-    void setFrameSize(uint16_t width, uint16_t height) final;
+    void setFormat(std::span<const uint8_t>, uint16_t width, uint16_t height) override;
     void colorSpaceOverrideChanged() final;
 
-    int32_t decodeFrameInternal(int64_t timeStamp, std::span<const uint8_t> data);
-    void setVideoInfo(Ref<VideoInfo>&&);
+    virtual bool shouldOverrideColorSpaceAttachments() const { return false; }
 
     void updateFormat(const VideoInfo&);
-
-    WorkQueue& queue() const { return m_workQueue; }
 
     const Ref<WorkQueue> m_workQueue;
     const BlockPtr<void(CVPixelBufferRef, int64_t, int64_t, bool)> m_callback;
@@ -66,7 +70,7 @@ private:
     RefPtr<GPUVideoDecoderVTBQueue> m_queue WTF_GUARDED_BY_CAPABILITY(queue());
     uint16_t m_width WTF_GUARDED_BY_CAPABILITY(queue()) { 0 };
     uint16_t m_height WTF_GUARDED_BY_CAPABILITY(queue()) { 0 };
-    uint8_t m_reorderQueueMaxSize WTF_GUARDED_BY_CAPABILITY(queue()) { 0 };
+    uint8_t m_reorderSize WTF_GUARDED_BY_CAPABILITY(queue()) { 0 };
 };
 
 }

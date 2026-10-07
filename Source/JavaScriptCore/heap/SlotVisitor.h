@@ -177,7 +177,7 @@ public:
     
     void NODELETE optimizeForStoppedMutator();
     
-    JS_EXPORT_PRIVATE void didRace(const VisitRaceKey&) final;
+    void didRace(const VisitRaceKey&) final;
     inline void didRace(JSCell* cell, const char* reason); // Defined in SlotVisitorInlines.h
     
     void visitAsConstraint(const JSCell*) final;
@@ -222,7 +222,7 @@ private:
     bool didReachTermination(const AbstractLocker&);
 
     template<typename Func>
-    IterationStatus forEachMarkStack(NOESCAPE const Func&);
+    IterationStatus forEachMarkStack(const Func&);
 
     MarkStackArray& NODELETE correspondingGlobalStack(MarkStackArray&);
 

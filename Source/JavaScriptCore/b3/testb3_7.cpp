@@ -1010,7 +1010,7 @@ void testOptimizeMaterialization()
 }
 
 template<typename Func>
-void generateLoop(Procedure& proc, NOESCAPE const Func& func)
+void generateLoop(Procedure& proc, const Func& func)
 {
     BasicBlock* root = proc.addBlock();
     BasicBlock* loop = proc.addBlock();
@@ -1048,7 +1048,7 @@ static std::array<int, 100> NODELETE makeArrayForLoops()
 }
 
 template<typename Func>
-void generateLoopNotBackwardsDominant(Procedure& proc, std::array<int, 100>& array, NOESCAPE const Func& func)
+void generateLoopNotBackwardsDominant(Procedure& proc, std::array<int, 100>& array, const Func& func)
 {
     BasicBlock* root = proc.addBlock();
     BasicBlock* loopHeader = proc.addBlock();
@@ -1848,8 +1848,7 @@ void testWasmBoundsCheck(unsigned offset)
     auto arguments = cCallArgumentValues<int32_t>(proc, root);
     root->appendNew<WasmBoundsCheckValue>(proc, Origin(), pinned, arguments[0], offset);
     Value* result = root->appendNew<Const32Value>(proc, Origin(), 0x42);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), result);
+    root->appendNewControlValue(proc, Return, Origin(), result);
 
     auto code = compileProc(proc);
     uint32_t bound = 2 + offset;
@@ -1882,13 +1881,13 @@ void testWasmAddress()
     Value* loopCountValue = arguments[0];
     Value* valueToStore = arguments[1];
     UpsilonValue* beginUpsilon = root->appendNew<UpsilonValue>(proc, Origin(), root->appendNew<Const32Value>(proc, Origin(), 0));
-    root->setSuccessors(header);
-    root->appendNew<Value>(proc, Jump, Origin());
+    root->appendNewControlValue(proc, Jump, Origin(), header);
 
     // Header
     Value* indexPhi = header->appendNew<Value>(proc, Phi, Int32, Origin());
-    header->setSuccessors(body, continuation);
-    header->appendNew<Value>(proc, Branch, Origin(), header->appendNew<Value>(proc, Below, Origin(), indexPhi, loopCountValue));
+    header->appendNewControlValue(proc, Branch, Origin(),
+        header->appendNew<Value>(proc, Below, Origin(), indexPhi, loopCountValue),
+        body, continuation);
 
     // Body
     Value* pointer = body->appendNew<Value>(proc, Mul, Origin(), indexPhi,
@@ -1899,12 +1898,10 @@ void testWasmAddress()
     UpsilonValue* incUpsilon = body->appendNew<UpsilonValue>(proc, Origin(),
         body->appendNew<Value>(proc, Add, Origin(), indexPhi,
             body->appendNew<Const32Value>(proc, Origin(), 1)));
-    body->setSuccessors(header);
-    body->appendNew<Value>(proc, Jump, Origin());
+    body->appendNewControlValue(proc, Jump, Origin(), header);
 
     // Continuation
-    continuation->clearSuccessors();
-    continuation->appendNew<Value>(proc, Return, Origin());
+    continuation->appendNewControlValue(proc, Return, Origin());
 
     beginUpsilon->setPhi(indexPhi);
     incUpsilon->setPhi(indexPhi);
@@ -1997,16 +1994,17 @@ void testWasmAddressScaledIndexWithLockedShlChild()
     Value* pointer = root->appendNew<Value>(
         proc, Shl, Origin(), masked,
         root->appendNew<Const32Value>(proc, Origin(), 2));
-    root->setSuccessors(FrequentedBlock(loadBlock), FrequentedBlock(bailBlock));
-    root->appendNew<Value>(proc, Branch, Origin(), arguments[1]);
+    root->appendNewControlValue(proc, Branch, Origin(), arguments[1], FrequentedBlock(loadBlock), FrequentedBlock(bailBlock));
 
-    loadBlock->clearSuccessors();
-    loadBlock->appendNew<Value>(proc, Return, Origin(), loadBlock->appendNew<MemoryValue>(
+    loadBlock->appendNewControlValue(
+        proc, Return, Origin(),
+        loadBlock->appendNew<MemoryValue>(
             proc, Load, Int32, Origin(),
             loadBlock->appendNew<WasmAddressValue>(proc, Origin(), pointer, pinnedGPR), 0));
 
-    bailBlock->clearSuccessors();
-    bailBlock->appendNew<Value>(proc, Return, Origin(), bailBlock->appendNew<Const32Value>(proc, Origin(), -1));
+    bailBlock->appendNewControlValue(
+        proc, Return, Origin(),
+        bailBlock->appendNew<Const32Value>(proc, Origin(), -1));
 
     auto code = compileProc(proc);
     int32_t values[] = { 11, 22, 33, 44, 55, 66, 77, 88 };
@@ -2035,8 +2033,7 @@ void testWasmAddressWithOffset()
     Value* pointer = offset;
     pointer = root->appendNew<Value>(proc, ZExt32, Origin(), offset);
     root->appendNew<MemoryValue>(proc, Store8, Origin(), valueToStore, root->appendNew<WasmAddressValue>(proc, Origin(), pointer, pinnedGPR), 1);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     invoke<void>(*code, 1, numToStore, values.span().data());
@@ -2084,8 +2081,7 @@ void NODELETE testFastTLSStore()
             jit.storeToTLSPtr(scratch, fastTLSOffsetForKey(WTF_TESTING_KEY));
         });
 
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     compileAndRun<void>(proc);
     CHECK_EQ(std::bit_cast<uintptr_t>(_pthread_getspecific_direct(WTF_TESTING_KEY)), static_cast<uintptr_t>(0xdead));
@@ -2122,8 +2118,9 @@ void testDoubleLiteralComparison(double a, double b)
         Value* valueC = root->appendNew<ConstDoubleValue>(proc, Origin(), 0.0);
         Value* valueAsFloat = root->appendNew<Value>(proc, DoubleToFloat, Origin(), valueC);
 
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(proc, BitAnd, Origin(),
+        root->appendNewControlValue(
+            proc, Return, Origin(),
+                root->appendNew<Value>(proc, BitAnd, Origin(),
                     root->appendNew<Value>(proc, std::get<0>(test), Origin(), valueA, valueB),
                     root->appendNew<Value>(proc, Equal, Origin(), valueAsFloat, valueAsFloat)));
 
@@ -2143,8 +2140,8 @@ void testFloatEqualOrUnorderedFolding()
             Value* constA = root->appendNew<ConstFloatValue>(proc, Origin(), a);
             Value* constB = root->appendNew<ConstFloatValue>(proc, Origin(), b);
 
-            root->clearSuccessors();
-            root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(
+            root->appendNewControlValue(proc, Return, Origin(),
+                root->appendNew<Value>(
                     proc, EqualOrUnordered, Origin(),
                     constA,
                     constB));
@@ -2174,8 +2171,8 @@ void testFloatEqualOrUnorderedFoldingNaN()
         if (i % 2)
             std::swap(a, b);
         ++i;
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(proc, EqualOrUnordered, Origin(), a, b));
+        root->appendNewControlValue(proc, Return, Origin(),
+            root->appendNew<Value>(proc, EqualOrUnordered, Origin(), a, b));
         CHECK(!!compileAndRun<int32_t>(proc, static_cast<double>(1.0)));
     }
 }
@@ -2189,8 +2186,8 @@ void testFloatEqualOrUnorderedDontFold()
         auto arguments = cCallArgumentValues<double>(proc, root);
         Value* constA = root->appendNew<ConstFloatValue>(proc, Origin(), a);
         Value* b = root->appendNew<Value>(proc, DoubleToFloat, Origin(), arguments[0]);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(
+        root->appendNewControlValue(proc, Return, Origin(),
+            root->appendNew<Value>(
                 proc, EqualOrUnordered, Origin(), constA, b));
 
         auto code = compileProc(proc);
@@ -2261,15 +2258,14 @@ void testShuffleDoesntTrashCalleeSaves()
         ptr,
         root->appendNew<ConstPtrValue>(proc, Origin(), 0));
 
-    root->setSuccessors(
-        FrequentedBlock(likely, FrequencyClass::Normal),
-        FrequentedBlock(unlikely, FrequencyClass::Rare));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(),
+        condition,
+        FrequentedBlock(likely, FrequencyClass::Normal), FrequentedBlock(unlikely, FrequencyClass::Rare));
 
     // Never executes.
     Value* const42 = likely->appendNew<Const32Value>(proc, Origin(), 42);
-    likely->clearSuccessors();
-    likely->appendNew<Value>(proc, Return, Origin(), const42);
+    likely->appendNewControlValue(proc, Return, Origin(), const42);
 
     // Always executes.
     Value* constNumber = unlikely->appendNew<Const32Value>(proc, Origin(), 0x1);
@@ -2291,8 +2287,8 @@ void testShuffleDoesntTrashCalleeSaves()
     voidPatch->appendSomeRegister(arg6);
     voidPatch->setGenerator([=] (CCallHelpers&, const StackmapGenerationParams&) { });
 
-    unlikely->clearSuccessors();
-    unlikely->appendNew<Value>(proc, Return, Origin(), unlikely->appendNew<MemoryValue>(proc, Load, Int32, Origin(), ptr));
+    unlikely->appendNewControlValue(proc, Return, Origin(),
+        unlikely->appendNew<MemoryValue>(proc, Load, Int32, Origin(), ptr));
 
     int32_t* inputPtr = static_cast<int32_t*>(fastMalloc(sizeof(int32_t)));
     *inputPtr = 48;
@@ -2363,8 +2359,7 @@ void testReportUsedRegistersLateUseFollowedByEarlyDefDoesNotMarkUseAsDead()
         });
     }
 
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     compileAndRun<void>(proc);
 }
@@ -2381,13 +2376,13 @@ void testInfiniteLoopDoesntCauseBadHoisting()
     auto arguments = cCallArgumentValues<intptr_t>(proc, root);
 
     Value* arg = arguments[0];
-    root->setSuccessors(header);
-    root->appendNew<Value>(proc, Jump, Origin());
+    root->appendNewControlValue(proc, Jump, Origin(), header);
 
-    header->setSuccessors(header, loadBlock);
-    header->appendNew<Value>(proc, Branch, Origin(), header->appendNew<Value>(proc, Equal, Origin(),
+    header->appendNewControlValue(
+        proc, Branch, Origin(),
+        header->appendNew<Value>(proc, Equal, Origin(),
             arg,
-            header->appendNew<ConstPtrValue>(proc, Origin(), 10)));
+            header->appendNew<ConstPtrValue>(proc, Origin(), 10)), header, loadBlock);
 
     PatchpointValue* patchpoint = loadBlock->appendNew<PatchpointValue>(proc, Void, Origin());
     patchpoint->effects = Effects::none();
@@ -2401,13 +2396,13 @@ void testInfiniteLoopDoesntCauseBadHoisting()
 
     Value* badLoad = loadBlock->appendNew<MemoryValue>(proc, Load, Int64, Origin(), arg, 0);
 
-    loadBlock->setSuccessors(header, postLoadBlock);
-    loadBlock->appendNew<Value>(proc, Branch, Origin(), loadBlock->appendNew<Value>(proc, Equal, Origin(),
+    loadBlock->appendNewControlValue(
+        proc, Branch, Origin(),
+        loadBlock->appendNew<Value>(proc, Equal, Origin(),
             badLoad,
-            loadBlock->appendNew<Const64Value>(proc, Origin(), 45)));
+            loadBlock->appendNew<Const64Value>(proc, Origin(), 45)), header, postLoadBlock);
 
-    postLoadBlock->clearSuccessors();
-    postLoadBlock->appendNew<Value>(proc, Return, Origin(), badLoad);
+    postLoadBlock->appendNewControlValue(proc, Return, Origin(), badLoad);
 
     // The patchpoint early ret() works because we don't have callee saves.
     auto code = compileProc(proc);
@@ -2449,18 +2444,19 @@ void testBackwardsDominatorsWithMultipleBackEdges()
     auto arguments = cCallArgumentValues<intptr_t>(proc, root);
     Value* arg = arguments[0];
 
-    root->setSuccessors(header);
-    root->appendNew<Value>(proc, Jump, Origin());
-    header->setSuccessors(success, failure);
-    header->appendNew<Value>(proc, Branch, Origin(), header->appendNew<Value>(proc, Equal, Origin(), arg,
-        header->appendNew<ConstPtrValue>(proc, Origin(), 10)));
-    success->setSuccessors(header, exit);
-    success->appendNew<Value>(proc, Branch, Origin(), success->appendNew<Value>(proc, Equal, Origin(), arg,
-        success->appendNew<ConstPtrValue>(proc, Origin(), 20)));
-    failure->setSuccessors(header);
-    failure->appendNew<Value>(proc, Jump, Origin());
-    exit->clearSuccessors();
-    exit->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Jump, Origin(), header);
+    header->appendNewControlValue(
+        proc, Branch, Origin(),
+        header->appendNew<Value>(proc, Equal, Origin(), arg,
+            header->appendNew<ConstPtrValue>(proc, Origin(), 10)),
+        success, failure);
+    success->appendNewControlValue(
+        proc, Branch, Origin(),
+        success->appendNew<Value>(proc, Equal, Origin(), arg,
+            success->appendNew<ConstPtrValue>(proc, Origin(), 20)),
+        header, exit);
+    failure->appendNewControlValue(proc, Jump, Origin(), header);
+    exit->appendNewControlValue(proc, Return, Origin());
 
     proc.resetReachability();
 
@@ -2613,8 +2609,7 @@ static void tailDupedTuplePair(unsigned first, double second)
         jit.store64(CCallHelpers::TrustedImm64(std::bit_cast<uint64_t>(second)), CCallHelpers::Address(CCallHelpers::framePointerRegister, params[1].offsetFromFP()));
     });
     root->appendNew<VariableValue>(proc, Set, Origin(), var, patchpoint);
-    root->setSuccessors(FrequentedBlock(truthy), FrequentedBlock(falsey));
-    root->appendNew<Value>(proc, Branch, Origin(), test);
+    root->appendNewControlValue(proc, Branch, Origin(), test, FrequentedBlock(truthy), FrequentedBlock(falsey));
 
     auto addDup = [&] (BasicBlock* block) {
         Value* tuple = block->appendNew<VariableValue>(proc, B3::Get, Origin(), var);
@@ -2658,8 +2653,7 @@ static void tuplePairVariableLoop(unsigned first, uint64_t second)
             jit.move(params[3].gpr(), params[1].gpr());
         });
         root->appendNew<VariableValue>(proc, Set, Origin(), var, patchpoint);
-        root->setSuccessors(body);
-        root->appendNew<Value>(proc, Jump, Origin());
+        root->appendNewControlValue(proc, Jump, Origin(), body);
     }
 
     {
@@ -2683,8 +2677,7 @@ static void tuplePairVariableLoop(unsigned first, uint64_t second)
         });
         body->appendNew<VariableValue>(proc, Set, Origin(), var, patchpoint);
         Value* condition = body->appendNew<ExtractValue>(proc, Origin(), Int32, patchpoint, 0);
-        body->setSuccessors(FrequentedBlock(body), FrequentedBlock(exit));
-        body->appendNew<Value>(proc, Branch, Origin(), condition);
+        body->appendNewControlValue(proc, Branch, Origin(), condition, FrequentedBlock(body), FrequentedBlock(exit));
     }
 
     {
@@ -2729,8 +2722,7 @@ static void tupleNestedLoop(intptr_t first, double second)
         });
         root->appendNew<VariableValue>(proc, Set, Origin(), varOuter, patchpoint);
         root->appendNew<VariableValue>(proc, Set, Origin(), tookInner, root->appendIntConstant(proc, Origin(), Int32, 0));
-        root->setSuccessors(outerLoop);
-        root->appendNew<Value>(proc, Jump, Origin());
+        root->appendNewControlValue(proc, Jump, Origin(), outerLoop);
     }
 
     {
@@ -2753,8 +2745,7 @@ static void tupleNestedLoop(intptr_t first, double second)
         outerLoop->appendNew<VariableValue>(proc, Set, Origin(), varOuter, patchpoint);
         outerLoop->appendNew<VariableValue>(proc, Set, Origin(), varInner, patchpoint);
         Value* condition = outerLoop->appendNew<ExtractValue>(proc, Origin(), Int32, patchpoint, 2);
-        outerLoop->setSuccessors(FrequentedBlock(outerContinuation), FrequentedBlock(innerLoop));
-        outerLoop->appendNew<Value>(proc, Branch, Origin(), condition);
+        outerLoop->appendNewControlValue(proc, Branch, Origin(), condition, FrequentedBlock(outerContinuation), FrequentedBlock(innerLoop));
     }
 
     {
@@ -2776,8 +2767,7 @@ static void tupleNestedLoop(intptr_t first, double second)
         innerLoop->appendNew<VariableValue>(proc, Set, Origin(), varInner, patchpoint);
         Value* condition = innerLoop->appendNew<ExtractValue>(proc, Origin(), Int32, patchpoint, 2);
         innerLoop->appendNew<VariableValue>(proc, Set, Origin(), tookInner, innerLoop->appendIntConstant(proc, Origin(), Int32, 1));
-        innerLoop->setSuccessors(FrequentedBlock(innerLoop), FrequentedBlock(outerLoop));
-        innerLoop->appendNew<Value>(proc, Branch, Origin(), condition);
+        innerLoop->appendNewControlValue(proc, Branch, Origin(), condition, FrequentedBlock(innerLoop), FrequentedBlock(outerLoop));
     }
 
     {
@@ -2785,8 +2775,7 @@ static void tupleNestedLoop(intptr_t first, double second)
         Value* first = outerContinuation->appendNew<ExtractValue>(proc, Origin(), Int32, tuple, 0);
         Value* second = outerContinuation->appendNew<ExtractValue>(proc, Origin(), Double, tuple, 1);
         Value* result = outerContinuation->appendNew<Value>(proc, Add, Origin(), second, outerContinuation->appendNew<Value>(proc, IToD, Origin(), first));
-        outerContinuation->clearSuccessors();
-        outerContinuation->appendNew<Value>(proc, Return, Origin(), result);
+        outerContinuation->appendNewControlValue(proc, Return, Origin(), result);
     }
 
     proc.resetReachability();
@@ -2836,8 +2825,7 @@ static void testFMaxMin()
         Value* a = arguments[0];
         Value* b = arguments[1];
         Value* result = root->appendNew<Value>(proc, max ? FMax : FMin, Origin(), a, b);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), result);
+        root->appendNewControlValue(proc, Return, Origin(), result);
         auto code = compileProc(proc);
         return invoke<FloatType>(*code, arg1, arg2);
     };
@@ -2855,8 +2843,7 @@ static void testFMaxMin()
             b = root->appendNew<ConstDoubleValue>(proc, Origin(), arg2);
         }
         Value* result = root->appendNew<Value>(proc, max ? FMax : FMin, Origin(), a, b);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), result);
+        root->appendNewControlValue(proc, Return, Origin(), result);
         auto code = compileProc(proc);
         return invoke<FloatType>(*code, arg1, arg2);
     };
@@ -2938,8 +2925,7 @@ void testVectorOrConstants(v128_t lhs, v128_t rhs)
         Value* rhsConstant = root->appendNew<Const128Value>(proc, Origin(), rhs);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorOr, B3::V128, SIMDLane::v128, SIMDSignMode::None, lhsConstant, rhsConstant);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         compileAndRun<void>(proc, &vector);
         CHECK(bitEquals(vector, vectorOr(lhs, rhs)));
@@ -2956,8 +2942,7 @@ void testVectorOrConstants(v128_t lhs, v128_t rhs)
         Value* first = root->appendNew<SIMDValue>(proc, Origin(), VectorOr, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, lhsConstant);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorOr, B3::V128, SIMDLane::v128, SIMDSignMode::None, first, rhsConstant);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
         auto code = compileProc(proc);
 
         for (auto& operand : v128Operands()) {
@@ -2979,8 +2964,7 @@ void testVectorOrSelf()
     Value* input = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorOr, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, input);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -3006,8 +2990,7 @@ void testVectorXorOrAllOnesToVectorAndXor()
     Value* result1 = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, input1, constant);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorOr, B3::V128, SIMDLane::v128, SIMDSignMode::None, result0, result1);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -3036,8 +3019,7 @@ void testVectorXorAndAllOnesToVectorOrXor()
     Value* result1 = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, input1, constant);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAnd, B3::V128, SIMDLane::v128, SIMDSignMode::None, result0, result1);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -3065,8 +3047,7 @@ void testVectorXorOrAllOnesConstantToVectorAndXor(v128_t constant)
     Value* result0 = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, allOnes);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorOr, B3::V128, SIMDLane::v128, SIMDSignMode::None, result0, constant0);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -3091,8 +3072,7 @@ void testVectorXorAndAllOnesConstantToVectorOrXor(v128_t constant)
     Value* result0 = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, allOnes);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAnd, B3::V128, SIMDLane::v128, SIMDSignMode::None, result0, constant0);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -3116,8 +3096,7 @@ void testVectorAndConstants(v128_t lhs, v128_t rhs)
         Value* rhsConstant = root->appendNew<Const128Value>(proc, Origin(), rhs);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAnd, B3::V128, SIMDLane::v128, SIMDSignMode::None, lhsConstant, rhsConstant);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         compileAndRun<void>(proc, &vector);
         CHECK(bitEquals(vector, vectorAnd(lhs, rhs)));
@@ -3134,8 +3113,7 @@ void testVectorAndConstants(v128_t lhs, v128_t rhs)
         Value* first = root->appendNew<SIMDValue>(proc, Origin(), VectorAnd, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, lhsConstant);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAnd, B3::V128, SIMDLane::v128, SIMDSignMode::None, first, rhsConstant);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
         auto code = compileProc(proc);
 
         for (auto& operand : v128Operands()) {
@@ -3157,8 +3135,7 @@ void testVectorAndSelf()
     Value* input = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAnd, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, input);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -3182,8 +3159,7 @@ void testVectorXorConstants(v128_t lhs, v128_t rhs)
         Value* rhsConstant = root->appendNew<Const128Value>(proc, Origin(), rhs);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, lhsConstant, rhsConstant);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         compileAndRun<void>(proc, &vector);
         CHECK(bitEquals(vector, vectorXor(lhs, rhs)));
@@ -3200,8 +3176,7 @@ void testVectorXorConstants(v128_t lhs, v128_t rhs)
         Value* first = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, lhsConstant);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, first, rhsConstant);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
         auto code = compileProc(proc);
 
         for (auto& operand : v128Operands()) {
@@ -3223,8 +3198,7 @@ void testVectorXorSelf()
     Value* input = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, input);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -3250,8 +3224,7 @@ void testVectorAndConstantConstant(v128_t lhs, v128_t rhs)
         Value* first = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, firstConstant);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAnd, B3::V128, SIMDLane::v128, SIMDSignMode::None, first, secondConstant);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
         auto code = compileProc(proc);
 
         for (auto& operand : v128Operands()) {
@@ -3272,8 +3245,7 @@ void testVectorAndConstantConstant(v128_t lhs, v128_t rhs)
         Value* first = root->appendNew<SIMDValue>(proc, Origin(), VectorOr, B3::V128, SIMDLane::v128, SIMDSignMode::None, input, firstConstant);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAnd, B3::V128, SIMDLane::v128, SIMDSignMode::None, first, secondConstant);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
         auto code = compileProc(proc);
 
         for (auto& operand : v128Operands()) {
@@ -3301,8 +3273,7 @@ void testVectorFmulByElementFloat()
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorMul, B3::V128, SIMDLane::f32x4, SIMDSignMode::None, input1, dup);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address2);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 
@@ -3366,8 +3337,7 @@ void testVectorFmulByElementDouble()
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorMul, B3::V128, SIMDLane::f64x2, SIMDSignMode::None, input1, dup);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address2);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 
@@ -3414,8 +3384,7 @@ void testVectorExtractLane0Float()
 
     Value* address0 = arguments[0];
     Value* input0 = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address0);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<SIMDValue>(proc, Origin(), VectorExtractLane, B3::Float, SIMDLane::f32x4, SIMDSignMode::None, static_cast<uint8_t>(0), input0));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<SIMDValue>(proc, Origin(), VectorExtractLane, B3::Float, SIMDLane::f32x4, SIMDSignMode::None, static_cast<uint8_t>(0), input0));
 
     auto code = compileProc(proc);
 
@@ -3447,8 +3416,7 @@ void testVectorExtractLane0Double()
 
     Value* address0 = arguments[0];
     Value* input0 = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address0);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<SIMDValue>(proc, Origin(), VectorExtractLane, B3::Double, SIMDLane::f64x2, SIMDSignMode::None, static_cast<uint8_t>(0), input0));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<SIMDValue>(proc, Origin(), VectorExtractLane, B3::Double, SIMDLane::f64x2, SIMDSignMode::None, static_cast<uint8_t>(0), input0));
 
     auto code = compileProc(proc);
 
@@ -3504,8 +3472,7 @@ void testVectorMulHigh()
         Value* input1 = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorMulHigh, B3::V128, lane, signMode, input0, input1);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (auto& operand0 : v128Operands()) {
@@ -3560,8 +3527,7 @@ void testVectorMulLow()
         Value* input1 = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorMulLow, B3::V128, lane, signMode, input0, input1);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (auto& operand0 : v128Operands()) {
@@ -3595,8 +3561,7 @@ void testVectorRelaxedMinMax()
         Value* input1 = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), opcode, B3::V128, lane, SIMDSignMode::None, input0, input1);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (auto& operand0 : v128Operands()) {
@@ -3656,8 +3621,7 @@ void testVectorRelaxedQ15Mulr()
     Value* input1 = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorRelaxedQ15Mulr, B3::V128, SIMDLane::i16x8, SIMDSignMode::Signed, input0, input1);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     for (auto& operand0 : v128Operands()) {
@@ -3698,8 +3662,7 @@ void testVectorRelaxedDotI8x16I7x16()
     Value* input1 = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorRelaxedDotI8x16I7x16, B3::V128, SIMDLane::i16x8, SIMDSignMode::Signed, input0, input1);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     for (auto& operand0 : v128Operands()) {
@@ -3751,8 +3714,7 @@ void testVectorRelaxedDotI8x16I7x16Add()
     Value* input2 = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(2 * sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorRelaxedDotI8x16I7x16Add, B3::V128, SIMDLane::i32x4, SIMDSignMode::Signed, input0, input1, input2);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     for (auto& operand0 : v128Operands()) {
@@ -3903,8 +3865,7 @@ void testVectorXorRotateRight64()
         Value* orResult = root->appendNew<SIMDValue>(proc, Origin(), VectorOr, B3::V128, SIMDLane::v128, SIMDSignMode::None, shlResult, shrResult);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), orResult, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 
@@ -3948,8 +3909,7 @@ void testVectorDotProductSplatOne()
     // dot_i16x8_s(input, splat(1)) should become extadd_pairwise
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorDotProduct, B3::V128, SIMDLane::i32x4, SIMDSignMode::Signed, input, ones);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -3977,8 +3937,7 @@ void testVectorDotProductSplatOne()
         Value* onesVal = root2->appendNew<Const128Value>(proc2, Origin(), splatOne);
         Value* res = root2->appendNew<SIMDValue>(proc2, Origin(), VectorDotProduct, B3::V128, SIMDLane::i32x4, SIMDSignMode::Signed, onesVal, inp);
         root2->appendNew<MemoryValue>(proc2, Store, Origin(), res, addr, static_cast<int32_t>(sizeof(v128_t)));
-        root2->clearSuccessors();
-        root2->appendNew<Value>(proc2, Return, Origin());
+        root2->appendNewControlValue(proc2, Return, Origin());
 
         auto code2 = compileProc(proc2);
         invoke<void>(*code2, vectors);
@@ -4010,8 +3969,7 @@ void testVectorXor3()
     Value* xorAB = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, a, b);
     Value* xorABC = root->appendNew<SIMDValue>(proc, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, xorAB, c);
     root->appendNew<MemoryValue>(proc, Store, Origin(), xorABC, address, static_cast<int32_t>(3 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -4038,8 +3996,7 @@ void testVectorXor3()
         Value* xorAB2 = root2->appendNew<SIMDValue>(proc2, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, va, vb);
         Value* result = root2->appendNew<SIMDValue>(proc2, Origin(), VectorXor, B3::V128, SIMDLane::v128, SIMDSignMode::None, vc, xorAB2);
         root2->appendNew<MemoryValue>(proc2, Store, Origin(), result, addr, static_cast<int32_t>(3 * sizeof(v128_t)));
-        root2->clearSuccessors();
-        root2->appendNew<Value>(proc2, Return, Origin());
+        root2->appendNewControlValue(proc2, Return, Origin());
 
         auto code2 = compileProc(proc2);
         invoke<void>(*code2, vectors);
@@ -4061,8 +4018,7 @@ void testVectorUnzipEven()
     Value* b = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorUnzipEven, B3::V128, SIMDLane::i32x4, SIMDSignMode::None, a, b);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     vectors[0].u32x4[0] = 0x11; vectors[0].u32x4[1] = 0x22; vectors[0].u32x4[2] = 0x33; vectors[0].u32x4[3] = 0x44;
@@ -4087,8 +4043,7 @@ void testVectorUnzipOdd()
     Value* b = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorUnzipOdd, B3::V128, SIMDLane::i32x4, SIMDSignMode::None, a, b);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     vectors[0].u32x4[0] = 0x11; vectors[0].u32x4[1] = 0x22; vectors[0].u32x4[2] = 0x33; vectors[0].u32x4[3] = 0x44;
@@ -4113,8 +4068,7 @@ void testVectorZipLower()
     Value* b = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorZipLower, B3::V128, SIMDLane::i32x4, SIMDSignMode::None, a, b);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     vectors[0].u32x4[0] = 0x11; vectors[0].u32x4[1] = 0x22; vectors[0].u32x4[2] = 0x33; vectors[0].u32x4[3] = 0x44;
@@ -4139,8 +4093,7 @@ void testVectorZipHigher()
     Value* b = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorZipHigher, B3::V128, SIMDLane::i32x4, SIMDSignMode::None, a, b);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     vectors[0].u32x4[0] = 0x11; vectors[0].u32x4[1] = 0x22; vectors[0].u32x4[2] = 0x33; vectors[0].u32x4[3] = 0x44;
@@ -4165,8 +4118,7 @@ void testVectorTransposeEven()
     Value* b = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorTransposeEven, B3::V128, SIMDLane::i32x4, SIMDSignMode::None, a, b);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     vectors[0].u32x4[0] = 0x11; vectors[0].u32x4[1] = 0x22; vectors[0].u32x4[2] = 0x33; vectors[0].u32x4[3] = 0x44;
@@ -4190,8 +4142,7 @@ void testVectorTransposeOdd()
     Value* b = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorTransposeOdd, B3::V128, SIMDLane::i32x4, SIMDSignMode::None, a, b);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     vectors[0].u32x4[0] = 0x11; vectors[0].u32x4[1] = 0x22; vectors[0].u32x4[2] = 0x33; vectors[0].u32x4[3] = 0x44;
@@ -4215,8 +4166,7 @@ void testVectorReverse()
     Value* input = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorReverse, B3::V128, SIMDLane::i32x4, SIMDSignMode::None, static_cast<uint8_t>(8), input);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     vectors[0].u32x4[0] = 0xAA; vectors[0].u32x4[1] = 0xBB; vectors[0].u32x4[2] = 0xCC; vectors[0].u32x4[3] = 0xDD;
@@ -4242,8 +4192,7 @@ void testVectorShlByOne()
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorShl, B3::V128, SIMDLane::i64x2, SIMDSignMode::Unsigned, input, shiftAmount);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -4276,8 +4225,7 @@ static void testVectorShlImmediateForLane(SIMDLane lane, unsigned shift, T input
     Value* shiftAmount = root->appendNew<Const32Value>(proc, Origin(), shift);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorShl, B3::V128, lane, SIMDSignMode::Unsigned, input, shiftAmount);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -4442,8 +4390,7 @@ void testVectorMulAddLowSimple()
         Value* mul = root->appendNew<SIMDValue>(proc, Origin(), VectorMulLow, B3::V128, lane, signMode, x, y);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, acc, mul);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(3 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (auto& accOp : v128Operands()) {
@@ -4490,8 +4437,7 @@ void testVectorMulAddLowDoubled()
         Value* doubled = root->appendNew<SIMDValue>(proc, Origin(), VectorShl, B3::V128, lane, SIMDSignMode::None, mul, one);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, acc, doubled);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(3 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (auto& accOp : v128Operands()) {
@@ -4541,8 +4487,7 @@ void testVectorMulAddLowTwoMuls()
         Value* sumOfMuls = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, mul1, mul2);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, acc, sumOfMuls);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(5 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         auto operands = v128Operands();
@@ -4608,8 +4553,7 @@ void testVectorMulAddLowBlaMka()
     Value* xPlusY = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, SIMDLane::i64x2, SIMDSignMode::None, x, y);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, SIMDLane::i64x2, SIMDSignMode::None, xPlusY, doubled);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     auto blamka = [](uint64_t xv, uint64_t yv) {
@@ -4655,8 +4599,7 @@ void testVectorMulAddHighSimple()
         Value* mul = root->appendNew<SIMDValue>(proc, Origin(), VectorMulHigh, B3::V128, lane, signMode, x, y);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, acc, mul);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(3 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (auto& accOp : v128Operands()) {
@@ -4703,8 +4646,7 @@ void testVectorMulAddHighDoubled()
         Value* doubled = root->appendNew<SIMDValue>(proc, Origin(), VectorShl, B3::V128, lane, SIMDSignMode::None, mul, one);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, acc, doubled);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(3 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (auto& accOp : v128Operands()) {
@@ -4753,8 +4695,7 @@ void testVectorMulAddHighTwoMuls()
         Value* sumOfMuls = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, mul1, mul2);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, acc, sumOfMuls);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(5 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         auto operands = v128Operands();
@@ -4809,8 +4750,7 @@ void testVectorMulAddMixedLowHigh()
             : root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, mulLow, mulHigh);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorAdd, B3::V128, lane, SIMDSignMode::None, acc, sumOfMuls);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(3 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (auto& accOp : v128Operands()) {
@@ -4855,8 +4795,7 @@ static void testVectorShrImmediateForLane(SIMDLane lane, SIMDSignMode signMode, 
     Value* shiftAmount = root->appendNew<Const32Value>(proc, Origin(), shift);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorShr, B3::V128, lane, signMode, input, shiftAmount);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -4941,8 +4880,7 @@ static void testVectorZipZeroExtendForLane(SIMDLane narrowLane, bool high)
     B3::Opcode zipOp = high ? VectorZipHigher : VectorZipLower;
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), zipOp, B3::V128, narrowLane, SIMDSignMode::None, input, zero);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -4989,8 +4927,7 @@ static void testBinarySwizzlePattern(const char*, const uint8_t pattern[16], v12
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorSwizzle, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, a, b, patternConst);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -5017,8 +4954,7 @@ static void testUnarySwizzlePattern(const char*, const uint8_t pattern[16], v128
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorSwizzle, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, inputVal, patternConst);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -5049,8 +4985,7 @@ void testVectorSwizzleToUnzipEven()
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorSwizzle, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, input, patternConst);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -5083,8 +5018,7 @@ void testVectorSwizzleBinaryToUnzipOdd()
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorSwizzle, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, a, b, patternConst);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
 
@@ -5112,8 +5046,7 @@ void testVectorExtractPair()
         Value* b = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorExtractPair, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, static_cast<uint8_t>(4), a, b);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (unsigned i = 0; i < 16; ++i) vectors[0].u8x16[i] = i;
@@ -5137,8 +5070,7 @@ void testVectorExtractPair()
         Value* b = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address, static_cast<int32_t>(sizeof(v128_t)));
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorExtractPair, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, static_cast<uint8_t>(8), a, b);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         for (unsigned i = 0; i < 16; ++i) vectors[0].u8x16[i] = i;
@@ -5588,8 +5520,7 @@ void testVectorCanonicalSameInputFolding()
         Value* v = root->appendNew<MemoryValue>(proc, Load, V128, Origin(), address);
         Value* result = root->appendNew<SIMDValue>(proc, Origin(), op, B3::V128, lane, SIMDSignMode::None, v, v);
         root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
         vectors[0].u64x2[0] = lo;
@@ -5710,8 +5641,7 @@ void testVectorSwizzleComposition()
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorSwizzle, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, b, innerResult, outerPatConst);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     for (unsigned i = 0; i < 16; ++i) vectors[0].u8x16[i] = i;       // a
@@ -5756,8 +5686,7 @@ void testVectorSwizzleUnaryComposition()
     Value* outer = root->appendNew<SIMDValue>(proc, Origin(), VectorSwizzle, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, inner, rotate4Const2);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), outer, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     for (unsigned i = 0; i < 16; ++i) vectors[0].u8x16[i] = i;
@@ -5811,8 +5740,7 @@ void testVectorSwizzleCompositionMultiUse()
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), outer1, address, static_cast<int32_t>(2 * sizeof(v128_t)));
     root->appendNew<MemoryValue>(proc, Store, Origin(), outer2, address, static_cast<int32_t>(3 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     for (unsigned i = 0; i < 16; ++i) vectors[0].u8x16[i] = i;        // src
@@ -5889,8 +5817,7 @@ void testVectorSwizzleCompositionRightImmOuter()
     Value* outer = root->appendNew<SIMDValue>(proc, Origin(), VectorSwizzle, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, inner, outerPatConst);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), outer, address, static_cast<int32_t>(sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     for (unsigned i = 0; i < 16; ++i)
@@ -5940,8 +5867,7 @@ static void runBinarySwizzleAndCheck(v128_t pattern, v128_t aIn, v128_t bIn)
     Value* patternConst = root->appendNew<Const128Value>(proc, Origin(), pattern);
     Value* result = root->appendNew<SIMDValue>(proc, Origin(), VectorSwizzle, B3::V128, SIMDLane::i8x16, SIMDSignMode::None, a, b, patternConst);
     root->appendNew<MemoryValue>(proc, Store, Origin(), result, address, static_cast<int32_t>(2 * sizeof(v128_t)));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     vectors[0] = aIn;
@@ -6101,8 +6027,7 @@ void testVectorShrZipToExtend()
         Value* shifted = root->appendNew<SIMDValue>(proc, Origin(), VectorShr, B3::V128, SIMDLane::i16x8, SIMDSignMode::Signed, zipped, shiftAmount);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), shifted, address, static_cast<int32_t>(sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 
@@ -6149,8 +6074,7 @@ void testVectorShrZipToExtend()
         Value* shifted = root->appendNew<SIMDValue>(proc, Origin(), VectorShr, B3::V128, SIMDLane::i16x8, SIMDSignMode::Signed, zipped, shiftAmount);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), shifted, address, static_cast<int32_t>(sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 
@@ -6200,8 +6124,7 @@ void testVectorShrZipToExtendI32()
         Value* shifted = root->appendNew<SIMDValue>(proc, Origin(), VectorShr, B3::V128, SIMDLane::i32x4, SIMDSignMode::Signed, zipped, shiftAmount);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), shifted, address, static_cast<int32_t>(sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 
@@ -6242,8 +6165,7 @@ void testVectorShrZipToExtendI32()
         Value* shifted = root->appendNew<SIMDValue>(proc, Origin(), VectorShr, B3::V128, SIMDLane::i32x4, SIMDSignMode::Signed, zipped, shiftAmount);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), shifted, address, static_cast<int32_t>(sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 
@@ -6285,8 +6207,7 @@ void testVectorShrZipToExtendI64()
         Value* shifted = root->appendNew<SIMDValue>(proc, Origin(), VectorShr, B3::V128, SIMDLane::i64x2, SIMDSignMode::Signed, zipped, shiftAmount);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), shifted, address, static_cast<int32_t>(sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 
@@ -6321,8 +6242,7 @@ void testVectorShrZipToExtendI64()
         Value* shifted = root->appendNew<SIMDValue>(proc, Origin(), VectorShr, B3::V128, SIMDLane::i64x2, SIMDSignMode::Signed, zipped, shiftAmount);
 
         root->appendNew<MemoryValue>(proc, Store, Origin(), shifted, address, static_cast<int32_t>(sizeof(v128_t)));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
 
         auto code = compileProc(proc);
 

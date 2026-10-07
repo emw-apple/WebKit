@@ -57,7 +57,7 @@ public:
 
 protected:
     explicit WebSharingServicePickerClient(WebView *);
-    __weak WebView *m_webView;
+    WebView *m_webView;
 };
 
 @interface WebSharingServicePickerController : NSObject <NSSharingServiceDelegate, NSSharingServicePickerDelegate> {

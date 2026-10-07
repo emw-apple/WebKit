@@ -74,11 +74,6 @@ bool UnevaluatedCalcSize::basisHasPercentage() const
     return protect(m_calcSize)->basisHasPercentage();
 }
 
-double UnevaluatedCalcSize::evaluate(double percentResolutionLength, const ZoomFactor& zoom, double keywordBasisSize) const
-{
-    return evaluateCalcSize(m_calcSize, range, percentResolutionLength, zoom, keywordBasisSize);
-}
-
 double UnevaluatedCalcSize::evaluate(double percentResolutionLength, const ZoomFactor& zoom) const
 {
     return evaluateCalcSize(m_calcSize, range, percentResolutionLength, zoom);

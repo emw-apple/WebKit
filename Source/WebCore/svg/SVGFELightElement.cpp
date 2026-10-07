@@ -45,7 +45,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGFELightElement);
 
 SVGFELightElement::SVGFELightElement(const QualifiedName& tagName, Document& document)
-    : SVGElement(tagName, document, PropertyRegistry::singleton())
+    : SVGElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     static bool didRegistration = false;
     if (!didRegistration) [[unlikely]] {

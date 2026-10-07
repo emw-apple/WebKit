@@ -111,7 +111,6 @@ JSTestReadOnlyMapLike.h:
 JSTestReadOnlySetLike.h: 
 JSTestReportExtraMemoryCost.h: 
 JSTestScheduledAction.h: 
-JSTestSerializable.h: 
 JSTestSerializedScriptValueInterface.h: 
 JSTestSetLike.h: 
 JSTestSetLikeWithOverriddenOperations.h: 

@@ -135,7 +135,6 @@
 #import <wtf/Ref.h>
 #import <wtf/RunLoop.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
-#import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
 #import <wtf/text/WTFString.h>
 
@@ -195,7 +194,7 @@ NSString *WebPluginContainerKey = @"WebPluginContainer";
 
 WebDataSource *dataSource(WebCore::DocumentLoader* loader)
 {
-    return loader ? downcast<WebDocumentLoaderMac>(*loader).dataSource() : nil;
+    return loader ? static_cast<WebDocumentLoaderMac*>(loader)->dataSource() : nil;
 }
 
 WebFrameLoaderClient::WebFrameLoaderClient(WebCore::FrameLoader& loader, WebFrame *webFrame)
@@ -234,7 +233,7 @@ bool WebFrameLoaderClient::forceLayoutOnRestoreFromBackForwardCache()
     // layout settings here.
     RetainPtr webView = getWebView(m_webFrame.get());
     bool isMainFrame = [webView.get() mainFrame] == m_webFrame.get();
-    RefPtr coreFrame = core(m_webFrame.get());
+    auto* coreFrame = core(m_webFrame.get());
     if (isMainFrame && coreFrame->view()) {
         Ref view = *coreFrame->view();
         WebCore::IntSize newSize([webView.get() _fixedLayoutSize]);
@@ -318,7 +317,7 @@ bool WebFrameLoaderClient::dispatchDidLoadResourceFromMemoryCache(WebCore::Docum
     WebResourceDelegateImplementationCache* implementations = WebViewGetResourceLoadDelegateImplementations(webView.get());
 #if PLATFORM(IOS_FAMILY)
     if (implementations->webThreadDidLoadResourceFromMemoryCacheFunc) {
-        CallResourceLoadDelegateInWebThread(implementations->webThreadDidLoadResourceFromMemoryCacheFunc, webView.get(), @selector(webThreadWebView:didLoadResourceFromMemoryCache:response:length:fromDataSource:), nsRequest.get(), nsResponse.get(), length, protect(dataSource(loader)));
+        CallResourceLoadDelegateInWebThread(implementations->webThreadDidLoadResourceFromMemoryCacheFunc, webView.get(), @selector(webThreadWebView:didLoadResourceFromMemoryCache:response:length:fromDataSource:), nsRequest.get(), nsResponse.get(), length, dataSource(loader));
         return true;
     }
 #endif
@@ -339,7 +338,7 @@ void WebFrameLoaderClient::assignIdentifierToInitialRequest(WebCore::ResourceLoa
 
 #if PLATFORM(IOS_FAMILY)
     if (implementations->webThreadIdentifierForRequestFunc) {
-        object = CallResourceLoadDelegateInWebThread(implementations->webThreadIdentifierForRequestFunc, webView.get(), @selector(webThreadWebView:identifierForInitialRequest:fromDataSource:), nsRequest.get(), protect(dataSource(loader)));
+        object = CallResourceLoadDelegateInWebThread(implementations->webThreadIdentifierForRequestFunc, webView.get(), @selector(webThreadWebView:identifierForInitialRequest:fromDataSource:), nsRequest.get(), dataSource(loader));
     } else
 #endif
     if (implementations->identifierForRequestFunc)
@@ -357,7 +356,7 @@ void WebFrameLoaderClient::dispatchWillSendRequest(WebCore::DocumentLoader* load
     WebResourceDelegateImplementationCache* implementations = WebViewGetResourceLoadDelegateImplementations(webView.get());
 
     if (redirectResponse.isNull())
-        downcast<WebDocumentLoaderMac>(*loader).increaseLoadCount(identifier);
+        static_cast<WebDocumentLoaderMac*>(loader)->increaseLoadCount(identifier);
 
     RetainPtr currentURLRequest = request.nsURLRequest(WebCore::HTTPBodyUpdatePolicy::UpdateHTTPBody);
 
@@ -371,7 +370,7 @@ void WebFrameLoaderClient::dispatchWillSendRequest(WebCore::DocumentLoader* load
     RetainPtr newURLRequest = currentURLRequest;
 #if PLATFORM(IOS_FAMILY)
     if (implementations->webThreadWillSendRequestFunc) {
-        newURLRequest = (NSURLRequest *)CallResourceLoadDelegateInWebThread(implementations->webThreadWillSendRequestFunc, webView.get(), @selector(webThreadWebView:resource:willSendRequest:redirectResponse:fromDataSource:), [webView.get() _objectForIdentifier:identifier], currentURLRequest.get(), nsRedirectResponse.get(), protect(dataSource(loader)));
+        newURLRequest = (NSURLRequest *)CallResourceLoadDelegateInWebThread(implementations->webThreadWillSendRequestFunc, webView.get(), @selector(webThreadWebView:resource:willSendRequest:redirectResponse:fromDataSource:), [webView.get() _objectForIdentifier:identifier], currentURLRequest.get(), nsRedirectResponse.get(), dataSource(loader));
     } else
 #endif
     if (implementations->willSendRequestFunc)
@@ -445,7 +444,7 @@ RetainPtr<CFDictionaryRef> WebFrameLoaderClient::connectionProperties(WebCore::D
 
     WebResourceDelegateImplementationCache* implementations = WebViewGetResourceLoadDelegateImplementations(webView.get());
     if (implementations->connectionPropertiesFunc)
-        return (CFDictionaryRef)CallResourceLoadDelegate(implementations->connectionPropertiesFunc, webView.get(), @selector(webView:connectionPropertiesForResource:dataSource:), resource, protect(dataSource(loader)));
+        return (CFDictionaryRef)CallResourceLoadDelegate(implementations->connectionPropertiesFunc, webView.get(), @selector(webView:connectionPropertiesForResource:dataSource:), resource, dataSource(loader));
 
     return nullptr;
 }
@@ -472,7 +471,7 @@ void WebFrameLoaderClient::dispatchDidReceiveResponse(WebCore::DocumentLoader* l
 #if PLATFORM(IOS_FAMILY)
     if (implementations->webThreadDidReceiveResponseFunc) {
         if (id resource = [webView.get() _objectForIdentifier:identifier])
-            CallResourceLoadDelegateInWebThread(implementations->webThreadDidReceiveResponseFunc, webView.get(), @selector(webThreadWebView:resource:didReceiveResponse:fromDataSource:), resource, nsResponse.get(), protect(dataSource(loader)));
+            CallResourceLoadDelegateInWebThread(implementations->webThreadDidReceiveResponseFunc, webView.get(), @selector(webThreadWebView:resource:didReceiveResponse:fromDataSource:), resource, nsResponse.get(), dataSource(loader));
 
     } else
 #endif
@@ -490,7 +489,7 @@ void WebFrameLoaderClient::willCacheResponse(WebCore::DocumentLoader* loader, We
 #if PLATFORM(IOS_FAMILY)
     if (implementations->webThreadWillCacheResponseFunc) {
         if (id resource = [webView.get() _objectForIdentifier:identifier])
-            return completionHandler(protect(CallResourceLoadDelegateInWebThread(implementations->webThreadWillCacheResponseFunc, webView.get(), @selector(webThreadWebView:resource:willCacheResponse:fromDataSource:), resource, response, protect(dataSource(loader)))));
+            return completionHandler(CallResourceLoadDelegateInWebThread(implementations->webThreadWillCacheResponseFunc, webView.get(), @selector(webThreadWebView:resource:willCacheResponse:fromDataSource:), resource, response, dataSource(loader)));
     } else
 #endif
     if (implementations->willCacheResponseFunc) {
@@ -508,7 +507,7 @@ void WebFrameLoaderClient::dispatchDidReceiveContentLength(WebCore::DocumentLoad
 #if PLATFORM(IOS_FAMILY)
     if (implementations->webThreadDidReceiveContentLengthFunc) {
         if (id resource = [webView.get() _objectForIdentifier:identifier])
-            CallResourceLoadDelegateInWebThread(implementations->webThreadDidReceiveContentLengthFunc, webView.get(), @selector(webThreadWebView:resource:didReceiveContentLength:fromDataSource:), resource, (NSInteger)dataLength, protect(dataSource(loader)));
+            CallResourceLoadDelegateInWebThread(implementations->webThreadDidReceiveContentLengthFunc, webView.get(), @selector(webThreadWebView:resource:didReceiveContentLength:fromDataSource:), resource, (NSInteger)dataLength, dataSource(loader));
     } else
 #endif
     if (implementations->didReceiveContentLengthFunc) {
@@ -531,7 +530,7 @@ void WebFrameLoaderClient::dispatchDidFinishLoading(WebCore::DocumentLoader* loa
 #if PLATFORM(IOS_FAMILY)
     if (implementations->webThreadDidFinishLoadingFromDataSourceFunc) {
         if (id resource = [webView.get() _objectForIdentifier:identifier])
-            CallResourceLoadDelegateInWebThread(implementations->webThreadDidFinishLoadingFromDataSourceFunc, webView.get(), @selector(webThreadWebView:resource:didFinishLoadingFromDataSource:), resource, protect(dataSource(loader)));
+            CallResourceLoadDelegateInWebThread(implementations->webThreadDidFinishLoadingFromDataSourceFunc, webView.get(), @selector(webThreadWebView:resource:didFinishLoadingFromDataSource:), resource, dataSource(loader));
     } else
 #endif
 
@@ -542,7 +541,7 @@ void WebFrameLoaderClient::dispatchDidFinishLoading(WebCore::DocumentLoader* loa
 
     [webView.get() _removeObjectForIdentifier:identifier];
 
-    downcast<WebDocumentLoaderMac>(*loader).decreaseLoadCount(identifier);
+    static_cast<WebDocumentLoaderMac*>(loader)->decreaseLoadCount(identifier);
 }
 
 void WebFrameLoaderClient::dispatchDidFailLoading(WebCore::DocumentLoader* loader, WebCore::ResourceLoaderIdentifier identifier, const WebCore::ResourceError& error)
@@ -553,7 +552,7 @@ void WebFrameLoaderClient::dispatchDidFailLoading(WebCore::DocumentLoader* loade
 #if PLATFORM(IOS_FAMILY)
     if (implementations->webThreadDidFailLoadingWithErrorFromDataSourceFunc) {
         if (id resource = [webView.get() _objectForIdentifier:identifier])
-            CallResourceLoadDelegateInWebThread(implementations->webThreadDidFailLoadingWithErrorFromDataSourceFunc, webView.get(), @selector(webThreadWebView:resource:didFailLoadingWithError:fromDataSource:), resource, protect((NSError *)error), protect(dataSource(loader)));
+            CallResourceLoadDelegateInWebThread(implementations->webThreadDidFailLoadingWithErrorFromDataSourceFunc, webView.get(), @selector(webThreadWebView:resource:didFailLoadingWithError:fromDataSource:), resource, (NSError *)error, dataSource(loader));
     } else
 #endif
     if (implementations->didFailLoadingWithErrorFromDataSourceFunc) {
@@ -563,7 +562,7 @@ void WebFrameLoaderClient::dispatchDidFailLoading(WebCore::DocumentLoader* loade
 
     [webView.get() _removeObjectForIdentifier:identifier];
 
-    downcast<WebDocumentLoaderMac>(*loader).decreaseLoadCount(identifier);
+    static_cast<WebDocumentLoaderMac*>(loader)->decreaseLoadCount(identifier);
 }
 
 void WebFrameLoaderClient::dispatchDidDispatchOnloadEvents()
@@ -1029,7 +1028,7 @@ void WebFrameLoaderClient::didChangeTitle(WebCore::DocumentLoader* loader)
 void WebFrameLoaderClient::didReplaceMultipartContent()
 {
 #if PLATFORM(IOS_FAMILY)
-    if (RefPtr view = core(m_webFrame.get())->view())
+    if (auto* view = core(m_webFrame.get())->view())
         view->didReplaceMultipartContent();
 #endif
 }
@@ -1189,10 +1188,10 @@ void WebFrameLoaderClient::saveViewStateToItem(WebCore::HistoryItem& item)
 {
 #if PLATFORM(IOS_FAMILY)
     // Let UIKit handle the scroll point for the main frame.
-    RetainPtr webFrame = m_webFrame;
+    WebFrame *webFrame = m_webFrame.get();
     RetainPtr webView = getWebView(webFrame);   
     if (webFrame == [webView.get() mainFrame]) {
-        [[webView.get() _UIKitDelegateForwarder] webView:webView.get() saveStateToHistoryItem:protect(kit(&item)) forFrame:webFrame];
+        [[webView.get() _UIKitDelegateForwarder] webView:webView.get() saveStateToHistoryItem:kit(&item) forFrame:webFrame];
         return;
     }
 #endif                    
@@ -1220,10 +1219,10 @@ void WebFrameLoaderClient::restoreViewState()
 
 #if PLATFORM(IOS_FAMILY)
     // Let UIKit handle the scroll point for the main frame.
-    RetainPtr webFrame = m_webFrame;
+    WebFrame *webFrame = m_webFrame.get();
     RetainPtr webView = getWebView(webFrame);   
     if (webFrame == [webView.get() mainFrame]) {
-        [[webView.get() _UIKitDelegateForwarder] webView:webView.get() restoreStateFromHistoryItem:protect(kit(currentItem.get())) forFrame:webFrame force:NO];
+        [[webView.get() _UIKitDelegateForwarder] webView:webView.get() restoreStateFromHistoryItem:kit(currentItem.get()) forFrame:webFrame force:NO];
         return;
     }
 #endif                    
@@ -1284,7 +1283,7 @@ void WebFrameLoaderClient::prepareForDataSourceReplacement()
     auto frameView = m_webFrame->_private->webFrameView;
     NSWindow *window = [frameView window];
     NSResponder *firstResp = [window firstResponder];
-    if ([dynamic_objc_cast<NSView>(firstResp) isDescendantOf:frameView.get()])
+    if ([firstResp isKindOfClass:[NSView class]] && [(NSView *)firstResp isDescendantOf:frameView.get()])
         [window endEditingFor:firstResp];
 #endif
 }
@@ -1559,7 +1558,7 @@ bool WebFrameLoaderClient::canCachePage() const
     if (!page)
         return false;
     
-    auto& backForwardList = downcast<BackForwardList>(page->backForward().client());
+    auto& backForwardList = static_cast<BackForwardList&>(page->backForward().client());
     if (!backForwardList.enabled())
         return false;
     
@@ -1663,7 +1662,8 @@ static NSView *pluginView(WebFrame *frame, WebPluginPackage *pluginPackage,
     NSArray *attributeNames, NSArray *attributeValues, NSURL *baseURL,
     DOMElement *element, BOOL loadManually)
 {
-    WebHTMLView *docView = checked_objc_cast<WebHTMLView>([[frame frameView] documentView]);
+    WebHTMLView *docView = (WebHTMLView *)[[frame frameView] documentView];
+    ASSERT([docView isKindOfClass:[WebHTMLView class]]);
 
     WebPluginController *pluginController = [docView _pluginController];
 
@@ -1791,8 +1791,8 @@ RefPtr<WebCore::Widget> WebFrameLoaderClient::createPlugin(WebCore::HTMLPlugInEl
             if (is<WebCore::RenderEmbeddedObject>(element.renderer()))
                 protect(downcast<WebCore::RenderEmbeddedObject>(*element.renderer()))->setPluginUnavailabilityReason(WebCore::PluginUnavailabilityReason::InsecurePluginVersion);
         } else {
-            if (RetainPtr package = dynamic_objc_cast<WebPluginPackage>(pluginPackage))
-                view = pluginView(m_webFrame.get(), package, attributeKeys.get(), createNSArray(paramValues).get(), baseURL.get(), domElement, loadManually);
+            if ([pluginPackage isKindOfClass:[WebPluginPackage class]])
+                view = pluginView(m_webFrame.get(), (WebPluginPackage *)pluginPackage, attributeKeys.get(), createNSArray(paramValues).get(), baseURL.get(), domElement, loadManually);
         }
     } else
         errorCode = WebKitErrorCannotFindPlugIn;
@@ -1833,7 +1833,8 @@ void WebFrameLoaderClient::redirectDataToPlugin(WebCore::Widget& pluginWidget)
     RetainPtr pluginView = pluginWidget.platformWidget();
 
     {
-        WebHTMLView *documentView = checked_objc_cast<WebHTMLView>([[m_webFrame.get() frameView] documentView]);
+        WebHTMLView *documentView = (WebHTMLView *)[[m_webFrame.get() frameView] documentView];
+        ASSERT([documentView isKindOfClass:[WebHTMLView class]]);
         [representation _redirectDataToManualLoader:[documentView _pluginController] forPluginView:pluginView.get()];
     }
 
@@ -1869,13 +1870,13 @@ void WebFrameLoaderClient::dispatchDidClearWindowObjectInWorld(WebCore::DOMWrapp
         return;
 
     RefPtr frame = core(m_webFrame.get());
-    CheckedRef script = frame->script();
-    RetainPtr windowScriptObject = script->windowScriptObject();
+    auto& script = frame->script();
+    RetainPtr windowScriptObject = script.windowScriptObject();
 
 #if JSC_OBJC_API_ENABLED
     if (implementations->didCreateJavaScriptContextForFrameFunc) {
         CallFrameLoadDelegate(implementations->didCreateJavaScriptContextForFrameFunc, webView.get(), @selector(webView:didCreateJavaScriptContext:forFrame:),
-            protect(script->javaScriptContext()), m_webFrame.get());
+            protect(script.javaScriptContext()), m_webFrame.get());
     } else
 #endif
     if (implementations->didClearWindowObjectForFrameFunc) {

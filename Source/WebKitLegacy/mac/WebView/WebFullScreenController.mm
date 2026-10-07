@@ -59,7 +59,7 @@ static WebCore::IntRect screenRectOfContents(WebCore::Element* element)
     ASSERT(element);
     if (element->renderer() && element->renderer()->hasLayer() && element->renderer()->enclosingLayer()->isComposited()) {
         WebCore::FloatQuad contentsBox = static_cast<WebCore::FloatRect>(element->renderer()->enclosingLayer()->backing()->contentsBox());
-        contentsBox = protect(element->renderer())->localToContainerQuad(contentsBox, nullptr);
+        contentsBox = element->renderer()->localToContainerQuad(contentsBox, nullptr);
         return element->renderer()->view().frameView().contentsToScreen(contentsBox.enclosingBoundingBox());
     }
     return element->screenRect();
@@ -126,6 +126,9 @@ static NSRect convertRectToScreen(NSWindow *window, NSRect rect)
 
 - (void)setWebView:(WebView *)webView
 {
+    [webView retain];
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_webView release];
     _webView = webView;
 }
 
@@ -228,7 +231,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         [_webViewPlaceholder.get() setWantsLayer:YES];
     }
     [[_webViewPlaceholder.get() layer] setContents:(__bridge id)webViewContents.get()];
-    _scrollPosition = protect(protect([webView _mainCoreFrame])->view())->scrollPosition();
+    _scrollPosition = [webView _mainCoreFrame]->view()->scrollPosition();
     [self _swapView:webView with:_webViewPlaceholder.get()];
     
     // Then insert the WebView into the full screen window
@@ -242,10 +245,9 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     _savedScale = [webView _viewScaleFactor];
     [webView _scaleWebView:1 atOrigin:NSMakePoint(0, 0)];
     _didEnterFullscreen = WTF::move(didEnterFullscreen);
-    RefPtr manager = [self _manager];
-    willEnterFullscreen(manager->willEnterFullscreen(*protect(_element), WebCore::HTMLMediaElementEnums::VideoFullscreenModeStandard));
-    manager->setAnimatingFullscreen(true);
-    protect([self _document].get())->updateLayout();
+    willEnterFullscreen([self _manager]->willEnterFullscreen(*_element, WebCore::HTMLMediaElementEnums::VideoFullscreenModeStandard));
+    [self _manager]->setAnimatingFullscreen(true);
+    [self _document]->updateLayout();
 
     _finalFrame = screenRectOfContents(_element.get());
     
@@ -273,7 +275,7 @@ static void setClipRectForWindow(NSWindow *window, NSRect clipRect)
     _isEnteringFullScreen = NO;
     
     if (completed) {
-        protect([self _manager])->setAnimatingFullscreen(false);
+        [self _manager]->setAnimatingFullscreen(false);
         if (_didEnterFullscreen)
             _didEnterFullscreen(true);
 
@@ -303,7 +305,7 @@ static void setClipRectForWindow(NSWindow *window, NSRect clipRect)
 {
     if (!_element)
         return;
-    protect(protect(_element->document())->fullscreen())->fullyExitFullscreen();
+    _element->document().fullscreen().fullyExitFullscreen();
 }
 
 - (void)exitFullScreen:(CompletionHandler<void()>&&)completionHandler
@@ -318,9 +320,8 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
     _finalFrame = screenRectOfContents(_element.get());
 
-    RefPtr manager = [self _manager];
-    manager->willExitFullscreen();
-    manager->setAnimatingFullscreen(true);
+    [self _manager]->willExitFullscreen();
+    [self _manager]->setAnimatingFullscreen(true);
 
     if (_isEnteringFullScreen)
         [self finishedEnterFullScreenAnimation:NO];
@@ -354,14 +355,14 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     
     [self _updateMenuAndDockForFullScreen];
 
-    protect([self _manager])->setAnimatingFullscreen(false);
+    [self _manager]->setAnimatingFullscreen(false);
     _exitCompletionHandler();
     RetainPtr webView = _webView;
     [webView _scaleWebView:_savedScale atOrigin:NSMakePoint(0, 0)];
 
     NSResponder *firstResponder = [[self window] firstResponder];
     [self _swapView:_webViewPlaceholder.get() with:webView];
-    protect(protect([webView _mainCoreFrame])->view())->setScrollPosition(_scrollPosition);
+    [webView _mainCoreFrame]->view()->setScrollPosition(_scrollPosition);
     [[webView window] makeResponder:firstResponder firstResponderIfDescendantOfView:webView];
     
     NSRect windowBounds = [[self window] frame];
@@ -447,7 +448,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 - (WebCore::DocumentFullscreen*)_manager
 {
-    return &protect(_element->document())->fullscreen();
+    return &_element->document().fullscreen();
 }
 
 - (void)_swapView:(NSView*)view with:(NSView*)otherView

@@ -19,7 +19,6 @@
 #include <variant>
 #include <vector>
 
-#include "api/media_stream_interface.h"
 #include "api/scoped_refptr.h"
 #include "api/units/data_rate.h"
 #include "api/units/data_size.h"
@@ -27,13 +26,13 @@
 #include "api/units/timestamp.h"
 #include "api/video/resolution.h"
 #include "api/video/video_frame_buffer.h"
+#include "api/video_codecs/video_codec.h"
 
 namespace webrtc {
 // NOTE: This class is still under development and may change without notice.
 class VideoEncoderInterface {
  public:
   virtual ~VideoEncoderInterface() = default;
-  using ContentHint = VideoTrackInterface::ContentHint;
   enum class FrameType { kKeyframe, kStartFrame, kDeltaFrame };
 
   struct EncodingError {};
@@ -51,18 +50,16 @@ class VideoEncoderInterface {
 
   class TemporalUnitSettings {
    public:
-    using ContentHint = VideoTrackInterface::ContentHint;
-
     constexpr TemporalUnitSettings()
         : presentation_timestamp_(Timestamp::Zero()) {}
     constexpr explicit TemporalUnitSettings(Timestamp timestamp)
         : presentation_timestamp_(timestamp) {}
-    constexpr TemporalUnitSettings(ContentHint content_hint,
+    constexpr TemporalUnitSettings(VideoCodecMode content_hint,
                                    Timestamp timestamp)
         : content_hint_(content_hint), presentation_timestamp_(timestamp) {}
 
-    ContentHint content_hint() const { return content_hint_; }
-    void set_content_hint(ContentHint content_hint) {
+    VideoCodecMode content_hint() const { return content_hint_; }
+    void set_content_hint(VideoCodecMode content_hint) {
       content_hint_ = content_hint;
     }
 
@@ -72,7 +69,7 @@ class VideoEncoderInterface {
     }
 
    private:
-    ContentHint content_hint_ = ContentHint::kNone;
+    VideoCodecMode content_hint_ = VideoCodecMode::kRealtimeVideo;
     Timestamp presentation_timestamp_;
   };
 

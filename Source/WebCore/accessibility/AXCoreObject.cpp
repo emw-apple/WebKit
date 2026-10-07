@@ -1003,9 +1003,9 @@ bool AXCoreObject::canHaveSelectedChildren() const
     case AccessibilityRole::Tree:
     case AccessibilityRole::TreeGrid:
     case AccessibilityRole::List:
-    // A combobox's selected child is its aria-activedescendant. Menus can have selected children
-    // too (e.g. a base-appearance select's picker), and ATSPI treats their focused or active menu
-    // item as selected.
+    // These roles are containers whose children are treated as selected by assistive
+    // technologies. We can get the "selected" item via aria-activedescendant or the
+    // focused element.
     case AccessibilityRole::Menu:
     case AccessibilityRole::MenuBar:
     case AccessibilityRole::ComboBox:
@@ -1042,23 +1042,19 @@ AXCoreObject::AccessibilityChildrenVector AXCoreObject::selectedChildren()
         return selectedListItems();
     case AccessibilityRole::Menu:
     case AccessibilityRole::MenuBar:
-#if USE(ATSPI)
-        // Outside of a pop-up button's menu (e.g. a base-appearance select's picker), ATSPI treats the focused
-        // or active menu item as the selected one, matching AccessibilityObject::isSelected().
-        if (!Accessibility::findAncestor(*this, /* includeSelf */ false, [] (const auto& ancestor) {
+        if (Accessibility::findAncestor(*this, /* includeSelf */ false, [] (const auto& ancestor) {
             return ancestor.isPopUpButton();
         })) {
-            if (RefPtr descendant = activeDescendant())
-                return { { descendant.releaseNonNull() } };
-            if (RefPtr focusedElement = focusedUIElement())
-                return { { focusedElement.releaseNonNull() } };
+            for (const auto& child : unignoredChildren()) {
+                if (child->isSelected())
+                    return { { child } };
+            }
             break;
         }
-#endif // USE(ATSPI)
-        for (const auto& child : unignoredChildren()) {
-            if (child->isSelected())
-                return { { child } };
-        }
+        if (RefPtr descendant = activeDescendant())
+            return { { descendant.releaseNonNull() } };
+        if (RefPtr focusedElement = focusedUIElement())
+            return { { focusedElement.releaseNonNull() } };
         break;
     case AccessibilityRole::MenuListPopup: {
         AccessibilityChildrenVector selectedItems;
@@ -1075,32 +1071,20 @@ AXCoreObject::AccessibilityChildrenVector AXCoreObject::selectedChildren()
     return { };
 }
 
-// Returns true once the selected option of a single-selection list box is found.
-static bool appendSelectedOptions(AXCoreObject& container, bool isMultiSelectable, AXCoreObject::AccessibilityChildrenVector& result)
-{
-    for (const auto& child : container.unignoredChildren()) {
-        if (child->isGroup()) {
-            if (appendSelectedOptions(child, isMultiSelectable, result))
-                return true;
-            continue;
-        }
-
-        if (!child->isListBoxOption() || !child->isSelected())
-            continue;
-
-        result.append(child);
-        if (!isMultiSelectable)
-            return true;
-    }
-    return false;
-}
-
 AXCoreObject::AccessibilityChildrenVector AXCoreObject::listboxSelectedChildren()
 {
     AX_ASSERT(role() == AccessibilityRole::ListBox);
 
     AccessibilityChildrenVector result;
-    appendSelectedOptions(*this, isMultiSelectable(), result);
+    bool isMulti = isMultiSelectable();
+    for (const auto& child : unignoredChildren()) {
+        if (!child->isListBoxOption() || !child->isSelected())
+            continue;
+
+        result.append(child);
+        if (!isMulti)
+            return result;
+    }
     return result;
 }
 
@@ -1681,19 +1665,10 @@ unsigned AXCoreObject::hierarchicalLevel() const
 
 bool AXCoreObject::supportsPressAction() const
 {
-    if (role() == AccessibilityRole::Presentational)
+    if (role() == AccessibilityRole::Presentational || hasPointerEventsNone())
         return false;
 
-    // pointer-events:none only stops pointer input. Implicitly interactive elements, like buttons, can still be
-    // activated without a pointer (e.g. with the keyboard), so they're still pressable.
-    if (isImplicitlyInteractive())
-        return true;
-
-    // But for anything else, pointer-events:none is an explicit signal that it isn't meant to be clicked.
-    if (hasPointerEventsNone())
-        return false;
-
-    if (hasClickHandler())
+    if (isImplicitlyInteractive() || hasClickHandler())
         return true;
 
     if ((isStaticText() || isImage()) && !isIgnored()) {

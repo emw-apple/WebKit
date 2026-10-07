@@ -85,7 +85,6 @@ private:
 
     bool m_needsOptionsWidthUpdate;
     int m_optionsWidth;
-    int m_widthWithoutOptions { 0 };
 };
 
 } // namespace WebCore

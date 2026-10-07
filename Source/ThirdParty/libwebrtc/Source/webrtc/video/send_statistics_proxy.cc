@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "absl/strings/match.h"
-#include "api/environment/environment.h"
 #include "api/field_trials_view.h"
 #include "api/units/data_rate.h"
 #include "api/units/time_delta.h"
@@ -165,20 +164,21 @@ std::optional<int> GetFallbackMaxPixelsIfFieldTrialDisabled(
 }  // namespace
 
 SendStatisticsProxy::SendStatisticsProxy(
-    const Environment& env,
+    Clock* clock,
     const VideoSendStream::Config& config,
-    VideoEncoderConfig::ContentType content_type)
-    : env_(env),
+    VideoEncoderConfig::ContentType content_type,
+    const FieldTrialsView& field_trials)
+    : clock_(clock),
       payload_name_(config.rtp.payload_name),
       rtp_config_(config.rtp),
       fallback_max_pixels_(
-          GetFallbackMaxPixelsIfFieldTrialEnabled(env_.field_trials())),
+          GetFallbackMaxPixelsIfFieldTrialEnabled(field_trials)),
       fallback_max_pixels_disabled_(
-          GetFallbackMaxPixelsIfFieldTrialDisabled(env_.field_trials())),
+          GetFallbackMaxPixelsIfFieldTrialDisabled(field_trials)),
       content_type_(content_type),
-      start_(env_.clock().CurrentTime()),
+      start_(clock->CurrentTime()),
       encode_time_(kEncodeTimeWeigthFactor),
-      quality_limitation_reason_tracker_(&env_.clock()),
+      quality_limitation_reason_tracker_(clock_),
       media_byte_rate_tracker_(kBucketSizeMs, kBucketCount),
       encoded_frame_rate_tracker_(kBucketSizeMs, kBucketCount),
       last_num_spatial_layers_(0),
@@ -186,15 +186,15 @@ SendStatisticsProxy::SendStatisticsProxy(
       last_spatial_layer_use_{},
       bw_limited_layers_(false),
       internal_encoder_scaler_(false),
-      uma_container_(new UmaSamplesContainer(GetUmaPrefix(content_type_),
-                                             stats_,
-                                             &env_.clock())) {}
+      uma_container_(
+          new UmaSamplesContainer(GetUmaPrefix(content_type_), stats_, clock)) {
+}
 
 SendStatisticsProxy::~SendStatisticsProxy() {
   MutexLock lock(&mutex_);
   uma_container_->UpdateHistograms(rtp_config_, stats_);
 
-  TimeDelta elapsed = env_.clock().CurrentTime() - start_;
+  TimeDelta elapsed = clock_->CurrentTime() - start_;
   RTC_HISTOGRAM_COUNTS_100000("WebRTC.Video.SendStreamLifetimeInSeconds",
                               elapsed.seconds());
 
@@ -309,7 +309,7 @@ void SendStatisticsProxy::UmaSamplesContainer::LogPsnrValues(
     ssb << ".S" << *spatial_id;
   }
   ssb << ".X";
-  std::string uma_name = ssb.Release();
+  std::string uma_name = ssb.str();
 
   std::optional<float> psnr_y =
       psnr_counters.psnr_y.Avg(kMinRequiredPsnrSamples);
@@ -830,7 +830,7 @@ void SendStatisticsProxy::OnEncoderReconfigured(
   if (content_type_ != config.content_type) {
     uma_container_->UpdateHistograms(rtp_config_, stats_);
     uma_container_.reset(new UmaSamplesContainer(
-        GetUmaPrefix(config.content_type), stats_, &env_.clock()));
+        GetUmaPrefix(config.content_type), stats_, clock_));
     content_type_ = config.content_type;
   }
   uma_container_->encoded_frames_.clear();
@@ -850,7 +850,7 @@ void SendStatisticsProxy::OnEncodedFrameTimeMeasured(int encode_time_ms,
 }
 
 void SendStatisticsProxy::OnSuspendChange(bool is_suspended) {
-  int64_t now_ms = env_.clock().TimeInMilliseconds();
+  int64_t now_ms = clock_->TimeInMilliseconds();
   MutexLock lock(&mutex_);
   stats_.suspended = is_suspended;
   if (is_suspended) {
@@ -888,7 +888,7 @@ void SendStatisticsProxy::OnSuspendChange(bool is_suspended) {
 
 VideoSendStream::Stats SendStatisticsProxy::GetStats() {
   MutexLock lock(&mutex_);
-  Timestamp now = env_.clock().CurrentTime();
+  Timestamp now = clock_->CurrentTime();
   PurgeOldStats(now);
   stats_.input_frame_rate = uma_container_->input_frame_rate_tracker_.Rate(now);
   stats_.frames = uma_container_->input_frame_rate_tracker_.TotalSampleCount();
@@ -984,7 +984,7 @@ void SendStatisticsProxy::OnSetEncoderTargetRate(uint32_t bitrate_bps) {
   if (uma_container_->target_rate_updates_.last_ms == -1 && bitrate_bps == 0)
     return;  // Start on first non-zero bitrate, may initially be zero.
 
-  int64_t now = env_.clock().TimeInMilliseconds();
+  int64_t now = clock_->TimeInMilliseconds();
   if (uma_container_->target_rate_updates_.last_ms != -1) {
     bool was_paused = stats_.target_media_bitrate_bps == 0;
     int64_t diff_ms = now - uma_container_->target_rate_updates_.last_ms;
@@ -1020,7 +1020,7 @@ void SendStatisticsProxy::UpdateEncoderFallbackStats(
 
   FallbackEncoderInfo* fallback_info = &uma_container_->fallback_info_;
 
-  const int64_t now_ms = env_.clock().TimeInMilliseconds();
+  const int64_t now_ms = clock_->TimeInMilliseconds();
   bool is_active = fallback_info->is_active;
   if (encoder_changed_) {
     // Implementation changed.
@@ -1088,7 +1088,7 @@ void SendStatisticsProxy::OnSendEncodedImage(
     const CodecSpecificInfo* codec_info) {
   int simulcast_idx = encoded_image.SimulcastIndex().value_or(0);
   MutexLock lock(&mutex_);
-  Timestamp now = env_.clock().CurrentTime();
+  Timestamp now = clock_->CurrentTime();
   ++stats_.frames_encoded;
   // The current encode frame rate is based on previously encoded frames.
   double encode_frame_rate = encoded_frame_rate_tracker_.Rate(now);
@@ -1239,18 +1239,18 @@ void SendStatisticsProxy::OnEncoderImplementationChanged(
 
 int SendStatisticsProxy::GetInputFrameRate() const {
   MutexLock lock(&mutex_);
-  return round(uma_container_->input_frame_rate_tracker_.Rate(
-      env_.clock().CurrentTime()));
+  return round(
+      uma_container_->input_frame_rate_tracker_.Rate(clock_->CurrentTime()));
 }
 
 int SendStatisticsProxy::GetSendFrameRate() const {
   MutexLock lock(&mutex_);
-  return round(encoded_frame_rate_tracker_.Rate(env_.clock().CurrentTime()));
+  return round(encoded_frame_rate_tracker_.Rate(clock_->CurrentTime()));
 }
 
 void SendStatisticsProxy::OnIncomingFrame(int width, int height) {
   MutexLock lock(&mutex_);
-  Timestamp now = env_.clock().CurrentTime();
+  Timestamp now = clock_->CurrentTime();
   uma_container_->input_frame_rate_tracker_.Update(1, now);
   uma_container_->input_fps_counter_.Add(1);
   uma_container_->input_width_counter_.Add(width);
@@ -1485,10 +1485,10 @@ void SendStatisticsProxy::SetAdaptTimer(const MaskedAdaptationCounts& counts,
   if (counts.resolution_adaptations || counts.num_framerate_reductions) {
     // Adaptation enabled.
     if (!stats_.suspended)
-      timer->Start(env_.clock().TimeInMilliseconds());
+      timer->Start(clock_->TimeInMilliseconds());
     return;
   }
-  timer->Stop(env_.clock().TimeInMilliseconds());
+  timer->Stop(clock_->TimeInMilliseconds());
 }
 
 void SendStatisticsProxy::RtcpPacketTypesCounterUpdated(
@@ -1501,8 +1501,7 @@ void SendStatisticsProxy::RtcpPacketTypesCounterUpdated(
 
   stats->rtcp_packet_type_counts = packet_counter;
   if (uma_container_->first_rtcp_stats_time_ms_ == -1)
-    uma_container_->first_rtcp_stats_time_ms_ =
-        env_.clock().TimeInMilliseconds();
+    uma_container_->first_rtcp_stats_time_ms_ = clock_->TimeInMilliseconds();
 }
 
 void SendStatisticsProxy::OnReportBlockDataUpdated(
@@ -1537,7 +1536,7 @@ void SendStatisticsProxy::DataCountersUpdated(
 
   stats->rtp_stats = counters;
   if (uma_container_->first_rtp_stats_time_ms_ == -1) {
-    int64_t now_ms = env_.clock().TimeInMilliseconds();
+    int64_t now_ms = clock_->TimeInMilliseconds();
     uma_container_->first_rtp_stats_time_ms_ = now_ms;
     uma_container_->cpu_adapt_timer_.Restart(now_ms);
     uma_container_->quality_adapt_timer_.Restart(now_ms);
@@ -1619,7 +1618,7 @@ void SendStatisticsProxy::Trackers::AddSendDelay(Timestamp now,
 }
 
 void SendStatisticsProxy::OnSendPacket(uint32_t ssrc, Timestamp capture_time) {
-  Timestamp now = env_.clock().CurrentTime();
+  Timestamp now = clock_->CurrentTime();
 
   MutexLock lock(&mutex_);
   VideoSendStream::StreamStats* stats = GetStatsEntry(ssrc);

@@ -307,7 +307,6 @@ WTF_EXTERN_C_END
     M(StreamClientConnection) \
     M(ScrollingPerformanceTestFingerDownInterval) \
     M(ScrollingPerformanceTestMomentumInterval) \
-    M(ScrollingPerformanceTestRubberBand) \
     M(UpdateAccessibilityIsolatedTree) \
     M(WebKitPerformance) \
     M(UserScript) \

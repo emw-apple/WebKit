@@ -49,7 +49,6 @@ enum class WebKit::WebExtensionEventListenerType : uint8_t {
     MenusOnClicked,
     NotificationsOnButtonClicked,
     NotificationsOnClicked,
-    NotificationsOnClosed,
     PermissionsOnAdded,
     PermissionsOnRemoved,
     PortOnDisconnect,

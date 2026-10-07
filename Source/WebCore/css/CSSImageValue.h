@@ -67,6 +67,8 @@ public:
 
     bool equals(const CSSImageValue&) const;
 
+    bool knownToBeOpaque(const RenderElement&) const;
+
     RefPtr<Style::Image> createStyleImage(const Style::BuilderState&) const;
 
     bool NODELETE isLoadedFromOpaqueSource() const;

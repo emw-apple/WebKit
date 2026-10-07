@@ -149,12 +149,8 @@ ALWAYS_INLINE void setLength(JSGlobalObject* globalObject, VM& vm, JSObject* obj
             throwRangeError(globalObject, scope, "Invalid array length"_s);
             return;
         }
-        JSArray* array = uncheckedDowncast<JSArray>(obj);
-        // Only ArrayStorage can hold a read-only length, whose unchanged assignment must still throw.
-        if (!hasAnyArrayStorage(array->indexingType()) && array->length() == value)
-            return;
         scope.release();
-        array->setLength(globalObject, static_cast<uint32_t>(value), throwException);
+        uncheckedDowncast<JSArray>(obj)->setLength(globalObject, static_cast<uint32_t>(value), throwException);
         return;
     }
     scope.release();
@@ -191,8 +187,11 @@ void shift(JSGlobalObject* globalObject, JSObject* thisObj, uint64_t header, uin
 
     if (isJSArray(thisObj)) {
         JSArray* array = asArray(thisObj);
-        if (array->length() == length && array->shiftCount<shiftCountMode>(globalObject, static_cast<uint32_t>(header + resultCount), static_cast<uint32_t>(count)))
+        uint32_t header32 = static_cast<uint32_t>(header);
+        ASSERT(header32 == header);
+        if (array->length() == length && array->shiftCount<shiftCountMode>(globalObject, header32, static_cast<uint32_t>(count)))
             return;
+        header = header32;
     }
 
     for (uint64_t k = header; k < length - currentCount; ++k) {
@@ -247,7 +246,7 @@ inline void unshift(JSGlobalObject* globalObject, JSObject* thisObj, uint64_t he
 
         JSArray* array = asArray(thisObj);
         if (array->length() == length) {
-            bool handled = array->unshiftCount(globalObject, static_cast<uint32_t>(header + currentCount), static_cast<uint32_t>(count));
+            bool handled = array->unshiftCount(globalObject, static_cast<uint32_t>(header), static_cast<uint32_t>(count));
             EXCEPTION_ASSERT(!scope.exception() || handled);
             if (handled)
                 return;

@@ -555,6 +555,7 @@ public:
     void setAllowsLinkPreview(bool);
     bool allowsLinkPreview() const { return m_allowsLinkPreview; }
     NSObject *immediateActionAnimationControllerForHitTestResult(API::HitTestResult*, uint32_t type, API::Object* userData);
+    void didPerformImmediateActionHitTest(const WebHitTestResultData&, bool contentPreventsDefault, API::Object* userData);
     void prepareForImmediateActionAnimation();
     void cancelImmediateActionAnimation();
     void completeImmediateActionAnimation();
@@ -1005,7 +1006,7 @@ private:
     void nativeMouseEventHandler(NSEvent *, WebEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
     void nativeMouseEventHandlerInternal(NSEvent *, WebEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
 
-    void scheduleMouseDidMoveOverElementForModifierFlagsChange(NSEvent *);
+    void scheduleMouseDidMoveOverElement(NSEvent *);
 
     void mouseMovedInternal(NSEvent *);
     void mouseDownInternal(NSEvent *, WebEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);

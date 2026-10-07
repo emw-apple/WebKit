@@ -2800,12 +2800,12 @@ class ImageHelper final : public Resource, public angle::Subject
     // This function can be used to prevent issuing redundant layout transition commands.
     bool isReadBarrierNecessary(Renderer *renderer, ImageAccess newAccess) const;
     bool isReadSubresourceBarrierNecessary(ImageAccess newAccess,
-                                           LevelIndex levelStart,
+                                           gl::OwnerLevel levelStart,
                                            uint32_t levelCount,
                                            gl::OwnerLayer layerStart,
                                            uint32_t layerCount) const;
     bool isWriteBarrierNecessary(ImageAccess newAccess,
-                                 LevelIndex levelStart,
+                                 gl::OwnerLevel levelStart,
                                  uint32_t levelCount,
                                  gl::OwnerLayer layerStart,
                                  uint32_t layerCount) const;
@@ -2826,6 +2826,7 @@ class ImageHelper final : public Resource, public angle::Subject
                               DeviceQueueIndex newDeviceQueueIndex,
                               OutsideRenderPassCommandBuffer *commandBuffer);
 
+    // Returns true if barrier has been generated
     void updateLayoutAndBarrier(Context *context,
                                 VkImageAspectFlags aspectMask,
                                 ImageAccess newAccess,
@@ -2952,7 +2953,7 @@ class ImageHelper final : public Resource, public angle::Subject
 
     // Mark a given subresource as written to.  The subresource is identified by [levelStart,
     // levelStart + levelCount) and [layerStart, layerStart + layerCount).
-    void onWrite(LevelIndex levelStart,
+    void onWrite(gl::OwnerLevel levelStart,
                  uint32_t levelCount,
                  gl::OwnerLayer layerStart,
                  uint32_t layerCount,
@@ -3076,6 +3077,8 @@ class ImageHelper final : public Resource, public angle::Subject
         // For ClearEmulatedChannelsOnly, mask of which channels to clear.
         VkColorComponentFlags colorMaskFlags;
     };
+    ANGLE_DISABLE_STRUCT_PADDING_WARNINGS
+    ANGLE_ENABLE_STRUCT_PADDING_WARNINGS
     struct ClearPartialUpdate
     {
         bool operator==(const ClearPartialUpdate &rhs) const
@@ -3088,8 +3091,8 @@ class ImageHelper final : public Resource, public angle::Subject
         uint32_t levelIndex;
         uint32_t layerIndex;
         uint32_t layerCount;
-        VkOffset2D offset;
-        VkExtent2D extent;
+        VkOffset3D offset;
+        VkExtent3D extent;
     };
     ANGLE_DISABLE_STRUCT_PADDING_WARNINGS
     struct BufferUpdate
@@ -3125,7 +3128,7 @@ class ImageHelper final : public Resource, public angle::Subject
                           const gl::OwnerLevel levelIndex,
                           const gl::OwnerLayer layerIndex,
                           const uint32_t layerCount,
-                          const gl::Rectangle &clearArea);
+                          const gl::Box &clearArea);
         SubresourceUpdate(VkImageAspectFlags aspectFlags,
                           const VkClearValue &clearValue,
                           gl::OwnerLevel level,
@@ -3244,16 +3247,16 @@ class ImageHelper final : public Resource, public angle::Subject
                                  PrimaryCommandBuffer *commandBuffer,
                                  VkSemaphore *acquireNextImageSemaphoreOut);
 
-    void setSubresourcesWrittenSinceBarrier(LevelIndex levelStart,
+    void setSubresourcesWrittenSinceBarrier(gl::OwnerLevel levelStart,
                                             uint32_t levelCount,
                                             gl::OwnerLayer layerStart,
                                             uint32_t layerCount);
 
     void resetSubresourcesWrittenSinceBarrier();
-    bool areLevelSubresourcesWrittenWithinMaskRange(LevelIndex level,
+    bool areLevelSubresourcesWrittenWithinMaskRange(uint32_t level,
                                                     ImageLayerWriteMask &layerMask) const
     {
-        return (mSubresourcesWrittenSinceBarrier[level.get()] & layerMask) != 0;
+        return (mSubresourcesWrittenSinceBarrier[level] & layerMask) != 0;
     }
 
     bool verifyNoStagedUpdates() const;
@@ -3272,15 +3275,6 @@ class ImageHelper final : public Resource, public angle::Subject
                LayerIndex baseArrayLayer,
                uint32_t layerCount,
                OutsideRenderPassCommandBuffer *commandBuffer);
-
-    angle::Result clearPartial(ContextVk *contextVk,
-                               VkImageAspectFlags aspectFlags,
-                               const VkClearValue &value,
-                               LevelIndex mipLevel,
-                               LayerIndex baseArrayLayer,
-                               uint32_t layerCount,
-                               const gl::Rectangle &clearArea,
-                               OutsideRenderPassCommandBufferHelper **commandBuffer);
 
     void clearColor(Renderer *renderer,
                     const VkClearColorValue &color,
@@ -3464,31 +3458,21 @@ class ImageHelper final : public Resource, public angle::Subject
     }
 
     void adjustLayerRange(const SubresourceUpdates &levelUpdates,
-                          const gl::OwnerLevel levelIndex,
                           gl::OwnerLayer *layerStart,
                           gl::OwnerLayer *layerEnd);
 
     // Returns true if the update's layer range exactly matches [layerIndex, layerIndex+layerCount).
-    // For 3D images, layer indicates slice.
     bool matchesLayerRange(const SubresourceUpdate &update,
-                           const gl::OwnerLevel levelIndex,
                            gl::OwnerLayer layerIndex,
                            uint32_t layerCount) const;
     // Returns true if the update is to any layer within range of [layerIndex,
     // layerIndex+layerCount).
-    // For 3D images, layer indicates slice.
     bool intersectsLayerRange(const SubresourceUpdate &update,
-                              const gl::OwnerLevel levelIndex,
                               gl::OwnerLayer layerIndex,
                               uint32_t layerCount) const;
-    // Get the layer range modified by the update.  For 3D images, layer indicates slice.
     void getDestSubresource(const SubresourceUpdate &update,
-                            const gl::OwnerLevel levelIndex,
                             gl::OwnerLayer *baseLayerOut,
                             uint32_t *layerCountOut) const;
-
-    // Make an image index that covers the entire level
-    gl::OwnerImageIndex getImageIndexForLevel(gl::OwnerLevel level);
 
     // Copy most of state and move VkImage/VkDeviceMemory from other ImageHelper. This should not be
     // used for general usage. It is specifically for stageSelfUpdate and falling back from tile
@@ -3576,7 +3560,6 @@ class ImageHelper final : public Resource, public angle::Subject
     // Track whether each subresource of VkImage has defined contents. Up to 8 layers are tracked
     // per level, above which the contents are considered unconditionally defined. Note that this is
     // only tracking VkImage. Staged update will not set this bit until it is flushed.
-    // For 3D images, tracking is done per slice.
     gl::TexLevelArray<LevelContentDefinedMask> mVkImageContentDefined;
     gl::TexLevelArray<LevelContentDefinedMask> mVkImageStencilContentDefined;
 
@@ -3600,7 +3583,6 @@ class ImageHelper final : public Resource, public angle::Subject
     // Used to track subresource writes per level/layer. This can help parallelize writes to
     // different levels or layers of the image, such as data uploads.
     // See comment on kMaxParallelLayerWrites.
-    // Indexed by vk::LevelIndex
     gl::TexLevelArray<ImageLayerWriteMask> mSubresourcesWrittenSinceBarrier;
 };
 

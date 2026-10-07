@@ -135,7 +135,7 @@ bool SQLiteDatabase::open(const String& filename, OpenMode openMode, OptionSet<O
             return;
 
         m_openingThreadID = 0;
-        m_openErrorMessage = UTF8CString::unsafeFromUTF8(sqlite3_errmsg(m_db));
+        m_openErrorMessage = UTF8CString { byteCast<char8_t>(sqlite3_errmsg(m_db)) };
         m_openError = sqlite3_errcode(m_db);
         close();
     });
@@ -531,7 +531,7 @@ void SQLiteDatabase::clearAllTables()
         tables.append(statement->columnText(0));
     for (auto& table : tables) {
         if (!executeCommandSlow(makeString("DROP TABLE "_s, table)))
-            LOG(SQLDatabase, "Unable to drop table %s", table.utf8());
+            LOG(SQLDatabase, "Unable to drop table %s", table.ascii().data());
     }
 }
 

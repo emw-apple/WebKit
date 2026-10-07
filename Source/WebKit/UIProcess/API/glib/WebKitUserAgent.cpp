@@ -100,9 +100,9 @@ WebKitUserAgent* webkit_user_agent_new_with_application_details(WebKitUserAgentT
 {
     WebKitUserAgent* userAgent = webkit_user_agent_new(type);
     if (applicationName)
-        userAgent->applicationName = UTF8CString::unsafeFromUTF8(applicationName);
+        userAgent->applicationName = UTF8CString { byteCast<char8_t>(applicationName) };
     if (applicationVersion)
-        userAgent->applicationVersion = UTF8CString::unsafeFromUTF8(applicationVersion);
+        userAgent->applicationVersion = UTF8CString { byteCast<char8_t>(applicationVersion) };
     return userAgent;
 }
 

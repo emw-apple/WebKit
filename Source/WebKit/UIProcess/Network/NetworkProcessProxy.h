@@ -420,8 +420,6 @@ private:
 
     // Message handlers
     void didReceiveAuthenticationChallenge(PAL::SessionID, WebPageProxyIdentifier, const std::optional<WebCore::SecurityOriginData>&, WebCore::AuthenticationChallenge&&, bool, AuthenticationChallengeIdentifier);
-    void requestLocalNetworkAccessPermission(PAL::SessionID, WebPageProxyIdentifier, WebCore::ClientOrigin&&, WebCore::IPAddressSpace, CompletionHandler<void(WebCore::PermissionState)>&&);
-    void queryLocalNetworkAccessPermission(PAL::SessionID, std::optional<WebPageProxyIdentifier>, WebCore::ClientOrigin&&, WebCore::IPAddressSpace, CompletionHandler<void(std::optional<WebCore::PermissionState>)>&&);
     void negotiatedLegacyTLS(WebPageProxyIdentifier);
     void didNegotiateModernTLS(WebPageProxyIdentifier, const URL&);
     void didBlockLoadToKnownTracker(WebPageProxyIdentifier, const URL&);
@@ -457,7 +455,7 @@ private:
 
     void terminateWebProcess(WebCore::ProcessIdentifier, IPC::MessageName);
 
-    void considerProcessSwapForNavigationResponse(WebPageProxyIdentifier, WebCore::NavigationIdentifier, WebCore::BrowsingContextGroupSwitchDecision, WebCore::NavigationResponseProcessSwapReason, const WebCore::Site& responseSite, NetworkResourceLoadIdentifier existingNetworkResourceLoadIdentifierToResume, MonotonicTime originalNavigationStartTime, CompletionHandler<void(std::optional<WebCore::ProcessIdentifier> destinationWebProcess)>&&);
+    void considerProcessSwapForNavigationResponse(WebPageProxyIdentifier, WebCore::NavigationIdentifier, WebCore::BrowsingContextGroupSwitchDecision, WebCore::NavigationResponseProcessSwapReason, const WebCore::Site& responseSite, NetworkResourceLoadIdentifier existingNetworkResourceLoadIdentifierToResume, MonotonicTime originalNavigationStartTime, CompletionHandler<void(bool success)>&&);
 
     void requestStorageSpace(PAL::SessionID, const WebCore::ClientOrigin&, uint64_t quota, uint64_t currentSize, uint64_t spaceRequired, CompletionHandler<void(std::optional<uint64_t> quota)>&&);
     void increaseQuota(PAL::SessionID, const WebCore::ClientOrigin&, QuotaIncreaseRequestIdentifier, uint64_t currentQuota, uint64_t currentUsage, uint64_t spaceRequested);

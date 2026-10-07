@@ -59,7 +59,7 @@ void MathMLMathElement::didAttachRenderers()
 {
     MathMLRowElement::didAttachRenderers();
 
-    MathMLStyle::resolveMathMLStyleTree(protect(renderer()));
+    MathMLStyle::resolveMathMLStyleTree(renderer());
 }
 
 bool MathMLMathElement::acceptsLegacyMathVariantAttribute()

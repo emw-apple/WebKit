@@ -33,7 +33,6 @@
 #import "WebCoreThread.h"
 #import <QuartzCore/CADisplayLink.h>
 #import <wtf/MainThread.h>
-#import <wtf/WeakObjCPtr.h>
 #import <wtf/text/TextStream.h>
 
 using WebCore::DisplayRefreshMonitorIOS;
@@ -42,8 +41,8 @@ constexpr WebCore::FramesPerSecond DisplayLinkFramesPerSecond = 60;
 
 @interface WebDisplayLinkHandler : NSObject
 {
-    ThreadSafeWeakPtr<DisplayRefreshMonitorIOS> m_monitor;
-    WeakObjCPtr<CADisplayLink> m_displayLink;
+    DisplayRefreshMonitorIOS* m_monitor;
+    CADisplayLink *m_displayLink;
 }
 
 - (id)initWithMonitor:(DisplayRefreshMonitorIOS*)monitor;
@@ -62,11 +61,10 @@ constexpr WebCore::FramesPerSecond DisplayLinkFramesPerSecond = 60;
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         // FIXME: CoreAnimation version deprecated rdar://164090713
         // Note that CADisplayLink retains its target (self), so a call to -invalidate is needed on teardown.
-        RetainPtr displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(handleDisplayLink:)];
+        m_displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(handleDisplayLink:)];
     ALLOW_DEPRECATED_DECLARATIONS_END
-        [displayLink addToRunLoop:protect(WebThreadNSRunLoop()) forMode:NSDefaultRunLoopMode];
-        [displayLink setPreferredFramesPerSecond:DisplayLinkFramesPerSecond];
-        m_displayLink = displayLink.get();
+        [m_displayLink addToRunLoop:WebThreadNSRunLoop() forMode:NSDefaultRunLoopMode];
+        m_displayLink.preferredFramesPerSecond = DisplayLinkFramesPerSecond;
     }
     return self;
 }
@@ -82,19 +80,18 @@ constexpr WebCore::FramesPerSecond DisplayLinkFramesPerSecond = 60;
     UNUSED_PARAM(sender);
     ASSERT(isMainThread());
     
-    if (RefPtr monitor = m_monitor)
-        monitor->displayLinkCallbackFired();
+    protect(m_monitor)->displayLinkCallbackFired();
 }
 
 - (void)setPaused:(BOOL)paused
 {
-    [protect(m_displayLink) setPaused:paused];
+    [m_displayLink setPaused:paused];
 }
 
 - (void)invalidate
 {
-    [protect(m_displayLink) invalidate];
-    m_displayLink = nil;
+    [m_displayLink invalidate];
+    m_displayLink = nullptr;
 }
 
 @end

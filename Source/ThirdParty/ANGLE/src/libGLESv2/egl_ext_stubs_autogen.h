@@ -26,7 +26,6 @@ namespace egl
 class AttributeMap;
 class Device;
 class Display;
-class ThreadSafeDisplay;
 class Image;
 class Stream;
 class Surface;
@@ -35,7 +34,7 @@ class Thread;
 struct Config;
 
 EGLint ClientWaitSyncKHR(Thread *thread,
-                         egl::ThreadSafeDisplay *dpyPacked,
+                         egl::Display *dpyPacked,
                          egl::Sync *syncPacked,
                          EGLint flags,
                          EGLTimeKHR timeout);
@@ -61,7 +60,7 @@ EGLStreamKHR CreateStreamKHR(Thread *thread,
                              egl::Display *dpyPacked,
                              const AttributeMap &attrib_listPacked);
 EGLSyncKHR CreateSyncKHR(Thread *thread,
-                         egl::ThreadSafeDisplay *dpyPacked,
+                         egl::Display *dpyPacked,
                          EGLenum type,
                          const AttributeMap &attrib_listPacked);
 EGLint DebugMessageControlKHR(Thread *thread,
@@ -69,10 +68,8 @@ EGLint DebugMessageControlKHR(Thread *thread,
                               const AttributeMap &attrib_listPacked);
 EGLBoolean DestroyImageKHR(Thread *thread, egl::Display *dpyPacked, ImageID imagePacked);
 EGLBoolean DestroyStreamKHR(Thread *thread, egl::Display *dpyPacked, egl::Stream *streamPacked);
-EGLBoolean DestroySyncKHR(Thread *thread, egl::ThreadSafeDisplay *dpyPacked, egl::Sync *syncPacked);
-EGLint DupNativeFenceFDANDROID(Thread *thread,
-                               egl::ThreadSafeDisplay *dpyPacked,
-                               egl::Sync *syncPacked);
+EGLBoolean DestroySyncKHR(Thread *thread, egl::Display *dpyPacked, egl::Sync *syncPacked);
+EGLint DupNativeFenceFDANDROID(Thread *thread, egl::Display *dpyPacked, egl::Sync *syncPacked);
 EGLBoolean GetMscRateANGLE(Thread *thread,
                            egl::Display *dpyPacked,
                            SurfaceID surfacePacked,
@@ -84,7 +81,7 @@ EGLDisplay GetPlatformDisplayEXT(Thread *thread,
                                  void *native_display,
                                  const AttributeMap &attrib_listPacked);
 EGLBoolean GetSyncAttribKHR(Thread *thread,
-                            egl::ThreadSafeDisplay *dpyPacked,
+                            egl::Display *dpyPacked,
                             egl::Sync *syncPacked,
                             EGLint attribute,
                             EGLint *value);
@@ -192,7 +189,7 @@ EGLBoolean SetDamageRegionKHR(Thread *thread,
                               EGLint *rects,
                               EGLint n_rects);
 EGLBoolean SignalSyncKHR(Thread *thread,
-                         egl::ThreadSafeDisplay *dpyPacked,
+                         egl::Display *dpyPacked,
                          egl::Sync *syncPacked,
                          EGLenum mode);
 EGLBoolean StreamAttribKHR(Thread *thread,
@@ -219,10 +216,7 @@ EGLBoolean SwapBuffersWithDamageKHR(Thread *thread,
                                     const EGLint *rects,
                                     EGLint n_rects);
 EGLBoolean UnlockSurfaceKHR(Thread *thread, egl::Display *dpyPacked, SurfaceID surfacePacked);
-EGLint WaitSyncKHR(Thread *thread,
-                   egl::ThreadSafeDisplay *dpyPacked,
-                   egl::Sync *syncPacked,
-                   EGLint flags);
+EGLint WaitSyncKHR(Thread *thread, egl::Display *dpyPacked, egl::Sync *syncPacked, EGLint flags);
 EGLDeviceEXT CreateDeviceANGLE(Thread *thread,
                                EGLint device_type,
                                void *native_device,
@@ -284,9 +278,7 @@ EGLBoolean ExportVkImageANGLE(Thread *thread,
                               ImageID imagePacked,
                               void *vk_image,
                               void *vk_image_create_info);
-void *CopyMetalSharedEventANGLE(Thread *thread,
-                                egl::ThreadSafeDisplay *dpyPacked,
-                                egl::Sync *syncPacked);
+void *CopyMetalSharedEventANGLE(Thread *thread, egl::Display *dpyPacked, egl::Sync *syncPacked);
 void WaitUntilWorkScheduledANGLE(Thread *thread, egl::Display *dpyPacked);
 void SetValidationEnabledANGLE(Thread *thread, EGLBoolean validationState);
 }  // namespace egl

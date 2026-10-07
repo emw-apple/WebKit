@@ -36,7 +36,10 @@ namespace JSC {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(MarkingConstraintSet);
 
-MarkingConstraintSet::MarkingConstraintSet() = default;
+MarkingConstraintSet::MarkingConstraintSet(JSC::Heap& heap)
+    : m_heap(heap)
+{
+}
 
 MarkingConstraintSet::~MarkingConstraintSet() = default;
 
@@ -94,7 +97,7 @@ bool MarkingConstraintSet::isWavefrontAdvancing(SlotVisitor& visitor)
 bool MarkingConstraintSet::executeConvergenceImpl(SlotVisitor& visitor)
 {
     SuperSamplerScope superSamplerScope(false);
-    MarkingConstraintSolver solver(*this, visitor);
+    MarkingConstraintSolver solver(*this);
     
     unsigned iteration = m_iteration++;
     

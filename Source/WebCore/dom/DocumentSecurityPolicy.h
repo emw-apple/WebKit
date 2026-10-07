@@ -27,14 +27,12 @@
 
 #include <WebCore/CrossOriginEmbedderPolicy.h>
 #include <WebCore/CrossOriginOpenerPolicy.h>
-#include <WebCore/IsSecureContext.h>
 
 namespace WebCore {
 
 struct DocumentSecurityPolicy {
     CrossOriginEmbedderPolicy crossOriginEmbedderPolicy;
     CrossOriginOpenerPolicy crossOriginOpenerPolicy;
-    IsSecureContext isSecureContext;
 };
 
 } // namespace WebCore

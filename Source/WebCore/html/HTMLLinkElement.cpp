@@ -573,10 +573,8 @@ void HTMLLinkElement::initializeStyleSheet(Ref<StyleSheetContents>&& styleSheet,
     if (CheckedPtr styleScope = m_styleScope)
         styleScope->establishPreferredStylesheetSetName(*this, protect(*m_sheet));
 
-    if (!protect(m_sheet)->canAccessRules()) {
-        ASSERT(m_sheet->contents().loadedFromOpaqueSource() == LoadedFromOpaqueSource::Yes);
+    if (!protect(m_sheet)->canAccessRules())
         m_sheet->contents().setAsLoadedFromOpaqueSource();
-    }
 }
 
 void HTMLLinkElement::setCSSStyleSheet(const String& href, const URL& baseURL, ASCIILiteral charset, const CachedCSSStyleSheet& cachedStyleSheet)
@@ -604,8 +602,6 @@ void HTMLLinkElement::setCSSStyleSheet(const String& href, const URL& baseURL, A
     }
 
     CSSParserContext parserContext(document.get(), baseURL, charset);
-    if (!cachedStyleSheet.isCORSSameOrigin())
-        parserContext.loadedFromOpaqueSource = LoadedFromOpaqueSource::Yes;
     auto cachePolicy = frame->loader().subresourceCachePolicy(baseURL);
 
     if (auto restoredSheet = const_cast<CachedCSSStyleSheet&>(cachedStyleSheet).restoreParsedStyleSheet(parserContext, cachePolicy, frame->loader())) {

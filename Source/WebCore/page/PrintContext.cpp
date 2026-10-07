@@ -101,11 +101,10 @@ void PrintContext::computePageRects(const FloatRect& printRect, float headerHeig
 
 FloatBoxExtent PrintContext::computedPageMargin(FloatBoxExtent printMargin)
 {
-    RefPtr document = frame() ? frame()->document() : nullptr;
-    if (!document)
+    if (!frame() || !frame()->document())
         return printMargin;
     // FIXME Currently no pseudo class is supported.
-    auto style = protect(protect(document->styleScope())->resolver())->styleForPage(0);
+    auto style = protect(frame())->document()->styleScope().resolver().styleForPage(0);
 
     float pixelToPointScaleFactor = 1.0f / CSS::pixelsPerPt;
 

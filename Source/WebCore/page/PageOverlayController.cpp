@@ -117,12 +117,6 @@ bool PageOverlayController::hasViewOverlays() const
     return false;
 }
 
-void PageOverlayController::mainFrameDidBecomeLocal()
-{
-    // View overlays installed while the main frame was remote could not be attached, so attach them now.
-    attachViewOverlayLayers();
-}
-
 void PageOverlayController::attachViewOverlayLayers()
 {
     if (hasViewOverlays())

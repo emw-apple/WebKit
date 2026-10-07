@@ -72,7 +72,6 @@
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/URLParser.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GSpanExtras.h>
 #include <wtf/glib/WTFGType.h>
 #include <wtf/text/CString.h>
@@ -346,7 +345,7 @@ static UTF8CString injectedBundleDirectory()
 {
     const char* bundleDirectory = g_getenv("WEBKIT_INJECTED_BUNDLE_PATH");
     if (bundleDirectory && g_file_test(bundleDirectory, G_FILE_TEST_IS_DIR))
-        return UTF8CString::unsafeFromUTF8(bundleDirectory);
+        return UTF8CString { byteCast<char8_t>(bundleDirectory) };
 
     return PKGLIBDIR G_DIR_SEPARATOR_S "injected-bundle"_s G_DIR_SEPARATOR_S;
 }
@@ -358,7 +357,7 @@ static void webkitWebContextGetProperty(GObject* object, guint propID, GValue* v
     switch (propID) {
 #if PLATFORM(GTK) && !USE(GTK4)
     case PROP_LOCAL_STORAGE_DIRECTORY:
-        gValueSetString(value, context->priv->localStorageDirectory);
+        g_value_set_string(value, context->priv->localStorageDirectory.legacyCStringPointer());
         break;
 #endif
 #if !ENABLE(2022_GLIB_API)
@@ -391,7 +390,7 @@ static void webkitWebContextSetProperty(GObject* object, guint propID, const GVa
     switch (propID) {
 #if PLATFORM(GTK) && !USE(GTK4)
     case PROP_LOCAL_STORAGE_DIRECTORY:
-        context->priv->localStorageDirectory = UTF8CString::unsafeFromUTF8(g_value_get_string(value));
+        context->priv->localStorageDirectory = UTF8CString { byteCast<char8_t>(g_value_get_string(value)) };
         break;
 #endif
 #if !ENABLE(2022_GLIB_API)
@@ -419,7 +418,7 @@ static void webkitWebContextSetProperty(GObject* object, guint propID, const GVa
     case PROP_TIME_ZONE_OVERRIDE: {
         const auto* timeZone = g_value_get_string(value);
         if (isTimeZoneValid(StringView::fromLatin1(timeZone)))
-            context->priv->timeZoneOverride = UTF8CString::unsafeFromUTF8(timeZone);
+            context->priv->timeZoneOverride = UTF8CString { byteCast<char8_t>(timeZone) };
         break;
     }
     default:
@@ -431,13 +430,13 @@ static void webkitWebContextConstructed(GObject* object)
 {
     G_OBJECT_CLASS(webkit_web_context_parent_class)->constructed(object);
 
-    auto bundleFilename = gBuildFilename(injectedBundleDirectory(), INJECTED_BUNDLE_FILENAME);
+    GUniquePtr<char> bundleFilename(g_build_filename(injectedBundleDirectory().legacyCStringPointer(), INJECTED_BUNDLE_FILENAME, nullptr));
 
     WebKitWebContext* webContext = WEBKIT_WEB_CONTEXT(object);
     WebKitWebContextPrivate* priv = webContext->priv;
 
     Ref configuration = API::ProcessPoolConfiguration::create();
-    configuration->setInjectedBundlePath(FileSystem::stringFromFileSystemRepresentation(bundleFilename.utf8()));
+    configuration->setInjectedBundlePath(FileSystem::stringFromFileSystemRepresentation(bundleFilename.get()));
     configuration->setUsesWebProcessCache(true);
 #if PLATFORM(GTK) && !USE(GTK4)
     configuration->setProcessSwapsOnNavigation(priv->psonEnabled);
@@ -1187,10 +1186,11 @@ void webkit_web_context_set_favicon_database_directory(WebKitWebContext* context
     priv->faviconDatabaseDirectory = directoryPath.utf8();
 
     // Build the full path to the icon database file on disk.
-    auto faviconDatabasePath = gBuildFilename(priv->faviconDatabaseDirectory, "WebpageIcons.db");
+    GUniquePtr<gchar> faviconDatabasePath(g_build_filename(priv->faviconDatabaseDirectory.legacyCStringPointer(),
+        "WebpageIcons.db", nullptr));
 
     // Setting the path will cause the icon database to be opened.
-    webkitFaviconDatabaseOpen(priv->faviconDatabase.get(), FileSystem::stringFromFileSystemRepresentation(faviconDatabasePath.utf8()), webkit_web_context_is_ephemeral(context));
+    webkitFaviconDatabaseOpen(priv->faviconDatabase.get(), FileSystem::stringFromFileSystemRepresentation(faviconDatabasePath.get()), webkit_web_context_is_ephemeral(context));
 }
 
 /**
@@ -1497,7 +1497,7 @@ void webkit_web_context_add_path_to_sandbox(WebKitWebContext* context, const cha
         g_error("Sandbox paths cannot be changed after subprocesses were spawned.");
 
     auto permission = readOnly ? SandboxPermission::ReadOnly : SandboxPermission::ReadWrite;
-    context->priv->processPool->addSandboxPath(UTF8CString::unsafeFromUTF8(path), permission);
+    context->priv->processPool->addSandboxPath(UTF8CString { byteCast<char8_t>(path) }, permission);
 }
 
 #if !ENABLE(2022_GLIB_API)
@@ -1581,7 +1581,7 @@ const gchar* const* webkit_web_context_get_spell_checking_languages(WebKitWebCon
     static GRefPtr<GPtrArray> languagesToReturn;
     languagesToReturn = adoptGRef(g_ptr_array_new_with_free_func(g_free));
     for (const auto& language : spellCheckingLanguages)
-        g_ptr_array_add(languagesToReturn.get(), gStrdup(language.utf8()));
+        g_ptr_array_add(languagesToReturn.get(), g_strdup(language.utf8().legacyCStringPointer()));
     g_ptr_array_add(languagesToReturn.get(), nullptr);
 
     return reinterpret_cast<char**>(languagesToReturn->pdata);
@@ -1700,7 +1700,7 @@ void webkit_web_context_set_web_extensions_directory(WebKitWebContext* context, 
     g_return_if_fail(WEBKIT_IS_WEB_CONTEXT(context));
     g_return_if_fail(directory);
 
-    context->priv->webProcessExtensionsDirectory = UTF8CString::unsafeFromUTF8(directory);
+    context->priv->webProcessExtensionsDirectory = UTF8CString { byteCast<char8_t>(directory) };
     context->priv->processPool->addSandboxPath(context->priv->webProcessExtensionsDirectory, SandboxPermission::ReadOnly);
 }
 
@@ -2017,8 +2017,8 @@ void webkitWebContextDownloadStarted(WebKitWebContext* context, WebKitDownload* 
 GVariant* webkitWebContextInitializeWebProcessExtensions(WebKitWebContext* context)
 {
     g_signal_emit(context, signals[INITIALIZE_WEB_PROCESS_EXTENSIONS], 0);
-    return gVariantNew("(msmv)",
-        context->priv->webProcessExtensionsDirectory,
+    return g_variant_new("(msmv)",
+        context->priv->webProcessExtensionsDirectory.legacyCStringPointer(),
         context->priv->webProcessExtensionsInitializationUserData.get());
 }
 

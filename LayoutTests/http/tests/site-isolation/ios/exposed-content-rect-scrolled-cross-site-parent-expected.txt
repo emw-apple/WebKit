@@ -1,4 +1,0 @@
-
-
-PASS exposedContentRect is mapped down through a scrolled cross-site frame to its same-site child
-

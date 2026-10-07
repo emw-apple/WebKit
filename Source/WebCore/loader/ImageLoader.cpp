@@ -117,7 +117,7 @@ static TextStream& operator<<(TextStream& ts, ImageLoading loading)
 }
 #endif // !LOG_DISABLED
 
-static ImageEventSender& loadEventSenderSingleton()
+static ImageEventSender& loadEventSender()
 {
     static NeverDestroyed<ImageEventSender> sender;
     return sender;
@@ -162,9 +162,9 @@ ImageLoader::~ImageLoader()
     if (RefPtr image = m_image)
         image->removeClient(*this);
 
-    ASSERT(m_hasPendingLoadEvent || m_hasPendingErrorEvent || !loadEventSenderSingleton().hasPendingEvents(*this));
+    ASSERT(m_hasPendingLoadEvent || m_hasPendingErrorEvent || !loadEventSender().hasPendingEvents(*this));
     if (m_hasPendingLoadEvent || m_hasPendingErrorEvent)
-        loadEventSenderSingleton().cancelEvent(*this);
+        loadEventSender().cancelEvent(*this);
 }
 
 void ImageLoader::ref() const
@@ -194,7 +194,7 @@ void ImageLoader::clearImageWithoutConsideringPendingLoadEvent()
     if (RefPtr oldImage = std::exchange(m_image, nullptr)) {
         m_hasPendingBeforeLoadEvent = false;
         if (m_hasPendingLoadEvent || m_hasPendingErrorEvent) {
-            loadEventSenderSingleton().cancelEvent(*this);
+            loadEventSender().cancelEvent(*this);
             m_hasPendingLoadEvent = m_hasPendingErrorEvent = false;
         }
         m_imageComplete = true;
@@ -239,11 +239,11 @@ void ImageLoader::updateFromElement(RelevantMutation relevantMutation)
         m_failedLoadURL = attr;
         RefPtr lazyImageElement = dynamicDowncast<HTMLImageElement>(element);
         if (lazyImageElement && lazyImageElement->isLazyLoadable() && document->settings().lazyImageLoadingEnabled() && !element->isConnected()) {
-            loadEventSenderSingleton().cancelEvent(*this, eventNames().errorEvent);
+            loadEventSender().cancelEvent(*this, eventNames().errorEvent);
             m_hasPendingErrorEvent = false;
         } else {
             m_hasPendingErrorEvent = true;
-            loadEventSenderSingleton().dispatchEventSoon(*this, eventNames().errorEvent);
+            loadEventSender().dispatchEventSoon(*this, eventNames().errorEvent);
         }
         didUpdateCachedImage(relevantMutation, WTF::move(newImage));
         return;
@@ -346,7 +346,7 @@ void ImageLoader::updateFromElement(RelevantMutation relevantMutation)
     if (!newImage && !pageIsBeingDismissed(document)) {
         m_failedLoadURL = attr;
         m_hasPendingErrorEvent = true;
-        loadEventSenderSingleton().dispatchEventSoon(*this, eventNames().errorEvent);
+        loadEventSender().dispatchEventSoon(*this, eventNames().errorEvent);
     } else
         clearFailedLoadURL();
 
@@ -368,7 +368,7 @@ void ImageLoader::didUpdateCachedImage(RelevantMutation relevantMutation, RefPtr
 
         m_hasPendingBeforeLoadEvent = false;
         if (m_hasPendingLoadEvent) {
-            loadEventSenderSingleton().cancelEvent(*this, eventNames().loadEvent);
+            loadEventSender().cancelEvent(*this, eventNames().loadEvent);
             m_hasPendingLoadEvent = false;
         }
 
@@ -377,7 +377,7 @@ void ImageLoader::didUpdateCachedImage(RelevantMutation relevantMutation, RefPtr
         // this load and we should not cancel the event.
         // FIXME: If both previous load and this one got blocked with an error, we can receive one error event instead of two.
         if (m_hasPendingErrorEvent && newImage) {
-            loadEventSenderSingleton().cancelEvent(*this, eventNames().errorEvent);
+            loadEventSender().cancelEvent(*this, eventNames().errorEvent);
             m_hasPendingErrorEvent = false;
         }
 
@@ -488,7 +488,7 @@ void ImageLoader::notifyFinished(CachedResource& resource, const NetworkLoadMetr
         clearImageWithoutConsideringPendingLoadEvent();
 
         m_hasPendingErrorEvent = true;
-        loadEventSenderSingleton().dispatchEventSoon(*this, eventNames().errorEvent);
+        loadEventSender().dispatchEventSoon(*this, eventNames().errorEvent);
 
         auto message = makeString("Cannot load image "_s, imageURL.string(), " due to access control checks."_s);
         protect(document())->addConsoleMessage(MessageSource::Security, MessageLevel::Error, message);
@@ -524,7 +524,7 @@ void ImageLoader::notifyFinished(CachedResource& resource, const NetworkLoadMetr
         setImageCompleteAndMaybeUpdateRenderer();
 
         decode();
-        loadEventSenderSingleton().dispatchEventSoon(*this, eventNames().loadEvent);
+        loadEventSender().dispatchEventSoon(*this, eventNames().loadEvent);
 
 #if ENABLE(QUICKLOOK_FULLSCREEN)
         if (RefPtr page = element().document().page())
@@ -639,7 +639,7 @@ void ImageLoader::decode(Ref<DeferredPromise>&& promise)
 
     if (m_imageComplete) {
         Ref document = element().document();
-        protect(document->eventLoop())->queueMicrotask(document->vm(), [weakThis = WeakPtr { *this }]() mutable {
+        document->eventLoop().queueMicrotask(document->vm(), [weakThis = WeakPtr { *this }]() mutable {
             RefPtr protectedThis = weakThis;
             if (!protectedThis || !protectedThis->m_imageComplete)
                 return;
@@ -696,7 +696,7 @@ bool ImageLoader::hasPendingActivity() const
 
 void ImageLoader::dispatchPendingEvent(ImageEventSender* eventSender, const AtomString& eventType)
 {
-    ASSERT_UNUSED(eventSender, eventSender == &loadEventSenderSingleton());
+    ASSERT_UNUSED(eventSender, eventSender == &loadEventSender());
     if (eventType == eventNames().loadEvent)
         dispatchPendingLoadEvent();
     if (eventType == eventNames().errorEvent)
@@ -740,7 +740,7 @@ void ImageLoader::dispatchPendingErrorEvent()
     if (!m_hasPendingErrorEvent)
         return;
     m_hasPendingErrorEvent = false;
-    loadEventSenderSingleton().cancelEvent(*this, eventNames().errorEvent);
+    loadEventSender().cancelEvent(*this, eventNames().errorEvent);
     Ref protectedElement = element();
     Ref document = protectedElement->document();
     if (document->canEverRender())
@@ -753,7 +753,7 @@ void ImageLoader::dispatchPendingErrorEvent()
 
 void ImageLoader::dispatchPendingLoadEvents(Page* page)
 {
-    loadEventSenderSingleton().dispatchPendingEvents(page);
+    loadEventSender().dispatchPendingEvents(page);
 }
 
 void ImageLoader::elementDidMoveToNewDocument(Document& oldDocument)

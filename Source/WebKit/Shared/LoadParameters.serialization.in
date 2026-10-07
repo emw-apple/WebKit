@@ -69,5 +69,4 @@ enum class WebCore::LockBackForwardList : bool;
     uint64_t requiredCookiesVersion;
     std::optional<WebCore::NavigationRequester> requester;
     std::optional<WebCore::ResourceRequest> originalRequest;
-    std::optional<WebCore::RegistrableDomain> unpartitionedStorageSite;
 };

@@ -92,12 +92,10 @@ public:
     void isVisibleInViewportChanged();
     void inActiveDocumentChanged();
 
-    enum class ForAutoplay : bool { No, Yes };
-    std::expected<void, MediaPlaybackDenialExplanation> playbackStateChangePermitted(MediaPlaybackState, ForAutoplay = ForAutoplay::No) const;
+    std::expected<void, MediaPlaybackDenialExplanation> playbackStateChangePermitted(MediaPlaybackState) const;
     // playbackStateChangePermitted() only denies an audible element, so play() is permitted while
     // the resource is believed to be silent (no audio track discovered yet, muted, or volume zero)
-    // and denied once it becomes audible. Starting playback while hidden is the exception: an element
-    // whose tracks are not yet known is treated as audible.
+    // and denied once it becomes audible.
     bool playbackPermitted() const final { return playbackStateChangePermitted(MediaPlaybackState::Playing).has_value(); }
     bool autoplayPermitted() const;
     bool dataLoadingPermitted() const;
@@ -129,7 +127,6 @@ public:
 
     void mediaEngineUpdated();
 
-    void setState(State) override;
     void resetPlaybackSessionState() override;
 
     void suspendBuffering() override;
@@ -160,7 +157,6 @@ public:
 #if ENABLE(REQUIRES_PAGE_VISIBILITY_FOR_NOW_PLAYING)
         RequirePageVisibilityForVideoToBeNowPlaying = 1 << 18,
 #endif
-        RequireUserGestureToStartAudiblePlaybackWhenHidden = 1 << 19,
         AllRestrictions = ~NoRestrictions,
     };
     typedef unsigned BehaviorRestrictions;
@@ -217,14 +213,7 @@ public:
 
     bool hasNowPlayingInfo() const;
 
-    Seconds gracePeriodForResumingPlaybackInBackground() const { return m_gracePeriodForResumingPlaybackInBackground; }
-    void setGracePeriodForResumingPlaybackInBackgroundForTesting(Seconds period) { m_gracePeriodForResumingPlaybackInBackground = period; }
-
-    void loadWillStart(bool autoplay);
-
 private:
-    bool startingAudiblePlaybackWhileHiddenRequiresUserGesture(MediaPlaybackState, ForAutoplay, const HTMLMediaElement&, const Document&) const;
-    bool isWithinGracePeriodForResumingPlaybackInBackground(const Document&) const;
 
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
     void targetAvailabilityChangedTimerFired();
@@ -269,9 +258,6 @@ private:
 #endif
 
     Markable<MonotonicTime> m_mostRecentUserInteractionTime;
-    Markable<MonotonicTime> m_mostRecentPlaybackEndedTime;
-    Seconds m_gracePeriodForResumingPlaybackInBackground { 10_s };
-    bool m_startPlaybackWhenHiddenGranted { false };
 
     mutable bool m_isMainContent { false };
     Timer m_mainContentCheckTimer;

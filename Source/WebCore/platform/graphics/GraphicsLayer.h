@@ -79,7 +79,6 @@ class GraphicsLayerKeyframeValueList;
 class HTMLVideoElement;
 class Image;
 class ImageBuffer;
-class NativeImage;
 class MediaPlayer;
 class Model;
 class Settings;
@@ -388,10 +387,10 @@ public:
     virtual Vector<AcceleratedAnimationForTesting> acceleratedAnimationsForTesting() const { return { }; }
 
     // Layer contents
-    virtual void setContentsToNativeImage(NativeImage*) { }
-    virtual bool canDirectlyCompositeNativeImage() const { return true; }
+    virtual void setContentsToImage(Image*) { }
+    virtual bool shouldDirectlyCompositeImage(Image*) const { return true; }
 
-    // FIXME: Merge this with setContentsToNativeImage once we can efficiently convert an
+    // FIXME: Merge this with setContentsToImage once we can efficiently convert an
     // ImageBuffer to NativeImage without GPUP readback.
     virtual void setContentsToImageBuffer(ImageBuffer*) { }
     virtual bool shouldDirectlyCompositeImageBuffer(ImageBuffer*) const { return false; }
@@ -445,10 +444,9 @@ public:
     virtual void setShowRepaintCounter(bool show) { m_showRepaintCounter = show; }
     bool isShowingRepaintCounter() const { return m_showRepaintCounter; }
 
-    virtual void setShowFrameProcessBorders(bool show, unsigned frameDepth, FrameIdentifier frameID) { m_showFrameProcessBorders = show; m_frameProcessIndicatorDepth = frameDepth; m_frameID = frameID; }
+    virtual void setShowFrameProcessBorders(bool show, unsigned frameDepth = 0) { m_showFrameProcessBorders = show; m_frameProcessIndicatorDepth = frameDepth; }
     bool isShowingFrameProcessBorders() const { return m_showFrameProcessBorders; }
     unsigned frameProcessIndicatorDepth() const { return m_frameProcessIndicatorDepth; }
-    Markable<FrameIdentifier> frameID() const { return m_frameID; }
 
     // FIXME: this is really a paint count.
     int repaintCount() const { return m_repaintCount; }
@@ -684,7 +682,6 @@ protected:
 
     int m_repaintCount { 0 };
     unsigned m_frameProcessIndicatorDepth { 0 };
-    Markable<FrameIdentifier> m_frameID;
     Vector<Ref<GraphicsLayer>> m_children;
     WeakPtr<GraphicsLayer> m_parent;
 

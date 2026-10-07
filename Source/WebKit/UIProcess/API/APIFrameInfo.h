@@ -49,7 +49,7 @@ public:
     static Ref<FrameInfo> create(WebKit::FrameInfoData&&);
     virtual ~FrameInfo();
 
-    bool isMainFrame() const { return m_stateSnapshot.isMainFrame; }
+    bool isMainFrame() const { return m_data.isMainFrame; }
     bool isLocalFrame() const { return m_data.frameType == WebKit::FrameType::Local; }
     const WebCore::ResourceRequest& request() const LIFETIME_BOUND { return m_data.request; }
     const WebCore::SecurityOriginData& securityOrigin() const LIFETIME_BOUND { return m_data.securityOrigin; }
@@ -58,7 +58,7 @@ public:
     const WebKit::WebPageProxy* page() const;
     RefPtr<FrameHandle> parentFrameHandle() const;
     Markable<WebCore::ScriptExecutionContextIdentifier> documentID() const { return m_data.documentID; }
-    ProcessID processID() const { return m_stateSnapshot.processID; }
+    ProcessID processID() const { return m_data.processID; }
     bool isFocused() const { return m_data.isFocused; }
     bool errorOccurred() const { return m_data.errorOccurred; }
     WTF::String title() const { return m_stateSnapshot.title; }
@@ -73,8 +73,6 @@ private:
         const WebCore::CertificateInfo certificateInfo;
         Markable<WebCore::FrameIdentifier> parentFrameID;
         WTF::String title;
-        bool isMainFrame { true };
-        ProcessID processID { 0 };
     };
     static StateSnapshot stateSnapshot(WebCore::FrameIdentifier);
 

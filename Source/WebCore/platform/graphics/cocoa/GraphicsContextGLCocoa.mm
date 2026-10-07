@@ -305,7 +305,7 @@ bool GraphicsContextGLCocoa::platformInitializeExtensions()
 bool GraphicsContextGLCocoa::platformInitialize()
 {
     // Compute platform-specific max internal framebuffer size.
-    m_maxInternalFramebufferSize.clampToMaximumSize(IOSurface::maximumSize());
+    m_maxInternalFramebufferSize.clampToMinimumSize(IOSurface::maximumSize());
     return true;
 }
 
@@ -315,8 +315,20 @@ GraphicsContextGLANGLE::~GraphicsContextGLANGLE()
         GL_Disable(DEBUG_OUTPUT);
         if (m_texture)
             GL_DeleteTextures(1, &m_texture);
+        if (m_multisampleColorBuffer)
+            GL_DeleteRenderbuffers(1, &m_multisampleColorBuffer);
+        if (m_multisampleDepthStencilBuffer)
+            GL_DeleteRenderbuffers(1, &m_multisampleDepthStencilBuffer);
+        if (m_multisampleFBO)
+            GL_DeleteFramebuffers(1, &m_multisampleFBO);
+        if (m_depthStencilBuffer)
+            GL_DeleteRenderbuffers(1, &m_depthStencilBuffer);
         if (m_fbo)
             GL_DeleteFramebuffers(1, &m_fbo);
+        if (m_preserveDrawingBufferTexture)
+            GL_DeleteTextures(1, &m_preserveDrawingBufferTexture);
+        if (m_preserveDrawingBufferFBO)
+            GL_DeleteFramebuffers(1, &m_preserveDrawingBufferFBO);
     }
     if (m_contextObj) {
         for (auto* image : m_eglImages.values()) {
@@ -514,12 +526,14 @@ bool GraphicsContextGLCocoa::bindNextDrawingBuffer()
     m_currentDrawingBufferIndex++;
     auto& buffer = drawingBuffer();
 
-    if (buffer && (buffer.isInUse() || m_failNextDrawingBufferAllocation)) {
+    if (buffer && (buffer.isInUse() || m_failNextStatusCheck)) {
         EGL_DestroySurface(m_displayObj, buffer.pbuffer());
         buffer = { };
     }
-    if (std::exchange(m_failNextDrawingBufferAllocation, false))
+    if (m_failNextStatusCheck) {
+        m_failNextStatusCheck = false;
         return false;
+    }
     if (!buffer) {
         buffer = createDrawingBuffer();
         if (!buffer)
@@ -690,6 +704,13 @@ void GraphicsContextGLCocoa::disableFoveation()
 }
 
 #if ENABLE(WEBXR)
+void GraphicsContextGLCocoa::framebufferDiscard(GCGLenum target, std::span<const GCGLenum> attachments)
+{
+    if (!makeContextCurrent())
+        return;
+    GL_DiscardFramebufferEXT(target, attachments.size(), attachments.data());
+}
+
 void GraphicsContextGLCocoa::framebufferResolveRenderbuffer(GCGLenum target, GCGLenum attachment, GCGLenum renderbuffertarget, PlatformGLObject renderbuffer)
 {
     if (!makeContextCurrent())

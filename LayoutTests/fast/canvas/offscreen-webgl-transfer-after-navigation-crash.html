@@ -3,17 +3,13 @@
 testRunner?.dumpAsText();
 testRunner?.waitUntilDone();
 function test() {
-    var iframe = document.querySelector("iframe");
-    var canvas = iframe.contentDocument.createElement("canvas");
+    var canvas = document.createElement("canvas");
     var offscreen = canvas.transferControlToOffscreen();
     offscreen.getContext("webgl");
-    iframe.onload = () => {
-        try { offscreen.transferToImageBitmap(); } catch(e) {}
-        testRunner?.notifyDone();
-    };
-    iframe.contentWindow.navigation.navigate("about:blank");
+    try { window.navigation.navigate("about:blank"); } catch(e) {}
+    try { offscreen.transferToImageBitmap(); } catch(e) {}
+    testRunner?.notifyDone();
 }
 </script>
 <body onload=test()>
 PASS if no crash.
-<iframe srcdoc="<p>Navigated away from.</p>"></iframe>

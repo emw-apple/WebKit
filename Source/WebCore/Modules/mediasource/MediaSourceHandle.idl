@@ -27,6 +27,5 @@
     JSGenerateToNativeObject,
     Conditional=MEDIA_SOURCE_IN_WORKERS,
     EnabledBySetting=MediaSourceInWorkerEnabled,
-    Exposed=(Window,DedicatedWorker),
-    Transferable
+    Exposed=(Window,DedicatedWorker)
 ] interface MediaSourceHandle {};

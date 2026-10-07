@@ -26,7 +26,6 @@
 #include "config.h"
 #include "EventDispatcher.h"
 
-#include "AXObjectCache.h"
 #include "CompositionEvent.h"
 #include "DocumentView.h"
 #include "EventContext.h"
@@ -260,11 +259,6 @@ void EventDispatcher::dispatchEvent(Node& node, Event& event)
     if (inputForLegacyPreActivationBehavior
         && (!event.isTrusted() || !inputForLegacyPreActivationBehavior->isDisabledFormControl())) {
         inputForLegacyPreActivationBehavior->willDispatchEvent(event, clickHandlingState);
-    }
-
-    if (event.isTrusted() && (typeInfo.type() == EventType::click || typeInfo.type() == EventType::keydown)) {
-        if (CheckedPtr cache = document->existingAXObjectCache())
-            cache->onTrustedUserInputWillDispatch(node, event);
     }
 
     if (!event.propagationStopped() && !eventPath.isEmpty() && !shouldSuppressEventDispatchInDOM(node, event) && listenerCounts.hasAny()) {

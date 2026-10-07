@@ -418,7 +418,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
         m_fastMapEntriesSentinel.setWithoutWriteBarrier(JSSentinel::create(*this, sentinelStructure));
         m_fastSetValuesSentinel.setWithoutWriteBarrier(JSSentinel::create(*this, sentinelStructure));
         m_fastSetEntriesSentinel.setWithoutWriteBarrier(JSSentinel::create(*this, sentinelStructure));
-        m_fastStringSentinel.setWithoutWriteBarrier(JSSentinel::create(*this, sentinelStructure));
+        m_fastStringValuesSentinel.setWithoutWriteBarrier(JSSentinel::create(*this, sentinelStructure));
         m_fastAsyncGeneratorSentinel.setWithoutWriteBarrier(JSSentinel::create(*this, sentinelStructure));
     }
 
@@ -640,7 +640,7 @@ VM::~VM()
     ASSERT(currentThreadIsHoldingAPILock());
     m_apiLock->willDestroyVM(this);
     smallStrings.setIsInitialized(false);
-    heap.shutDown();
+    heap.lastChanceToFinalize();
 
     while (!m_microtaskQueues.isEmpty())
         m_microtaskQueues.begin()->remove();
@@ -1382,7 +1382,7 @@ void VM::addImpureProperty(UniquedStringImpl* propertyName)
 }
 
 template<typename Func>
-static bool enableProfilerWithRespectToCount(unsigned& counter, NOESCAPE const Func& doEnableWork)
+static bool enableProfilerWithRespectToCount(unsigned& counter, const Func& doEnableWork)
 {
     bool needsToRecompile = false;
     if (!counter) {
@@ -1395,7 +1395,7 @@ static bool enableProfilerWithRespectToCount(unsigned& counter, NOESCAPE const F
 }
 
 template<typename Func>
-static bool disableProfilerWithRespectToCount(unsigned& counter, NOESCAPE const Func& doDisableWork)
+static bool disableProfilerWithRespectToCount(unsigned& counter, const Func& doDisableWork)
 {
     RELEASE_ASSERT(counter > 0);
     bool needsToRecompile = false;
@@ -1999,7 +1999,7 @@ void VM::visitAggregateImpl(Visitor& visitor)
     visitor.append(m_fastMapEntriesSentinel);
     visitor.append(m_fastSetValuesSentinel);
     visitor.append(m_fastSetEntriesSentinel);
-    visitor.append(m_fastStringSentinel);
+    visitor.append(m_fastStringValuesSentinel);
     visitor.append(m_fastAsyncGeneratorSentinel);
     visitor.append(m_cachedSortScratch);
     visitor.append(m_sortScratchSentinel);

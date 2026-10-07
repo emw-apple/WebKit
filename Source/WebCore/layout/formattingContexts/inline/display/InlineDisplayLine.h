@@ -212,9 +212,6 @@ inline void Line::setLineBoxRectForSVGText(const FloatRect& rect)
     m_lineBoxLogicalRect = m_isHorizontal ? rect : rect.transposedRect();
     m_enclosingLogicalTopAndBottom.top = m_lineBoxLogicalRect.y();
     m_enclosingLogicalTopAndBottom.bottom = m_lineBoxLogicalRect.maxY();
-    m_contentLogicalLeft = 0;
-    m_contentLogicalLeftIgnoringInlineDirection = 0;
-    m_contentLogicalWidth = m_lineBoxLogicalRect.width();
 }
 
 }

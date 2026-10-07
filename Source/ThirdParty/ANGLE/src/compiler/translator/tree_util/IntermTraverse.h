@@ -186,10 +186,7 @@ class TIntermTraverser : angle::NonCopyable
                                      TIntermNode *originalIn,
                                      TIntermSequence &&replacementsIn)
             : parent(parentIn), original(originalIn), replacements(std::move(replacementsIn))
-        {
-            ASSERT(parentIn);
-            ASSERT(originalIn);
-        }
+        {}
 
         TIntermAggregateBase *parent;
         TIntermNode *original;

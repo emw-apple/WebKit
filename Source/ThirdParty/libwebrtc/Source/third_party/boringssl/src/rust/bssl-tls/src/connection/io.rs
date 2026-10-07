@@ -33,9 +33,8 @@ use crate::{
         methods::HasTlsConnectionMethod, //
     },
     context::{
-        HasDatagramIo,
-        HasShutdown,
-        HasStreamIo, //
+        HasBasicIo,
+        TlsMode, //
     },
     errors::{
         Error,
@@ -58,7 +57,7 @@ where
         }
     }
 
-    pub(crate) fn take_io_err(&mut self) -> Option<Box<dyn core::error::Error + Send + Sync>> {
+    fn take_io_err(&mut self) -> Option<Box<dyn core::error::Error + Send + Sync>> {
         let bio = self.get_connection_methods().bio.as_mut()?;
         bio.as_mut().take_io_err()
     }
@@ -76,7 +75,10 @@ where
         }
     }
 
-    fn read_inner(&mut self, buffer: &mut ReceiveBuffer<'_>) -> Result<IoStatus, Error> {
+    /// Read data from the socket.
+    ///
+    /// This method reads up to `buffer.len()` bytes from `buffer`.
+    pub fn sync_read(&mut self, buffer: &mut ReceiveBuffer<'_>) -> Result<IoStatus, Error> {
         let buf = unsafe {
             // Safety:
             // - the use of this pointer is outlived by this function callframe.
@@ -102,75 +104,7 @@ where
         }
     }
 
-    fn write_inner(&mut self, buffer: &[u8]) -> Result<IoStatus, Error> {
-        let (ptr, len) = slice_into_ffi_raw_parts(buffer);
-        let num = c_int::try_from(len).unwrap_or(c_int::MAX);
-        let rc = unsafe {
-            // Safety: the validity of the handle `self.ptr()` is witnessed by `self`
-            bssl_sys::SSL_write(self.ptr(), ptr as _, num)
-        };
-        if rc > 0 {
-            Ok(IoStatus::Ok(rc as usize))
-        } else {
-            self.translate_io_error(rc)
-        }
-    }
-}
-
-impl<R, M> TlsConnection<R, M>
-where
-    M: HasTlsConnectionMethod,
-{
-    /// For `async` operations, obtain a pinned mutable reference.
-    pub fn as_pin_mut(&mut self) -> Pin<&mut Self> {
-        Pin::new(self)
-    }
-
-    /// For `async` operations, obtain a pinned immutable reference.
-    pub fn as_pin(&self) -> Pin<&Self> {
-        Pin::new(self)
-    }
-}
-
-impl<R, M> TlsConnection<R, M>
-where
-    M: HasTlsConnectionMethod,
-{
-    fn do_async_io(
-        mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        sync_op: impl FnOnce(&mut TlsConnection<R, M>) -> Result<IoStatus, Error>,
-    ) -> Result<Option<IoStatus>, Error> {
-        self.set_waker(cx.waker());
-
-        let reason = match sync_op(&mut *self) {
-            Ok(
-                status @ (IoStatus::Ok(..)
-                | IoStatus::EndOfStream
-                | IoStatus::Empty
-                | IoStatus::Err),
-            ) => return Ok(Some(status)),
-            Err(e) => return Err(e),
-            Ok(IoStatus::Retry(reason)) => reason,
-        };
-        self.get_connection_methods().set_pending_reason(reason);
-        Ok(None)
-    }
-}
-
-/// I/O for stream sockets
-impl<R, M> TlsConnection<R, M>
-where
-    M: HasTlsConnectionMethod + HasStreamIo,
-{
-    /// Read data from the socket.
-    ///
-    /// This method reads up to `buffer.remaining()` bytes from `buffer`.
-    pub fn sync_read(&mut self, buffer: &mut ReceiveBuffer<'_>) -> Result<IoStatus, Error> {
-        self.read_inner(buffer)
-    }
-
-    /// Peek `buffer.remaining()` bytes of application data into the `buffer`.
+    /// Peek `buffer.len()` bytes of application data into the `buffer`.
     pub fn peek(&mut self, buffer: &mut ReceiveBuffer<'_>) -> Result<IoStatus, Error> {
         let buf = unsafe {
             // Safety:
@@ -201,7 +135,17 @@ where
     ///
     /// This method writes up to `buffer.len()` bytes from `buffer`.
     pub fn sync_write(&mut self, buffer: &[u8]) -> Result<IoStatus, Error> {
-        self.write_inner(buffer)
+        let (ptr, len) = slice_into_ffi_raw_parts(buffer);
+        let num = c_int::try_from(len).unwrap_or(c_int::MAX);
+        let rc = unsafe {
+            // Safety: the validity of the handle `self.ptr()` is witnessed by `self`
+            bssl_sys::SSL_write(self.ptr(), ptr as _, num)
+        };
+        if rc > 0 {
+            Ok(IoStatus::Ok(rc as usize))
+        } else {
+            self.translate_io_error(rc)
+        }
     }
 
     /// Flush the data on the **transport**.
@@ -227,7 +171,7 @@ where
             // Safety: `bio` should still be valid here.
             bssl_sys::BIO_should_retry(bio)
         };
-        if bio_retry != 0 {
+        if bio_retry != 1 {
             return Ok(IoStatus::Retry(TlsRetryReason::WantWrite));
         }
         // Pre-emptively extract error and clear the error queue.
@@ -237,36 +181,69 @@ where
             Ok(IoStatus::Ok(0))
         }
     }
+}
 
-    /// Poll from the connection once for receiving application data.
-    ///
-    /// When the transport is not ready or the handshake has pending resolution,
-    /// this function will register a waker and return [`None`].
-    pub fn async_poll_read(
-        self: Pin<&mut Self>,
-        buffer: &mut ReceiveBuffer<'_>,
-        cx: &mut Context<'_>,
-    ) -> Result<Option<IoStatus>, Error> {
-        self.do_async_io(cx, move |this| this.read_inner(buffer))
+/// Async I/O
+impl<R, M> TlsConnection<R, M>
+where
+    M: HasTlsConnectionMethod,
+{
+    /// For `async` operations, obtain a pinned mutable reference.
+    pub fn as_pin_mut(&mut self) -> Pin<&mut Self> {
+        Pin::new(self)
     }
 
-    /// Poll from the connection once for writing application data.
-    ///
-    /// When the transport is not ready or the handshake has pending resolution,
-    /// this function will register a waker and return [`None`].
-    pub fn async_poll_write(
+    /// For `async` operations, obtain a pinned immutable reference.
+    pub fn as_pin(&self) -> Pin<&Self> {
+        Pin::new(self)
+    }
+}
+
+impl<R, M> TlsConnection<R, M>
+where
+    M: HasTlsConnectionMethod + HasBasicIo,
+{
+    fn do_async_io(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        sync_op: impl FnOnce(&mut TlsConnection<R, M>) -> Result<IoStatus, Error>,
+    ) -> Result<Option<IoStatus>, Error> {
+        self.set_waker(cx.waker());
+
+        let reason = match sync_op(&mut *self) {
+            Ok(
+                status @ (IoStatus::Ok(..)
+                | IoStatus::EndOfStream
+                | IoStatus::Empty
+                | IoStatus::Err),
+            ) => return Ok(Some(status)),
+            Err(e) => return Err(e),
+            Ok(IoStatus::Retry(reason)) => reason,
+        };
+        self.get_connection_methods().set_pending_reason(reason);
+        Ok(None)
+    }
+    #[doc(hidden)]
+    pub fn aread_inner(
+        self: Pin<&mut Self>,
+        buffer: &mut [u8],
+        cx: &mut Context<'_>,
+    ) -> Result<Option<IoStatus>, Error> {
+        let mut buffer = ReceiveBuffer::new(buffer);
+        self.do_async_io(cx, move |this| this.sync_read(&mut buffer))
+    }
+
+    #[doc(hidden)]
+    pub fn awrite_inner(
         self: Pin<&mut Self>,
         buffer: &[u8],
         cx: &mut Context<'_>,
     ) -> Result<Option<IoStatus>, Error> {
-        self.do_async_io(cx, move |this| this.write_inner(buffer))
+        self.do_async_io(cx, move |this| this.sync_write(buffer))
     }
 
-    /// Poll from the connection once for flushing pending writes.
-    ///
-    /// When the transport is not ready or the handshake has pending resolution,
-    /// this function will register a waker and return [`None`].
-    pub fn async_poll_flush(
+    #[doc(hidden)]
+    pub fn aflush_inner(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Result<Option<IoStatus>, Error> {
@@ -279,9 +256,9 @@ where
     /// The reason can be inspected by invoking [`Self::take_pending_reason`].
     pub fn async_read<'a>(
         mut self: Pin<&'a mut Self>,
-        buffer: &'a mut ReceiveBuffer<'_>,
+        buffer: &'a mut [u8],
     ) -> impl 'a + Send + Future<Output = Result<IoStatus, Error>> {
-        poll_fn(move |cx| match self.as_mut().async_poll_read(buffer, cx) {
+        poll_fn(move |cx| match self.as_mut().aread_inner(buffer, cx) {
             Ok(Some(status)) => Poll::Ready(Ok(status)),
             Ok(None) => Poll::Pending,
             Err(e) => Poll::Ready(Err(e)),
@@ -296,7 +273,7 @@ where
         mut self: Pin<&'a mut Self>,
         buffer: &'a [u8],
     ) -> impl 'a + Send + Future<Output = Result<IoStatus, Error>> {
-        poll_fn(move |cx| match self.as_mut().async_poll_write(buffer, cx) {
+        poll_fn(move |cx| match self.as_mut().awrite_inner(buffer, cx) {
             Ok(Some(status)) => Poll::Ready(Ok(status)),
             Ok(None) => Poll::Pending,
             Err(e) => Poll::Ready(Err(e)),
@@ -310,113 +287,15 @@ where
     pub fn async_flush<'a>(
         mut self: Pin<&'a mut Self>,
     ) -> impl 'a + Send + Future<Output = Result<IoStatus, Error>> {
-        poll_fn(move |cx| match self.as_mut().async_poll_flush(cx) {
-            Ok(Some(status)) => Poll::Ready(Ok(status)),
-            Ok(None) => Poll::Pending,
-            Err(e) => Poll::Ready(Err(e)),
-        })
-    }
-}
-
-/// I/O for datagram sockets.
-impl<R, M> TlsConnection<R, M>
-where
-    M: HasTlsConnectionMethod + HasDatagramIo,
-{
-    /// Receive an application datagram from the socket.
-    ///
-    /// This method reads up to `buffer.len()` bytes from `buffer`.
-    /// Be sure to use [`Self::dtlsv1_get_timeout`] to arm a timer and
-    /// notify the connection about deadline with [`Self::dtlsv1_handle_timeout`].
-    pub fn sync_recv(&mut self, buffer: &mut ReceiveBuffer<'_>) -> Result<IoStatus, Error> {
-        self.read_inner(buffer)
-    }
-
-    /// Send an application datagram down the socket.
-    ///
-    /// This method writes up to `buffer.len()` bytes from `buffer`.
-    /// Be sure to use [`Self::dtlsv1_get_timeout`] to arm a timer and
-    /// notify the connection about deadline with [`Self::dtlsv1_handle_timeout`].
-    pub fn sync_send(&mut self, buffer: &[u8]) -> Result<IoStatus, Error> {
-        self.write_inner(buffer)
-    }
-
-    /// Poll from the connection once for receiving application datagrams.
-    ///
-    /// When the transport is not ready or the handshake has pending resolution,
-    /// this function will register a waker and return [`None`].
-    ///
-    /// Be sure to use [`Self::dtlsv1_get_timeout`] to arm a timer and
-    /// notify the connection about deadline with [`Self::dtlsv1_handle_timeout`].
-    pub fn async_poll_recv(
-        self: Pin<&mut Self>,
-        buffer: &mut ReceiveBuffer<'_>,
-        cx: &mut Context<'_>,
-    ) -> Result<Option<IoStatus>, Error> {
-        self.do_async_io(cx, move |this| this.read_inner(buffer))
-    }
-
-    /// Poll from the connection once for sending application datagrams.
-    ///
-    /// When the transport is not ready or the handshake has pending resolution,
-    /// this function will register a waker and return [`None`].
-    ///
-    /// Be sure to use [`Self::dtlsv1_get_timeout`] to arm a timer and
-    /// notify the connection about deadline with [`Self::dtlsv1_handle_timeout`].
-    pub fn async_poll_send(
-        self: Pin<&mut Self>,
-        buffer: &[u8],
-        cx: &mut Context<'_>,
-    ) -> Result<Option<IoStatus>, Error> {
-        self.do_async_io(cx, move |this| this.write_inner(buffer))
-    }
-
-    /// Asynchronously receive an application datagram.
-    ///
-    /// This method will intercept [`IoStatus::Retry`] and suspend the future.
-    /// The reason can be inspected by invoking [`Self::take_pending_reason`].
-    ///
-    /// Be sure to use [`Self::dtlsv1_get_timeout`] to arm a timer and
-    /// notify the connection about deadline with [`Self::dtlsv1_handle_timeout`].
-    pub fn async_recv<'a>(
-        mut self: Pin<&'a mut Self>,
-        buffer: &'a mut ReceiveBuffer<'_>,
-    ) -> impl 'a + Send + Future<Output = Result<IoStatus, Error>> {
-        poll_fn(move |cx| match self.as_mut().async_poll_recv(buffer, cx) {
+        poll_fn(move |cx| match self.as_mut().aflush_inner(cx) {
             Ok(Some(status)) => Poll::Ready(Ok(status)),
             Ok(None) => Poll::Pending,
             Err(e) => Poll::Ready(Err(e)),
         })
     }
 
-    /// Asynchronously send an application datagram.
-    ///
-    /// This method will intercept [`IoStatus::Retry`] and suspend the future.
-    /// The reason can be inspected by invoking [`Self::take_pending_reason`].
-    ///
-    /// Be sure to use [`Self::dtlsv1_get_timeout`] to arm a timer and
-    /// notify the connection about deadline with [`Self::dtlsv1_handle_timeout`].
-    pub fn async_send<'a>(
-        mut self: Pin<&'a mut Self>,
-        buffer: &'a [u8],
-    ) -> impl 'a + Send + Future<Output = Result<IoStatus, Error>> {
-        poll_fn(move |cx| match self.as_mut().async_poll_send(buffer, cx) {
-            Ok(Some(status)) => Poll::Ready(Ok(status)),
-            Ok(None) => Poll::Pending,
-            Err(e) => Poll::Ready(Err(e)),
-        })
-    }
-}
-
-impl<R, M> TlsConnection<R, M>
-where
-    M: HasTlsConnectionMethod + HasShutdown,
-{
-    /// Poll from the connection once for shutting down the connection.
-    ///
-    /// When the transport is not ready or the shutdown has pending resolution,
-    /// this function will register a waker and return [`None`].
-    pub fn async_poll_shutdown(
+    #[doc(hidden)]
+    pub fn ashutdown_inner(
         mut self: Pin<&mut Self>,
         cx: &mut Context<'_>,
     ) -> Result<Option<ShutdownStatus>, Error> {
@@ -436,7 +315,7 @@ where
     pub fn async_shutdown<'a>(
         mut self: Pin<&'a mut Self>,
     ) -> impl 'a + Send + Future<Output = Result<(), Error>> {
-        poll_fn(move |cx| match self.as_mut().async_poll_shutdown(cx) {
+        poll_fn(move |cx| match self.as_mut().ashutdown_inner(cx) {
             Ok(Some(ShutdownStatus::CloseNotifyReceived)) => Poll::Ready(Ok(())),
             Ok(Some(ShutdownStatus::EndOfStream)) => {
                 Poll::Ready(Err(Error::Io(IoError::EndOfStream)))

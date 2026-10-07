@@ -78,7 +78,7 @@ void SliderTrackMac::draw(GraphicsContext& context, const FloatRoundedRect& bord
     static constexpr int sliderTrackRadius = 2;
     static constexpr IntSize sliderRadius(sliderTrackRadius, sliderTrackRadius);
 
-    RetainPtr cgContext = context.platformContext();
+    CGContextRef cgContext = context.platformContext();
     CGColorSpaceRef cspace = sRGBColorSpaceSingleton();
 
     Ref sliderTrackPart = owningSliderTrackPart();

@@ -367,7 +367,6 @@ void addBitvectorTests();
 void addBmallocTests();
 void addCartesianTreeTests();
 void addCoalignTests();
-void addCompactHeapReservationTests();
 void addEnumerationTests();
 void addExpendableMemoryTests();
 void addExtendedGCDTests();
@@ -864,7 +863,6 @@ int main(int argc, char** argv)
     ADD_SUITE(Bmalloc);
     ADD_SUITE(CartesianTree);
     ADD_SUITE(Coalign);
-    ADD_SUITE(CompactHeapReservation);
     ADD_SUITE(Enumeration);
     ADD_SUITE(ExpendableMemory);
     ADD_SUITE(ExtendedGCD);

@@ -56,7 +56,7 @@ private:
     String debugDescription() const final;
 
     const Ref<WebCore::ControlFactory> m_controlFactory;
-    const Ref<DisplayList::RecorderImpl> m_drawingContext;
+    DisplayList::RecorderImpl m_drawingContext;
 };
 
 } // namespace WebCore

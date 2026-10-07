@@ -36,27 +36,28 @@ namespace TestWebKitAPI {
 
 using namespace WebCore;
 
-using PermissionAnswer = Function<PermissionState(const ClientOrigin&, IPAddressSpace)>;
-
-static PermissionAnswer permissionCheckReturning(PermissionState decision)
+static LocalNetworkAccessPermissionCheckFunction permissionCheckReturning(PermissionState decision)
 {
-    return [decision](const ClientOrigin&, IPAddressSpace) {
-        return decision;
+    return [decision](const ClientOrigin&, IPAddressSpace, CompletionHandler<void(PermissionState)>&& completionHandler) {
+        completionHandler(decision);
     };
 }
 
-// Mirrors NetworkResourceLoader: the permission is only consulted when the check says one is required.
-static std::optional<ResourceError> checkSynchronouslyWithOriginPair(const ResourceRequest& request, IPAddressSpace connectionAddressSpace, IPAddressSpace clientAddressSpace, bool clientIsSecureContext, const ClientOrigin& clientOrigin, const PermissionAnswer& permissionCheck, const URL& currentURL = { }, bool localNetworkAllowedByPermissionsPolicy = true, bool loopbackNetworkAllowedByPermissionsPolicy = true)
+// performLocalNetworkAccessCheck() is asynchronous because resolving the permission may prompt, but
+// every case exercised here resolves synchronously, so the result can be unwrapped for assertions.
+static std::optional<ResourceError> checkSynchronouslyWithOriginPair(const ResourceRequest& request, IPAddressSpace connectionAddressSpace, IPAddressSpace clientAddressSpace, bool clientIsSecureContext, const ClientOrigin& clientOrigin, const LocalNetworkAccessPermissionCheckFunction& permissionCheck, const URL& currentURL = { }, bool localNetworkAllowedByPermissionsPolicy = true, bool loopbackNetworkAllowedByPermissionsPolicy = true)
 {
-    auto requirement = checkLocalNetworkAccess(request, currentURL.isNull() ? request.url() : currentURL, connectionAddressSpace, clientAddressSpace, clientIsSecureContext, clientOrigin, localNetworkAllowedByPermissionsPolicy, loopbackNetworkAllowedByPermissionsPolicy);
-    if (!requirement)
-        return requirement.error();
-    if (*requirement == LocalNetworkAccessRequirement::None)
-        return std::nullopt;
-    return localNetworkAccessPermissionError(request.url(), permissionCheck(clientOrigin, connectionAddressSpace));
+    std::optional<ResourceError> result;
+    bool called = false;
+    performLocalNetworkAccessCheck(request, currentURL.isNull() ? request.url() : currentURL, connectionAddressSpace, clientAddressSpace, clientIsSecureContext, clientOrigin, localNetworkAllowedByPermissionsPolicy, loopbackNetworkAllowedByPermissionsPolicy, permissionCheck, [&](std::optional<ResourceError> error) {
+        result = WTF::move(error);
+        called = true;
+    });
+    EXPECT_TRUE(called);
+    return result;
 }
 
-static std::optional<ResourceError> checkSynchronously(const ResourceRequest& request, IPAddressSpace connectionAddressSpace, IPAddressSpace clientAddressSpace, bool clientIsSecureContext, const SecurityOriginData& clientOrigin, const PermissionAnswer& permissionCheck, const URL& currentURL = { }, bool localNetworkAllowedByPermissionsPolicy = true, bool loopbackNetworkAllowedByPermissionsPolicy = true)
+static std::optional<ResourceError> checkSynchronously(const ResourceRequest& request, IPAddressSpace connectionAddressSpace, IPAddressSpace clientAddressSpace, bool clientIsSecureContext, const SecurityOriginData& clientOrigin, const LocalNetworkAccessPermissionCheckFunction& permissionCheck, const URL& currentURL = { }, bool localNetworkAllowedByPermissionsPolicy = true, bool loopbackNetworkAllowedByPermissionsPolicy = true)
 {
     return checkSynchronouslyWithOriginPair(request, connectionAddressSpace, clientAddressSpace, clientIsSecureContext, ClientOrigin { clientOrigin, clientOrigin }, permissionCheck, currentURL, localNetworkAllowedByPermissionsPolicy, loopbackNetworkAllowedByPermissionsPolicy);
 }
@@ -71,9 +72,9 @@ TEST(LocalNetworkAccess, AClientWithNoDocumentStillUsesARecordedGrant)
     auto clientOrigin = SecurityOriginData::fromURL(URL { "https://example.com/"_s });
 
     bool consulted = false;
-    PermissionAnswer recordingCheck = [&consulted](const ClientOrigin&, IPAddressSpace) {
+    LocalNetworkAccessPermissionCheckFunction recordingCheck = [&consulted](const ClientOrigin&, IPAddressSpace, CompletionHandler<void(PermissionState)>&& completionHandler) {
         consulted = true;
-        return PermissionState::Granted;
+        completionHandler(PermissionState::Granted);
     };
 
     auto error = checkSynchronously(request, IPAddressSpace::Local, IPAddressSpace::Public, true, clientOrigin, recordingCheck);
@@ -87,9 +88,9 @@ TEST(LocalNetworkAccess, PermissionsPolicyDenialBlocksWithoutConsultingPermissio
     auto clientOrigin = SecurityOriginData::fromURL(URL { "https://example.com/"_s });
 
     bool consulted = false;
-    PermissionAnswer recordingCheck = [&consulted](const ClientOrigin&, IPAddressSpace) {
+    LocalNetworkAccessPermissionCheckFunction recordingCheck = [&consulted](const ClientOrigin&, IPAddressSpace, CompletionHandler<void(PermissionState)>&& completionHandler) {
         consulted = true;
-        return PermissionState::Granted;
+        completionHandler(PermissionState::Granted);
     };
 
     auto error = checkSynchronously(request, IPAddressSpace::Local, IPAddressSpace::Public, true, clientOrigin, recordingCheck, { }, false, true);
@@ -295,37 +296,47 @@ TEST(LocalNetworkAccess, UndeterminedConnectionSpaceStillHonorsSameOriginTrustwo
     EXPECT_FALSE(error.has_value());
 }
 
-// Exhaustive over the inputs, because the ordering asserted separately below is only meaningful if
-// no other combination is doing something unexpected.
+// Exhaustive over the inputs, because the two orderings asserted separately below are only
+// meaningful if no other combination is doing something unexpected.
 TEST(LocalNetworkAccess, PermissionRequestOutcomeCoversEveryInput)
 {
     using Outcome = LocalNetworkAccessPermissionRequestOutcome;
     struct Expectation {
         IPAddressSpace addressSpace;
         bool hasRecordedDecision;
+        bool canPrompt;
         Outcome expected;
     };
 
     static constexpr Expectation expectations[] = {
         // An undetermined space refuses regardless of what else is true.
-        { IPAddressSpace::Unknown, false, Outcome::RefuseAsUndetermined },
-        { IPAddressSpace::Unknown, true, Outcome::RefuseAsUndetermined },
+        { IPAddressSpace::Unknown, false, false, Outcome::RefuseAsUndetermined },
+        { IPAddressSpace::Unknown, false, true, Outcome::RefuseAsUndetermined },
+        { IPAddressSpace::Unknown, true, false, Outcome::RefuseAsUndetermined },
+        { IPAddressSpace::Unknown, true, true, Outcome::RefuseAsUndetermined },
 
-        { IPAddressSpace::Public, false, Outcome::Prompt },
-        { IPAddressSpace::Public, true, Outcome::UseRecordedDecision },
+        { IPAddressSpace::Public, false, false, Outcome::RefuseAsUnpromptable },
+        { IPAddressSpace::Public, false, true, Outcome::Prompt },
+        { IPAddressSpace::Public, true, false, Outcome::UseRecordedDecision },
+        { IPAddressSpace::Public, true, true, Outcome::UseRecordedDecision },
 
-        { IPAddressSpace::Local, false, Outcome::Prompt },
-        { IPAddressSpace::Local, true, Outcome::UseRecordedDecision },
+        { IPAddressSpace::Local, false, false, Outcome::RefuseAsUnpromptable },
+        { IPAddressSpace::Local, false, true, Outcome::Prompt },
+        { IPAddressSpace::Local, true, false, Outcome::UseRecordedDecision },
+        { IPAddressSpace::Local, true, true, Outcome::UseRecordedDecision },
 
-        { IPAddressSpace::Loopback, false, Outcome::Prompt },
-        { IPAddressSpace::Loopback, true, Outcome::UseRecordedDecision },
+        { IPAddressSpace::Loopback, false, false, Outcome::RefuseAsUnpromptable },
+        { IPAddressSpace::Loopback, false, true, Outcome::Prompt },
+        { IPAddressSpace::Loopback, true, false, Outcome::UseRecordedDecision },
+        { IPAddressSpace::Loopback, true, true, Outcome::UseRecordedDecision },
     };
 
     for (auto& expectation : expectations) {
-        auto outcome = localNetworkAccessPermissionRequestOutcome(expectation.addressSpace, expectation.hasRecordedDecision);
+        auto outcome = localNetworkAccessPermissionRequestOutcome(expectation.addressSpace, expectation.hasRecordedDecision, expectation.canPrompt);
         EXPECT_EQ(expectation.expected, outcome)
             << "addressSpace=" << static_cast<unsigned>(expectation.addressSpace)
-            << " recorded=" << expectation.hasRecordedDecision;
+            << " recorded=" << expectation.hasRecordedDecision
+            << " canPrompt=" << expectation.canPrompt;
     }
 }
 
@@ -334,7 +345,15 @@ TEST(LocalNetworkAccess, PermissionRequestOutcomeCoversEveryInput)
 TEST(LocalNetworkAccess, UndeterminedSpaceOutranksARecordedDecision)
 {
     EXPECT_EQ(LocalNetworkAccessPermissionRequestOutcome::RefuseAsUndetermined,
-        localNetworkAccessPermissionRequestOutcome(IPAddressSpace::Unknown, true));
+        localNetworkAccessPermissionRequestOutcome(IPAddressSpace::Unknown, true, true));
+}
+
+// The recorded decision has to come before the can-prompt gate, or a worker would be refused despite
+// the user having already permitted its origin.
+TEST(LocalNetworkAccess, RecordedDecisionOutranksBeingUnableToPrompt)
+{
+    EXPECT_EQ(LocalNetworkAccessPermissionRequestOutcome::UseRecordedDecision,
+        localNetworkAccessPermissionRequestOutcome(IPAddressSpace::Loopback, true, false));
 }
 
 // A request that was never asked about must not be reported as a denial the user made, since that is
@@ -378,23 +397,35 @@ TEST(LocalNetworkAccess, EachRefusalNamesItsOwnCause)
     EXPECT_TRUE(undetermined->localizedDescription().contains("not a secure context"_s));
 }
 
-// A request that passes every policy check is not decided by the check itself: it reports that the
-// embedder has to be asked, and the answer is turned into the refusal separately.
-TEST(LocalNetworkAccess, AGatedRequestDefersToThePermissionAnswer)
+// A prompt suspends the check, so the completion handler must survive being invoked later rather
+// than depending on anything owned by the synchronous scope.
+TEST(LocalNetworkAccess, PermissionAnsweredAfterTheCheckReturnsStillReportsTheReason)
 {
     ResourceRequest request { URL { "http://192.168.1.1/"_s } };
     auto clientOrigin = SecurityOriginData::fromURL(URL { "https://example.com/"_s });
 
-    auto requirement = checkLocalNetworkAccess(request, request.url(), IPAddressSpace::Local, IPAddressSpace::Public, true, ClientOrigin { clientOrigin, clientOrigin }, true, true);
-    ASSERT_TRUE(requirement.has_value());
-    EXPECT_EQ(LocalNetworkAccessRequirement::Permission, *requirement);
+    CompletionHandler<void(PermissionState)> deferred;
+    LocalNetworkAccessPermissionCheckFunction deferringCheck = [&deferred](const ClientOrigin&, IPAddressSpace, CompletionHandler<void(PermissionState)>&& completionHandler) {
+        deferred = WTF::move(completionHandler);
+    };
 
-    EXPECT_FALSE(localNetworkAccessPermissionError(request.url(), PermissionState::Granted).has_value());
-    auto denied = localNetworkAccessPermissionError(request.url(), PermissionState::Denied);
-    ASSERT_TRUE(denied.has_value());
-    EXPECT_TRUE(denied->isAccessControl());
-    EXPECT_TRUE(denied->localizedDescription().contains("was denied"_s));
-    EXPECT_EQ(request.url().string(), denied->failingURL().string());
+    std::optional<ResourceError> result;
+    bool called = false;
+    performLocalNetworkAccessCheck(request, request.url(), IPAddressSpace::Local, IPAddressSpace::Public, true, ClientOrigin { clientOrigin, clientOrigin }, true, true, deferringCheck, [&](std::optional<ResourceError> error) {
+        result = WTF::move(error);
+        called = true;
+    });
+
+    EXPECT_FALSE(called);
+    ASSERT_TRUE(!!deferred);
+
+    deferred(PermissionState::Denied);
+    EXPECT_TRUE(called);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(result->isAccessControl());
+    EXPECT_TRUE(result->localizedDescription().contains("was denied"_s));
+    // The URL is still right, which it would not be had the error been built from a dangling request.
+    EXPECT_EQ(request.url().string(), result->failingURL().string());
 }
 
 // The exemption must compare the URL against the *requesting* origin. Every other test passes the same
@@ -455,15 +486,42 @@ TEST(LocalNetworkAccess, DeclaredTargetAddressSpaceMustMatchTheConnection)
     EXPECT_FALSE(checkSynchronously(declaredPublic, IPAddressSpace::Loopback, IPAddressSpace::Public, true, clientOrigin, permissionCheckReturning(PermissionState::Granted)).has_value());
 }
 
+// The permission must be asked about the space actually connected to. Consulting the client's space, or
+// hardcoding one, would answer a loopback request from a local-network grant and vice versa.
+TEST(LocalNetworkAccess, ThePermissionIsAskedAboutTheConnectionsAddressSpace)
+{
+    auto clientOrigin = SecurityOriginData::fromURL(URL { "https://example.com/"_s });
+    ClientOrigin expectedPair { clientOrigin, clientOrigin };
+
+    std::optional<IPAddressSpace> askedAbout;
+    std::optional<ClientOrigin> forwardedOrigin;
+    LocalNetworkAccessPermissionCheckFunction recordingCheck = [&](const ClientOrigin& origin, IPAddressSpace space, CompletionHandler<void(PermissionState)>&& completionHandler) {
+        askedAbout = space;
+        forwardedOrigin = origin;
+        completionHandler(PermissionState::Granted);
+    };
+
+    ResourceRequest loopbackRequest { URL { "http://127.0.0.1/"_s } };
+    checkSynchronously(loopbackRequest, IPAddressSpace::Loopback, IPAddressSpace::Public, true, clientOrigin, recordingCheck);
+    EXPECT_EQ(IPAddressSpace::Loopback, askedAbout.value_or(IPAddressSpace::Unknown));
+    ASSERT_TRUE(forwardedOrigin.has_value());
+    EXPECT_TRUE(*forwardedOrigin == expectedPair);
+
+    askedAbout = std::nullopt;
+    ResourceRequest localRequest { URL { "http://192.168.1.1/"_s } };
+    checkSynchronously(localRequest, IPAddressSpace::Local, IPAddressSpace::Public, true, clientOrigin, recordingCheck);
+    EXPECT_EQ(IPAddressSpace::Local, askedAbout.value_or(IPAddressSpace::Unknown));
+}
+
 // Neither allow path may consult the permission. Reaching it for an ordinary same-origin or
 // public-to-public request would mean a prompt during normal browsing, which is the prompt fatigue the
 // whole design is trying to avoid.
 TEST(LocalNetworkAccess, TheAllowPathsDoNotConsultThePermission)
 {
     bool consulted = false;
-    PermissionAnswer recordingCheck = [&consulted](const ClientOrigin&, IPAddressSpace) {
+    LocalNetworkAccessPermissionCheckFunction recordingCheck = [&consulted](const ClientOrigin&, IPAddressSpace, CompletionHandler<void(PermissionState)>&& completionHandler) {
         consulted = true;
-        return PermissionState::Granted;
+        completionHandler(PermissionState::Granted);
     };
 
     // Same-origin and trustworthy.
@@ -481,21 +539,6 @@ TEST(LocalNetworkAccess, TheAllowPathsDoNotConsultThePermission)
 // An undetermined connection space consults the local-network feature, not the loopback one. A frame
 // allowed only loopback-network is therefore refused, which is the fail-closed choice but is worth
 // pinning because the refusal message names both features and cannot tell you which was consulted.
-// A blob: or data: URL has no host to resolve, so its address space is always undetermined, which
-// would otherwise refuse it as fail-closed. Asserted from a non-secure client with permissions policy
-// denied, so that any step after the scheme check would refuse it.
-TEST(LocalNetworkAccess, AURLWithoutANetworkHostIsNeverALocalNetworkRequest)
-{
-    auto clientOrigin = SecurityOriginData::fromURL(URL { "http://example.com/"_s });
-    for (auto& string : { "blob:http://example.com/7b3a4c1e-2f6d-4b8a-9e0c-1d2f3a4b5c6d"_s, "data:text/plain,hello"_s }) {
-        URL url { string };
-        ResourceRequest request { URL { url } };
-        auto requirement = checkLocalNetworkAccess(request, url, IPAddressSpace::Unknown, IPAddressSpace::Public, false, ClientOrigin { clientOrigin, clientOrigin }, false, false);
-        ASSERT_TRUE(requirement.has_value());
-        EXPECT_EQ(LocalNetworkAccessRequirement::None, *requirement);
-    }
-}
-
 TEST(LocalNetworkAccess, AnUndeterminedConnectionConsultsTheLocalNetworkFeature)
 {
     ResourceRequest request { URL { "https://example.com/resource"_s } };

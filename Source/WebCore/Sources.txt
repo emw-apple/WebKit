@@ -46,11 +46,11 @@ Modules/WebGPU/GPUComputePassDescriptor.cpp
 Modules/WebGPU/GPUComputePassEncoder.cpp
 Modules/WebGPU/GPUComputePassTimestampWrites.cpp
 Modules/WebGPU/GPUComputePipeline.cpp
+Modules/WebGPU/GPUCopyElementImageDestination.cpp
+Modules/WebGPU/GPUCopyElementImageSource.cpp
 Modules/WebGPU/GPUDepthStencilState.cpp
 Modules/WebGPU/GPUDevice.cpp
 Modules/WebGPU/GPUDeviceLostInfo.cpp
-Modules/WebGPU/GPUDrawElementImageDestination.cpp
-Modules/WebGPU/GPUDrawElementImageSource.cpp
 Modules/WebGPU/GPUExtent3DDict.cpp
 Modules/WebGPU/GPUExternalTexture.cpp
 Modules/WebGPU/GPUExternalTextureBindingLayout.cpp
@@ -168,8 +168,6 @@ Modules/cookie-store/ExtendableCookieChangeEvent.cpp
 Modules/credentialmanagement/BasicCredential.cpp
 Modules/credentialmanagement/CredentialsContainer.cpp @cost:3
 Modules/credentialmanagement/NavigatorCredentials.cpp @cost:3
-Modules/device-posture/DevicePosture.cpp
-Modules/device-posture/NavigatorDevicePosture.cpp
 Modules/entriesapi/DOMFileSystem.cpp
 Modules/entriesapi/ErrorCallback.cpp
 Modules/entriesapi/FileSystemDirectoryEntry.cpp
@@ -1403,7 +1401,6 @@ dom/ElementData.cpp
 dom/ElementInternals.cpp
 dom/ElementRareData.cpp
 dom/ElementTextDirection.cpp
-dom/ElementVolumetricScene.cpp
 dom/ErrorEvent.cpp
 dom/Event.cpp
 dom/EventContext.cpp
@@ -1666,6 +1663,7 @@ html/CanvasNoiseInjection.cpp
 html/CheckboxInputType.cpp @header:RenderStyleGetters @cost:6
 html/ColorInputType.cpp @header:RenderStyleGetters @cost:9
 html/CustomPaintCanvas.cpp
+html/CustomPaintImage.cpp @header:RenderStyleGetters @cost:6
 html/DOMFormData.cpp
 html/DOMTokenList.cpp
 html/DOMURL.cpp
@@ -1880,7 +1878,6 @@ html/canvas/PaintRenderingContext2D.cpp
 html/canvas/Path2D.cpp
 html/canvas/PlaceholderRenderingContext.cpp
 html/canvas/PredefinedColorSpace.cpp
-html/canvas/UpdateElementGeometryOptions.cpp
 html/canvas/WebGL2RenderingContext.cpp
 html/canvas/WebGLBlendFuncExtended.cpp
 html/canvas/WebGLBuffer.cpp
@@ -2013,7 +2010,6 @@ inspector/InspectorInstrumentationWebKit.cpp
 inspector/InspectorNetworkIntercept.cpp
 inspector/InspectorNodeFinder.cpp
 inspector/InspectorOverlay.cpp @header:RenderStyleGetters
-inspector/InspectorOverlayConfigParser.cpp
 inspector/InspectorOverlayLabel.cpp
 inspector/InspectorResourceUtilities.cpp
 inspector/InspectorShaderProgram.cpp
@@ -2098,7 +2094,6 @@ layout/formattingContexts/block/tablewrapper/TableWrapperBlockFormattingQuirks.c
 layout/formattingContexts/flex/FlexFormattingContext.cpp @header:RenderStyleGetters @cost:4
 layout/formattingContexts/flex/FlexFormattingUtils.cpp @header:RenderStyleGetters @cost:4
 layout/formattingContexts/flex/FlexLineBreaker.cpp
-layout/formattingContexts/grid/AutoRepeatResolver.cpp
 layout/formattingContexts/grid/ExplicitGridResolver.cpp @header:RenderStyleGetters
 layout/formattingContexts/grid/GridFormattingContext.cpp @header:RenderStyleGetters
 layout/formattingContexts/grid/GridItemPlacer.cpp @header:RenderStyleGetters
@@ -2127,7 +2122,6 @@ layout/formattingContexts/inline/InlineQuirks.cpp @header:RenderStyleGetters
 layout/formattingContexts/inline/InlineTextItem.cpp @header:RenderStyleGetters
 layout/formattingContexts/inline/IntrinsicWidthHandler.cpp @header:RenderStyleGetters
 layout/formattingContexts/inline/RangeBasedLineBuilder.cpp @header:RenderStyleGetters
-layout/formattingContexts/inline/SVGTextDisplayContentBuilder.cpp @header:RenderStyleGetters
 layout/formattingContexts/inline/TextOnlySimpleLineBuilder.cpp @header:RenderStyleGetters
 layout/formattingContexts/inline/display/InlineDisplayContent.cpp
 layout/formattingContexts/inline/display/InlineDisplayContentBuilder.cpp @header:RenderStyleGetters
@@ -2182,7 +2176,6 @@ loader/CrossOriginPreflightChecker.cpp
 loader/CrossOriginPreflightResultCache.cpp
 loader/CustomHeaderFields.cpp @no-unify-when(bundle<=8)
 loader/DefaultResourceLoadPriority.cpp
-loader/DocumentIsolationPolicy.cpp
 loader/DocumentLoader.cpp
 loader/DocumentThreadableLoader.cpp
 loader/DocumentWriter.cpp
@@ -2270,7 +2263,6 @@ loader/cache/KeepaliveRequestTracker.cpp
 loader/cache/MemoryCache.cpp
 loader/cache/TrustedFonts.cpp
 loader/icon/IconLoader.cpp
-mathml/MathMLAnchorElement.cpp @header:RenderStyleGetters
 mathml/MathMLAnnotationElement.cpp @header:RenderStyleGetters
 mathml/MathMLElement.cpp @header:RenderStyleGetters
 mathml/MathMLFractionElement.cpp @header:RenderStyleGetters
@@ -2386,7 +2378,6 @@ page/PointerCaptureController.cpp
 page/PointerLockController.cpp
 page/PrintContext.cpp @header:RenderStyleGetters @cost:7
 page/ProcessWarming.cpp
-page/QuirkMatchPattern.cpp
 page/QuirkTable.cpp
 page/Quirks.cpp @header:RenderStyleGetters @cost:11
 page/RemoteDOMWindow.cpp
@@ -2399,7 +2390,6 @@ page/ResizeObservation.cpp @header:RenderStyleGetters @cost:5
 page/ResizeObserver.cpp
 page/ResourceUsageOverlay.cpp
 page/ResourceUsageThread.cpp
-page/RuntimeQuirkTable.cpp
 page/Screen.cpp
 page/ScreenOrientation.cpp
 page/ScriptTrackingPrivacyCategory.cpp
@@ -2412,6 +2402,7 @@ page/ShadowRealmGlobalScope.cpp
 page/ShareDataReader.cpp
 page/SpatialNavigation.cpp @header:RenderStyleGetters @cost:6
 page/TextIndicator.cpp @header:RenderStyleGetters @cost:6
+page/URLMatch.cpp
 page/UndoItem.cpp
 page/UndoManager.cpp
 page/UserContentController.cpp
@@ -2694,6 +2685,7 @@ platform/graphics/ComplexTextController.cpp
 platform/graphics/ContentTypeUtilities.cpp
 platform/graphics/ContentsFormat.cpp
 platform/graphics/CornerRadii.cpp
+platform/graphics/CrossfadeGeneratedImage.cpp
 platform/graphics/DisplayRefreshMonitor.cpp
 platform/graphics/DisplayRefreshMonitorClient.cpp
 platform/graphics/DisplayRefreshMonitorManager.cpp
@@ -2733,10 +2725,12 @@ platform/graphics/FontSelectionAlgorithm.cpp
 platform/graphics/FontSelector.cpp
 platform/graphics/FontTaggedSettings.cpp
 platform/graphics/FourCC.cpp
+platform/graphics/GeneratedImage.cpp
 platform/graphics/GeometryUtilities.cpp
 platform/graphics/Gradient.cpp
 platform/graphics/GradientColorStop.cpp
 platform/graphics/GradientColorStops.cpp
+platform/graphics/GradientImage.cpp
 platform/graphics/GraphicsContext.cpp
 platform/graphics/GraphicsContextGL.cpp
 platform/graphics/GraphicsContextGLImageExtractor.cpp
@@ -2790,6 +2784,8 @@ platform/graphics/MediaSampleConverter.cpp
 platform/graphics/MediaSourcePrivate.cpp
 platform/graphics/Model.cpp
 platform/graphics/ModelContext.cpp
+platform/graphics/ColorImageGeneratedImage.cpp
+platform/graphics/NamedImageGeneratedImage.cpp
 platform/graphics/NativeImage.cpp
 platform/graphics/NativeImageSource.cpp
 platform/graphics/NullImageBufferBackend.cpp
@@ -3079,7 +3075,6 @@ rendering/LegacyInlineIterator.cpp @header:RenderStyleGetters @cost:4
 rendering/LegacyInlineTextBox.cpp @header:RenderStyleGetters @cost:7
 rendering/LegacyLineLayout.cpp @header:RenderStyleGetters @cost:7
 rendering/LegacyRootInlineBox.cpp @header:RenderStyleGetters @cost:5
-rendering/LineClampUpdater.cpp
 rendering/MarkedText.cpp @header:RenderStyleGetters @cost:6
 rendering/MotionPath.cpp @header:RenderStyleGetters @cost:5
 rendering/NinePieceImagePainter.cpp @header:RenderStyleGetters @cost:5
@@ -3438,7 +3433,6 @@ style/values/animations/StyleSingleAnimationRangeName.cpp
 style/values/animations/StyleSingleAnimationRange.cpp
 style/values/animations/StyleSingleAnimationTimeline.cpp
 style/values/animations/StyleSingleAnimationTrigger.cpp
-style/values/backgrounds/StyleBackgroundImageSizing.cpp
 style/values/backgrounds/StyleBackgroundLayer.cpp
 style/values/backgrounds/StyleBackgroundSize.cpp
 style/values/backgrounds/StyleBorderImageOutset.cpp
@@ -3533,7 +3527,6 @@ style/values/images/kinds/StyleCursorImage.cpp
 style/values/images/kinds/StyleFilterImage.cpp @header:RenderStyleGetters @cost:6
 style/values/images/kinds/StyleGeneratedImage.cpp @header:RenderStyleGetters @cost:6
 style/values/images/kinds/StyleGradientImage.cpp @header:RenderStyleGetters @cost:6
-style/values/images/kinds/StyleImage.cpp
 style/values/images/kinds/StyleImageSet.cpp
 style/values/images/kinds/StyleInvalidImage.cpp
 style/values/images/kinds/StyleMultiImage.cpp
@@ -3541,7 +3534,6 @@ style/values/images/kinds/StyleColorImage.cpp
 style/values/images/kinds/StyleNamedImage.cpp
 style/values/images/kinds/StylePaintImage.cpp @header:RenderStyleGetters @cost:6
 style/values/images/StyleGradient.cpp @header:RenderStyleGetters @cost:6
-style/values/images/StyleImageDrawingExtras.cpp
 style/values/images/StyleImageOrNone.cpp
 style/values/images/StyleImageOrientation.cpp
 style/values/images/StyleImageWrapper.cpp
@@ -3562,7 +3554,6 @@ style/values/masking/StyleMaskBorderSlice.cpp
 style/values/masking/StyleMaskBorderSource.cpp
 style/values/masking/StyleMaskBorderWidth.cpp
 style/values/masking/StyleMaskBorder.cpp
-style/values/masking/StyleMaskImageSizing.cpp
 style/values/masking/StyleMaskLayer.cpp
 style/values/masking/StyleMaskMode.cpp
 style/values/math/StyleMathDepth.cpp @header:RenderStyleGetters @cost:5
@@ -3678,6 +3669,9 @@ style/values/will-change/StyleWillChange.cpp
 svg/DocumentSVG.cpp
 svg/IsolatedSVGDocumentContext.cpp
 svg/SVGAElement.cpp @header:RenderStyleGetters
+svg/SVGAltGlyphDefElement.cpp
+svg/SVGAltGlyphElement.cpp @header:RenderStyleGetters
+svg/SVGAltGlyphItemElement.cpp
 svg/SVGAngleValue.cpp
 svg/SVGAnimateElement.cpp
 svg/SVGAnimateElementBase.cpp
@@ -3731,6 +3725,8 @@ svg/SVGFontFaceUriElement.cpp
 svg/SVGForeignObjectElement.cpp
 svg/SVGGElement.cpp @header:RenderStyleGetters
 svg/SVGGeometryElement.cpp
+svg/SVGGlyphElement.cpp
+svg/SVGGlyphRefElement.cpp
 svg/SVGGradientElement.cpp
 svg/SVGGraphicsElement.cpp @header:RenderStyleGetters
 svg/SVGHKernElement.cpp
@@ -3746,6 +3742,7 @@ svg/SVGMPathElement.cpp
 svg/SVGMarkerElement.cpp
 svg/SVGMaskElement.cpp @header:RenderStyleGetters
 svg/SVGMetadataElement.cpp
+svg/SVGMissingGlyphElement.cpp
 svg/SVGNumberList.cpp
 svg/SVGParserUtilities.cpp
 svg/SVGPathAbsoluteConverter.cpp
@@ -3798,6 +3795,9 @@ svg/animation/SMILTime.cpp
 svg/animation/SMILTimeContainer.cpp
 svg/animation/SVGSMILElement.cpp
 svg/graphics/SVGImage.cpp @header:RenderStyleGetters
+svg/graphics/SVGImageCache.cpp
+svg/graphics/SVGImageForContainer.cpp
+svg/graphics/SVGResourceImage.cpp
 svg/graphics/filters/SVGFilterPrimitiveGraph.cpp
 svg/graphics/filters/SVGFilterRenderer.cpp
 svg/properties/SVGAnimatedPropertyBase.cpp
@@ -3936,7 +3936,6 @@ JSHTMLElementWrapperFactory.cpp
 JSMathMLElementWrapperFactory.cpp
 JSSVGElementWrapperFactory.cpp
 MathMLElementFactory.cpp
-QuirksAccessors.cpp
 SVGElementFactory.cpp @cost:4
 StyleBuilderGenerated.cpp @cost:13
 StyleChangedAnimatablePropertiesGenerated.cpp @cost:6
@@ -4136,7 +4135,6 @@ JSCanvasCaptureMediaStreamTrack.cpp
 JSCanvasCompositing.cpp
 JSCanvasDirection.cpp
 JSCanvasDrawElementImage.cpp
-JSCanvasDrawElementImageOptions.cpp
 JSCanvasDrawImage.cpp
 JSCanvasDrawPath.cpp
 JSCanvasElementImage.cpp
@@ -4297,8 +4295,6 @@ JSDetectedText.cpp
 JSDeviceMotionEvent.cpp
 JSDeviceOrientationEvent.cpp
 JSDeviceOrientationOrMotionPermissionState.cpp
-JSDevicePosture.cpp
-JSDevicePostureType.cpp
 JSDigitalCredential.cpp
 JSDigitalCredentialGetRequest.cpp
 JSDigitalCredentialRequestOptions.cpp
@@ -4441,6 +4437,8 @@ JSGPUComputePassEncoder.cpp
 JSGPUComputePassTimestampWrites.cpp
 JSGPUComputePipeline.cpp
 JSGPUComputePipelineDescriptor.cpp
+JSGPUCopyElementImageDestination.cpp
+JSGPUCopyElementImageSource.cpp
 JSGPUCullMode.cpp
 JSGPUDebugCommandsMixin.cpp
 JSGPUDepthStencilState.cpp
@@ -4451,8 +4449,6 @@ JSGPUDeviceLost.cpp
 JSGPUDeviceLostInfo.cpp
 JSGPUDeviceLostReason.cpp
 JSGPUDeviceUncapturedError.cpp
-JSGPUDrawElementImageDestination.cpp
-JSGPUDrawElementImageSource.cpp
 JSGPUError.cpp
 JSGPUErrorFilter.cpp
 JSGPUExtent3DDict.cpp
@@ -4644,7 +4640,6 @@ JSHTMLVideoElement.cpp
 JSHardwareAcceleration.cpp
 JSHashChangeEvent.cpp
 JSHdrMetadataType.cpp
-JSHevcEncoderConfig.cpp
 JSHighlight.cpp
 JSHighlightHitResult.cpp
 JSHighlightRegistry.cpp
@@ -4715,7 +4710,6 @@ JSLongRange.cpp
 JSManagedMediaSource.cpp
 JSManagedSourceBuffer.cpp
 JSMapperCallback.cpp
-JSMathMLAnchorElement.cpp
 JSMathMLElement.cpp
 JSMathMLMathElement.cpp
 JSMediaCapabilities.cpp
@@ -5295,7 +5289,6 @@ JSUnderlyingSourceStartCallback.cpp
 JSUndoItem.cpp
 JSUndoManager.cpp
 JSUnknownCredentialOptions.cpp
-JSUpdateElementGeometryOptions.cpp
 JSUserActivation.cpp
 JSUserMessageHandler.cpp
 JSUserMessageHandlersNamespace.cpp

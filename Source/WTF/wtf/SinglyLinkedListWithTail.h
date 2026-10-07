@@ -36,7 +36,7 @@ public:
     bool isEmpty() const { return !m_first; }
     
     template<typename SetNextFunc>
-    void append(NOESCAPE const SetNextFunc& setNextFunc, T* node)
+    void append(SetNextFunc&& setNextFunc, T* node)
     {
         if (!m_first) {
             RELEASE_ASSERT(!m_last);
@@ -45,7 +45,7 @@ public:
             return;
         }
         
-        setNextFunc(m_last, node);
+        std::forward<SetNextFunc>(setNextFunc)(m_last, node);
         m_last = node;
     }
     

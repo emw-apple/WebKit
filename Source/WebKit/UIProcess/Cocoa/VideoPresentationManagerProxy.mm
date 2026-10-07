@@ -854,7 +854,7 @@ void VideoPresentationManagerProxy::removeClientForContext(PlaybackSessionContex
     m_clientCounts.set(contextId, clientCount);
 }
 
-void VideoPresentationManagerProxy::forEachSession(NOESCAPE const Function<void(VideoPresentationModelContext&, PlatformVideoPresentationInterface&)>& callback)
+void VideoPresentationManagerProxy::forEachSession(Function<void(VideoPresentationModelContext&, PlatformVideoPresentationInterface&)>&& callback)
 {
     if (m_contextMap.isEmpty())
         return;
@@ -1104,8 +1104,6 @@ void VideoPresentationManagerProxy::setupFullscreenWithID(IPC::Connection& conne
     RefPtr page = m_page.get();
     if (!page)
         return;
-
-    m_lastSetupFullscreenRectForTesting = screenRect;
 
     auto contextId = contextIdForConnection(connection, identifier);
     auto [model, interface] = ensureModelAndInterface(contextId);

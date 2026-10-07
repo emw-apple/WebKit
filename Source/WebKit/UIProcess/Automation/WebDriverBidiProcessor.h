@@ -39,7 +39,6 @@ namespace WebKit {
 class BidiBrowserAgent;
 class BidiBrowsingContextAgent;
 class BidiDigitalCredentialsAgent;
-class BidiInputAgent;
 class BidiPermissionsAgent;
 class BidiScriptAgent;
 class BidiSessionAgent;
@@ -58,7 +57,6 @@ public:
 
     BidiBrowserAgent& browserAgent() const LIFETIME_BOUND { return m_browserAgent; }
     BidiDigitalCredentialsAgent& digitalCredentialsAgent() const LIFETIME_BOUND { return m_digitalCredentialsAgent; }
-    BidiInputAgent& inputAgent() const LIFETIME_BOUND { return m_inputAgent; }
     BidiScriptAgent& scriptAgent() const LIFETIME_BOUND { return m_scriptAgent; }
 
     // Inspector::FrontendChannel methods. Domain events sent via WebDriverBidi domain notifiers are packaged up
@@ -68,7 +66,6 @@ public:
 
     // Event entry points called from the owning WebAutomationSession.
     Inspector::BidiBrowsingContextFrontendDispatcher& browsingContextDomainNotifier() const LIFETIME_BOUND { return m_browsingContextDomainNotifier; }
-    Inspector::BidiInputFrontendDispatcher& inputDomainNotifier() const LIFETIME_BOUND { return m_inputDomainNotifier; }
     Inspector::BidiLogFrontendDispatcher& logDomainNotifier() const LIFETIME_BOUND { return m_logDomainNotifier; }
     Inspector::BidiScriptFrontendDispatcher& scriptDomainNotifier() const LIFETIME_BOUND { return m_scriptDomainNotifier; }
 
@@ -87,13 +84,11 @@ private:
     const UniqueRef<BidiBrowserAgent> m_browserAgent;
     const Ref<BidiBrowsingContextAgent> m_browsingContextAgent;
     const UniqueRef<BidiDigitalCredentialsAgent> m_digitalCredentialsAgent;
-    const UniqueRef<BidiInputAgent> m_inputAgent;
     const UniqueRef<BidiPermissionsAgent> m_permissionsAgent;
     const UniqueRef<BidiScriptAgent> m_scriptAgent;
     const UniqueRef<BidiSessionAgent> m_sessionAgent;
     const UniqueRef<BidiStorageAgent> m_storageAgent;
     const UniqueRef<Inspector::BidiBrowsingContextFrontendDispatcher> m_browsingContextDomainNotifier;
-    const UniqueRef<Inspector::BidiInputFrontendDispatcher> m_inputDomainNotifier;
     const UniqueRef<Inspector::BidiLogFrontendDispatcher> m_logDomainNotifier;
     const UniqueRef<Inspector::BidiScriptFrontendDispatcher> m_scriptDomainNotifier;
 };

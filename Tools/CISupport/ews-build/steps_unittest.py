@@ -3982,49 +3982,6 @@ class TestFilterLayoutTestFailuresUsingResultsDB(BuildStepMixinAdditions, unitte
             {'platform': 'mac', 'style': 'release', 'flavor': 'wk2'},
         )
 
-    def test_glib_queries_include_the_architecture(self):
-        self.setup_step(RunWebKitTests())
-        self.setProperty('platform', 'wpe')
-        self.setProperty('configuration', 'release')
-        self.setProperty('flavor', 'wk2')
-        self.setProperty('architecture', 'x86_64')
-        self.assertEqual(
-            self.get_nth_step(0).results_db_query_configuration(),
-            {'platform': 'WPE', 'style': 'release', 'flavor': 'wk2', 'architecture': 'x86_64'},
-        )
-
-    def test_glib_queries_prefer_the_machine_architecture(self):
-        # Queues without architectures in config.json only know it from the worker.
-        self.setup_step(RunWebKitTests())
-        self.setProperty('platform', 'gtk')
-        self.setProperty('configuration', 'release')
-        self.setProperty('machine_architecture', 'arm64')
-        self.assertEqual(
-            self.get_nth_step(0).results_db_query_configuration(),
-            {'platform': 'GTK', 'style': 'release', 'architecture': 'arm64'},
-        )
-
-    def test_glib_queries_skip_a_multi_architecture_value(self):
-        self.setup_step(RunWebKitTests())
-        self.setProperty('platform', 'wpe')
-        self.setProperty('configuration', 'release')
-        self.setProperty('architecture', 'x86_64 arm64')
-        self.assertEqual(
-            self.get_nth_step(0).results_db_query_configuration(),
-            {'platform': 'WPE', 'style': 'release'},
-        )
-
-    def test_mac_queries_pool_architectures(self):
-        self.setup_step(RunWebKitTests())
-        self.setProperty('platform', 'mac')
-        self.setProperty('configuration', 'release')
-        self.setProperty('flavor', 'wk2')
-        self.setProperty('machine_architecture', 'arm64')
-        self.assertEqual(
-            self.get_nth_step(0).results_db_query_configuration(),
-            {'platform': 'mac', 'style': 'release', 'flavor': 'wk2'},
-        )
-
     def test_site_isolation_queries_keep_their_platform(self) -> None:
         # mac has its own site-isolation post-commit queue, so dropping the platform here would
         # fold another platform's history for the same test into the verdict.
@@ -4060,83 +4017,6 @@ class TestFilterLayoutTestFailuresUsingResultsDB(BuildStepMixinAdditions, unitte
         failing_tests = [f'test{i}.html' for i in range(cap + 10)]
         yield step.filter_failures_using_results_db(failing_tests)
         self.assertEqual(len(queried), cap)
-
-    @defer.inlineCallbacks
-    def test_a_test_whose_expectations_this_change_modifies_is_not_excused_as_pre_existing(self):
-        # Removing an expectation claims the test passes now, which the database cannot vouch for.
-        step = self._configure({'ungardened.html', 'unrelated.html'})
-        self.setProperty('modified_tests', ['LayoutTests/ungardened.html'])
-
-        yield step.filter_failures_using_results_db(['ungardened.html', 'unrelated.html'])
-
-        self.assertEqual(step.failing_tests_filtered, ['ungardened.html'])
-        self.assertEqual(step.pre_existing_failures_in_results_db, ['unrelated.html'])
-        self.assertEqual(step.tests_modified_by_change, ['ungardened.html'])
-
-    @defer.inlineCallbacks
-    def test_a_test_this_change_modifies_is_not_excused_as_a_known_flake(self):
-        step = self._configure(set())
-        self.setProperty('modified_tests', ['LayoutTests/modified.html'])
-        self.patch(ResultsDatabase, 'flaky_verdicts_for', classmethod(
-            lambda cls, tests, **kwargs: defer.succeed((
-                {test: FlakyVerdict(flaky_type='DirtyTree', build_urls={'https://build.webkit.org/'}) for test in tests}, ''))))
-
-        yield step.filter_failures_using_results_db(['modified.html', 'flaky.html'])
-
-        # flaky.html is excused by its verdict, modified.html is never queried at all.
-        self.assertEqual(step.failing_tests_filtered, ['modified.html'])
-        self.assertEqual(step.pre_existing_flakes_in_results_db, {'flaky.html': 'DirtyTree'})
-
-    @defer.inlineCallbacks
-    def test_results_db_is_not_queried_for_tests_this_change_modifies(self):
-        queried = []
-
-        def fake_is_pre_existing(cls, test, **kwargs):
-            queried.append(test)
-            return defer.succeed({
-                'is_existing_failure': True, 'pass_rate': 0, 'raw_data': {}, 'logs': '', 'request_failed': False,
-            })
-
-        step = self._configure(set())
-        self.patch(ResultsDatabase, 'is_test_pre_existing_failure', classmethod(fake_is_pre_existing))
-        self.setProperty('modified_tests', ['LayoutTests/modified.html'])
-
-        yield step.filter_failures_using_results_db(['modified.html', 'other.html'])
-
-        self.assertEqual(queried, ['other.html'])
-
-    @defer.inlineCallbacks
-    def test_modified_tests_are_matched_without_the_layouttests_prefix(self):
-        # FindModifiedLayoutTests stores 'LayoutTests/foo.html'; failures are reported as 'foo.html'.
-        step = self._configure({'ipc/invalid-message-to-web-process-crash.html'})
-        self.setProperty('modified_tests', ['LayoutTests/ipc/invalid-message-to-web-process-crash.html'])
-
-        yield step.filter_failures_using_results_db(['ipc/invalid-message-to-web-process-crash.html'])
-
-        self.assertEqual(step.failing_tests_filtered, ['ipc/invalid-message-to-web-process-crash.html'])
-        self.assertEqual(step.pre_existing_failures_in_results_db, [])
-
-    @defer.inlineCallbacks
-    def test_tests_this_change_does_not_touch_are_still_excused(self):
-        # Over-reach guard: modified_tests must not stop unrelated failures being ignored.
-        step = self._configure({'unrelated.html'})
-        self.setProperty('modified_tests', ['LayoutTests/modified.html'])
-
-        yield step.filter_failures_using_results_db(['unrelated.html'])
-
-        self.assertEqual(step.failing_tests_filtered, [])
-        self.assertEqual(step.pre_existing_failures_in_results_db, ['unrelated.html'])
-        self.assertEqual(step.tests_modified_by_change, [])
-
-    @defer.inlineCallbacks
-    def test_without_modified_tests_every_failure_is_still_checked(self):
-        step = self._configure({'pre-existing.html'})
-
-        yield step.filter_failures_using_results_db(['pre-existing.html', 'real.html'])
-
-        self.assertEqual(step.failing_tests_filtered, ['real.html'])
-        self.assertEqual(step.pre_existing_failures_in_results_db, ['pre-existing.html'])
-        self.assertEqual(step.tests_modified_by_change, [])
 
 
 class TestRunWebKitTestsRedTree(BuildStepMixinAdditions, unittest.TestCase):

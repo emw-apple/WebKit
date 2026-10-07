@@ -18,8 +18,6 @@ import os
 import re
 import subprocess
 import sys
-import time
-import urllib.error
 import urllib.request
 
 
@@ -61,7 +59,7 @@ WEBRTC_ONLY_DEPS = [
     'src/third_party',
     'src/third_party/grpc/src',
     'src/third_party/gtest-parallel',
-    'src/third_party/wireplumber/linux-amd64',
+    'src/third_party/pipewire/linux-amd64',
     'src/tools',
 ]
 
@@ -247,28 +245,22 @@ def ReadRemoteCrCommit(revision):
     return _ReadGitilesContent(CHROMIUM_COMMIT_TEMPLATE % revision)
 
 
-def ReadUrlContent(url, retry_limit=3, retry_delay_seconds=5):
-    """Connect to a remote host and read the contents with retries.
+def ReadUrlContent(url):
+    """Connect to a remote host and read the contents.
 
     Args:
       url: URL to connect to.
-      retry_limit: Number of retry attempts.
-      retry_delay_seconds: Delay between retries in seconds.
     Returns:
       A list of lines.
     """
-    for _ in range(retry_limit):
-        conn = None
-        try:
-            conn = urllib.request.urlopen(url)
-            return conn.readlines()
-        except (urllib.error.URLError, IOError) as e:
-            logging.warning('Error connecting to %s: %s.', url, e)
-            time.sleep(retry_delay_seconds)
-        finally:
-            if conn:
-                conn.close()
-    raise RollError('Failed to read %s after %d retries.' % (url, retry_limit))
+    conn = urllib.request.urlopen(url)
+    try:
+        return conn.readlines()
+    except IOError as e:
+        logging.exception('Error connecting to %s. Error: %s', url, e)
+        raise
+    finally:
+        conn.close()
 
 
 def GetMatchingDepsEntries(depsentry_dict, dir_path):

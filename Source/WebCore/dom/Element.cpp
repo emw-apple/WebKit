@@ -515,16 +515,6 @@ static ShouldIgnoreMouseEvent dispatchPointerEventIfNeeded(Element& element, con
         UNUSED_PARAM(platformEvent);
 #endif
 
-#if PLATFORM(MAC)
-        // A tracked pointer's events are dispatched as its press happens, so the mouse events synthesized for
-        // the same press must not derive them a second time.
-        if (!isAnyClick(mouseEvent) && mouseEvent.type() != eventNames().contextmenuEvent && pointerCaptureController.mouseEventBelongsToTrackedPointer(platformEvent)) {
-            if (isCompatibilityMouseEvent(mouseEvent) && pointerCaptureController.preventsCompatibilityMouseEventsForIdentifier(platformEvent.pointerId()))
-                return ShouldIgnoreMouseEvent::Yes;
-            return ShouldIgnoreMouseEvent::No;
-        }
-#endif
-
         // FIXME: <https://webkit.org/b/314881> This early-return is using synthetic click type
         // and input source to approximate "pointer events for this interaction have already been
         // dispatched upstream by other compat paths."
@@ -549,7 +539,7 @@ static ShouldIgnoreMouseEvent dispatchPointerEventIfNeeded(Element& element, con
     return ShouldIgnoreMouseEvent::No;
 }
 
-Element::DispatchMouseEventResult Element::dispatchMouseEvent(const PlatformMouseEvent& platformEvent, const AtomString& eventType, int detail, Element* relatedTarget, IsSyntheticClick isSyntheticClick, ShouldDispatchPointerEvent shouldDispatchPointerEvent)
+Element::DispatchMouseEventResult Element::dispatchMouseEvent(const PlatformMouseEvent& platformEvent, const AtomString& eventType, int detail, Element* relatedTarget, IsSyntheticClick isSyntheticClick)
 {
     auto eventIsDefaultPrevented = Element::EventIsDefaultPrevented::No;
     if (isForceEvent(platformEvent) && !document().hasListenerTypeForEventType(platformEvent.type()))
@@ -571,8 +561,7 @@ Element::DispatchMouseEventResult Element::dispatchMouseEvent(const PlatformMous
     Ref protectedThis { *this };
     bool didNotSwallowEvent = true;
 
-    if (shouldDispatchPointerEvent == ShouldDispatchPointerEvent::Yes
-        && dispatchPointerEventIfNeeded(*this, mouseEvent, platformEvent, didNotSwallowEvent) == ShouldIgnoreMouseEvent::Yes)
+    if (dispatchPointerEventIfNeeded(*this, mouseEvent, platformEvent, didNotSwallowEvent) == ShouldIgnoreMouseEvent::Yes)
         return { Element::EventIsDispatched::No, eventIsDefaultPrevented };
 
     auto isParentProcessAFullWebBrowser = false;
@@ -959,16 +948,6 @@ bool Element::isFocusable() const
         // focusable as long as their canvas is displayed and visible.
         RefPtr canvas = ancestorsOfType<HTMLCanvasElement>(*this).first();
         if (canvas && !canvas->hasFocusableStyle())
-            return false;
-    }
-
-    // Never-rendered SVG elements (e.g. <defs>, <clipPath>, <symbol>) and any
-    // elements inside them are never rendered and should not be focusable per
-    // the SVG spec. Walk from this element's own renderer upwards so that both
-    // a hidden container and its descendants are rejected.
-    // https://w3c.github.io/svgwg/svg2-draft/render.html#Rendered-vs-NonRendered
-    for (CheckedPtr ancestor = renderer(); ancestor; ancestor = ancestor->parent()) {
-        if (ancestor->isRenderSVGHiddenContainer() || ancestor->isLegacyRenderSVGHiddenContainer())
             return false;
     }
 
@@ -1525,11 +1504,11 @@ static int adjustContentsScrollPositionOrSizeForZoom(int value, const LocalFrame
     return static_cast<int>(value / zoomFactor);
 }
 
-enum class LegacyCSSOMElementMetricsRoundingStrategy : bool { Round, Floor };
+enum LegacyCSSOMElementMetricsRoundingStrategy { Round, Floor };
 
-static int convertToNonSubpixelValue(double value, const LegacyCSSOMElementMetricsRoundingStrategy roundStrategy = LegacyCSSOMElementMetricsRoundingStrategy::Round)
+static int convertToNonSubpixelValue(double value, const LegacyCSSOMElementMetricsRoundingStrategy roundStrategy = Round)
 {
-    return roundStrategy == LegacyCSSOMElementMetricsRoundingStrategy::Round ? std::round(value) : std::floor(value);
+    return roundStrategy == Round ? std::round(value) : std::floor(value);
 }
 
 static int adjustOffsetForZoomAndSubpixelLayout(RenderBoxModelObject& renderer, const LayoutUnit& offset)
@@ -1537,8 +1516,8 @@ static int adjustOffsetForZoomAndSubpixelLayout(RenderBoxModelObject& renderer, 
     auto offsetLeft = LayoutUnit { roundToInt(offset) };
     double zoomFactor = localZoomForRenderer(renderer);
     if (zoomFactor == 1)
-        return convertToNonSubpixelValue(offsetLeft, LegacyCSSOMElementMetricsRoundingStrategy::Floor);
-    return convertToNonSubpixelValue(offsetLeft / zoomFactor, LegacyCSSOMElementMetricsRoundingStrategy::Round);
+        return convertToNonSubpixelValue(offsetLeft, Floor);
+    return convertToNonSubpixelValue(offsetLeft / zoomFactor, Round);
 }
 
 static HashSet<TreeScope*> collectAncestorTreeScopeAsHashSet(Node& node)
@@ -3164,31 +3143,6 @@ RenderPtr<RenderElement> Element::createElementRenderer(Style::ComputedStyle&& s
     return RenderElement::createFor(*this, WTF::move(style));
 }
 
-static void preserveCustomElementRegistryAfterLeavingTreeScope(Element& element, ContainerNode& oldParent)
-{
-    if (!oldParent.isInShadowTree())
-        return;
-    if (RefPtr registry = oldParent.treeScope().customElementRegistry()) {
-        if (registry->isScoped() && !element.usesScopedCustomElementRegistryMap()) [[unlikely]]
-            CustomElementRegistry::addToScopedCustomElementRegistryMap(element, *registry);
-    }
-}
-
-static void preserveCustomElementRegistryAfterEnteringTreeScope(Element& element)
-{
-    if (element.usesScopedCustomElementRegistryMap()) {
-        if (CustomElementRegistry::registryForElement(element) == element.treeScope().customElementRegistry())
-            CustomElementRegistry::removeFromScopedCustomElementRegistryMap(element);
-    } else if (!element.usesNullCustomElementRegistry()) {
-        if (element.treeScope().customElementRegistry() != element.document().customElementRegistry()) [[unlikely]] {
-            // This element was moved into a shadow tree with a scoped custom element registry.
-            // Keep using the document's non-scoped custom element registry.
-            if (RefPtr window = element.document().window())
-                CustomElementRegistry::addToScopedCustomElementRegistryMap(element, protect(window->ensureCustomElementRegistry()));
-        }
-    }
-}
-
 Node::NeedsPostConnectionSteps Element::insertionSteps(InsertionType insertionType, ContainerNode& parentOfInsertedTree)
 {
     ContainerNode::insertionSteps(insertionType, parentOfInsertedTree);
@@ -3196,10 +3150,30 @@ Node::NeedsPostConnectionSteps Element::insertionSteps(InsertionType insertionTy
     if (insertionType.treeScopeChanged) {
         RefPtr<HTMLDocument> newHTMLDocument = insertionType.connectedToDocument && parentOfInsertedTree.isInDocumentTree()
             ? dynamicDowncast<HTMLDocument>(treeScope().documentScope()) : nullptr;
-        addToIdAndNameMaps(protect(treeScope()), newHTMLDocument.get());
+        if (auto& idValue = getIdAttribute(); !idValue.isEmpty()) {
+            protect(treeScope())->addElementById(idValue, *this);
+            if (newHTMLDocument)
+                updateIdForDocument(*newHTMLDocument, nullAtom(), idValue, HTMLDocumentNamedItemMapsUpdatingCondition::Always);
+        }
+        if (auto& nameValue = getNameAttribute(); !nameValue.isEmpty()) {
+            protect(treeScope())->addElementByName(nameValue, *this);
+            if (newHTMLDocument)
+                updateNameForDocument(*newHTMLDocument, nullAtom(), nameValue);
+        }
 
-        if (parentOfInsertedTree.isInTreeScope())
-            preserveCustomElementRegistryAfterEnteringTreeScope(*this);
+        if (parentOfInsertedTree.isInTreeScope()) {
+            if (usesScopedCustomElementRegistryMap()) {
+                if (CustomElementRegistry::registryForElement(*this) == treeScope().customElementRegistry())
+                    CustomElementRegistry::removeFromScopedCustomElementRegistryMap(*this);
+            } else if (!usesNullCustomElementRegistry()) {
+                if (treeScope().customElementRegistry() != document().customElementRegistry()) [[unlikely]] {
+                    // This element was moved into a shadow tree with a scoped custom elemnt registry.
+                    // Keep using the document's non-scoped custom element registry.
+                    if (RefPtr window = document().window())
+                        CustomElementRegistry::addToScopedCustomElementRegistryMap(*this, protect(window->ensureCustomElementRegistry()));
+                }
+            }
+        }
     }
 
     if (insertionType.connectedToDocument) {
@@ -3289,8 +3263,22 @@ void Element::removingSteps(RemovalType removalType, ContainerNode& oldParentOfR
         RefPtr<HTMLDocument> oldHTMLDocument = removalType.disconnectedFromDocument
             && oldParentOfRemovedTree.isInDocumentTree() ? dynamicDowncast<HTMLDocument>(oldTreeScope->documentScope()) : nullptr;
 
-        removeFromIdAndNameMaps(oldTreeScope, oldHTMLDocument.get());
-        preserveCustomElementRegistryAfterLeavingTreeScope(*this, oldParentOfRemovedTree);
+        if (auto& idValue = getIdAttribute(); !idValue.isEmpty()) {
+            oldTreeScope->removeElementById(idValue, *this);
+            if (oldHTMLDocument)
+                updateIdForDocument(*oldHTMLDocument, idValue, nullAtom(), HTMLDocumentNamedItemMapsUpdatingCondition::Always);
+        }
+        if (auto& nameValue = getNameAttribute(); !nameValue.isEmpty()) {
+            oldTreeScope->removeElementByName(nameValue, *this);
+            if (oldHTMLDocument)
+                updateNameForDocument(*oldHTMLDocument, nameValue, nullAtom());
+        }
+        if (oldParentOfRemovedTree.isInShadowTree()) {
+            if (RefPtr registry = oldTreeScope->customElementRegistry()) {
+                if (registry->isScoped() && !usesScopedCustomElementRegistryMap()) [[unlikely]]
+                    CustomElementRegistry::addToScopedCustomElementRegistryMap(*this, *registry);
+            }
+        }
     }
 
     if (removalType.disconnectedFromDocument) {
@@ -3351,18 +3339,33 @@ void Element::removingSteps(RemovalType removalType, ContainerNode& oldParentOfR
     }
 }
 
-void Element::movingSteps(MovingType movingType, ContainerNode& oldParent)
+void Element::movingSteps(IsSubtreeRoot isSubtreeRoot, ContainerNode& oldParent)
 {
-    ContainerNode::movingSteps(movingType, oldParent);
+    ContainerNode::movingSteps(isSubtreeRoot, oldParent);
 
-    RefPtr htmlDocument = dynamicDowncast<HTMLDocument>(document());
-    if (movingType.didRemoveFromOldTreeScope) {
-        removeFromIdAndNameMaps(protect(oldParent.treeScope()), oldParent.isInDocumentTree() ? htmlDocument.get() : nullptr);
-        preserveCustomElementRegistryAfterLeavingTreeScope(*this, oldParent);
+    Ref oldTreeScope = oldParent.treeScope();
+    Ref newTreeScope = treeScope();
+    RefPtr<HTMLDocument> oldHTMLDocument = oldTreeScope->rootNode().isDocumentNode()
+        ? dynamicDowncast<HTMLDocument>(oldTreeScope->documentScope()) : nullptr;
+    RefPtr<HTMLDocument> newHTMLDocument = newTreeScope->rootNode().isDocumentNode()
+        ? dynamicDowncast<HTMLDocument>(newTreeScope->documentScope()) : nullptr;
+
+    if (auto& idValue = getIdAttribute(); !idValue.isEmpty()) {
+        oldTreeScope->removeElementById(idValue, *this);
+        newTreeScope->addElementById(idValue, *this);
+        if (oldHTMLDocument)
+            updateIdForDocument(*oldHTMLDocument, idValue, nullAtom(), HTMLDocumentNamedItemMapsUpdatingCondition::Always);
+        if (newHTMLDocument)
+            updateIdForDocument(*newHTMLDocument, nullAtom(), idValue, HTMLDocumentNamedItemMapsUpdatingCondition::Always);
     }
-    if (movingType.didInsertIntoNewTreeScope) {
-        addToIdAndNameMaps(protect(treeScope()), isInDocumentTree() ? htmlDocument.get() : nullptr);
-        preserveCustomElementRegistryAfterEnteringTreeScope(*this);
+
+    if (auto& nameValue = getNameAttribute(); !nameValue.isEmpty()) {
+        oldTreeScope->removeElementByName(nameValue, *this);
+        newTreeScope->addElementByName(nameValue, *this);
+        if (oldHTMLDocument)
+            updateNameForDocument(*oldHTMLDocument, nameValue, nullAtom());
+        if (newHTMLDocument)
+            updateNameForDocument(*newHTMLDocument, nullAtom(), nameValue);
     }
 
     if (!is<HTMLSlotElement>(*this))
@@ -3370,7 +3373,7 @@ void Element::movingSteps(MovingType movingType, ContainerNode& oldParent)
 
     updateEffectiveLangState();
 
-    if (!movingType.isSubtreeRoot || !hasFocusWithin())
+    if (isSubtreeRoot == IsSubtreeRoot::No || !hasFocusWithin())
         return;
 
     if (RefPtr oldParentElement = dynamicDowncast<Element>(oldParent))
@@ -5327,7 +5330,7 @@ void Element::requestFullscreen(FullscreenOptions&& options, RefPtr<DeferredProm
         }
     }
 
-    protect(document())->fullscreen().requestFullscreen(*this, DocumentFullscreen::FullscreenCheckType::EnforceIFrameAllowFullscreenRequirement, [promise = WTF::move(promise)](auto result) {
+    protect(document())->fullscreen().requestFullscreen(*this, DocumentFullscreen::EnforceIFrameAllowFullscreenRequirement, [promise = WTF::move(promise)] (auto result) {
         if (!promise)
             return;
         if (result.hasException())
@@ -5832,34 +5835,6 @@ void Element::updateIdForDocument(HTMLDocument& document, const AtomString& oldI
             document.removeDocumentNamedItem(oldId, *this);
         if (!newId.isEmpty() && newId != name)
             document.addDocumentNamedItem(newId, *this);
-    }
-}
-
-inline void Element::addToIdAndNameMaps(TreeScope& treeScope, HTMLDocument* htmlDocument)
-{
-    if (auto& idValue = getIdAttribute(); !idValue.isEmpty()) {
-        treeScope.addElementById(idValue, *this);
-        if (htmlDocument)
-            updateIdForDocument(*htmlDocument, nullAtom(), idValue, HTMLDocumentNamedItemMapsUpdatingCondition::Always);
-    }
-    if (auto& nameValue = getNameAttribute(); !nameValue.isEmpty()) {
-        treeScope.addElementByName(nameValue, *this);
-        if (htmlDocument)
-            updateNameForDocument(*htmlDocument, nullAtom(), nameValue);
-    }
-}
-
-inline void Element::removeFromIdAndNameMaps(TreeScope& treeScope, HTMLDocument* htmlDocument)
-{
-    if (auto& idValue = getIdAttribute(); !idValue.isEmpty()) {
-        treeScope.removeElementById(idValue, *this);
-        if (htmlDocument)
-            updateIdForDocument(*htmlDocument, idValue, nullAtom(), HTMLDocumentNamedItemMapsUpdatingCondition::Always);
-    }
-    if (auto& nameValue = getNameAttribute(); !nameValue.isEmpty()) {
-        treeScope.removeElementByName(nameValue, *this);
-        if (htmlDocument)
-            updateNameForDocument(*htmlDocument, nameValue, nullAtom());
     }
 }
 

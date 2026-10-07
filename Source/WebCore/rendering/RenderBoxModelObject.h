@@ -30,6 +30,9 @@
 
 namespace WebCore {
 
+// Modes for some of the line-related functions.
+enum class LineDirection : bool { Horizontal, Vertical };
+
 enum class BleedAvoidance : uint8_t {
     None,
     ShrinkBackground,
@@ -42,7 +45,6 @@ class BorderShape;
 class GraphicsContext;
 class Image;
 class ImageBuffer;
-class ImageSizingContext;
 class RenderTextFragment;
 class StickyPositionViewportConstraints;
 class TransformationMatrix;
@@ -207,6 +209,7 @@ public:
     void applyTransform(TransformationMatrix&, const Style::ComputedStyle&, const FloatRect& boundingBox, OptionSet<Style::TransformResolverOption>) const override;
 
     bool NODELETE fixedBackgroundPaintsInLocalCoordinates() const;
+    InterpolationQuality chooseInterpolationQuality(GraphicsContext&, Image&, const void*, const LayoutSize&) const;
     DecodingMode decodingModeForImageDraw(const Image&, const PaintInfo&) const;
 
     void paintMaskForTextFillBox(GraphicsContext&, const FloatRect&, const InlineIterator::InlineBoxIterator&, const LayoutRect&);
@@ -217,7 +220,7 @@ public:
     void clearFirstLetterRemainingText();
 
     enum class ScaleByUsedZoom : bool { No, Yes };
-    LayoutSize calculateImageIntrinsicDimensions(const Style::Image&, const ImageSizingContext&, ScaleByUsedZoom) const;
+    LayoutSize calculateImageIntrinsicDimensions(Style::Image*, const LayoutSize& scaledPositioningAreaSize, ScaleByUsedZoom) const;
 
     RenderBlock* containingBlockForAutoHeightDetection(const Style::PreferredSize& logicalHeight) const;
     RenderBlock* containingBlockForAutoHeightDetection(const Style::MinimumSize& logicalHeight) const;
@@ -233,7 +236,6 @@ protected:
     void willBeDestroyed() override;
 
     void styleWillChange(Style::Difference, const Style::ComputedStyle& newStyle) override;
-    void styleDidChange(Style::Difference, const Style::ComputedStyle* oldStyle) override;
 
     LayoutPoint adjustedPositionRelativeToOffsetParent(const LayoutPoint&) const;
 

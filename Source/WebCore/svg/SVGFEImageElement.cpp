@@ -37,7 +37,6 @@
 #include "RenderLayerModelObject.h"
 #include "RenderObject.h"
 #include "SVGElementInlines.h"
-#include "SVGElementTypeHelpers.h"
 #include "SVGNames.h"
 #include "SVGPreserveAspectRatioValue.h"
 #include "SVGRenderingContext.h"
@@ -51,7 +50,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGFEImageElement);
 
 inline SVGFEImageElement::SVGFEImageElement(const QualifiedName& tagName, Document& document)
-    : SVGFilterPrimitiveStandardAttributes(tagName, document, PropertyRegistry::singleton())
+    : SVGFilterPrimitiveStandardAttributes(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
     , SVGURIReference(this)
 {
     ASSERT(hasTagName(SVGNames::feImageTag));
@@ -265,8 +264,8 @@ std::tuple<RefPtr<ImageBuffer>, FloatRect> SVGFEImageElement::imageBufferForEffe
 RefPtr<FilterEffect> SVGFEImageElement::createFilterEffect(const FilterEffectVector&, const GraphicsContext& destinationContext) const
 {
     if (RefPtr cachedImage = m_cachedImage) {
-        RefPtr image = cachedImage->image();
-        if (!image || !image->hasSomethingToDraw())
+        RefPtr image = cachedImage->imageForRenderer(renderer());
+        if (!image || image->isNull())
             return nullptr;
 
         RefPtr nativeImage = image->currentPreTransformedNativeImage(ConcreteObjectSize::fixed(image->size()));

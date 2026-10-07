@@ -153,7 +153,7 @@ void RemoteLayerTreeNode::initializeLayer()
 
 void RemoteLayerTreeNode::applyBackingStore(RemoteLayerTreeHost* host, RemoteLayerBackingStoreProperties& properties)
 {
-    if (asyncContentsIdentifier() && properties.contentsFrameIdentifier() && *asyncContentsIdentifier() >= *properties.contentsFrameIdentifier())
+    if (asyncContentsIdentifier() && properties.contentsRenderingResourceIdentifier() && *asyncContentsIdentifier() >= *properties.contentsRenderingResourceIdentifier())
         return;
 
     RetainPtr<UIView> hostingView;
@@ -161,8 +161,10 @@ void RemoteLayerTreeNode::applyBackingStore(RemoteLayerTreeHost* host, RemoteLay
     hostingView = uiView();
 #endif
 
-    bool applied = properties.applyBackingStoreToNode(*this, host->replayDynamicContentScalingDisplayListsIntoBackingStore(), hostingView.get());
-    setAsyncContentsIdentifier(applied ? properties.contentsFrameIdentifier() : std::nullopt);
+    properties.applyBackingStoreToNode(*this, host->replayDynamicContentScalingDisplayListsIntoBackingStore(), hostingView.get());
+
+    if (auto identifier = properties.contentsRenderingResourceIdentifier())
+        setAsyncContentsIdentifier(*identifier);
 }
 
 #if ENABLE(GAZE_GLOW_FOR_INTERACTION_REGIONS)
@@ -398,17 +400,9 @@ NSString *RemoteLayerTreeNode::appendLayerDescription(NSString *description, CAL
 void RemoteLayerTreeNode::addToHostingNode(RemoteLayerTreeNode& hostingNode)
 {
 #if PLATFORM(IOS_FAMILY)
-    RetainPtr hostingView = hostingNode.uiView();
-    RetainPtr view = uiView();
-    if ([view superview] != hostingView.get())
-        [hostingView addSubview:view.get()];
-    ASSERT([hostingView subviews].count == 1);
+    [protect(hostingNode.uiView()) addSubview:protect(uiView()).get()];
 #else
-    RetainPtr hostingLayer = hostingNode.layer();
-    RetainPtr layer = this->layer();
-    if ([layer superlayer] != hostingLayer.get())
-        [hostingLayer addSublayer:layer.get()];
-    ASSERT([hostingLayer sublayers].count == 1);
+    [protect(hostingNode.layer()) addSublayer:protect(layer()).get()];
 #endif
 }
 
@@ -433,10 +427,8 @@ void RemoteLayerTreeNode::setAcceleratedEffectsAndBaseValues(const WebCore::Acce
 
     m_hasHighImpactMonotonicAnimations = false;
 
-    if (effects.isEmpty()) {
-        m_animationStack = nullptr;
+    if (effects.isEmpty())
         return;
-    }
 
     Ref animationStack = RemoteAnimationStack::create(effects.map([&](const Ref<WebCore::AcceleratedEffect>& effect) {
         TimelineID timelineID { effect->timelineIdentifier(), m_layerID.processIdentifier() };

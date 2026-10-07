@@ -175,11 +175,11 @@ WI.DOMStorageContentView = class DOMStorageContentView extends WI.ContentView
             }
 
             this._dataGrid.addPlaceholderNode();
-            this._sortDataGrid({immediately: true});
+            this._sortDataGrid();
         }.bind(this));
     }
 
-    _sortDataGrid({immediately} = {})
+    _sortDataGrid()
     {
         let sortColumnIdentifier = this._dataGrid.sortColumnIdentifier || "key";
 
@@ -188,10 +188,7 @@ WI.DOMStorageContentView = class DOMStorageContentView extends WI.ContentView
             return a.data[sortColumnIdentifier].extendedLocaleCompare(b.data[sortColumnIdentifier]);
         }
 
-        if (immediately)
-            this._dataGrid.sortNodesImmediately(comparator);
-        else
-            this._dataGrid.sortNodes(comparator);
+        this._dataGrid.sortNodesImmediately(comparator);
     }
 
     _deleteCallback()

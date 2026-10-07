@@ -566,12 +566,12 @@ JSC_DEFINE_HOST_FUNCTION(regExpProtoGetterFlags, (JSGlobalObject* globalObject, 
         return throwVMTypeError(globalObject, scope, "The RegExp.prototype.flags getter can only be called on an object"_s);
 
     if (auto* regExpObject = dynamicDowncast<RegExpObject>(thisValue); regExpObject && regExpFlagsWatchpointIsValid(vm, regExpObject)) [[likely]]
-        return JSValue::encode(jsString(vm, String { Yarr::flagsString(regExpObject->regExp()->flags()).span() }));
+        return JSValue::encode(jsString(vm, String::fromLatin1(Yarr::flagsString(regExpObject->regExp()->flags()).data())));
 
     auto flags = flagsString(globalObject, asObject(thisValue));
     RETURN_IF_EXCEPTION(scope, encodedJSValue());
 
-    return JSValue::encode(jsString(vm, String { flags.span() }));
+    return JSValue::encode(jsString(vm, String::fromLatin1(flags.data())));
 }
 
 JSC_DEFINE_HOST_FUNCTION(regExpProtoGetterSource, (JSGlobalObject* globalObject, CallFrame* callFrame))
@@ -672,7 +672,7 @@ template<typename ControlFunc, typename PushFunc>
 MatchResult genericSplit(
     JSGlobalObject* globalObject, RegExp* regexp, JSString* inputString, StringView input, unsigned inputSize, unsigned& position,
     unsigned& matchPosition, bool regExpIsSticky, bool regExpIsUnicode,
-    NOESCAPE const ControlFunc& control, NOESCAPE const PushFunc& push)
+    const ControlFunc& control, const PushFunc& push)
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);

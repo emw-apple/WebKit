@@ -28,10 +28,11 @@
 
 namespace rx
 {
-ANGLE_ENABLE_STRUCT_PADDING_WARNINGS
-
 struct PackedAttributeLayout
 {
+    PackedAttributeLayout();
+    PackedAttributeLayout(const PackedAttributeLayout &other);
+
     void addAttributeData(GLenum glType,
                           UINT semanticIndex,
                           angle::FormatID vertexFormatID,
@@ -39,12 +40,9 @@ struct PackedAttributeLayout
 
     bool operator==(const PackedAttributeLayout &other) const;
 
-    uint32_t numAttributes                  = 0;
-    uint32_t pad0                           = 0;
-    gl::AttribArray<uint64_t> attributeData = {0};
+    uint32_t numAttributes;
+    gl::AttribArray<uint64_t> attributeData;
 };
-
-ANGLE_DISABLE_STRUCT_PADDING_WARNINGS
 }  // namespace rx
 
 namespace std

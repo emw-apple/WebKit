@@ -66,7 +66,7 @@ static HashMap<ScriptExecutionContextIdentifier, ThreadSafeWeakPtr<SharedWorkerT
     return map;
 }
 
-static WorkerParameters generateWorkerParameters(const WorkerFetchResult& workerFetchResult, WorkerOptions&& workerOptions, WorkerInitializationData&& initializationData, Document& document, const ClientOrigin& clientOrigin)
+static WorkerParameters generateWorkerParameters(const WorkerFetchResult& workerFetchResult, WorkerOptions&& workerOptions, WorkerInitializationData&& initializationData, Document& document)
 {
     RELEASE_ASSERT(document.sessionID());
     return {
@@ -91,8 +91,7 @@ static WorkerParameters generateWorkerParameters(const WorkerFetchResult& worker
         document.advancedPrivacyProtections(),
         document.noiseInjectionHashSalt(),
         makeString(Process::identifier().toUInt64(), "-sharedworker-"_s, initializationData.clientIdentifier->toString()),
-        document.networkLoadPolicy(),
-        clientOrigin.topOrigin.securityOrigin()->isPotentiallyTrustworthy() ? IsSecureContext::Yes : IsSecureContext::No
+        document.networkLoadPolicy()
     };
 }
 
@@ -110,7 +109,7 @@ SharedWorkerThreadProxy::SharedWorkerThreadProxy(Ref<Page>&& page, SharedWorkerI
     : m_page(WTF::move(page))
     , m_document(*m_page->localTopDocument())
     , m_contextIdentifier(*initializationData.clientIdentifier)
-    , m_workerThread(SharedWorkerThread::create(sharedWorkerIdentifier, generateWorkerParameters(workerFetchResult, WTF::move(workerOptions), WTF::move(initializationData), m_document, clientOrigin), WTF::move(workerFetchResult.script), *this, *this, *this, *this, WorkerThreadStartMode::Normal, clientOrigin.topOrigin.securityOrigin(), protect(m_document->idbConnectionProxy()).get(), protect(m_document->socketProvider()).get(), JSC::RuntimeFlags::createAllEnabled()))
+    , m_workerThread(SharedWorkerThread::create(sharedWorkerIdentifier, generateWorkerParameters(workerFetchResult, WTF::move(workerOptions), WTF::move(initializationData), m_document), WTF::move(workerFetchResult.script), *this, *this, *this, *this, WorkerThreadStartMode::Normal, clientOrigin.topOrigin.securityOrigin(), protect(m_document->idbConnectionProxy()).get(), protect(m_document->socketProvider()).get(), JSC::RuntimeFlags::createAllEnabled()))
     , m_cacheStorageProvider(cacheStorageProvider)
     , m_clientOrigin(clientOrigin)
 {
@@ -148,7 +147,7 @@ void SharedWorkerThreadProxy::notifyNetworkStateChange(bool isOnline)
     postTaskForModeToWorkerOrWorkletGlobalScope([isOnline] (ScriptExecutionContext& context) {
         auto& globalScope = downcast<WorkerGlobalScope>(context);
         globalScope.setIsOnline(isOnline);
-        protect(globalScope.eventLoop())->queueTask(TaskSource::DOMManipulation, [globalScope = Ref { globalScope }, isOnline] {
+        globalScope.eventLoop().queueTask(TaskSource::DOMManipulation, [globalScope = Ref { globalScope }, isOnline] {
             globalScope->dispatchEvent(Event::create(isOnline ? eventNames().onlineEvent : eventNames().offlineEvent, Event::CanBubble::No, Event::IsCancelable::No));
         });
     }, WorkerRunLoop::defaultMode());

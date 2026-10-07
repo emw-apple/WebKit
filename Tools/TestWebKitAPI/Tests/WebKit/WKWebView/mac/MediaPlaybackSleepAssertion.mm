@@ -41,6 +41,7 @@ static bool didFinishLoad = false;
 static bool didBeginPlaying = false;
 static bool didStopPlaying = false;
 static bool didBeginRemotePlayback = false;
+static bool didEndRemotePlayback = false;
 
 @interface MediaPlaybackSleepAssertionLoadDelegate : NSObject <WebFrameLoadDelegate>
 @end
@@ -70,8 +71,10 @@ static bool didBeginRemotePlayback = false;
             didStopPlaying = true;
         } else if ([URL.resourceSpecifier isEqualToString:@"remote-start"]) {
             didBeginRemotePlayback = true;
+            didEndRemotePlayback = false;
         } else if ([URL.resourceSpecifier isEqualToString:@"remote-end"]) {
             didBeginRemotePlayback = false;
+            didEndRemotePlayback = true;
         }
 
         [listener ignore];
@@ -147,6 +150,7 @@ TEST(WebKitLegacy, DISABLED_MediaPlaybackSleepAssertion)
     didBeginPlaying = false;
     didStopPlaying = false;
     didBeginRemotePlayback = false;
+    didEndRemotePlayback = false;
 
     @autoreleasepool {
         RetainPtr webView = adoptNS([[WebView alloc] initWithFrame:NSMakeRect(0, 0, 120, 200) frameName:nil groupName:nil]);

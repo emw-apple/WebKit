@@ -58,7 +58,6 @@ enum class WebExtensionEventListenerType : uint8_t {
     MenusOnClicked,
     NotificationsOnButtonClicked,
     NotificationsOnClicked,
-    NotificationsOnClosed,
     PermissionsOnAdded,
     PermissionsOnRemoved,
     PortOnDisconnect,
@@ -150,8 +149,6 @@ inline String toAPIString(WebExtensionEventListenerType eventType)
         return "onButtonClicked"_s;
     case WebExtensionEventListenerType::NotificationsOnClicked:
         return "onClicked"_s;
-    case WebExtensionEventListenerType::NotificationsOnClosed:
-        return "onClosed"_s;
     case WebExtensionEventListenerType::PermissionsOnAdded:
         return "onAdded"_s;
     case WebExtensionEventListenerType::PermissionsOnRemoved:

@@ -34,7 +34,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGTextElement);
 
 inline SVGTextElement::SVGTextElement(const QualifiedName& tagName, Document& document)
-    : SVGTextPositioningElement(tagName, document, PropertyRegistry::singleton())
+    : SVGTextPositioningElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::textTag));
 }
@@ -53,6 +53,7 @@ bool SVGTextElement::childShouldCreateRenderer(const Node& child) const
 {
     if (child.isTextNode()
         || child.hasTagName(SVGNames::aTag)
+        || child.hasTagName(SVGNames::altGlyphTag)
         || child.hasTagName(SVGNames::textPathTag)
         || child.hasTagName(SVGNames::trefTag)
         || child.hasTagName(SVGNames::tspanTag))

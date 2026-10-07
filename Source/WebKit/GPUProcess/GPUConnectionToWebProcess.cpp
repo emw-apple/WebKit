@@ -842,17 +842,6 @@ void GPUConnectionToWebProcess::setNowPlayingCandidateState(NowPlayingCandidateS
     gpuProcess().recomputeNowPlayingOwner();
 }
 
-void GPUConnectionToWebProcess::abandonSnapshotFrame(RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameIdentifier)
-{
-    // FIXME: using global identifiers (frameIdentifier) is not secure. Do not follow this pattern.
-    m_gpuProcess->abandonSnapshotFrame(snapshotIdentifier, frameIdentifier);
-}
-
-void GPUConnectionToWebProcess::failSnapshot(RemoteSnapshotIdentifier snapshotIdentifier)
-{
-    m_gpuProcess->failSnapshot(snapshotIdentifier);
-}
-
 void GPUConnectionToWebProcess::setNowPlayingInfoForPage(NowPlayingInfo&& nowPlayingInfo, std::optional<WebCore::PageIdentifier> pageIdentifier)
 {
     if (!pageIdentifier)
@@ -999,11 +988,6 @@ void GPUConnectionToWebProcess::releaseAudioHardwareListener(RemoteAudioHardware
 {
     bool found = m_remoteAudioHardwareListenerMap.remove(identifier);
     ASSERT_UNUSED(found, found);
-}
-
-void GPUConnectionToWebProcess::releaseTransferredImageBuffer(WebCore::ImageBufferTransferIdentifier identifier)
-{
-    protect(gpuProcess())->releaseTransferredImageBuffer(identifier);
 }
 
 void GPUConnectionToWebProcess::createRemoteCommandListener(RemoteRemoteCommandListenerIdentifier identifier)

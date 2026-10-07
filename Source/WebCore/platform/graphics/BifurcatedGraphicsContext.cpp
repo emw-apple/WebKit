@@ -427,6 +427,26 @@ ImageDrawResult BifurcatedGraphicsContext::drawImage(Image& image, ConcreteObjec
     return result;
 }
 
+ImageDrawResult BifurcatedGraphicsContext::drawTiledImage(Image& image, const FloatRect& destination, const FloatPoint& source, const FloatSize& tileSize, const FloatSize& spacing, ImagePaintingOptions options)
+{
+    auto result = m_primaryContext.drawTiledImage(image, destination, source, tileSize, spacing, options);
+    m_secondaryContext.drawTiledImage(image, destination, source, tileSize, spacing, options);
+
+    VERIFY_STATE_SYNCHRONIZATION();
+
+    return result;
+}
+
+ImageDrawResult BifurcatedGraphicsContext::drawTiledImage(Image& image, const FloatRect& destination, const FloatRect& source, const FloatSize& tileScaleFactor, Image::TileRule hRule, Image::TileRule vRule, ImagePaintingOptions options)
+{
+    auto result = m_primaryContext.drawTiledImage(image, destination, source, tileScaleFactor, hRule, vRule, options);
+    m_secondaryContext.drawTiledImage(image, destination, source, tileScaleFactor, hRule, vRule, options);
+    
+    VERIFY_STATE_SYNCHRONIZATION();
+
+    return result;
+}
+
 #if ENABLE(VIDEO)
 void BifurcatedGraphicsContext::drawVideoFrame(const VideoFrame& videoFrame, const FloatRect& destination, ShouldDiscardAlpha shouldDiscardAlpha, ImagePaintingOptions options)
 {

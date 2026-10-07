@@ -35,7 +35,6 @@
 #import <WebCore/DatabaseManager.h>
 #import <WebCore/DatabaseTracker.h>
 #import <WebCore/SecurityOrigin.h>
-#import <wtf/NeverDestroyed.h>
 #import <wtf/cocoa/VectorCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
 
@@ -46,18 +45,18 @@
 #endif
 
 
-NSString * const WebDatabaseDirectoryDefaultsKey = @"WebDatabaseDirectory";
+NSString *WebDatabaseDirectoryDefaultsKey = @"WebDatabaseDirectory";
 
 NSString *WebDatabaseDisplayNameKey = @"WebDatabaseDisplayNameKey";
 NSString *WebDatabaseExpectedSizeKey = @"WebDatabaseExpectedSizeKey";
 NSString *WebDatabaseUsageKey = @"WebDatabaseUsageKey";
 
-NSString * const WebDatabaseDidModifyOriginNotification = @"WebDatabaseDidModifyOriginNotification";
-NSString * const WebDatabaseDidModifyDatabaseNotification = @"WebDatabaseDidModifyDatabaseNotification";
-NSString * const WebDatabaseIdentifierKey = @"WebDatabaseIdentifierKey";
+NSString *WebDatabaseDidModifyOriginNotification = @"WebDatabaseDidModifyOriginNotification";
+NSString *WebDatabaseDidModifyDatabaseNotification = @"WebDatabaseDidModifyDatabaseNotification";
+NSString *WebDatabaseIdentifierKey = @"WebDatabaseIdentifierKey";
 
 #if PLATFORM(IOS_FAMILY)
-const CFStringRef WebDatabaseOriginsDidChangeNotification = CFSTR("WebDatabaseOriginsDidChangeNotification");
+CFStringRef WebDatabaseOriginsDidChangeNotification = CFSTR("WebDatabaseOriginsDidChangeNotification");
 #endif
 
 static NSString *databasesDirectoryPath();
@@ -66,8 +65,8 @@ static NSString *databasesDirectoryPath();
 
 + (WebDatabaseManager *) sharedWebDatabaseManager
 {
-    static NeverDestroyed<RetainPtr<WebDatabaseManager>> sharedManager = adoptNS([[WebDatabaseManager alloc] init]);
-    return sharedManager.get();
+    static WebDatabaseManager *sharedManager = [[WebDatabaseManager alloc] init];
+    return sharedManager;
 }
 
 - (id)init
@@ -124,7 +123,7 @@ static NSString *databasesDirectoryPath();
 #if PLATFORM(IOS_FAMILY)
     // FIXME: This needs to be removed once DatabaseTrackers in multiple processes
     // are in sync: <rdar://problem/9567500> Remove Website Data pane is not kept in sync with Safari
-    [[NSFileManager defaultManager] removeItemAtPath:protect(databasesDirectoryPath()) error:NULL];
+    [[NSFileManager defaultManager] removeItemAtPath:databasesDirectoryPath() error:NULL];
 #endif
 }
 
@@ -154,7 +153,7 @@ static bool isFileHidden(NSString *file)
 
 + (void)removeEmptyDatabaseFiles
 {
-    RetainPtr databasesDirectory = databasesDirectoryPath();
+    NSString *databasesDirectory = databasesDirectoryPath();
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSArray *array = [fileManager contentsOfDirectoryAtPath:databasesDirectory error:0];
     if (!array)

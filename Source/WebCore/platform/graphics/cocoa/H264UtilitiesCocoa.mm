@@ -113,7 +113,7 @@ RefPtr<VideoInfo> createVideoInfoFromAVCC(std::span<const uint8_t> avcc)
     if (PAL::CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault, paramSetPtrs.size(), paramSetPtrs.span().data(), paramSetSizes.span().data(), lengthSize, &rawDescription))
         return nullptr;
     RetainPtr description = adoptCF(rawDescription);
-    return createVideoInfoFromFormatDescription(description, findAVCCMaxNumReorderFrames(avcc));
+    return createVideoInfoFromFormatDescription(description);
 }
 
 Vector<uint8_t> convertAVCCMSampleBufferToAnnexB(CMSampleBufferRef avccSampleBuffer, bool isKeyframe)
@@ -152,21 +152,23 @@ RefPtr<VideoInfo> createVideoInfoFromAVCAnnexBStream(std::span<const uint8_t> da
     if (PAL::CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault, paramSetPointers.size(), paramSetPointers.data(), paramSetSizes.data(), 4, &rawDescription) != noErr)
         return nullptr;
     RetainPtr description = adoptCF(rawDescription);
-    return createVideoInfoFromFormatDescription(description, findH264AnnexBMaxNumReorderFrames(data, naluIndices));
+    return createVideoInfoFromFormatDescription(description);
 }
 
 Vector<uint8_t> convertAVCAnnexBToLengthPrefixed(std::span<const uint8_t> data, const Vector<NaluIndex>& naluIndices)
 {
-    // FIXME: We basically assume that SPS is first and PPS is second. But there may be nalus between them, and SPS/PPS order is not guaranteed.
-    // We also need to validate what to do for a frame with only one SPS or only one PPS.
-    // For now, we skip all NAL units up to and including the SPS/PPS pair, if present, as parameter sets belong in the format description, not in the per-sample data.
+    // We skip all NAL units up to and including the SPS/PPS pair, if present, as parameter sets belong in the format description, not in the per-sample data.
     size_t startIndex = 0;
     auto spsIndex = findH264AnnexBSpsIndex(data, naluIndices);
     if (spsIndex != notFound) {
+        // If we only have a Sps, we skip it and log an error.
+        // FIXME: We should probably align convertAVCAnnexBToLengthPrefixed and convertHEVCAnnexBToLengthPrefixed on the exact same behaviour in case of missing sps/pps/vps.
         if (h264AnnexBSpsIsFollowedByPps(data, naluIndices, spsIndex))
             startIndex = spsIndex + 2;
-        else
+        else {
             RELEASE_LOG_ERROR(WebRTC, "convertAVCAnnexBToLengthPrefixed NAL unit following SPS is not PPS");
+            startIndex = spsIndex + 1;
+        }
     }
 
     return annexBToLengthPrefixed(data, naluIndices.subspan(startIndex));

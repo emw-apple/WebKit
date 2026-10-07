@@ -30,7 +30,6 @@
 #import <WebCore/CAAudioStreamDescription.h>
 #import <WebCore/PitchShiftAudioUnit.h>
 #import <cmath>
-#import <numbers>
 #import <pal/cf/CoreAudioExtras.h>
 
 using namespace WebCore;
@@ -47,7 +46,7 @@ static void generateSineWave(AudioBus& bus, size_t numFrames, double frequency, 
         auto* channelData = bus.channel(channel)->mutableData();
         for (size_t frame = 0; frame < numFrames; ++frame) {
             auto currentFrame = frame + startingFrame;
-            double phase = 2.0 * std::numbers::pi * frequency * currentFrame / sampleRate;
+            double phase = 2.0 * M_PI * frequency * currentFrame / sampleRate;
             channelData[frame] = static_cast<Float32>(std::sin(phase));
         }
     }

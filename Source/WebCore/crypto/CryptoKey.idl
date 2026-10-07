@@ -35,7 +35,6 @@ typedef (CryptoKeyAlgorithm or CryptoAesKeyAlgorithm or CryptoEcKeyAlgorithm or 
     Exposed=(Window,Worker),
     GenerateIsReachable=Impl,
     SecureContext,
-    Serializable,
     SkipVTableValidation
 ] interface CryptoKey {
     readonly attribute KeyType type;

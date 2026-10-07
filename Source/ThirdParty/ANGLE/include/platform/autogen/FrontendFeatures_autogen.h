@@ -33,12 +33,6 @@ struct FrontendFeatures : FeatureSetBase
         &members,
     };
 
-    FeatureInfo disallowNonZeroBaseLevelAndIncompatibleLevelsOnHardenedContexts = {
-        "disallowNonZeroBaseLevelAndIncompatibleLevelsOnHardenedContexts",
-        FeatureCategory::FrontendWorkarounds,
-        &members,
-    };
-
     FeatureInfo disableProgramCachingForTransformFeedback = {
         "disableProgramCachingForTransformFeedback",
         FeatureCategory::FrontendWorkarounds,

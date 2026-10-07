@@ -275,7 +275,7 @@ void CSSStyleSheet::forEachStyleScope(NOESCAPE const Function<void(Style::Scope&
         return;
     }
     for (Ref treeScope : m_adoptingTreeScopes)
-        apply(protect(styleScopeFor(treeScope)));
+        apply(styleScopeFor(treeScope));
 }
 
 void CSSStyleSheet::clearOwnerNode()
@@ -350,7 +350,7 @@ CSSRule* CSSStyleSheet::item(unsigned index)
 
     RefPtr<CSSRule>& cssRule = m_childRuleCSSOMWrappers[index];
     if (!cssRule)
-        cssRule = protect(protect(m_contents)->ruleAt(index))->createCSSOMWrapper(*this);
+        cssRule = protect(m_contents)->ruleAt(index)->createCSSOMWrapper(*this);
     return cssRule.get();
 }
 
@@ -564,9 +564,6 @@ ExceptionOr<void> CSSStyleSheet::replaceSync(String&& text)
     if (!m_wasConstructedByJS)
         return Exception { ExceptionCode::NotAllowedError, "This CSSStyleSheet object was not constructed by JavaScript"_s };
 
-    if (text.isNull())
-        return { };
-
     // Try to use the cache in the case where contents is replaced before the stylesheet is attached to the document.
     if (isDetached() && m_childRuleCSSOMWrappers.isEmpty()) {
         auto key = Style::StyleSheetContentsCache::Key { text, m_contents->parserContext() };
@@ -611,14 +608,14 @@ void CSSStyleSheet::addAdoptingTreeScope(ContainerNode& treeScope)
 {
     ASSERT(is<Document>(treeScope) || is<ShadowRoot>(treeScope));
     m_adoptingTreeScopes.add(treeScope);
-    protect(styleScopeFor(treeScope))->didChangeActiveStyleSheetCandidates();
+    styleScopeFor(treeScope).didChangeActiveStyleSheetCandidates();
 }
 
 void CSSStyleSheet::removeAdoptingTreeScope(ContainerNode& treeScope)
 {
     ASSERT(is<Document>(treeScope) || is<ShadowRoot>(treeScope));
     m_adoptingTreeScopes.remove(treeScope);
-    protect(styleScopeFor(treeScope))->didChangeStyleSheetContents();
+    styleScopeFor(treeScope).didChangeStyleSheetContents();
 }
 
 void CSSStyleSheet::getChildStyleSheets(HashSet<Ref<CSSStyleSheet>>& childStyleSheets)

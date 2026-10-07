@@ -57,7 +57,15 @@ double get_amplification_factor(TX_TYPE tx_type, TX_SIZE tx_size);
 void reference_hybrid_2d(double *in, double *out, TX_TYPE tx_type,
                          TX_SIZE tx_size);
 template <typename Type1, typename Type2>
-double compute_avg_abs_error(const Type1 *a, const Type2 *b, const int size);
+static double compute_avg_abs_error(const Type1 *a, const Type2 *b,
+                                    const int size) {
+  double error = 0;
+  for (int i = 0; i < size; i++) {
+    error += fabs(static_cast<double>(a[i]) - static_cast<double>(b[i]));
+  }
+  error = error / size;
+  return error;
+}
 
 template <typename Type>
 void fliplr(Type *dest, int width, int height, int stride);

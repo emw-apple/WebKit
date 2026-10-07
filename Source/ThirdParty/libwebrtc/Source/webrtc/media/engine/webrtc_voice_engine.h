@@ -43,14 +43,13 @@
 #include "api/payload_type.h"
 #include "api/rtc_error.h"
 #include "api/rtp_headers.h"
-#include "api/rtp_packet_infos.h"
 #include "api/rtp_parameters.h"
 #include "api/rtp_sender_interface.h"
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
 #include "api/task_queue/pending_task_safety_flag.h"
 #include "api/task_queue/task_queue_base.h"
-#include "api/units/timestamp.h"
+#include "api/transport/rtp/rtp_source.h"
 #include "call/audio_send_stream.h"
 #include "call/audio_state.h"
 #include "call/call.h"
@@ -109,10 +108,7 @@ class WebRtcVoiceEngine final : public VoiceEngineInterface {
       Call* call,
       const MediaConfig& config,
       const AudioOptions& options,
-      const CryptoOptions& crypto_options,
-      absl::AnyInvocable<void(uint32_t ssrc)> on_first_packet,
-      absl::AnyInvocable<void(uint32_t ssrc, const RtpPacketInfos&, Timestamp)
-                             const> on_frame_delivered_callback) override;
+      const CryptoOptions& crypto_options) override;
 
   const std::vector<Codec>& LegacySendCodecs() const override;
   const std::vector<Codec>& LegacyRecvCodecs() const override;
@@ -263,10 +259,6 @@ class WebRtcVoiceSendChannel final : public MediaChannelUtil,
 
   bool SenderNackEnabled() const override;
   bool SenderNonSenderRttEnabled() const override;
-  bool SetEncoderFactoryOverride(
-      uint32_t ssrc,
-      absl_nonnull scoped_refptr<AudioEncoderFactory> encoder_factory) override;
-  void ResetEncoderFactoryOverride(uint32_t ssrc) override;
 
  private:
   bool SetOptions(const AudioOptions& options);
@@ -325,16 +317,12 @@ class WebRtcVoiceReceiveChannel final
     : public MediaChannelUtil,
       public VoiceMediaReceiveChannelInterface {
  public:
-  WebRtcVoiceReceiveChannel(
-      const Environment& env,
-      WebRtcVoiceEngine* absl_nonnull engine,
-      const MediaConfig& config,
-      const AudioOptions& options,
-      const CryptoOptions& crypto_options,
-      Call* absl_nonnull call,
-      absl::AnyInvocable<void(uint32_t ssrc)> on_first_packet,
-      absl::AnyInvocable<void(uint32_t ssrc, const RtpPacketInfos&, Timestamp)
-                             const> on_frame_delivered_callback);
+  WebRtcVoiceReceiveChannel(const Environment& env,
+                            WebRtcVoiceEngine* absl_nonnull engine,
+                            const MediaConfig& config,
+                            const AudioOptions& options,
+                            const CryptoOptions& crypto_options,
+                            Call* absl_nonnull call);
 
   WebRtcVoiceReceiveChannel() = delete;
   WebRtcVoiceReceiveChannel(const WebRtcVoiceReceiveChannel&) = delete;
@@ -404,6 +392,8 @@ class WebRtcVoiceReceiveChannel final
   // current. Only one stream at a time will use the sink.
   void SetDefaultRawAudioSink(
       std::unique_ptr<AudioSinkInterface> sink) override;
+
+  std::vector<RtpSource> GetSources(uint32_t ssrc) const override;
 
   void SetDepacketizerToDecoderFrameTransformer(
       uint32_t ssrc,
@@ -484,14 +474,6 @@ class WebRtcVoiceReceiveChannel final
       RTC_GUARDED_BY(worker_thread_);
   scoped_refptr<FrameTransformerInterface> unsignaled_frame_transformer_
       RTC_GUARDED_BY(worker_thread_);
-
-  // Channel-level callback invoked when a receive stream on this channel
-  // receives its first packet.
-  absl::AnyInvocable<void(uint32_t ssrc)> on_first_packet_
-      RTC_GUARDED_BY(worker_thread_);
-  const absl::AnyInvocable<void(uint32_t ssrc, const RtpPacketInfos&, Timestamp)
-                               const>
-      on_frame_delivered_callback_;
 };
 
 }  //  namespace webrtc

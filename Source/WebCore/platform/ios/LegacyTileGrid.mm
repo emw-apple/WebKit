@@ -176,7 +176,7 @@ CALayer* LegacyTileGrid::tileHostLayer() const
 
 IntRect LegacyTileGrid::bounds() const
 {
-    return IntRect(IntPoint(), IntSize([protect(tileHostLayer()) size]));
+    return IntRect(IntPoint(), IntSize([tileHostLayer() size]));
 }
 
 RefPtr<LegacyTileGridTile> LegacyTileGrid::tileForIndex(const TileIndex& index) const
@@ -254,14 +254,14 @@ void LegacyTileGrid::updateTileOpacity()
 {
     TileMap::iterator end = m_tiles.end();
     for (TileMap::iterator it = m_tiles.begin(); it != end; ++it)
-        [protect(it->value->tileLayer()) setOpaque:m_tileCache->tilesOpaque()];
+        [it->value->tileLayer() setOpaque:m_tileCache->tilesOpaque()];
 }
 
 void LegacyTileGrid::updateTileBorderVisibility()
 {
     TileMap::iterator end = m_tiles.end();
     for (TileMap::iterator it = m_tiles.begin(); it != end; ++it)
-        protect(it->value)->showBorder(protect(m_tileCache)->tileBordersVisible());
+        it->value->showBorder(protect(m_tileCache)->tileBordersVisible());
 }
 
 unsigned LegacyTileGrid::tileCount() const
@@ -296,18 +296,17 @@ bool LegacyTileGrid::checkDoSingleTileLayout()
 
 void LegacyTileGrid::updateHostLayerSize()
 {
-    RetainPtr hostLayer = protect(tileCache())->hostLayer();
-    RetainPtr tileHostLayer = this->tileHostLayer();
-    CGRect tileHostBounds = [hostLayer convertRect:[hostLayer bounds] toLayer:tileHostLayer];
+    CALayer* hostLayer = protect(tileCache())->hostLayer();
+    CGRect tileHostBounds = [hostLayer convertRect:[hostLayer bounds] toLayer:tileHostLayer()];
     CGSize transformedSize;
     transformedSize.width = CGRound(tileHostBounds.size.width);
     transformedSize.height = CGRound(tileHostBounds.size.height);
 
-    CGRect bounds = [tileHostLayer bounds];
+    CGRect bounds = [tileHostLayer() bounds];
     if (CGSizeEqualToSize(bounds.size, transformedSize))
         return;
     bounds.size = transformedSize;
-    [tileHostLayer setBounds:bounds];
+    [tileHostLayer() setBounds:bounds];
 }
 
 void LegacyTileGrid::dropInvalidTiles()
@@ -551,7 +550,7 @@ void LegacyTileGrid::dumpTiles()
         TileIndex& index = it->key;
         IntRect tileRect = it->value->rect();
         NSLog(@"#%-3d (%3d %3d) - [%6d %6d %6d %6d]%@", ++i, index.x(), index.y(), tileRect.x(), tileRect.y(), tileRect.width(), tileRect.height(), tileRect.intersects(visibleRect) ? @" *" : @"");
-        NSLog(@"     %@", [protect(it->value->tileLayer()) contents]);
+        NSLog(@"     %@", [it->value->tileLayer() contents]);
     }
 }
 

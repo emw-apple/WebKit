@@ -23,7 +23,6 @@
 
 #include "APIError.h"
 #include "WebKitPrivate.h"
-#include <wtf/glib/GLibExtras.h>
 
 using namespace WebCore;
 
@@ -36,7 +35,7 @@ using namespace WebCore;
  */
 GQuark webkit_network_error_quark()
 {
-    return gQuarkFromString(API::Error::webKitNetworkErrorDomain().utf8());
+    return g_quark_from_string(API::Error::webKitNetworkErrorDomain().utf8().legacyCStringPointer());
 }
 
 /**
@@ -48,7 +47,7 @@ GQuark webkit_network_error_quark()
  */
 GQuark webkit_policy_error_quark()
 {
-    return gQuarkFromString(API::Error::webKitPolicyErrorDomain().utf8());
+    return g_quark_from_string(API::Error::webKitPolicyErrorDomain().utf8().legacyCStringPointer());
 }
 
 /**
@@ -60,7 +59,7 @@ GQuark webkit_policy_error_quark()
  */
 GQuark webkit_plugin_error_quark()
 {
-    return gQuarkFromString(API::Error::webKitPluginErrorDomain().utf8());
+    return g_quark_from_string(API::Error::webKitPluginErrorDomain().utf8().legacyCStringPointer());
 }
 
 /**
@@ -72,7 +71,7 @@ GQuark webkit_plugin_error_quark()
  */
 GQuark webkit_download_error_quark()
 {
-    return gQuarkFromString(API::Error::webKitDownloadErrorDomain().utf8());
+    return g_quark_from_string(API::Error::webKitDownloadErrorDomain().utf8().legacyCStringPointer());
 }
 
 #if PLATFORM(GTK)
@@ -85,7 +84,7 @@ GQuark webkit_download_error_quark()
  */
 GQuark webkit_print_error_quark()
 {
-    return gQuarkFromString(API::Error::webKitPrintErrorDomain().utf8());
+    return g_quark_from_string(API::Error::webKitPrintErrorDomain().utf8().legacyCStringPointer());
 }
 #endif
 

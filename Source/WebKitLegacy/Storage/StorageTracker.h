@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include "StorageTrackerClient.h"
 #include <WebCore/SQLiteDatabase.h>
 #include <wtf/HashSet.h>
 #include <wtf/Seconds.h>
@@ -38,6 +37,7 @@
 namespace WebCore {
 class StorageThread;
 class SecurityOrigin;
+class StorageTrackerClient;
 class SecurityOriginData;
 }
 

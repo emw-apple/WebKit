@@ -66,13 +66,6 @@ Seconds CompositorIntegrationImpl::lastFrameGPUCost() const
     return 0_s;
 }
 
-Seconds CompositorIntegrationImpl::lastFramePresentStall() const
-{
-    if (RefPtr presentationContext = m_presentationContext)
-        return presentationContext->lastFramePresentStall();
-    return 0_s;
-}
-
 void CompositorIntegrationImpl::updateContentsHeadroom(float headroom)
 {
 #if HAVE(SUPPORT_HDR_DISPLAY)

@@ -30,12 +30,13 @@
 #include "FloatQuad.h"
 #include "GraphicsContext.h"
 #include "HitTestResult.h"
+#include "ImageQualityController.h"
 #include "LayoutRepainter.h"
 #include "LegacyRenderSVGResource.h"
 #include "PointerEventsHitRules.h"
 #include "RenderImageResource.h"
-#include "RenderLayer.h"
 #include "RenderObjectInlines.h"
+#include "RenderLayer.h"
 #include "SVGElementTypeHelpers.h"
 #include "SVGImageElement.h"
 #include "SVGImageIntrinsicSizing.h"
@@ -43,13 +44,8 @@
 #include "SVGResources.h"
 #include "SVGResourcesCache.h"
 #include "SVGVisitedRendererTracking.h"
-#include "StyleImageDrawingExtras.h"
 #include <wtf/StackStats.h>
 #include <wtf/TZoneMallocInlines.h>
-
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-#include <WebKitAdditions/AXCustomColorModeController.h>
-#endif
 
 namespace WebCore {
 
@@ -98,8 +94,24 @@ bool LegacyRenderSVGImage::updateImageViewport()
     m_objectBoundingBox = calculateObjectBoundingBox();
 
     bool updatedViewport = false;
+    URL imageSourceURL = protect(document())->encodingParseURL(protect(imageElement())->imageSourceURL());
+
+    // Images with preserveAspectRatio=none should force non-uniform scaling. This can be achieved
+    // by setting the image's container size to its intrinsic size.
+    // See: http://www.w3.org/TR/SVG/single-page.html, 7.8 The ‘preserveAspectRatio’ attribute.
+    if (imageElement().preserveAspectRatio().align() == SVGPreserveAspectRatioValue::SVG_PRESERVEASPECTRATIO_NONE) {
+        if (RefPtr cachedImage = imageResource().cachedImage()) {
+            LayoutSize intrinsicSize = cachedImage->imageSizeForRenderer(nullptr, style().usedZoom());
+            if (intrinsicSize != imageResource().imageSize(style().usedZoom())) {
+                imageResource().setContainerContext(roundedIntSize(intrinsicSize), imageSourceURL);
+                updatedViewport = true;
+            }
+        }
+    }
 
     if (oldBoundaries != m_objectBoundingBox) {
+        if (!updatedViewport)
+            imageResource().setContainerContext(enclosingIntRect(m_objectBoundingBox).size(), imageSourceURL);
         updatedViewport = true;
         m_needsBoundariesUpdate = true;
     }
@@ -179,39 +191,21 @@ void LegacyRenderSVGImage::paint(PaintInfo& paintInfo, const LayoutPoint&)
         paintOutline(childPaintInfo, IntRect(boundingBox));
 }
 
-IntSize LegacyRenderSVGImage::imageContainerSize() const
-{
-    // https://w3c.github.io/svgwg/svg2-draft/coords.html#PreserveAspectRatioAttribute
-    if (imageElement().preserveAspectRatio().align() == SVGPreserveAspectRatioValue::SVG_PRESERVEASPECTRATIO_NONE) {
-        if (RefPtr cachedImage = imageResource().cachedImage())
-            return svgImageSizeForPreserveAspectRatioNone(*cachedImage, style().usedZoom());
-    }
-
-    return enclosingIntRect(m_objectBoundingBox).size();
-}
-
 void LegacyRenderSVGImage::paintForeground(PaintInfo& paintInfo)
 {
-    RefPtr styleImage = imageResource().styleImage();
-    if (!styleImage || !styleImage->canDraw(*this))
+    RefPtr<Image> image = imageResource().image();
+    if (!image)
         return;
 
-    auto imageRenderingSize = svgImageRenderingSize(*styleImage, *this, FloatSize { imageContainerSize() });
     FloatRect destRect = m_objectBoundingBox;
-    FloatRect srcRect { { }, imageRenderingSize };
+    FloatRect srcRect(0, 0, image->width(), image->height());
 
     imageElement().preserveAspectRatio().transformRect(destRect, srcRect);
 
-    auto concreteObjectSize = ConcreteObjectSize::fixed(imageRenderingSize);
-
     ImagePaintingOptions options = {
         imageOrientation(),
-        styleImage->interpolationQualityForImageDraw(paintInfo.context(), *this, concreteObjectSize, styleImage.get(), LayoutSize(destRect.size())),
+        ImageQualityController::chooseInterpolationQualityForSVG(paintInfo.context(), *this, *image),
         settings().imageSubsamplingEnabled() ? AllowImageSubsampling::Yes : AllowImageSubsampling::No,
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-        // FIXME: Remove the Image::nullImage() parameter once AXCustomColorModeController::shouldInvertContentImage() is updated.
-        (styleImage->drawsSVGImage() && AXCustomColorModeController::shouldInvertSVGImage(*this)) || AXCustomColorModeController::shouldInvertContentImage(*this, Image::nullImage(), destRect.size()) ? InvertContent::Yes : InvertContent::No,
-#endif
         settings().showDebugBorders() ? ShowDebugBackground::Yes : ShowDebugBackground::No,
         settings().hdrAcceleratedApplyGainMapEnabled() ? AllowAcceleratedApplyGainMap::Yes : AllowAcceleratedApplyGainMap::No,
         paintInfo.paintBehavior.contains(PaintBehavior::DrawsHDRContent) ? DrawsHDRContent::Yes : DrawsHDRContent::No,
@@ -219,9 +213,10 @@ void LegacyRenderSVGImage::paintForeground(PaintInfo& paintInfo)
     };
 
     auto& context = paintInfo.context();
-    styleImage->draw(context, *this, concreteObjectSize, destRect, srcRect, options);
+    context.drawImage(*image, ConcreteObjectSize::fixed(image->size()), destRect, srcRect, options);
 
-    if (RefPtr cachedImage = imageResource().cachedImage(); cachedImage && !context.paintingDisabled())
+    RefPtr cachedImage = imageResource().cachedImage();
+    if (cachedImage && !context.paintingDisabled())
         protect(document())->didPaintImage(imageElement(), cachedImage, destRect);
 }
 
@@ -274,7 +269,7 @@ void LegacyRenderSVGImage::imageChanged(WrappedImagePtr, const IntRect*)
     // Eventually notify parent resources, that we've changed.
     LegacyRenderSVGResource::markForLayoutAndParentResourceInvalidation(*this, false);
 
-    // Recompute the object bounding box in case image loading finished after layout.
+    // Update the SVGImageCache sizeAndScales entry in case image loading finished after layout.
     // (https://bugs.webkit.org/show_bug.cgi?id=99489)
     m_objectBoundingBox = FloatRect();
     if (updateImageViewport())
@@ -284,7 +279,7 @@ void LegacyRenderSVGImage::imageChanged(WrappedImagePtr, const IntRect*)
 
     repaint();
 
-    if (RefPtr image = imageResource().cachedImage(); image && image->currentFrameIsComplete()) {
+    if (RefPtr image = imageResource().cachedImage(); image && image->currentFrameIsComplete(this)) {
         if (auto styleable = Styleable::fromRenderer(*this))
             protect(document())->didLoadImage(protect(styleable->element).get(), image);
     }

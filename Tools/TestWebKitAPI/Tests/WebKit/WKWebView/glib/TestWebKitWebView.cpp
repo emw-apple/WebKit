@@ -22,7 +22,6 @@
 #include "WebKitTestServer.h"
 #include "WebViewTest.h"
 #include <glib/gstdio.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GSpanExtras.h>
 
@@ -301,7 +300,7 @@ static void testWebViewEphemeral(WebViewTest* test, gconstpointer)
 
 static void testWebViewCustomCharset(WebViewTest* test, gconstpointer)
 {
-    test->loadURI(gServer->getURIForPath("/"));
+    test->loadURI(gServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     g_assert_null(webkit_web_view_get_custom_charset(test->webView()));
     webkit_web_view_set_custom_charset(test->webView(), "utf8");
@@ -1792,7 +1791,7 @@ static void testWebViewNotification(NotificationWebViewTest* test, gconstpointer
     test->initialize();
 
     // Notifications don't work with local or special schemes.
-    test->loadURI(gServer->getURIForPath("/"));
+    test->loadURI(gServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     g_assert_false(test->hasPermission());
 
@@ -1850,7 +1849,7 @@ static void testWebViewNotificationInitialPermissionAllowed(NotificationWebViewT
     g_signal_connect(test->m_webContext.get(), "initialize-notification-permissions", G_CALLBACK(setInitialNotificationPermissionsAllowedCallback), test);
     test->initialize();
 
-    test->loadURI(gServer->getURIForPath("/"));
+    test->loadURI(gServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     g_assert_true(test->hasPermission());
 
@@ -1863,7 +1862,7 @@ static void testWebViewNotificationInitialPermissionDisallowed(NotificationWebVi
     g_signal_connect(test->m_webContext.get(), "initialize-notification-permissions", G_CALLBACK(setInitialNotificationPermissionsDisallowedCallback), test);
     test->initialize();
 
-    test->loadURI(gServer->getURIForPath("/"));
+    test->loadURI(gServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     g_assert_false(test->hasPermission());
 }
@@ -1879,8 +1878,8 @@ static void testWebViewIsPlayingAudio(IsPlayingAudioWebViewTest* test, gconstpoi
     g_assert_false(webkit_web_view_is_playing_audio(test->webView()));
     g_assert_false(webkit_web_view_get_is_muted(test->webView()));
 
-    auto resourcePath = gBuildFilename(Test::getResourcesDir(Test::WebKit2Resources), "file-with-video.html");
-    GUniquePtr<char> resourceURL(g_filename_to_uri(resourcePath.utf8(), nullptr, nullptr));
+    GUniquePtr<char> resourcePath(g_build_filename(Test::getResourcesDir(Test::WebKit2Resources).legacyCStringPointer(), "file-with-video.html", nullptr));
+    GUniquePtr<char> resourceURL(g_filename_to_uri(resourcePath.get(), nullptr, nullptr));
     webkit_web_view_load_uri(test->webView(), resourceURL.get());
     test->waitUntilLoadFinished();
     g_assert_false(webkit_web_view_is_playing_audio(test->webView()));
@@ -2070,7 +2069,7 @@ static void testWebViewOffscreenWindow(WebViewTest* test, gconstpointer)
 {
     GtkWidget* window = gtk_offscreen_window_new();
     gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(test->webView()));
-    test->loadURI(gServer->getURIForPath("/"));
+    test->loadURI(gServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     gtk_widget_show_all(window);
     gtk_widget_destroy(window);
@@ -2084,7 +2083,7 @@ public:
 
     static void titleChangedCallback(WebKitWebView* view, GParamSpec*, WebViewTitleTest* test)
     {
-        test->m_webViewTitles.append(UTF8CString::unsafeFromUTF8(webkit_web_view_get_title(view)));
+        test->m_webViewTitles.append(UTF8CString { byteCast<char8_t>(webkit_web_view_get_title(view)) });
     }
 
     WebViewTitleTest()
@@ -2102,26 +2101,26 @@ static void testWebViewTitleChange(WebViewTitleTest* test, gconstpointer)
     test->loadHtml("<head><title>Page Title</title></head>", nullptr);
     test->waitUntilTitleChanged();
     g_assert_cmpint(test->m_webViewTitles.size(), ==, 1);
-    ASSERT_CMP_CSTRING(test->m_webViewTitles[0], ==, "Page Title");
+    g_assert_cmpstr(test->m_webViewTitles[0].legacyCStringPointer(), ==, "Page Title");
 
     test->loadHtml("<head><title>Another Page Title</title></head>", nullptr);
     test->waitUntilTitleChanged();
     g_assert_cmpint(test->m_webViewTitles.size(), ==, 2);
-    ASSERT_CMP_CSTRING(test->m_webViewTitles[1], ==, "");
+    g_assert_cmpstr(test->m_webViewTitles[1].legacyCStringPointer(), ==, "");
     test->waitUntilTitleChanged();
     g_assert_cmpint(test->m_webViewTitles.size(), ==, 3);
     /* Page title should be immediately unset when loading a new page. */
-    ASSERT_CMP_CSTRING(test->m_webViewTitles[2], ==, "Another Page Title");
+    g_assert_cmpstr(test->m_webViewTitles[2].legacyCStringPointer(), ==, "Another Page Title");
 
     test->loadHtml("<p>This page has no title!</p>", nullptr);
     test->waitUntilLoadFinished();
     g_assert_cmpint(test->m_webViewTitles.size(), ==, 4);
-    ASSERT_CMP_CSTRING(test->m_webViewTitles[3], ==, "");
+    g_assert_cmpstr(test->m_webViewTitles[3].legacyCStringPointer(), ==, "");
 
     test->loadHtml("<script>document.title = 'one'; document.title = 'two'; document.title = 'three';</script>", nullptr);
     test->waitUntilTitleChanged();
     g_assert_cmpint(test->m_webViewTitles.size(), ==, 5);
-    ASSERT_CMP_CSTRING(test->m_webViewTitles[4], ==, "three");
+    g_assert_cmpstr(test->m_webViewTitles[4].legacyCStringPointer(), ==, "three");
 }
 
 #if PLATFORM(WPE)
@@ -2131,7 +2130,7 @@ public:
 
     static void titleChangedCallback(WebKitWebView* view, GParamSpec*, WebViewTitleTest* test)
     {
-        test->m_webViewTitles.append(UTF8CString::unsafeFromUTF8(webkit_web_view_get_title(view)));
+        test->m_webViewTitles.append(UTF8CString { byteCast<char8_t>(webkit_web_view_get_title(view)) });
     }
 
     FrameDisplayedTest()
@@ -2289,9 +2288,9 @@ static void testWebViewCORSAllowlist(WebViewTest* test, gconstpointer)
     webkit_web_context_register_uri_scheme(test->m_webContext.get(), "foo",
         [](WebKitURISchemeRequest* request, gpointer userData) {
             GRefPtr<GInputStream> inputStream = adoptGRef(g_memory_input_stream_new());
-            auto data = "<p>foobar!</p>"_span;
-            gMemoryInputStreamAddStaticData(G_MEMORY_INPUT_STREAM(inputStream.get()), data);
-            webkit_uri_scheme_request_finish(request, inputStream.get(), data.size(), "text/html");
+            const char* data = "<p>foobar!</p>";
+            g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(inputStream.get()), data, strlen(data), nullptr);
+            webkit_uri_scheme_request_finish(request, inputStream.get(), strlen(data), "text/html");
         }, nullptr, nullptr);
 
     char html[] = "<html><script>let foo = 0; fetch('foo://bar/baz').then(response => { foo = response.status; }).catch(err => { foo = -1; });</script></html>";
@@ -2385,13 +2384,6 @@ static void testWebViewWebExtensionMode(WebViewTest* test, gconstpointer)
 
     // Create a new web view with an extension mode that blocks the unsafe-inline keyword.
     auto webView = test->createWebView("web-extension-mode", WEBKIT_WEB_EXTENSION_MODE_MANIFESTV3, nullptr);
-
-    // The extension CSP mode only applies to schemes that bypass CSP, so opt in to applying it to about:blank.
-    g_autoptr(WebKitFeatureList) featureList = webkit_settings_get_development_features();
-    WebKitFeature* feature = webkit_feature_list_find(featureList, "ContentSecurityPolicyExtensionModeAppliesToAllSchemesForTesting");
-    g_assert_nonnull(feature);
-    webkit_settings_set_feature_enabled(webkit_web_view_get_settings(webView.get()), feature, TRUE);
-
     test->loadHtml(html, nullptr, webView.get());
     test->waitUntilLoadFinished(webView.get());
     value = test->runJavaScriptAndWaitUntilFinished("document.title == 'unset';", &error.outPtr(), webView.get());
@@ -2405,9 +2397,9 @@ static void testWebViewDisableWebSecurity(WebViewTest* test, gconstpointer)
     webkit_web_context_register_uri_scheme(test->m_webContext.get(), "foo",
         [](WebKitURISchemeRequest* request, gpointer userData) {
             GRefPtr<GInputStream> inputStream = adoptGRef(g_memory_input_stream_new());
-            auto data = "<p>foobar!</p>"_span;
-            gMemoryInputStreamAddStaticData(G_MEMORY_INPUT_STREAM(inputStream.get()), data);
-            webkit_uri_scheme_request_finish(request, inputStream.get(), data.size(), "text/html");
+            const char* data = "<p>foobar!</p>";
+            g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(inputStream.get()), data, strlen(data), nullptr);
+            webkit_uri_scheme_request_finish(request, inputStream.get(), strlen(data), "text/html");
         }, nullptr, nullptr);
 
     char html[] = "<html><script>let foo = 0; fetch('foo://bar/baz').then(response => { foo = response.status; }).catch(err => { foo = -1; });</script></html>";

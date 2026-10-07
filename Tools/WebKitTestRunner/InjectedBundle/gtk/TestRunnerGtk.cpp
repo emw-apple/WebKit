@@ -31,7 +31,6 @@
 #include <JavaScriptCore/JSStringRefCPP.h>
 #include <glib.h>
 #include <wtf/FileSystem.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GUniquePtr.h>
 
 namespace WTR {
@@ -48,8 +47,8 @@ RefPtr<OpaqueJSString> TestRunner::pathToLocalResource(JSStringRef url)
         return url;
 
     const gchar* layoutTestsSuffix = urlString.legacyCStringPointer() + strlen("file:///tmp/");
-    auto testPath = gBuildFilename(FileSystem::webkitTopLevelDirectory(), layoutTestsSuffix);
-    GUniquePtr<gchar> testURI(g_filename_to_uri(testPath.utf8(), 0, 0));
+    GUniquePtr<gchar> testPath(g_build_filename(FileSystem::webkitTopLevelDirectory().legacyCStringPointer(), layoutTestsSuffix, nullptr));
+    GUniquePtr<gchar> testURI(g_filename_to_uri(testPath.get(), 0, 0));
     return adoptRef(JSStringCreateWithUTF8CString(testURI.get()));
 }
 

@@ -31,8 +31,6 @@
 #include "compiler/translator/tree_ops/DeferGlobalInitializers.h"
 #include "compiler/translator/tree_ops/EmulateGLFragColorBroadcast.h"
 #include "compiler/translator/tree_ops/EmulateMultiDrawShaderBuiltins.h"
-#include "compiler/translator/tree_ops/ExpandFragmentOutputsToVec4.h"
-#include "compiler/translator/tree_ops/FoldConstantSwitch.h"
 #include "compiler/translator/tree_ops/FoldExpressions.h"
 #include "compiler/translator/tree_ops/InitializeVariables.h"
 #include "compiler/translator/tree_ops/PruneEmptyCases.h"
@@ -299,26 +297,6 @@ struct UniformSortComparator
     }
 };
 
-// To make CollectVariable's recursive algorithms more efficient, turn the "(uniform, field_chain)"
-// tuples into a map of uniform to set of (nested) fields.
-SamplersStaticallyUsedWithTexelFetch PreprocessSamplersStaticallyUsedWithTexelFetch(
-    const TUnorderedSet<SamplerAccess> samplersStaticallyUsedWithTexelFetch)
-{
-    SamplersStaticallyUsedWithTexelFetch result;
-
-    for (const SamplerAccess &access : samplersStaticallyUsedWithTexelFetch)
-    {
-        SelectedFields *fields = &result[access.uniform];
-        for (uint32_t fieldIndex : access.fields)
-        {
-            // operator[] inserts a new empty element in subfields, which is what makes this
-            // algorithm work.
-            fields = &fields->subfields[fieldIndex];
-        }
-    }
-
-    return result;
-}
 }  // anonymous namespace
 
 bool IsGLSL150OrNewer(ShShaderOutput output)
@@ -790,21 +768,14 @@ bool TCompiler::checkAndSimplifyAST(TIntermBlock *root,
         }
     }
 
-    // Fold expressions that could not be folded before validation or otherwise that was done as a
-    // part of parsing.
+    // Fold expressions that could not be folded before validation that was done as a part of
+    // parsing.
     if (!FoldExpressions(this, root, &mDiagnostics))
     {
         return false;
     }
     // Folding should only be able to generate warnings.
     ASSERT(mDiagnostics.numErrors() == 0);
-
-    // Fold switch statements with constant expression.  Run after FoldExpressions because the
-    // switch selector may need folding.
-    if (!FoldConstantSwitch(this, root, &mSymbolTable))
-    {
-        return false;
-    }
 
     const bool hasAnyClipCullDistance =
         parseContext.isExtensionEnabled(TExtension::ANGLE_clip_cull_distance) ||
@@ -1042,10 +1013,7 @@ bool TCompiler::checkAndSimplifyAST(TIntermBlock *root,
         return false;
     }
 
-    const SamplersStaticallyUsedWithTexelFetch samplersStaticallyUsedWithTexelFetch =
-        PreprocessSamplersStaticallyUsedWithTexelFetch(
-            parseContext.getSamplersStaticallyUsedWithTexelFetch());
-    collectVariables(root, samplersStaticallyUsedWithTexelFetch);
+    collectVariables(root);
 
     if (compileOptions.useUnusedStandardSharedBlocks)
     {
@@ -1176,14 +1144,6 @@ bool TCompiler::checkAndSimplifyAST(TIntermBlock *root,
     if (compileOptions.rewriteRepeatedAssignToSwizzled)
     {
         if (!sh::RewriteRepeatedAssignToSwizzled(this, root))
-        {
-            return false;
-        }
-    }
-
-    if (compileOptions.expandFragmentOutputsToVec4 && mShaderVersion >= 300)
-    {
-        if (!ExpandFragmentOutputsToVec4(this, root, &getSymbolTable()))
         {
             return false;
         }
@@ -1477,9 +1437,7 @@ void TCompiler::setResourceString()
     mBuiltInResourcesString = strstream.str();
 }
 
-void TCompiler::collectVariables(
-    TIntermBlock *root,
-    const SamplersStaticallyUsedWithTexelFetch &samplersStaticallyUsedWithTexelFetch)
+void TCompiler::collectVariables(TIntermBlock *root)
 {
     // Variable collection is done from the IR already.
     ASSERT(!mCompileOptions.useIR);
@@ -1487,8 +1445,7 @@ void TCompiler::collectVariables(
     CollectVariables(root, &mAttributes, &mOutputVariables, &mUniforms, &mInputVaryings,
                      &mOutputVaryings, &mSharedVariables, &mUniformBlocks, &mShaderStorageBlocks,
                      mResources.HashFunction, &mNameMap, &mSymbolTable, mShaderType,
-                     mExtensionBehavior, mCompileOptions.transformFloatUniformTo16Bits,
-                     samplersStaticallyUsedWithTexelFetch);
+                     mExtensionBehavior, mCompileOptions.transformFloatUniformTo16Bits);
     collectInterfaceBlocks();
     mVariablesCollected = true;
 }

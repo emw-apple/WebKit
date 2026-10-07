@@ -30,18 +30,18 @@
 #import <WebKitLegacy/WebHistoryItem.h>
 
 #if TARGET_OS_IPHONE
-extern NSString * const WebViewportInitialScaleKey;
-extern NSString * const WebViewportMinimumScaleKey;
-extern NSString * const WebViewportMaximumScaleKey;
-extern NSString * const WebViewportUserScalableKey;
-extern NSString * const WebViewportShrinkToFitKey;
-extern NSString * const WebViewportFitKey;
-extern NSString * const WebViewportWidthKey;
-extern NSString * const WebViewportHeightKey;
+extern NSString *WebViewportInitialScaleKey;
+extern NSString *WebViewportMinimumScaleKey;
+extern NSString *WebViewportMaximumScaleKey;
+extern NSString *WebViewportUserScalableKey;
+extern NSString *WebViewportShrinkToFitKey;
+extern NSString *WebViewportFitKey;
+extern NSString *WebViewportWidthKey;
+extern NSString *WebViewportHeightKey;
 
-extern NSString * const WebViewportFitAutoValue;
-extern NSString * const WebViewportFitContainValue;
-extern NSString * const WebViewportFitCoverValue;
+extern NSString *WebViewportFitAutoValue;
+extern NSString *WebViewportFitContainValue;
+extern NSString *WebViewportFitCoverValue;
 #endif
 
 @interface WebHistoryItem (WebPrivate)

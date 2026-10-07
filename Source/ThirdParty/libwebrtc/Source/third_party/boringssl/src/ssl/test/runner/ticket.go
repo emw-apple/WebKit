@@ -183,9 +183,6 @@ func (s *sessionState) unmarshal(data []byte) bool {
 }
 
 func (c *Conn) encryptTicket(state *sessionState) ([]byte, error) {
-	if c.config.SessionTicketKey == nil {
-		panic("tls: SessionTicketKey not configured")
-	}
 	key := c.config.SessionTicketKey[:]
 	if c.config.Bugs.EncryptSessionTicketKey != nil {
 		key = c.config.Bugs.EncryptSessionTicketKey[:]
@@ -213,9 +210,6 @@ func (c *Conn) encryptTicket(state *sessionState) ([]byte, error) {
 }
 
 func (c *Conn) decryptTicket(encrypted []byte) (*sessionState, bool) {
-	if c.config.SessionTicketKey == nil {
-		panic("tls: SessionTicketKey not configured")
-	}
 	if len(encrypted) < aes.BlockSize+sha256.Size {
 		return nil, false
 	}

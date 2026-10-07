@@ -68,7 +68,6 @@ WTF_DECLARE_CF_TYPE_TRAIT(CFCharacterSet);
 WTF_DECLARE_CF_TYPE_TRAIT(CFData);
 WTF_DECLARE_CF_TYPE_TRAIT(CFDictionary);
 WTF_DECLARE_CF_TYPE_TRAIT(CFError);
-WTF_DECLARE_CF_TYPE_TRAIT(CFNotificationCenter);
 WTF_DECLARE_CF_TYPE_TRAIT(CFNumber);
 WTF_DECLARE_CF_TYPE_TRAIT(CFRunLoop);
 WTF_DECLARE_CF_TYPE_TRAIT(CFRunLoopSource);
@@ -87,12 +86,10 @@ WTF_DECLARE_CF_MUTABLE_TYPE_TRAIT(CFString, CFMutableString);
 
 #if USE(CG)
 #include <CoreGraphics/CGColor.h>
-#include <CoreGraphics/CGDataProvider.h>
 #include <CoreGraphics/CGImage.h>
 #include <CoreGraphics/CGPDFDocument.h>
 #include <CoreGraphics/CGPath.h>
 WTF_DECLARE_CF_TYPE_TRAIT(CGColor);
-WTF_DECLARE_CF_TYPE_TRAIT(CGDataProvider);
 WTF_DECLARE_CF_TYPE_TRAIT(CGImage);
 WTF_DECLARE_CF_TYPE_TRAIT(CGPDFDocument);
 WTF_DECLARE_CF_TYPE_TRAIT(CGPath);

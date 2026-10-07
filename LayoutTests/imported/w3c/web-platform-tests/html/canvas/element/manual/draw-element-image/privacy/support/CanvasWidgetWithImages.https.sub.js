@@ -20,7 +20,7 @@ class CanvasWidget extends HTMLElement {
           top: 100px;
         }
       </style>
-      <canvas id=canvas width="100" height="200" content=drawable>
+      <canvas id=canvas width="100" height="200" layoutsubtree>
         <div id=child>
         </div>
       </canvas>

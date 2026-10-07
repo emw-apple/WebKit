@@ -469,14 +469,16 @@ function performActions() {
             ));
         },
         () => {
-            ignoreException(() => queue.drawElementImageToTexture({
+            ignoreException(() => queue.copyElementImageToTexture({
                 source: document.querySelector("canvas"),
-                sourceX: 0,
-                sourceY: 0,
-                sourceWidth: 1,
-                sourceHeight: 1,
+                sx: 0,
+                sy: 0,
+                swidth: 1,
+                sheight: 1,
             }, {
                 destination: {texture},
+                width: 1,
+                height: 1,
             }));
         },
         () => {

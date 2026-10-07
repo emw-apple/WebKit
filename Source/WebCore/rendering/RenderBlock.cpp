@@ -353,11 +353,12 @@ void RenderBlock::styleDidChange(Style::Difference diff, const Style::ComputedSt
 
     // It's possible for our border/padding to change, but for the overall logical width of the block to
     // end up being the same. We keep track of this change so in layoutBlock, we can know to set relayoutChildren=true.
+    auto shouldForceRelayoutChildren = false;
     if (oldStyle && diff == Style::DifferenceResult::Layout && needsLayout()) {
         // Out-of-flow boxes anchored to the padding box.
-        if (contentBoxLogicalWidthChanged(*oldStyle, style()) || (outOfFlowBoxes() && paddingBoxLogicalHeightChanged(*oldStyle, style())))
-            setShouldForceRelayoutChildren(true);
+        shouldForceRelayoutChildren = contentBoxLogicalWidthChanged(*oldStyle, style()) || (outOfFlowBoxes() && paddingBoxLogicalHeightChanged(*oldStyle, style()));
     }
+    setShouldForceRelayoutChildren(shouldForceRelayoutChildren);
 }
 
 bool RenderBlock::childrenPreventSelfCollapsing() const
@@ -1390,20 +1391,13 @@ bool RenderBlock::establishesIndependentFormattingContextIgnoringDisplayType(con
         || style.usedContain().contains(Style::ContainValue::Layout)
         || style.containerType().hasSizeContainment()
         || Style::ContainmentChecker { style, *element }.shouldApplyPaintContainment()
-        || (style.display().isBlockType() && !style.blockStepSize().isNone())
-        || style.overflowContinue() == OverflowContinue::Discard;
+        || (style.display().isBlockType() && !style.blockStepSize().isNone());
 }
 
 bool RenderBlock::establishesIndependentFormattingContext() const
 {
     auto& style = this->style();
     if (establishesIndependentFormattingContextIgnoringDisplayType(style))
-        return true;
-
-    // flow-root "always establishes a new block formatting context for its contents", and "unless otherwise specified,
-    // however, establishing a new formatting context creates an independent formatting context."
-    // https://drafts.csswg.org/css-display-3/#valdef-display-flow-root
-    if (style.display() == Style::DisplayType::BlockFlowRoot)
         return true;
 
     if (isGridItem()) {
@@ -1441,6 +1435,7 @@ bool RenderBlock::createsNewFormattingContext() const
         || isRenderOrLegacyRenderSVGForeignObject()
         || style.specifiesColumns()
         || style.columnSpan() == ColumnSpan::All
+        || style.display() == Style::DisplayType::BlockFlowRoot
         || establishesIndependentFormattingContext();
 }
 
@@ -2342,40 +2337,6 @@ std::pair<LayoutUnit, LayoutUnit> RenderBlock::computeIntrinsicLogicalWidths() c
     return { minLogicalWidth + scrollbarWidth, maxLogicalWidth + scrollbarWidth };
 }
 
-std::optional<LayoutUnit> RenderBlock::fixedLogicalWidthContribution(const Style::PreferredSize& logicalWidth) const
-{
-    auto fixedLogicalWidth = logicalWidth.tryFixed();
-    if (!fixedLogicalWidth || !fixedLogicalWidth->isPositiveOrZero())
-        return { };
-
-    // A table cell's fixed width is a minimum rather than the size it contributes, and a zero-width
-    // deprecated flex item still flexes, so its 0 is not a usable fixed width either.
-    if (isRenderTableCell() || (isDeprecatedFlexItem() && !static_cast<int>(fixedLogicalWidth->resolveZoom(style().usedZoomForLength()))))
-        return { };
-    return adjustContentBoxLogicalWidthForBoxSizing(*fixedLogicalWidth);
-}
-
-std::pair<LayoutUnit, LayoutUnit> RenderBlock::logicalWidthContributionsForSize(const Style::PreferredSize& logicalWidth, LayoutUnit minContentLogicalWidth, LayoutUnit maxContentLogicalWidth) const
-{
-    // Either intrinsic keyword makes both contributions that one size, so the box neither shrinks below
-    // it nor grows past it. Both sit behind the aspect-ratio branch in the caller: a ratio transfers the
-    // block size across, and that transferred size is what the keyword then stands for, not the content
-    // based one, which for an empty box with `height: 100px; aspect-ratio: 1/1` would be zero.
-    if (auto contribution = fixedLogicalWidthContribution(logicalWidth))
-        return { *contribution, *contribution };
-
-    if (logicalWidth.isMinContent())
-        maxContentLogicalWidth = minContentLogicalWidth;
-    else if (logicalWidth.isMaxContent())
-        minContentLogicalWidth = maxContentLogicalWidth;
-
-    if (!logicalWidth.isCalcSize())
-        return { minContentLogicalWidth, maxContentLogicalWidth };
-
-    auto calcSize = logicalWidth.calcSize();
-    return { resolveCalcSizeLogicalWidth(calcSize, minContentLogicalWidth, 0_lu), resolveCalcSizeLogicalWidth(calcSize, maxContentLogicalWidth, 0_lu) };
-}
-
 void RenderBlock::computeIntrinsicLogicalWidthContributions()
 {
     ASSERT(hasInvalidContentLogicalWidths());
@@ -2385,23 +2346,25 @@ void RenderBlock::computeIntrinsicLogicalWidthContributions()
 
     auto& styleToUse = style();
     auto logicalWidth = overridingLogicalWidthForFlexBasisComputation().value_or(styleToUse.logicalWidth());
-    if (auto contribution = fixedLogicalWidthContribution(logicalWidth)) {
-        m_minContentLogicalWidthContribution = *contribution;
-        m_maxContentLogicalWidthContribution = *contribution;
+    if (auto fixedLogicalWidth = logicalWidth.tryFixed(); !isRenderTableCell() && fixedLogicalWidth && fixedLogicalWidth->isPositiveOrZero() && !(isDeprecatedFlexItem() && !static_cast<int>(fixedLogicalWidth->resolveZoom(style().usedZoomForLength())))) {
+        m_minContentLogicalWidthContribution = adjustContentBoxLogicalWidthForBoxSizing(*fixedLogicalWidth);
+        m_maxContentLogicalWidthContribution = m_minContentLogicalWidthContribution;
     } else if (shouldComputeLogicalWidthFromAspectRatio()) {
         m_maxContentLogicalWidthContribution = std::max(0_lu, computeLogicalWidthFromAspectRatio() - borderAndPaddingLogicalWidth());
         m_minContentLogicalWidthContribution = m_maxContentLogicalWidthContribution;
         applyAutomaticContentBasedMinimumSize(m_minContentLogicalWidthContribution, m_maxContentLogicalWidthContribution);
-    } else {
-        auto [minContentLogicalWidth, maxContentLogicalWidth] = computeIntrinsicLogicalWidths();
-
-        if (overridingLogicalWidthForFlexBasisComputation() && logicalWidth.isCalcSize() && logicalWidth.isAuto()) {
-            // A flex-basis used as the main size, where `auto` means the width property rather than the width this box would otherwise take.
-            std::tie(minContentLogicalWidth, maxContentLogicalWidth) = logicalWidthContributionsForSize(styleToUse.logicalWidth(), minContentLogicalWidth, maxContentLogicalWidth);
-        }
-
-        std::tie(m_minContentLogicalWidthContribution, m_maxContentLogicalWidthContribution) = logicalWidthContributionsForSize(logicalWidth, minContentLogicalWidth, maxContentLogicalWidth);
-    }
+    } else if (logicalWidth.isMinContent() || logicalWidth.isMaxContent()) {
+        // Either keyword makes both contributions that one size, so the box neither shrinks below it
+        // nor grows past it. Both sit behind the aspect-ratio branch: a ratio transfers the block size
+        // across, and that transferred size is what the keyword then stands for, not the content based
+        // one, which for an empty box with `height: 100px; aspect-ratio: 1/1` would be zero.
+        std::tie(m_minContentLogicalWidthContribution, m_maxContentLogicalWidthContribution) = computeIntrinsicLogicalWidths();
+        if (logicalWidth.isMaxContent())
+            m_minContentLogicalWidthContribution = m_maxContentLogicalWidthContribution;
+        else
+            m_maxContentLogicalWidthContribution = m_minContentLogicalWidthContribution;
+    } else
+        std::tie(m_minContentLogicalWidthContribution, m_maxContentLogicalWidthContribution) = computeIntrinsicLogicalWidths();
 
     constrainIntrinsicLogicalWidthsByMinMax(m_minContentLogicalWidthContribution, m_maxContentLogicalWidthContribution);
 
@@ -3158,10 +3121,11 @@ std::optional<LayoutUnit> RenderBlock::availableLogicalHeightForPercentageComput
         }
 
         if (shouldComputeLogicalHeightFromAspectRatio()) {
-            // blockSizeFromAspectRatio() derives the block size from logicalWidth(). While this box measures its own intrinsic widths it has no inline size yet,
-            if (!style.logicalWidth().isSpecified() && layoutContext().isComputingIntrinsicLogicalWidthFor(*this))
+            // blockSizeFromAspectRatio() derives the block size from logicalWidth(). A shrink-to-fit box has
+            // no inline size until it is laid out, so during a preferred-width pass logicalWidth() still
+            // carries the previous layout's value and feeding it back here grows the box on every relayout.
+            if (hasInvalidContentLogicalWidths() && !style.logicalWidth().isSpecified() && (isRenderGrid() || sizesLogicalWidthToFitContent()))
                 return { };
-
             return blockSizeFromAspectRatio(
                 horizontalBorderAndPaddingExtent(),
                 verticalBorderAndPaddingExtent(),

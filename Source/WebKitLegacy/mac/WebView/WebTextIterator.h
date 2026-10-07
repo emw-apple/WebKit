@@ -27,8 +27,12 @@
 
 @class DOMRange;
 @class DOMNode;
+@class WebTextIteratorPrivate;
 
-@interface WebTextIterator : NSObject
+@interface WebTextIterator : NSObject {
+@private
+    WebTextIteratorPrivate *_private;
+}
 
 - (id)initWithRange:(DOMRange *)range;
 

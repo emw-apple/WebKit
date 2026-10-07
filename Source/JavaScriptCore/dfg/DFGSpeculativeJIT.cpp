@@ -1318,7 +1318,7 @@ void SpeculativeJIT::dump(const char* label)
             dataLogF(":fpr%d\n", info.fpr());
         else if (info.registerFormat() != DataFormatNone) {
             ASSERT(info.gpr() != InvalidGPRReg);
-            SAFE_DATALOGF(":%s\n", GPRInfo::debugName(info.gpr()));
+            dataLogF(":%s\n", GPRInfo::debugName(info.gpr()).characters());
         } else
             dataLogF("\n");
     }
@@ -2579,7 +2579,7 @@ void SpeculativeJIT::compileGetCharCodeAt(Node* node)
     strictInt32Result(scratchReg, m_currentNode);
 }
 
-void SpeculativeJIT::compileGetByValOnString(Node* node, NOESCAPE const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
+void SpeculativeJIT::compileGetByValOnString(Node* node, const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
 {
     ASSERT(node->op() == GetByVal || node->op() == EnumeratorGetByVal || node->op() == StringCharAt || node->op() == StringAt);
 
@@ -3262,7 +3262,7 @@ void SpeculativeJIT::setIntTypedArrayLoadResult(Node* node, GPRReg resultGPR, Ty
     doubleResult(resultFPR, node);
 }
 
-void SpeculativeJIT::compileGetByValOnIntTypedArray(Node* node, TypedArrayType type, NOESCAPE const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
+void SpeculativeJIT::compileGetByValOnIntTypedArray(Node* node, TypedArrayType type, const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
 {
     ASSERT(isInt(type));
     
@@ -3534,7 +3534,7 @@ void SpeculativeJIT::compilePutByValForIntTypedArray(Node* node, TypedArrayType 
     noResult(node);
 }
 
-void SpeculativeJIT::compileGetByValOnFloatTypedArray(Node* node, TypedArrayType type, NOESCAPE const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
+void SpeculativeJIT::compileGetByValOnFloatTypedArray(Node* node, TypedArrayType type, const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
 {
     ASSERT(isFloat(type));
     
@@ -3663,7 +3663,7 @@ void SpeculativeJIT::compilePutByValForFloatTypedArray(Node* node, TypedArrayTyp
     noResult(node);
 }
 
-void SpeculativeJIT::compileGetByValForObjectWithString(Node* node, NOESCAPE const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
+void SpeculativeJIT::compileGetByValForObjectWithString(Node* node, const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
 {
     SpeculateCellOperand arg1(this, m_graph.varArgChild(node, 0));
     SpeculateCellOperand arg2(this, m_graph.varArgChild(node, 1));
@@ -3679,7 +3679,7 @@ void SpeculativeJIT::compileGetByValForObjectWithString(Node* node, NOESCAPE con
     jsValueResult(resultGPR, node);
 }
 
-void SpeculativeJIT::compileGetByValForObjectWithSymbol(Node* node, NOESCAPE const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
+void SpeculativeJIT::compileGetByValForObjectWithSymbol(Node* node, const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
 {
     SpeculateCellOperand arg1(this, m_graph.varArgChild(node, 0));
     SpeculateCellOperand arg2(this, m_graph.varArgChild(node, 1));
@@ -7341,7 +7341,6 @@ void SpeculativeJIT::compileStringEquality(
     JumpList trueCase;
     JumpList falseCase;
     JumpList slowCase;
-    JumpList ropeCase;
 
     trueCase.append(fastTrue);
     falseCase.append(fastFalse);
@@ -7350,7 +7349,7 @@ void SpeculativeJIT::compileStringEquality(
         if (atom)
             return;
         loadPtr(Address(jsStringGPR, JSString::offsetOfValue()), implGPR);
-        ropeCase.append(branchIfRopeStringImpl(implGPR));
+        slowCase.append(branchIfRopeStringImpl(implGPR));
     };
 
     auto resolveDataPtr = [&](bool atom, const String& constStr, GPRReg implGPR) {
@@ -7456,7 +7455,6 @@ void SpeculativeJIT::compileStringEquality(
     Jump done = jump();
 
     falseCase.link(this);
-    Label falseResult = label();
     moveFalseTo(leftTempGPR);
 
     done.link(this);
@@ -7464,22 +7462,7 @@ void SpeculativeJIT::compileStringEquality(
     Vector<SilentRegisterSavePlan> savePlans;
     silentSpillAllRegistersImpl(false, savePlans, leftTempGPR);
     Label doneOperationCall = label();
-    addSlowPathGeneratorLambda([=, this, savePlans = WTF::move(savePlans), slowCase = WTF::move(slowCase), ropeCase = WTF::move(ropeCase)]() mutable {
-        auto loadLength = [&](GPRReg jsStringGPR, GPRReg resultGPR) {
-            loadPtr(Address(jsStringGPR, JSString::offsetOfValue()), resultGPR);
-            Jump isRope = branchIfRopeStringImpl(resultGPR);
-            load32(Address(resultGPR, StringImpl::lengthMemoryOffset()), resultGPR);
-            Jump lengthLoaded = jump();
-            isRope.link(this);
-            load32(Address(jsStringGPR, JSRopeString::offsetOfLength()), resultGPR);
-            lengthLoaded.link(this);
-        };
-
-        ropeCase.link(this);
-        loadLength(leftGPR, leftTempGPR);
-        loadLength(rightGPR, rightTempGPR);
-        branch32(NotEqual, leftTempGPR, rightTempGPR).linkTo(falseResult, this);
-
+    addSlowPathGeneratorLambda([=, this, savePlans = WTF::move(savePlans), slowCase = WTF::move(slowCase)]() mutable {
         slowCase.link(this);
         silentSpill(savePlans);
         setupArguments<decltype(operationCompareStringEq)>(LinkableConstant::globalObject(*this, node), leftGPR, rightGPR);
@@ -7929,7 +7912,7 @@ void SpeculativeJIT::compileGetTypedArrayByteOffset(Node* node)
     strictInt32Result(resultGPR, node);
 }
 
-void SpeculativeJIT::compileGetByValOnDirectArguments(Node* node, NOESCAPE const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
+void SpeculativeJIT::compileGetByValOnDirectArguments(Node* node, const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
 {
     SpeculateCellOperand base(this, m_graph.varArgChild(node, 0));
     SpeculateStrictInt32Operand property(this, m_graph.varArgChild(node, 1));
@@ -7971,7 +7954,7 @@ void SpeculativeJIT::compileGetByValOnDirectArguments(Node* node, NOESCAPE const
     jsValueResult(resultGPR, node);
 }
 
-void SpeculativeJIT::compileGetByValOnScopedArguments(Node* node, NOESCAPE const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
+void SpeculativeJIT::compileGetByValOnScopedArguments(Node* node, const ScopedLambda<std::tuple<GPRReg, DataFormat>(DataFormat preferredFormat, bool needsFlush)>& prefix)
 {
     SpeculateCellOperand base(this, m_graph.varArgChild(node, 0));
     SpeculateStrictInt32Operand property(this, m_graph.varArgChild(node, 1));
@@ -10590,9 +10573,7 @@ void SpeculativeJIT::emitStructureCheck(Node* node, GPRReg cellGPR, GPRReg tempG
         
         JumpList done;
         
-        // Structure sets usually list structures in the order they were observed. Objects tend to
-        // transition away from older structures, so test the most recently observed ones first.
-        for (size_t i = node->structureSet().size(); --i;) {
+        for (size_t i = 0; i < node->structureSet().size() - 1; ++i) {
             done.append(
                 branchWeakStructure(Equal, structureGPR, node->structureSet()[i]));
         }
@@ -10600,7 +10581,7 @@ void SpeculativeJIT::emitStructureCheck(Node* node, GPRReg cellGPR, GPRReg tempG
         speculationCheck(
             BadCache, JSValueSource(cellGPR), nullptr,
             branchWeakStructure(
-                NotEqual, structureGPR, node->structureSet()[0]));
+                NotEqual, structureGPR, node->structureSet().last()));
         
         done.link(this);
     }
@@ -14160,33 +14141,6 @@ void SpeculativeJIT::compileDefineDataProperty(Node* node)
         callOperation(operationDefineDataPropertySymbol, LinkableConstant::globalObject(*this, node), baseGPR, propertyGPR, valueGPR, attributesGPR);
         break;
     }
-    case Int32Use: {
-        SpeculateInt32Operand property(this, propertyEdge);
-        GPRTemporary boxedProperty(this);
-        GPRReg propertyGPR = boxedProperty.gpr();
-        boxInt32(property.gpr(), propertyGPR);
-
-        speculateObject(baseEdge, baseGPR);
-
-        useChildren(node);
-
-        flushRegisters();
-        callOperation(operationDefineDataProperty, LinkableConstant::globalObject(*this, node), baseGPR, propertyGPR, valueGPR, attributesGPR);
-        break;
-    }
-    case NumberUse: {
-        speculateNumber(propertyEdge);
-        JSValueOperand property(this, propertyEdge, ManualOperandSpeculation);
-        GPRReg propertyGPR = property.gpr();
-
-        speculateObject(baseEdge, baseGPR);
-
-        useChildren(node);
-
-        flushRegisters();
-        callOperation(operationDefineDataProperty, LinkableConstant::globalObject(*this, node), baseGPR, propertyGPR, valueGPR, attributesGPR);
-        break;
-    }
     case UntypedUse: {
         JSValueOperand property(this, propertyEdge);
         GPRReg propertyGPR = property.gpr();
@@ -14267,33 +14221,6 @@ void SpeculativeJIT::compileDefineAccessorProperty(Node* node)
         callOperation(operationDefineAccessorPropertySymbol, LinkableConstant::globalObject(*this, node), baseGPR, propertyGPR, getterGPR, setterGPR, attributesGPR);
         break;
     }
-    case Int32Use: {
-        SpeculateInt32Operand property(this, propertyEdge);
-        GPRTemporary boxedProperty(this);
-        GPRReg propertyGPR = boxedProperty.gpr();
-        boxInt32(property.gpr(), propertyGPR);
-
-        speculateObject(baseEdge, baseGPR);
-
-        useChildren(node);
-
-        flushRegisters();
-        callOperation(operationDefineAccessorProperty, LinkableConstant::globalObject(*this, node), baseGPR, propertyGPR, getterGPR, setterGPR, attributesGPR);
-        break;
-    }
-    case NumberUse: {
-        speculateNumber(propertyEdge);
-        JSValueOperand property(this, propertyEdge, ManualOperandSpeculation);
-        GPRReg propertyGPR = property.gpr();
-
-        speculateObject(baseEdge, baseGPR);
-
-        useChildren(node);
-
-        flushRegisters();
-        callOperation(operationDefineAccessorProperty, LinkableConstant::globalObject(*this, node), baseGPR, propertyGPR, getterGPR, setterGPR, attributesGPR);
-        break;
-    }
     case UntypedUse: {
         JSValueOperand property(this, propertyEdge);
         GPRReg propertyGPR = property.gpr();
@@ -14316,60 +14243,18 @@ void SpeculativeJIT::compileDefineAccessorProperty(Node* node)
 void SpeculativeJIT::compileObjectDefineProperty(Node* node)
 {
     SpeculateCellOperand target(this, node->child1());
+    JSValueOperand key(this, node->child2());
     SpeculateCellOperand descriptor(this, node->child3());
 
     GPRReg targetGPR = target.gpr();
+    GPRReg keyGPR = key.gpr();
     GPRReg descriptorGPR = descriptor.gpr();
 
     speculateObject(node->child1(), targetGPR);
     speculateObject(node->child3(), descriptorGPR);
 
-    Edge keyEdge = node->child2();
-    switch (keyEdge.useKind()) {
-    case StringUse:
-    case SymbolUse: {
-        SpeculateCellOperand key(this, keyEdge);
-        GPRReg keyGPR = key.gpr();
-        if (keyEdge.useKind() == StringUse)
-            speculateString(keyEdge, keyGPR);
-        else
-            speculateSymbol(keyEdge, keyGPR);
-
-        flushRegisters();
-        callOperation(operationObjectDefineProperty, LinkableConstant::globalObject(*this, node), targetGPR, keyGPR, descriptorGPR);
-        break;
-    }
-    case Int32Use: {
-        SpeculateInt32Operand key(this, keyEdge);
-        GPRTemporary boxedKey(this);
-        GPRReg keyGPR = boxedKey.gpr();
-        boxInt32(key.gpr(), keyGPR);
-
-        flushRegisters();
-        callOperation(operationObjectDefineProperty, LinkableConstant::globalObject(*this, node), targetGPR, keyGPR, descriptorGPR);
-        break;
-    }
-    case NumberUse: {
-        speculateNumber(keyEdge);
-        JSValueOperand key(this, keyEdge, ManualOperandSpeculation);
-        GPRReg keyGPR = key.gpr();
-
-        flushRegisters();
-        callOperation(operationObjectDefineProperty, LinkableConstant::globalObject(*this, node), targetGPR, keyGPR, descriptorGPR);
-        break;
-    }
-    case UntypedUse: {
-        JSValueOperand key(this, keyEdge);
-        GPRReg keyGPR = key.gpr();
-
-        flushRegisters();
-        callOperation(operationObjectDefineProperty, LinkableConstant::globalObject(*this, node), targetGPR, keyGPR, descriptorGPR);
-        break;
-    }
-    default:
-        RELEASE_ASSERT_NOT_REACHED();
-        break;
-    }
+    flushRegisters();
+    callOperation(operationObjectDefineProperty, LinkableConstant::globalObject(*this, node), targetGPR, keyGPR, descriptorGPR);
     noResult(node);
 }
 
@@ -14380,79 +14265,35 @@ void SpeculativeJIT::compileObjectDefinePropertyFromFields(Node* node)
 
     // Children layout:
     //   [0] target (ObjectUse)
-    //   [1] key (StringUse, SymbolUse, Int32Use, NumberUse, or UntypedUse)
+    //   [1] key (UntypedUse)
     //   [2..7] descriptor slots, indexed by Node::DescriptorSlot
     //          (UntypedUse or JSConstant(empty) if absent).
     SpeculateCellOperand target(this, m_graph.varArgChild(node, 0));
+    JSValueOperand key(this, m_graph.varArgChild(node, 1));
+    GPRTemporary buffer(this);
+
     GPRReg targetGPR = target.gpr();
+    GPRReg keyGPR = key.gpr();
+    GPRReg bufferGPR = buffer.gpr();
+
     speculateObject(m_graph.varArgChild(node, 0), targetGPR);
 
-    Edge keyEdge = m_graph.varArgChild(node, 1);
-    auto lower = [&](GPRReg keyGPR, const auto& useKey) {
-        GPRTemporary buffer(this);
-        GPRReg bufferGPR = buffer.gpr();
+    constexpr size_t scratchSize = sizeof(EncodedJSValue) * Node::numberOfDescriptorSlots;
+    ScratchBuffer* scratchBuffer = vm().scratchBufferForSize(scratchSize);
+    EncodedJSValue* scratchData = static_cast<EncodedJSValue*>(scratchBuffer->dataBuffer());
 
-        constexpr size_t scratchSize = sizeof(EncodedJSValue) * Node::numberOfDescriptorSlots;
-        ScratchBuffer* scratchBuffer = vm().scratchBufferForSize(scratchSize);
-        EncodedJSValue* scratchData = static_cast<EncodedJSValue*>(scratchBuffer->dataBuffer());
+    move(TrustedImmPtr(scratchData), bufferGPR);
+    for (unsigned slot = 0; slot < Node::numberOfDescriptorSlots; ++slot) {
+        JSValueOperand operand(this, m_graph.varArgChild(node, slot + 2));
+        storeValue(operand.gpr(), Address(bufferGPR, sizeof(EncodedJSValue) * slot));
+        operand.use();
+    }
 
-        move(TrustedImmPtr(scratchData), bufferGPR);
-        for (unsigned slot = 0; slot < Node::numberOfDescriptorSlots; ++slot) {
-            JSValueOperand operand(this, m_graph.varArgChild(node, slot + 2));
-            storeValue(operand.gpr(), Address(bufferGPR, sizeof(EncodedJSValue) * slot));
-            operand.use();
-        }
+    target.use();
+    key.use();
 
-        target.use();
-        useKey();
-
-        flushRegisters();
-        callOperation(operationObjectDefinePropertyFromFields, LinkableConstant::globalObject(*this, node), targetGPR, keyGPR, bufferGPR);
-    };
-
-    switch (keyEdge.useKind()) {
-    case StringUse:
-    case SymbolUse: {
-        SpeculateCellOperand key(this, keyEdge);
-        GPRReg keyGPR = key.gpr();
-        if (keyEdge.useKind() == StringUse)
-            speculateString(keyEdge, keyGPR);
-        else
-            speculateSymbol(keyEdge, keyGPR);
-        lower(keyGPR, [&] {
-            key.use();
-        });
-        break;
-    }
-    case Int32Use: {
-        SpeculateInt32Operand key(this, keyEdge);
-        GPRTemporary boxedKey(this);
-        GPRReg keyGPR = boxedKey.gpr();
-        boxInt32(key.gpr(), keyGPR);
-        lower(keyGPR, [&] {
-            key.use();
-        });
-        break;
-    }
-    case NumberUse: {
-        speculateNumber(keyEdge);
-        JSValueOperand key(this, keyEdge, ManualOperandSpeculation);
-        lower(key.gpr(), [&] {
-            key.use();
-        });
-        break;
-    }
-    case UntypedUse: {
-        JSValueOperand key(this, keyEdge);
-        lower(key.gpr(), [&] {
-            key.use();
-        });
-        break;
-    }
-    default:
-        RELEASE_ASSERT_NOT_REACHED();
-        break;
-    }
+    flushRegisters();
+    callOperation(operationObjectDefinePropertyFromFields, LinkableConstant::globalObject(*this, node), targetGPR, keyGPR, bufferGPR);
     noResult(node, UseChildrenCalledExplicitly);
 }
 
@@ -16828,7 +16669,7 @@ void SpeculativeJIT::compileAllocateNewArrayWithSize(Node* node, GPRReg resultGP
     compileAllocateNewArrayWithSize(node, resultGPR, sizeGPR, m_graph.registerStructure(globalObject->arrayStructureForIndexingTypeDuringAllocation(indexingType)), shouldConvertLargeSizeToArrayStorage);
 }
 
-void SpeculativeJIT::compileHasIndexedProperty(Node* node, S_JITOperation_GCZ slowPathOperation, NOESCAPE const ScopedLambda<std::tuple<GPRReg, GPRReg>()>& prefix, bool preserveIndexReg)
+void SpeculativeJIT::compileHasIndexedProperty(Node* node, S_JITOperation_GCZ slowPathOperation, const ScopedLambda<std::tuple<GPRReg, GPRReg>()>& prefix, bool preserveIndexReg)
 {
     auto baseEdge = m_graph.varArgChild(node, 0);
     SpeculateCellOperand base(this, baseEdge);

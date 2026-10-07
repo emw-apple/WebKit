@@ -413,13 +413,10 @@ TEST_P(PeerConnectionIntegrationTest, CallTransferredForCaller) {
   // directly above.
   original_peer->pc()->Close();
 
-  // Only signal SDP initially to avoid delivering ICE candidates to the new
-  // callee before it has received the remote offer.
-  ConnectFakeSignalingForSdpOnly();
+  ConnectFakeSignaling();
   callee()->AddAudioVideoTracks();
   caller()->SetOfferAnswerOptions(IceRestartOfferAnswerOptions());
   caller()->CreateAndSetAndSignalOffer();
-  SetSignalIceCandidates(true);
   ASSERT_TRUE(WaitUntil([&] { return SignalingStateStable(); }));
   // Wait for some additional frames to be transmitted end-to-end.
   MediaExpectations media_expectations;

@@ -73,7 +73,6 @@
 #import <WebCore/JSXPathResult.h>
 #import <WebCore/SimpleRange.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/cocoa/TypeCastsCocoa.h>
 
 static WebScriptObject *createDOMWrapper(JSC::JSObject& jsWrapper)
 {
@@ -117,7 +116,7 @@ static WebScriptObject *createDOMWrapper(JSC::JSObject& jsWrapper)
 static void disconnectWindowWrapper(WebScriptObject *windowWrapper)
 {
     ASSERT([windowWrapper isKindOfClass:[DOMAbstractView class]]);
-    [checked_objc_cast<DOMAbstractView>(windowWrapper) _disconnectFrame];
+    [(DOMAbstractView *)windowWrapper _disconnectFrame];
 }
 
 void NODELETE initializeDOMWrapperHooks()

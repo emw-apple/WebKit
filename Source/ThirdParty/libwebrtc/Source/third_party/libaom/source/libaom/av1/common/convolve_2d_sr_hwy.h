@@ -323,20 +323,18 @@ HWY_ATTR HWY_INLINE hn::VFromD<D> LoadAndCombineClamped(D d, D128 d128,
 //   from `strip_im_buf` and instead compute horizontal convolve on the fly.
 // - `round_0_const`, `round_1_const`: Compile-time rounding offsets, enabling
 //   optimized shift calculations when non-zero.
-// - `limit_val`: Compile-time iteration limit (1 for h=2, 2 for h=4, 3 for h=6,
-//    4 for h>=8).
 // - `IdxTbl`: Target-specific Highway type for table lookup indices.
 // - `ComputeHRowBlock`: Callable type for computing horizontal convolve on the
 //   fly (used when `skip_strip_im` is true).
 template <int taps_y_val, bool h_ge_8, bool skip_strip_im, int round_0_const,
-          int round_1_const, int limit_val, class IdxTbl,
+          int round_1_const, class IdxTbl,
           class ComputeHRowBlock = IVec16 (*)(int)>
 HWY_ATTR HWY_INLINE void ConvolveVerticalPass(
     const int16_t *strip_im_buf, uint8_t *dst, int dst_stride, int w, int h,
     const IVec16 *coeffs_v, IVec32 round_const_y, int round_1, int bits,
     IdxTbl idx_tbl, ComputeHRowBlock compute_h_row_block = nullptr) {
   constexpr int num_coeffs = taps_y_val / 2;
-  constexpr int num_z = limit_val + num_coeffs - 1;
+  constexpr int num_z = (h_ge_8 ? 8 : 4) / 2 + num_coeffs - 1;
   constexpr int num_h = num_z / 2 + 1;
 
   hn::Half<decltype(int16xN_tag)> d16_16;
@@ -398,7 +396,8 @@ HWY_ATTR HWY_INLINE void ConvolveVerticalPass(
       Z[z_idx] = hn::TableLookupLanes(L, idx_tbl);
     }
 
-    for (int i = 0; i < limit_val; ++i) {
+    constexpr int limit = h_ge_8 ? 4 : 2;
+    for (int i = 0; i < limit; ++i) {
       auto sum = ConvolveVertical<taps_y_val>(int32xN_tag, &Z[i], coeffs_v,
                                               round_const_y);
       round_and_store(sum, y + 2 * i);
@@ -581,29 +580,25 @@ HWY_ATTR HWY_INLINE void Convolve2DSRHwyImpl(
       HWY_IF_CONSTEXPR(taps_y_const > 0) {
         constexpr bool skip_strip_im = taps_y_const == 12 ? false : true;
         ConvolveVerticalPass<taps_y_const, false, skip_strip_im, round_0_const,
-                             round_1_const, /*limit_val=*/2>(
+                             round_1_const>(
             strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
             round_1, bits, idx_tbl, compute_h_row_block);
       }
       else {
         if (taps_y == 2) {
-          ConvolveVerticalPass<2, false, true, round_0_const, round_1_const,
-                               /*limit_val=*/2>(
+          ConvolveVerticalPass<2, false, true, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl, compute_h_row_block);
         } else if (taps_y == 4) {
-          ConvolveVerticalPass<4, false, true, round_0_const, round_1_const,
-                               /*limit_val=*/2>(
+          ConvolveVerticalPass<4, false, true, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl, compute_h_row_block);
         } else if (taps_y == 6) {
-          ConvolveVerticalPass<6, false, true, round_0_const, round_1_const,
-                               /*limit_val=*/2>(
+          ConvolveVerticalPass<6, false, true, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl, compute_h_row_block);
         } else if (taps_y == 8) {
-          ConvolveVerticalPass<8, false, true, round_0_const, round_1_const,
-                               /*limit_val=*/2>(
+          ConvolveVerticalPass<8, false, true, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl, compute_h_row_block);
         }
@@ -612,29 +607,25 @@ HWY_ATTR HWY_INLINE void Convolve2DSRHwyImpl(
       HWY_IF_CONSTEXPR(taps_y_const > 0) {
         constexpr bool skip_strip_im = taps_y_const == 12 ? false : true;
         ConvolveVerticalPass<taps_y_const, true, skip_strip_im, round_0_const,
-                             round_1_const, /*limit_val=*/4>(
+                             round_1_const>(
             strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
             round_1, bits, idx_tbl, compute_h_row_block);
       }
       else {
         if (taps_y == 2) {
-          ConvolveVerticalPass<2, true, true, round_0_const, round_1_const,
-                               /*limit_val=*/4>(
+          ConvolveVerticalPass<2, true, true, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl, compute_h_row_block);
         } else if (taps_y == 4) {
-          ConvolveVerticalPass<4, true, true, round_0_const, round_1_const,
-                               /*limit_val=*/4>(
+          ConvolveVerticalPass<4, true, true, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl, compute_h_row_block);
         } else if (taps_y == 6) {
-          ConvolveVerticalPass<6, true, true, round_0_const, round_1_const,
-                               /*limit_val=*/4>(
+          ConvolveVerticalPass<6, true, true, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl, compute_h_row_block);
         } else if (taps_y == 8) {
-          ConvolveVerticalPass<8, true, true, round_0_const, round_1_const,
-                               /*limit_val=*/4>(
+          ConvolveVerticalPass<8, true, true, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl, compute_h_row_block);
         }
@@ -642,151 +633,73 @@ HWY_ATTR HWY_INLINE void Convolve2DSRHwyImpl(
     } else {
       if (h >= 8) {
         if (is_taps_y_12) {
-          ConvolveVerticalPass<12, true, false, round_0_const, round_1_const,
-                               /*limit_val=*/4>(
+          ConvolveVerticalPass<12, true, false, round_0_const, round_1_const>(
               strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
               round_1, bits, idx_tbl);
         } else {
           HWY_IF_CONSTEXPR(taps_y_const > 0) {
             ConvolveVerticalPass<taps_y_const, true, false, round_0_const,
-                                 round_1_const, /*limit_val=*/4>(
+                                 round_1_const>(
                 strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
                 round_const_y, round_1, bits, idx_tbl);
           }
           else {
             if (taps_y == 2) {
-              ConvolveVerticalPass<2, true, false, round_0_const, round_1_const,
-                                   /*limit_val=*/4>(
+              ConvolveVerticalPass<2, true, false, round_0_const,
+                                   round_1_const>(
                   strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
                   round_const_y, round_1, bits, idx_tbl);
             } else if (taps_y == 4) {
-              ConvolveVerticalPass<4, true, false, round_0_const, round_1_const,
-                                   /*limit_val=*/4>(
+              ConvolveVerticalPass<4, true, false, round_0_const,
+                                   round_1_const>(
                   strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
                   round_const_y, round_1, bits, idx_tbl);
             } else if (taps_y == 6) {
-              ConvolveVerticalPass<6, true, false, round_0_const, round_1_const,
-                                   /*limit_val=*/4>(
+              ConvolveVerticalPass<6, true, false, round_0_const,
+                                   round_1_const>(
                   strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
                   round_const_y, round_1, bits, idx_tbl);
             } else if (taps_y == 8) {
-              ConvolveVerticalPass<8, true, false, round_0_const, round_1_const,
-                                   /*limit_val=*/4>(
+              ConvolveVerticalPass<8, true, false, round_0_const,
+                                   round_1_const>(
                   strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
                   round_const_y, round_1, bits, idx_tbl);
             }
           }
         }
       } else {
-        if (h == 2) {
-          if (is_taps_y_12) {
-            ConvolveVerticalPass<12, false, false, round_0_const, round_1_const,
-                                 /*limit_val=*/1>(
-                strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                round_const_y, round_1, bits, idx_tbl);
-          } else {
-            HWY_IF_CONSTEXPR(taps_y_const > 0) {
-              ConvolveVerticalPass<taps_y_const, false, false, round_0_const,
-                                   round_1_const, /*limit_val=*/1>(
-                  strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                  round_const_y, round_1, bits, idx_tbl);
-            }
-            else {
-              if (taps_y == 2) {
-                ConvolveVerticalPass<2, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/1>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 4) {
-                ConvolveVerticalPass<4, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/1>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 6) {
-                ConvolveVerticalPass<6, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/1>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 8) {
-                ConvolveVerticalPass<8, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/1>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              }
-            }
-          }
-        } else if (h == 6) {
-          if (is_taps_y_12) {
-            ConvolveVerticalPass<12, false, false, round_0_const, round_1_const,
-                                 /*limit_val=*/3>(
-                strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                round_const_y, round_1, bits, idx_tbl);
-          } else {
-            HWY_IF_CONSTEXPR(taps_y_const > 0) {
-              ConvolveVerticalPass<taps_y_const, false, false, round_0_const,
-                                   round_1_const, /*limit_val=*/3>(
-                  strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                  round_const_y, round_1, bits, idx_tbl);
-            }
-            else {
-              if (taps_y == 2) {
-                ConvolveVerticalPass<2, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/3>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 4) {
-                ConvolveVerticalPass<4, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/3>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 6) {
-                ConvolveVerticalPass<6, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/3>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 8) {
-                ConvolveVerticalPass<8, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/3>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              }
-            }
-          }
+        if (is_taps_y_12) {
+          ConvolveVerticalPass<12, false, false, round_0_const, round_1_const>(
+              strip_im_buf, dst + j, dst_stride, w, h, coeffs_v, round_const_y,
+              round_1, bits, idx_tbl);
         } else {
-          if (is_taps_y_12) {
-            ConvolveVerticalPass<12, false, false, round_0_const, round_1_const,
-                                 /*limit_val=*/2>(
+          HWY_IF_CONSTEXPR(taps_y_const > 0) {
+            ConvolveVerticalPass<taps_y_const, false, false, round_0_const,
+                                 round_1_const>(
                 strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
                 round_const_y, round_1, bits, idx_tbl);
-          } else {
-            HWY_IF_CONSTEXPR(taps_y_const > 0) {
-              ConvolveVerticalPass<taps_y_const, false, false, round_0_const,
-                                   round_1_const, /*limit_val=*/2>(
+          }
+          else {
+            if (taps_y == 2) {
+              ConvolveVerticalPass<2, false, false, round_0_const,
+                                   round_1_const>(
                   strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
                   round_const_y, round_1, bits, idx_tbl);
-            }
-            else {
-              if (taps_y == 2) {
-                ConvolveVerticalPass<2, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/2>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 4) {
-                ConvolveVerticalPass<4, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/2>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 6) {
-                ConvolveVerticalPass<6, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/2>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              } else if (taps_y == 8) {
-                ConvolveVerticalPass<8, false, false, round_0_const,
-                                     round_1_const, /*limit_val=*/2>(
-                    strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
-                    round_const_y, round_1, bits, idx_tbl);
-              }
+            } else if (taps_y == 4) {
+              ConvolveVerticalPass<4, false, false, round_0_const,
+                                   round_1_const>(
+                  strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
+                  round_const_y, round_1, bits, idx_tbl);
+            } else if (taps_y == 6) {
+              ConvolveVerticalPass<6, false, false, round_0_const,
+                                   round_1_const>(
+                  strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
+                  round_const_y, round_1, bits, idx_tbl);
+            } else if (taps_y == 8) {
+              ConvolveVerticalPass<8, false, false, round_0_const,
+                                   round_1_const>(
+                  strip_im_buf, dst + j, dst_stride, w, h, coeffs_v,
+                  round_const_y, round_1, bits, idx_tbl);
             }
           }
         }

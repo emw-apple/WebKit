@@ -311,14 +311,11 @@ std::optional<SimpleRange> DictionaryLookup::rangeAtHitTestResult(const HitTestR
     if (position.isNull())
         position = firstPositionInOrBeforeNode(node.get());
 
+    RefPtr focusedOrMainFrame = frame->page()->focusController().focusedOrMainFrame();
+    if (!focusedOrMainFrame)
+        return std::nullopt;
 
-    // The frame with focus might be in another process.
-    // If so, fall back to the frame that was hit tested.
-    RefPtr selectionFrame = frame->page()->focusController().focusedOrMainFrame();
-    if (!selectionFrame)
-        selectionFrame = frame;
-
-    auto selection = selectionFrame->selection().selection();
+    auto selection = focusedOrMainFrame->selection().selection();
     NSRange selectionRange;
     NSUInteger hitIndex;
     std::optional<SimpleRange> fullCharacterRange;

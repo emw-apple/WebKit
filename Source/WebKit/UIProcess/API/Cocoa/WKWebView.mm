@@ -308,7 +308,7 @@ RetainPtr<NSError> nsErrorFromExceptionDetails(const std::optional<WebCore::Exce
     if (!details)
         return createNSError(WKErrorJavaScriptResultTypeIsUnsupported);
 
-    RetainPtr userInfo = adoptNS([[NSMutableDictionary alloc] init]);
+    auto userInfo = adoptNS([[NSMutableDictionary alloc] init]);
 
     WKErrorCode errorCode;
     switch (details->type) {
@@ -4483,8 +4483,18 @@ FOR_EACH_PRIVATE_WKCONTENTVIEW_ACTION(FORWARD_ACTION_TO_WKCONTENTVIEW)
 
 - (void)_frameTrees:(void (^)(NSSet<_WKFrameTreeNode *> *))completionHandler
 {
-    _page->getAllFrameTreesForSiteIsolationTesting([completionHandler = makeBlockPtr(completionHandler), page = protect(*_page)] (Vector<WebKit::FrameTreeNodeData>&& vector) {
+    _page->getAllFrameTrees([completionHandler = makeBlockPtr(completionHandler), page = protect(*_page)] (Vector<WebKit::FrameTreeNodeData>&& vector) {
         auto set = adoptNS([[NSMutableSet alloc] initWithCapacity:vector.size()]);
+        for (auto& data : vector)
+            [set addObject:wrapper(API::FrameTreeNode::create(WTF::move(data), page.get())).get()];
+        completionHandler(set.get());
+    });
+}
+
+- (void)_frameTreesInBackForwardCacheAtIndex:(NSInteger)relativeIndex completionHandler:(void (^)(NSSet<_WKFrameTreeNode *> *))completionHandler
+{
+    _page->getFrameTreesForBackForwardItem(static_cast<int>(relativeIndex), [completionHandler = makeBlockPtr(completionHandler), page = protect(*_page)] (Vector<WebKit::FrameTreeNodeData>&& vector) {
+        RetainPtr set = adoptNS([[NSMutableSet alloc] initWithCapacity:vector.size()]);
         for (auto& data : vector)
             [set addObject:wrapper(API::FrameTreeNode::create(WTF::move(data), page.get())).get()];
         completionHandler(set.get());

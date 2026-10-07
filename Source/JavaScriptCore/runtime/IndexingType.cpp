@@ -32,6 +32,15 @@
 
 namespace JSC {
 
+IndexingType leastUpperBoundOfIndexingTypes(IndexingType a, IndexingType b)
+{
+    // It doesn't make sense to LUB something that is an array with something that isn't.
+    ASSERT((a & IsArray) == (b & IsArray));
+
+    // Boy, this sure is easy right now.
+    return std::max(a, b);
+}
+
 bool isProvenValidTypeForIndexingShapeStorage(IndexingType indexingType, SpeculatedType type)
 {
     ASSERT(type);
@@ -76,6 +85,11 @@ IndexingType leastUpperBoundOfIndexingTypeAndTypeForSpeculation(IndexingType ind
         CRASH();
         return 0;
     }
+}
+
+IndexingType leastUpperBoundOfIndexingTypeAndValue(IndexingType indexingType, JSValue value)
+{
+    return leastUpperBoundOfIndexingTypes(indexingType, indexingTypeForValue(value) | (indexingType & IsArray));
 }
 
 void dumpIndexingType(PrintStream& out, IndexingType indexingType)

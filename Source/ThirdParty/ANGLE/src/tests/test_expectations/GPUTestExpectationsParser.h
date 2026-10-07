@@ -11,7 +11,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "GPUTestConfig.h"
@@ -98,8 +97,6 @@ class GPUTestExpectationsParser
     int32_t getTestExpectationImpl(const GPUTestConfig *config, const std::string &testName);
 
     std::vector<GPUTestExpectationEntry> mEntries;
-    std::unordered_map<std::string, std::vector<size_t>> mExactEntriesIndex;
-    std::vector<size_t> mWildcardEntriesIndex;
     std::vector<std::string> mErrorMessages;
 
     uint32_t mExpectationsAllowMask;

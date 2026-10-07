@@ -120,7 +120,7 @@ class UtilsVk : angle::NonCopyable
         VkImageAspectFlags aspectFlags = 0;
         vk::LevelIndex level           = vk::LevelIndex(0);
         vk::LayerIndex layer           = vk::LayerIndex(0);
-        gl::Rectangle clearArea        = {};
+        gl::Box clearArea              = {};
         VkClearValue clearValue        = {};
     };
 

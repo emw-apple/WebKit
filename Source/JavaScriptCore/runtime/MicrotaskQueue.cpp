@@ -55,9 +55,9 @@ bool QueuedTask::isRunnable() const
     return uncheckedDowncast<JSGlobalObject>(dispatcher())->microtaskRunnability() == QueuedTaskResult::Executed;
 }
 
-static bool runMicrotask(JSGlobalObject* globalObject, TopExceptionScope& catchScope, VM& vm, InternalMicrotask job, uint8_t payload, JSValue argument0, JSValue argument1, JSValue argument2, MicrotaskCallCache* microtaskCallCache)
+static bool runMicrotask(JSGlobalObject* globalObject, TopExceptionScope& catchScope, VM& vm, QueuedTask& task, MicrotaskCallCache* microtaskCallCache)
 {
-    runInternalMicrotask(globalObject, vm, job, payload, argument0, argument1, argument2, microtaskCallCache);
+    runInternalMicrotask(globalObject, vm, task.job(), task.payload(), task.arguments(), microtaskCallCache);
     if (auto* exception = catchScope.exception()) [[unlikely]] {
         if (!catchScope.clearExceptionExceptTermination()) [[unlikely]]
             return false;
@@ -79,8 +79,7 @@ void runMicrotaskWithDebugger(JSGlobalObject* globalObject, VM& vm, QueuedTask& 
             return;
     }
 
-    auto arguments = task.arguments();
-    if (!runMicrotask(globalObject, catchScope, vm, task.job(), task.payload(), arguments[0], arguments[1], arguments[2], nullptr)) [[unlikely]]
+    if (!runMicrotask(globalObject, catchScope, vm, task, nullptr)) [[unlikely]]
         return;
 
     if (auto* debugger = globalObject->debugger(); debugger && identifier) [[unlikely]] {
@@ -193,8 +192,7 @@ ALWAYS_INLINE std::pair<JSGlobalObject*, bool> MicrotaskQueue::drainImpl(JSGloba
                 return { globalObject, false };
 
             auto task = m_queue.dequeue();
-            auto arguments = task.arguments();
-            if (!runMicrotask(globalObject, catchScope, vm, task.job(), task.payload(), arguments[0], arguments[1], arguments[2], &microtaskCallCache)) [[unlikely]] {
+            if (!runMicrotask(globalObject, catchScope, vm, task, &microtaskCallCache)) [[unlikely]] {
                 clear();
                 return { nullptr, true };
             }

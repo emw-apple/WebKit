@@ -57,7 +57,7 @@ struct RecordedStatuses {
     void shrinkToFit();
     
     template<typename Func>
-    void forEachVector(NOESCAPE const Func& func)
+    void forEachVector(const Func& func)
     {
         func(calls);
         func(gets);

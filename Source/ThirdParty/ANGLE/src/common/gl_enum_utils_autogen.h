@@ -109,7 +109,6 @@ enum class GLESEnum
     MatrixMode,
     MemoryBarrierMask,
     MemoryObjectParameterName,
-    MemoryTrimLevel,
     NormalPointerType,
     ObjectIdentifier,
     PLSPlaneParameterName,

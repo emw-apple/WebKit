@@ -57,34 +57,38 @@ float SVGTextChunkBuilder::totalAnchorShift() const
     return anchorShift;
 }
 
-void SVGTextChunkBuilder::buildTextChunks(const Vector<InlineIterator::SVGTextBoxIterator>& lineLayoutBoxes, const SVGTextChunkStarts& chunkStarts, SVGTextFragmentMap& fragmentMap)
+AffineTransform SVGTextChunkBuilder::transformationForTextBox(InlineIterator::SVGTextBoxIterator textBox) const
 {
-    for (auto box : lineLayoutBoxes) {
-        auto key = makeKey(*box);
-        auto fragmentsIterator = fragmentMap.find(key);
-        if (fragmentsIterator == fragmentMap.end())
-            continue;
-
-        auto fragments = fragmentsIterator->value.mutableSpan();
-        size_t rangeStart = 0;
-
-        auto chunkStartsIterator = chunkStarts.find(key);
-        if (chunkStartsIterator != chunkStarts.end()) {
-            for (auto chunkStart : chunkStartsIterator->value) {
-                ASSERT(chunkStart >= rangeStart && chunkStart < fragments.size());
-                if (!m_textChunks.isEmpty())
-                    m_textChunks.last().appendFragments(fragments.subspan(rangeStart, chunkStart - rangeStart));
-                m_textChunks.append(SVGTextChunk(*box));
-                rangeStart = chunkStart;
-            }
-        }
-
-        if (!m_textChunks.isEmpty())
-            m_textChunks.last().appendFragments(fragments.subspan(rangeStart));
-    }
+    auto it = m_textBoxTransformations.find(makeKey(*textBox));
+    return it == m_textBoxTransformations.end() ? AffineTransform() : it->value;
 }
 
-void SVGTextChunkBuilder::layoutTextChunks(const Vector<InlineIterator::SVGTextBoxIterator>& lineLayoutBoxes, const SVGTextChunkStarts& chunkStarts, SVGTextFragmentMap& fragmentMap)
+void SVGTextChunkBuilder::buildTextChunks(const Vector<InlineIterator::SVGTextBoxIterator>& lineLayoutBoxes, const HashSet<InlineIterator::SVGTextBox::Key>& chunkStarts, SVGTextFragmentMap& fragmentMap)
+{
+    if (lineLayoutBoxes.isEmpty())
+        return;
+
+    unsigned limit = lineLayoutBoxes.size();
+    unsigned first = limit;
+
+    for (unsigned i = 0; i < limit; ++i) {
+        if (!chunkStarts.contains(makeKey(*lineLayoutBoxes[i])))
+            continue;
+
+        if (first == limit)
+            first = i;
+        else {
+            ASSERT_WITH_SECURITY_IMPLICATION(first != i);
+            m_textChunks.append(SVGTextChunk(lineLayoutBoxes, first, i, fragmentMap));
+            first = i;
+        }
+    }
+
+    if (first != limit)
+        m_textChunks.append(SVGTextChunk(lineLayoutBoxes, first, limit, fragmentMap));
+}
+
+void SVGTextChunkBuilder::layoutTextChunks(const Vector<InlineIterator::SVGTextBoxIterator>& lineLayoutBoxes, const HashSet<InlineIterator::SVGTextBox::Key>& chunkStarts, SVGTextFragmentMap& fragmentMap)
 {
     buildTextChunks(lineLayoutBoxes, chunkStarts, fragmentMap);
     if (m_textChunks.isEmpty())
@@ -93,7 +97,7 @@ void SVGTextChunkBuilder::layoutTextChunks(const Vector<InlineIterator::SVGTextB
     applyElementLevelTextLength();
 
     for (const auto& chunk : m_textChunks)
-        chunk.layout();
+        chunk.layout(m_textBoxTransformations);
 
     m_textChunks.clear();
 }
@@ -125,8 +129,14 @@ void SVGTextChunkBuilder::applyElementLevelTextLength()
         const SVGTextFragment* groupFirstFragment = nullptr;
         for (auto* chunk : chunks) {
             groupTotalLength += chunk->totalLength();
-            if (!groupFirstFragment)
-                groupFirstFragment = chunk->firstFragment();
+            if (groupFirstFragment)
+                continue;
+            for (const auto& boxAndFragments : chunk->m_boxes) {
+                if (!boxAndFragments.fragments.isEmpty()) {
+                    groupFirstFragment = &boxAndFragments.fragments.first();
+                    break;
+                }
+            }
         }
 
         if (!groupFirstFragment || groupTotalLength <= 0)
@@ -142,7 +152,8 @@ void SVGTextChunkBuilder::applyElementLevelTextLength()
         transform.translate(-groupFirstFragment->x, -groupFirstFragment->y);
 
         for (auto* chunk : chunks) {
-            chunk->setLengthAdjustTransform(transform);
+            for (const auto& boxAndFragments : chunk->m_boxes)
+                m_textBoxTransformations.set(makeKey(*boxAndFragments.box), transform);
             chunk->m_textLengthLayoutMode = SVGTextChunk::TextLengthLayoutMode::ElementGroup;
         }
     }

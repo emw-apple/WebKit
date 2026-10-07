@@ -27,7 +27,6 @@
 #include "LegacyRenderSVGShape.h"
 #include "NodeName.h"
 #include "RenderSVGShape.h"
-#include "SVGElementTypeHelpers.h"
 #include "SVGLengthValue.h"
 #include "SVGParsingError.h"
 #include "SVGPropertyOwnerRegistry.h"
@@ -38,7 +37,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGLineElement);
 
 inline SVGLineElement::SVGLineElement(const QualifiedName& tagName, Document& document)
-    : SVGGeometryElement(tagName, document, PropertyRegistry::singleton())
+    : SVGGeometryElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::lineTag));
 

@@ -1,4 +1,6 @@
 
+Harness Error (TIMEOUT), message = null
+
 PASS "require-corp" top-level: navigating a frame to "none" should fail
 PASS "require-corp" top-level: navigating a frame from "require-corp" to "none" should fail
 PASS "require-corp" top-level: creating a noopener "none" popup should succeed
@@ -10,9 +12,9 @@ PASS "require-corp" top-level: fetch() to CORP: cross-origin response should suc
 PASS "require-corp" top-level: fetch() to response without CORP should fail
 PASS "require-corp" top-level: fetch() to response without CORP through a WindowProxy should fail
 PASS "require-corp" top-level: navigating an iframe to a page without CORP, through a WindowProxy, should fail
-PASS CORP: same-site is checked and allowed.
+TIMEOUT CORP: same-site is checked and allowed. Test timed out
 PASS CORP: same-site is checked and blocked.
-PASS navigation CORP is checked with the parent frame, not the navigation source - to be allowed
+TIMEOUT navigation CORP is checked with the parent frame, not the navigation source - to be allowed Test timed out
 PASS navigation CORP is checked with the parent frame, not the navigation source - to be blocked
 PASS navigation CORP is checked for each redirect
 

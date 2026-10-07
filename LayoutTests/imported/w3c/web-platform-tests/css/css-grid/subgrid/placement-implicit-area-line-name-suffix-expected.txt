@@ -1,3 +1,0 @@
-
-PASS subgrid implicit area line name "x-end-end" resolves by suffix, not by first substring match
-

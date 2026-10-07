@@ -88,11 +88,10 @@ private:
     RefPtr<SuspendedPageProxy> m_suspendedPage;
     Vector<Ref<WebFrameProxy>> m_cachedChildren;
     RunLoop::Timer m_expirationTimer;
-} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(refWebBackForwardCacheEntry, derefWebBackForwardCacheEntry);
+} SWIFT_SHARED_REFERENCE(refWebBackForwardCacheEntry, derefWebBackForwardCacheEntry) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
 } // namespace WebKit
 
-#if !ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
 inline void refWebBackForwardCacheEntry(WebKit::WebBackForwardCacheEntry* WTF_NONNULL obj)
 {
     obj->ref();
@@ -102,4 +101,3 @@ inline void derefWebBackForwardCacheEntry(WebKit::WebBackForwardCacheEntry* WTF_
 {
     obj->deref();
 }
-#endif

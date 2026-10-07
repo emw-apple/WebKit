@@ -79,6 +79,7 @@ cc_library(
 
 cc_library(
     name = "hardening",
+    srcs = ["internal/hardening.cc"],
     hdrs = [
         "internal/hardening.h",
     ],
@@ -187,7 +188,6 @@ cc_library(
     ],
     deps = [
         ":base_internal",
-        ":config",
         ":core_headers",
         ":errno_saver",
     ],
@@ -365,7 +365,6 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":atomic_hook",
-        ":config",
         ":core_headers",
     ],
 )
@@ -395,7 +394,6 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":base",
-        ":config",
         ":core_headers",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
@@ -512,7 +510,6 @@ cc_library(
         "//absl/memory",
         "//absl/meta:type_traits",
         "//absl/strings",
-        "//absl/strings:string_view",
         "//absl/utility",
         "@googletest//:gtest",
     ],
@@ -656,7 +653,6 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":base",
-        ":config",
         ":core_headers",
         "//absl/synchronization",
         "@googletest//:gtest",
@@ -779,7 +775,6 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":base",
-        ":config",
         "//absl/synchronization",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
@@ -811,7 +806,6 @@ cc_test(
         "no_test_wasm",
     ],
     deps = [
-        ":config",
         ":malloc_internal",
         "//absl/container:node_hash_map",
     ],
@@ -827,7 +821,6 @@ cc_test(
     ],
     deps = [
         ":base",
-        ":config",
         ":core_headers",
         "//absl/synchronization",
         "@googletest//:gtest",
@@ -890,7 +883,6 @@ cc_test(
         "//absl/flags:flag_internal",
         "//absl/flags:marshalling",
         "//absl/strings",
-        "//absl/strings:string_view",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -1039,7 +1031,7 @@ cc_test(
     linkstatic = 1,
     deps = [
         ":core_headers",
-        "//absl/strings:string_view",
+        "//absl/strings",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -1098,8 +1090,8 @@ cc_library(
         "@do_not_use_for_gloop_visibility_only//gloop/perftools/tracing:__subpackages__",
     ],
     deps = [
-        ":config",
-        ":core_headers",
+        "//absl/base:config",
+        "//absl/base:core_headers",
     ],
 )
 

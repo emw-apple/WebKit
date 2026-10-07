@@ -44,7 +44,8 @@ rtc_library("vad") {
 }
 
 if (rtc_include_tests) {
-  rtc_cc_test("gmm_unittest") {
+  rtc_library("gmm_unittest") {
+    testonly = true
     sources = [ "gmm_unittest.cc" ]
     deps = [
       ":vad",
@@ -52,20 +53,18 @@ if (rtc_include_tests) {
     ]
   }
 
-  rtc_cc_test("pitch_based_vad_unittest") {
+  rtc_library("pitch_based_vad_unittest") {
+    testonly = true
     sources = [ "pitch_based_vad_unittest.cc" ]
     deps = [
       ":vad",
       "../../../test:fileutils",
       "../../../test:test_support",
     ]
-    data_deps = [ "../../../resources:audio_processing_unittests_data" ]
-    if (is_ios) {
-      deps += [ "../../../resources:audio_processing_unittests_bundle_data" ]
-    }
   }
 
-  rtc_cc_test("pitch_internal_unittest") {
+  rtc_library("pitch_internal_unittest") {
+    testonly = true
     sources = [ "pitch_internal_unittest.cc" ]
     deps = [
       ":vad",
@@ -73,7 +72,8 @@ if (rtc_include_tests) {
     ]
   }
 
-  rtc_cc_test("pole_zero_filter_unittest") {
+  rtc_library("pole_zero_filter_unittest") {
+    testonly = true
     sources = [ "pole_zero_filter_unittest.cc" ]
     deps = [
       ":vad",
@@ -81,33 +81,28 @@ if (rtc_include_tests) {
     ]
   }
 
-  rtc_cc_test("standalone_vad_unittest") {
+  rtc_library("standalone_vad_unittest") {
+    testonly = true
     sources = [ "standalone_vad_unittest.cc" ]
     deps = [
       ":vad",
       "../../../test:fileutils",
       "../../../test:test_support",
     ]
-    data_deps = [ "../../../resources:audio_processing_unittests_data" ]
-    if (is_ios) {
-      deps += [ "../../../resources:audio_processing_unittests_bundle_data" ]
-    }
   }
 
-  rtc_cc_test("vad_audio_proc_unittest") {
+  rtc_library("vad_audio_proc_unittest") {
+    testonly = true
     sources = [ "vad_audio_proc_unittest.cc" ]
     deps = [
       ":vad",
       "../../../test:fileutils",
       "../../../test:test_support",
     ]
-    data_deps = [ "../../../resources:audio_processing_unittests_data" ]
-    if (is_ios) {
-      deps += [ "../../../resources:audio_processing_unittests_bundle_data" ]
-    }
   }
 
-  rtc_cc_test("vad_circular_buffer_unittest") {
+  rtc_library("vad_circular_buffer_unittest") {
+    testonly = true
     sources = [ "vad_circular_buffer_unittest.cc" ]
     deps = [
       ":vad",
@@ -115,16 +110,28 @@ if (rtc_include_tests) {
     ]
   }
 
-  rtc_cc_test("voice_activity_detector_unittest") {
+  rtc_library("voice_activity_detector_unittest") {
+    testonly = true
     sources = [ "voice_activity_detector_unittest.cc" ]
     deps = [
       ":vad",
       "../../../test:fileutils",
       "../../../test:test_support",
     ]
-    data_deps = [ "../../../resources:audio_processing_unittests_data" ]
-    if (is_ios) {
-      deps += [ "../../../resources:audio_processing_unittests_bundle_data" ]
-    }
+  }
+
+  rtc_library("vad_unittests") {
+    testonly = true
+    sources = []
+    deps = [
+      ":gmm_unittest",
+      ":pitch_based_vad_unittest",
+      ":pitch_internal_unittest",
+      ":pole_zero_filter_unittest",
+      ":standalone_vad_unittest",
+      ":vad_audio_proc_unittest",
+      ":vad_circular_buffer_unittest",
+      ":voice_activity_detector_unittest",
+    ]
   }
 }

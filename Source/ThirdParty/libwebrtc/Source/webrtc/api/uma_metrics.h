@@ -224,7 +224,6 @@ enum SdpMungingType {
   kRtpHeaderExtensionAdded = 41,
   kRtpHeaderExtensionModified = 42,
   kCryptex = 43,
-  kRtcpXrRcvrRtt = 44,
   // Audio-related munging.
   kAudioCodecsRemoved = 60,
   kAudioCodecsAdded = 61,

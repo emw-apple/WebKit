@@ -5,10 +5,6 @@ if (USE_APPLE_INTERNAL_SDK)
     add_subdirectory(../../Internal/WebKit/WebKitAdditions ${CMAKE_BINARY_DIR}/WebKitAdditions)
 endif ()
 
-if (WEBKIT_PLATFORM_FEATURE_DEFINES_FILE)
-    webkit_generate_platform_feature_defines_file()
-endif ()
-
 add_subdirectory(bmalloc)
 add_subdirectory(WTF)
 
@@ -38,7 +34,6 @@ endif ()
 if (ENABLE_API_TESTS)
     add_subdirectory(ThirdParty/gtest)
     webkit_scope_target_interface_definitions(gtestFramework)
-    add_subdirectory(ThirdParty/gmock)
 endif ()
 
 if (USE_XDGMIME)

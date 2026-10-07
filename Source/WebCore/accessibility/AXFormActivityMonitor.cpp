@@ -32,19 +32,14 @@
 #include "AXUtilities.h"
 #include "AXObjectCacheInlines.h"
 #include "AccessibilityObject.h"
-#include "Color.h"
-#include "ColorSerialization.h"
-#include "ComposedTreeIterator.h"
 #include "ElementAncestorIteratorInlines.h"
 #include "ElementInlines.h"
 #include "HTMLBodyElement.h"
 #include "HTMLFormControlElement.h"
-#include "HTMLInputElement.h"
+#include "HTMLFormElement.h"
 #include "HTMLLabelElement.h"
 #include "HTMLNames.h"
-#include "HTMLSelectElement.h"
 #include "Logging.h"
-#include "RenderText.h"
 #include "TypedElementDescendantIteratorInlines.h"
 #include "ValidatedFormListedElement.h"
 #include <ranges>
@@ -53,29 +48,11 @@
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuilder.h>
 
+#define AXFORMLOG(...) LOG_WITH_STREAM(AccessibilityFormErrors, stream << makeString(__VA_ARGS__))
+
 namespace WebCore {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(AXFormActivityMonitor);
-
-bool shouldLogFormActivity()
-{
-#if !LOG_DISABLED
-    if (LOG_CHANNEL(AccessibilityFormErrors).state != logChannelStateOff)
-        return true;
-#endif
-    return AXObjectCache::isAppleInternalInstall();
-}
-
-void logFormActivity(const String& message)
-{
-#if !LOG_DISABLED
-    if (LOG_CHANNEL(AccessibilityFormErrors).state != logChannelStateOff) {
-        LOG(AccessibilityFormErrors, "%s", message.utf8());
-        return;
-    }
-#endif
-    RELEASE_LOG(AccessibilityFormErrors, "%" PUBLIC_LOG_STRING, message.utf8());
-}
 
 // How long to keep watching after a submission attempt. Long enough for a server round-trip to come
 // back and render a message, short enough that later, unrelated page changes are not attributed to
@@ -229,26 +206,10 @@ static String messageText(AXCoreObject& object)
     return builder.toString();
 }
 
-// Empty, or invalid by the page's own marking, the browser's validation, or an error detection already found.
-static bool isEmptyOrInvalid(AccessibilityObject& field)
-{
-    if (field.isTextControl() && field.stringValue().isEmpty())
-        return true;
-    if (RefPtr select = dynamicDowncast<HTMLSelectElement>(field.element()); select && select->value().isEmpty())
-        return true;
-    return field.invalidStatusIncludingInferred() != "false"_s;
-}
-
-// Close enough under a field to be about it, rather than about the part of the page around it.
-static constexpr int maximumUncoloredMessageGap = 40;
-
-static bool isDirectlyBelow(const IntRect& messageRect, const IntRect& fieldRect)
-{
-    // A message counts as below the field once it starts past the field's middle, not only past its bottom edge.
-    // |fieldRect| and |messageRect| have been rounded upstream, and on a zoomed-out page, this rounding can actually
-    // make these rects intersect a small amount. We still want to count that as being "directly below".
-    return messageRect.y() >= fieldRect.center().y() && messageRect.y() - fieldRect.maxY() <= maximumUncoloredMessageGap;
-}
+struct FieldBounds {
+    Ref<Element> field;
+    IntRect rect;
+};
 
 // How far from a field a message may sit and still be about it, and what it costs to sit above the field
 // rather than below, or outside the form rather than within it. Sites put the message under the input far
@@ -333,56 +294,16 @@ Seconds AXFormActivityMonitor::quietPeriod() const
     return settleDelay() / 2;
 }
 
-void AXFormActivityMonitor::didAttemptSubmissionWithoutNavigation(Element& container, Element* submitter, Attempt attempt)
+void AXFormActivityMonitor::didAttemptSubmissionWithoutNavigation(HTMLFormElement& form, HTMLFormControlElement* submitter)
 {
-    if (m_container.get() == &container) {
-        // Another attempt at the same fields. Keep what has been found, since those messages are already on screen and
-        // would not be written again, and give the page a full window from now.
-        if (attempt == Attempt::Submission)
-            m_attempt = Attempt::Submission;
-        captureRenderedFields(container);
-        m_submitter = submitter;
-        AXFORMLOG("Another attempt at the watched fields, so restarting the watch as a "_s, m_attempt == Attempt::Submission ? "submission"_s : "possible submission"_s,
-            " and keeping its "_s, m_candidateErrorMessages.size(), " candidate messages."_s);
-        startWatchWindow();
-        return;
-    }
-
-    // A watch that has already found messages is left to report them, rather than lose them to something that may not
-    // have been an attempt at all.
-    if (attempt == Attempt::PossibleSubmission && isWatching() && !m_candidateErrorMessages.isEmpty()) {
-        AXFORMLOG("Ignoring a possible submission elsewhere, since the running watch has already found "_s,
-            m_candidateErrorMessages.size(), " candidate messages."_s);
-        return;
-    }
-
-    AXFORMLOG("Watching for form errors after a "_s, attempt == Attempt::Submission ? "submission"_s : "possible submission"_s,
-        is<HTMLFormElement>(container) ? " in a form"_s : " in a form-like container"_s, ", submitter "_s, !!submitter,
-        ", settle delay "_s, settleDelay().milliseconds(), "ms."_s);
-    m_container = container;
+    AXFORMLOG("Watching for form errors, submitter "_s, !!submitter, ", settle delay "_s, settleDelay().milliseconds(), "ms."_s);
+    m_form = form;
     m_submitter = submitter;
-    m_attempt = attempt;
     m_candidateErrorMessages.clear();
     m_announcedText.clear();
-    m_fieldsRenderedAtAttempt.clear();
     m_changedElements.clear();
     m_changedElementCount = 0;
     m_objectsVisited = 0;
-    captureRenderedFields(container);
-    startWatchWindow();
-}
-
-void AXFormActivityMonitor::captureRenderedFields(Element& container)
-{
-    for (Ref field : CheckedRef { m_cache }->fieldsForErrorPairing(container)) {
-        if (field->renderer())
-            m_fieldsRenderedAtAttempt.add(field);
-    }
-}
-
-void AXFormActivityMonitor::startWatchWindow()
-{
-    m_reportIsPending = false;
     m_watchStartTime = MonotonicTime::now();
     m_lastChangeTime = m_watchStartTime;
     m_watchDeadline = m_watchStartTime + settleDelay() * maximumWatchMultiplier;
@@ -391,12 +312,12 @@ void AXFormActivityMonitor::startWatchWindow()
 
 void AXFormActivityMonitor::didStartLoading(LocalFrame* frame)
 {
-    RefPtr container = m_container.get();
-    if (!container)
+    RefPtr form = m_form.get();
+    if (!form)
         return;
 
-    // Only a load in the frame the watched fields live in means the submission navigated after all.
-    if (!frame || frame != container->document().frame())
+    // Only a load in the frame the watched form lives in means the submission navigated after all.
+    if (!frame || frame != form->document().frame())
         return;
 
     cancel();
@@ -404,77 +325,23 @@ void AXFormActivityMonitor::didStartLoading(LocalFrame* frame)
 
 void AXFormActivityMonitor::cancel()
 {
-    if (m_container) {
-        AXFORMLOG("Cancelling the watch after a "_s, m_attempt == Attempt::Submission ? "submission, so clearing the errors detected in its fields."_s
-            : "possible submission, so keeping any errors already detected."_s);
-    }
-
-    // A load that follows a submission means it went through, so the errors it had are resolved. A load that follows
-    // anything else, like a click that starts a download, may leave the page and its errors exactly where they were.
-    if (RefPtr container = m_container.get(); container && m_attempt == Attempt::Submission)
-        CheckedRef { m_cache }->clearDetectedErrorsForContainer(*container);
+    if (RefPtr form = m_form.get())
+        CheckedRef { m_cache }->clearDetectedErrorsForForm(*form);
 
     m_settleTimer.stop();
-    m_container = nullptr;
+    m_form = nullptr;
     m_submitter = nullptr;
     m_reportIsPending = false;
     m_candidateErrorMessages.clear();
     m_announcedText.clear();
-    m_fieldsRenderedAtAttempt.clear();
     m_changedElements.clear();
     m_changedElementCount = 0;
     m_objectsVisited = 0;
 }
 
-// The reds and oranges that sites give error text in both light and dark appearances, as opposed to the gray, black, blue
-// or green of status, success and hint text. It stops short of the amber and yellow that warnings take.
-static bool isErrorColor(const Color& color)
-{
-    constexpr float lowestErrorHueDegrees = 335;
-    constexpr float highestErrorHueDegrees = 40;
-    constexpr float minimumErrorSaturationPercent = 40;
-    constexpr float minimumErrorLightnessPercent = 20;
-    constexpr float maximumErrorLightnessPercent = 80;
-    constexpr float minimumErrorOpacity = 0.5;
-
-    auto hsla = color.toColorTypeLossy<HSLA<float>>().resolved();
-    if (hsla.alpha < minimumErrorOpacity || hsla.saturation < minimumErrorSaturationPercent)
-        return false;
-    if (hsla.lightness < minimumErrorLightnessPercent || hsla.lightness > maximumErrorLightnessPercent)
-        return false;
-    return hsla.hue >= lowestErrorHueDegrees || hsla.hue <= highestErrorHueDegrees;
-}
-
-// The color a message's visible text is rendered in. Where it has several, like a red "Error:" ahead of the rest in black,
-// an error color wins, since that is what marks the message as one.
-static std::optional<Color> renderedTextColor(Element& message)
-{
-    std::optional<Color> firstColor;
-    for (Ref node : composedTreeDescendants(message)) {
-        RefPtr text = dynamicDowncast<Text>(node.get());
-        if (!text || text->data().containsOnly<isASCIIWhitespace>())
-            continue;
-
-        CheckedPtr renderer = text->renderer();
-        if (!renderer || isVisibilityHidden(renderer->style()))
-            continue;
-
-        auto color = protect(renderer->style())->visitedDependentColor();
-        if (isErrorColor(color))
-            return color;
-        if (!firstColor)
-            firstColor = color;
-    }
-    return firstColor;
-}
-
 static bool couldHoldMessage(Element& element)
 {
     if (is<HTMLFormControlElement>(element) || element.isLink())
-        return false;
-
-    // A field's own text, and text in an editor the page built, is not a message.
-    if (element.isInUserAgentShadowTree() || element.hasEditableStyle())
         return false;
 
     // Text inside a label names a control, not an error message.
@@ -511,11 +378,11 @@ void AXFormActivityMonitor::onChangedContent(AccessibilityObject& object)
     if (!isWatching())
         return;
 
-    // Text nodes have no element of their own, so record the element holding the text, or the host of the shadow root holding it.
+    // Text nodes have no element of their own, so record the element holding the text.
     RefPtr element = object.element();
     if (!element) {
         RefPtr node = object.node();
-        element = node ? node->parentOrShadowHostElement() : nullptr;
+        element = node ? node->parentElement() : nullptr;
     }
     if (element)
         onChangedContent(*element);
@@ -562,25 +429,21 @@ void AXFormActivityMonitor::collectErrorMessagesFrom(AccessibilityObject& object
     RefPtr element = object.element();
     if (!element) {
         RefPtr node = object.node();
-        element = node ? node->parentOrShadowHostElement() : nullptr;
+        element = node ? node->parentElement() : nullptr;
     }
 
-    // A message and the wrapper around it can both arrive separately, as can a component and the parts of its shadow
-    // root. Keep the outermost, which is the whole message, so a field does not end up with the same message attached twice.
+    // A message and the wrapper around it can both arrive separately. Keep the outermost, which is the
+    // whole message, so a field does not end up with the same message attached twice.
     if (element) {
-        for (auto& candidate : m_candidateErrorMessages) {
+        for (const auto& candidate : m_candidateErrorMessages) {
             RefPtr existing = candidate.element.get();
-            if (!existing || !existing->isShadowIncludingInclusiveAncestorOf(*element))
-                continue;
-            // The same element arriving whole, after text inside it arrived on its own, is the whole message.
-            if (existing == element && text.contains(candidate.text))
-                candidate.text = WTF::move(text);
-            return;
+            if (existing && existing->contains(*element))
+                return;
         }
 
         m_candidateErrorMessages.removeAllMatching([&] (const CandidateErrorMessage& candidate) {
             RefPtr existing = candidate.element.get();
-            return existing && element->isShadowIncludingInclusiveAncestorOf(*existing);
+            return existing && element->contains(*existing);
         });
     }
 
@@ -637,7 +500,7 @@ void AXFormActivityMonitor::collectErrorMessagesFromChangedElements()
 
 void AXFormActivityMonitor::settleTimerFired()
 {
-    if (!m_container) {
+    if (!m_form) {
         cancel();
         return;
     }
@@ -681,17 +544,15 @@ void AXFormActivityMonitor::report()
 {
     m_reportIsPending = false;
 
-    RefPtr container = m_container.get();
+    RefPtr form = m_form.get();
     RefPtr submitter = m_submitter.get();
-    auto attempt = m_attempt;
 
     auto announced = std::exchange(m_announcedText, { });
-    auto fieldsRenderedAtAttempt = std::exchange(m_fieldsRenderedAtAttempt, { });
-    m_container = nullptr;
+    m_form = nullptr;
     m_submitter = nullptr;
     m_objectsVisited = 0;
 
-    if (!container)
+    if (!form)
         return;
     CheckedRef { m_cache }->updateDetectedFormErrors();
 
@@ -702,45 +563,26 @@ void AXFormActivityMonitor::report()
     // Repair what the author left out. Each message is paired with the field it most likely belongs to, and
     // that field is given an aria-errormessage relation. Geometry is used to make the pairings, because
     // what makes a sighted user read a message as being about a field is that it appears next to it.
-    auto fields = CheckedRef { m_cache }->fieldsForErrorPairing(*container);
-    // What's known about each field, gathered the same way whatever the attempt was, so the decisions made from it sit in one place.
-    struct FieldInfo {
-        Ref<Element> field;
-        IntRect rect;
-        bool wasRenderedAtAttempt { false };
-        // Unknown for a field that has no accessibility object to ask.
-        std::optional<bool> isEmptyOrInvalid;
-    };
-    Vector<FieldInfo> fieldInfo;
-    fieldInfo.reserveInitialCapacity(fields.size());
+    auto fields = CheckedRef { m_cache }->formFieldsForErrorPairing(*form);
+    Vector<FieldBounds> fieldBounds;
+    fieldBounds.reserveInitialCapacity(fields.size());
     for (auto& field : fields) {
         auto rect = field->boundsInRootViewSpace();
-        if (rect.isEmpty())
-            continue;
-
-        bool wasRenderedAtAttempt = fieldsRenderedAtAttempt.contains(field.get());
-        // Building an object changes what the error count and notifications below can reach, so build one only where the
-        // uncolored-message rule may need the answer, and otherwise ask an object that already exists.
-        RefPtr fieldObject = attempt == Attempt::PossibleSubmission && wasRenderedAtAttempt ? CheckedRef { m_cache }->getOrCreate(field.get()) : CheckedRef { m_cache }->get(field.ptr());
-        std::optional<bool> isFieldEmptyOrInvalid;
-        if (fieldObject)
-            isFieldEmptyOrInvalid = isEmptyOrInvalid(*fieldObject);
-        fieldInfo.append(FieldInfo { field, rect, wasRenderedAtAttempt, isFieldEmptyOrInvalid });
+        if (!rect.isEmpty())
+            fieldBounds.append(FieldBounds { field, rect });
     }
 
     // Deliberately no message or field text in any of this logging. An error message can quote what the
-    // user typed into the field, so only counts, lengths, indices, colors and geometry are recorded.
-    AXFORMLOG("Container has "_s, fields.size(), " fields, "_s, fieldInfo.size(), " with a box."_s);
-    if (shouldLogFormActivity()) {
-        for (size_t fieldIndex = 0; fieldIndex < fieldInfo.size(); ++fieldIndex) {
-            const auto& info = fieldInfo[fieldIndex];
-            RefPtr fieldObject = CheckedRef { m_cache }->get(info.field.ptr());
-            AXFORMLOG("  field "_s, fieldIndex, " role "_s, fieldObject ? roleToString(fieldObject->role()) : String { "none"_s },
-                " bounds "_s, info.rect.x(), ","_s, info.rect.y(), " "_s, info.rect.width(), "x"_s, info.rect.height(),
-                info.wasRenderedAtAttempt ? ", rendered at the attempt"_s : ", not rendered at the attempt"_s,
-                !info.isEmptyOrInvalid ? ", no accessibility object"_s : (*info.isEmptyOrInvalid ? ", empty or invalid"_s : ", filled in and valid"_s));
-        }
+    // user typed into the field, so only counts, lengths, indices and geometry are recorded.
+    AXFORMLOG("Form has "_s, fields.size(), " fields, "_s, fieldBounds.size(), " with a box."_s);
+#if !LOG_DISABLED
+    for (size_t fieldIndex = 0; fieldIndex < fieldBounds.size(); ++fieldIndex) {
+        const auto& bounds = fieldBounds[fieldIndex];
+        RefPtr fieldObject = CheckedRef { m_cache }->get(bounds.field.ptr());
+        AXFORMLOG("  field "_s, fieldIndex, " role "_s, fieldObject ? roleToString(fieldObject->role()) : String { "none"_s },
+            " bounds "_s, bounds.rect.x(), ","_s, bounds.rect.y(), " "_s, bounds.rect.width(), "x"_s, bounds.rect.height());
     }
+#endif
 
     // One message belongs to one field.
     struct Pairing {
@@ -750,85 +592,37 @@ void AXFormActivityMonitor::report()
     };
     // Measured once per message rather than once per pair, since for a message whose outermost element has
     // no box of its own this walks that element's descendants as well.
-    struct MessageInfo {
+    struct MessageBounds {
         size_t candidateIndex;
         IntRect rect;
         bool isInsideForm;
-        std::optional<Color> textColor;
-        bool isErrorColored;
     };
 
-    Vector<MessageInfo> messageInfo;
-    messageInfo.reserveInitialCapacity(candidates.size());
+    Vector<MessageBounds> messageBounds;
+    messageBounds.reserveInitialCapacity(candidates.size());
     for (size_t candidateIndex = 0; candidateIndex < candidates.size(); ++candidateIndex) {
-        auto& candidate = candidates[candidateIndex];
-        RefPtr errorElement = candidate.element.get();
+        RefPtr errorElement = candidates[candidateIndex].element.get();
         if (!errorElement || !errorElement->isConnected())
             continue;
-
-        // A page may reuse one element for a status and then an error, so take what the message says now.
-        if (RefPtr errorObject = CheckedRef { m_cache }->get(*errorElement)) {
-            auto currentText = messageText(*errorObject).simplifyWhiteSpace(isASCIIWhitespace);
-            if (isWorthAnnouncing(currentText) && !currentText.contains(candidate.text))
-                candidate.text = WTF::move(currentText);
-        }
-        auto textColor = renderedTextColor(*errorElement);
-        bool isErrorColored = textColor && isErrorColor(*textColor);
-        messageInfo.append(MessageInfo { candidateIndex, boundsForMessage(*errorElement), container->isShadowIncludingInclusiveAncestorOf(*errorElement), textColor, isErrorColored });
+        messageBounds.append(MessageBounds { candidateIndex, boundsForMessage(*errorElement), form->contains(*errorElement) });
     }
 
-    AXFORMLOG("Considering "_s, messageInfo.size(), " of "_s, candidates.size(), " candidate messages."_s);
-    if (shouldLogFormActivity()) {
-        for (const auto& message : messageInfo) {
-            const auto& candidate = candidates[message.candidateIndex];
-            AXFORMLOG("  candidate "_s, message.candidateIndex, " length "_s, candidate.text.length(),
-                " insideForm "_s, message.isInsideForm, " bounds "_s, message.rect.x(), ","_s, message.rect.y(),
-                " "_s, message.rect.width(), "x"_s, message.rect.height(),
-                " color "_s, message.textColor ? serializationForCSS(*message.textColor) : String { "none"_s },
-                message.isErrorColored ? ", an error color"_s : ", not an error color"_s);
-        }
+    AXFORMLOG("Considering "_s, messageBounds.size(), " of "_s, candidates.size(), " candidate messages."_s);
+#if !LOG_DISABLED
+    for (const auto& message : messageBounds) {
+        AXFORMLOG("  candidate "_s, message.candidateIndex, " length "_s, candidates[message.candidateIndex].text.length(),
+            " insideForm "_s, message.isInsideForm, " bounds "_s, message.rect.x(), ","_s, message.rect.y(),
+            " "_s, message.rect.width(), "x"_s, message.rect.height());
     }
+#endif
 
     Vector<Pairing> pairings;
-    for (const auto& message : messageInfo) {
-        // Status and hint text has to be told apart from errors. In a 2FA form, "We sent a code to 123-456-7891" is not an error
-        // for the code field. An unmistakable attempt to submit, or text in an error color, is evidence enough. Anything else
-        // only counts right under the field nearest to it, if that field was already there when the user acted and they left
-        // it empty or wrong.
-        if (attempt == Attempt::Submission || message.isErrorColored) {
-            AXFORMLOG("  candidate "_s, message.candidateIndex, " may pair with any field near it, "_s,
-                attempt == Attempt::Submission ? "after a submission."_s : "because it is in an error color."_s);
-            for (size_t fieldIndex = 0; fieldIndex < fieldInfo.size(); ++fieldIndex) {
-                if (std::optional affinity = messageFieldAffinity(message.rect, fieldInfo[fieldIndex].rect, message.isInsideForm))
-                    pairings.append(Pairing { fieldIndex, message.candidateIndex, *affinity });
-            }
-            continue;
+    for (size_t fieldIndex = 0; fieldIndex < fieldBounds.size(); ++fieldIndex) {
+        for (const auto& message : messageBounds) {
+            std::optional affinity = messageFieldAffinity(message.rect, fieldBounds[fieldIndex].rect, message.isInsideForm);
+            if (affinity)
+                pairings.append(Pairing { fieldIndex, message.candidateIndex, *affinity });
         }
-
-        std::optional<size_t> nearestFieldIndex;
-        std::optional<int> nearestAffinity;
-        for (size_t fieldIndex = 0; fieldIndex < fieldInfo.size(); ++fieldIndex) {
-            std::optional affinity = messageFieldAffinity(message.rect, fieldInfo[fieldIndex].rect, message.isInsideForm);
-            if (affinity && (!nearestAffinity || *affinity < *nearestAffinity)) {
-                nearestFieldIndex = fieldIndex;
-                nearestAffinity = affinity;
-            }
-        }
-        if (!nearestFieldIndex) {
-            AXFORMLOG("  candidate "_s, message.candidateIndex, " is uncolored after a possible submission, and near no field."_s);
-            continue;
-        }
-
-        const auto& nearestField = fieldInfo[*nearestFieldIndex];
-        bool isBelowNearestField = isDirectlyBelow(message.rect, nearestField.rect);
-        bool isNearestFieldEmptyOrInvalid = nearestField.isEmptyOrInvalid.value_or(false);
-        bool isAccepted = nearestField.wasRenderedAtAttempt && isNearestFieldEmptyOrInvalid && isBelowNearestField;
-        AXFORMLOG("  candidate "_s, message.candidateIndex, " is uncolored after a possible submission, so "_s, isAccepted ? "accepting"_s : "rejecting"_s,
-            " it. It is "_s, isBelowNearestField ? ""_s : "not "_s, "directly below its nearest field "_s, *nearestFieldIndex, ", which was "_s,
-            nearestField.wasRenderedAtAttempt ? ""_s : "not "_s, "rendered at the attempt and is "_s, isNearestFieldEmptyOrInvalid ? ""_s : "not "_s,
-            "empty or invalid."_s);
-        if (isAccepted)
-            pairings.append(Pairing { *nearestFieldIndex, message.candidateIndex, *nearestAffinity });
     }
 
     // Ties are broken by position so the same page always pairs the same way.
@@ -837,51 +631,42 @@ void AXFormActivityMonitor::report()
     });
 
     Vector<bool> fieldTaken;
-    fieldTaken.fill(false, fieldInfo.size());
+    fieldTaken.fill(false, fieldBounds.size());
 
     Vector<bool> candidateTaken;
     candidateTaken.fill(false, candidates.size());
 
-    Vector<Pairing> acceptedPairings;
+    Vector<AXObjectCache::DetectedFormErrorPairing> detectedErrors;
+    Vector<String> pairedText;
     for (const auto& pairing : pairings) {
-        if (fieldTaken[pairing.fieldIndex] || candidateTaken[pairing.candidateIndex] || !candidates[pairing.candidateIndex].element)
+        if (fieldTaken[pairing.fieldIndex] || candidateTaken[pairing.candidateIndex])
+            continue;
+
+        RefPtr errorElement = candidates[pairing.candidateIndex].element.get();
+        if (!errorElement)
             continue;
 
         fieldTaken[pairing.fieldIndex] = true;
         candidateTaken[pairing.candidateIndex] = true;
-        acceptedPairings.append(pairing);
+
+        auto& field = fieldBounds[pairing.fieldIndex].field;
+        const auto& text = candidates[pairing.candidateIndex].text;
+        detectedErrors.append({ .field = field, .message = errorElement.releaseNonNull() });
+        if (!pairedText.contains(text))
+            pairedText.append(text);
 
         AXFORMLOG("  paired candidate "_s, pairing.candidateIndex, " with field "_s, pairing.fieldIndex,
             ", affinity "_s, pairing.affinity);
     }
 
-    if (shouldLogFormActivity()) {
-        for (const auto& message : messageInfo) {
-            if (!candidateTaken[message.candidateIndex])
-                AXFORMLOG("  candidate "_s, message.candidateIndex, " paired with no field."_s);
-        }
+#if !LOG_DISABLED
+    for (const auto& message : messageBounds) {
+        if (!candidateTaken[message.candidateIndex])
+            AXFORMLOG("  candidate "_s, message.candidateIndex, " paired with no field."_s);
     }
-
-    // Closeness decides which message goes with which field, but the user receives them in the order the fields come on the page.
-    std::ranges::sort(acceptedPairings, [&] (const Pairing& a, const Pairing& b) {
-        return is_lt(treeOrder<ComposedTree>(fieldInfo[a.fieldIndex].field.get(), fieldInfo[b.fieldIndex].field.get()));
-    });
-
-    Vector<AXObjectCache::DetectedFormErrorPairing> detectedErrors;
-    Vector<String> pairedText;
-    for (const auto& pairing : acceptedPairings) {
-        RefPtr errorElement = candidates[pairing.candidateIndex].element.get();
-        if (!errorElement)
-            continue;
-
-        detectedErrors.append({ .field = fieldInfo[pairing.fieldIndex].field, .message = errorElement.releaseNonNull() });
-        const auto& text = candidates[pairing.candidateIndex].text;
-        if (!pairedText.contains(text))
-            pairedText.append(text);
-    }
+#endif
 
     bool detectedAnyError = !detectedErrors.isEmpty();
-    RefPtr<Element> firstPairedField = detectedAnyError ? detectedErrors[0].field.ptr() : nullptr;
     if (detectedAnyError)
         CheckedRef { m_cache }->addDetectedFormErrors(WTF::move(detectedErrors));
 
@@ -916,28 +701,20 @@ void AXFormActivityMonitor::report()
 
     unsigned errorFieldCount = 0;
     for (auto& field : fields) {
-        RefPtr fieldObject = CheckedRef { m_cache }->getOrCreate(field.get());
-        if (fieldObject && !fieldObject->isIgnored() && fieldObject->invalidStatusIncludingInferred() != "false"_s)
+        RefPtr fieldObject = CheckedRef { m_cache }->get(field.ptr());
+        if (fieldObject && fieldObject->invalidStatusIncludingInferred() != "false"_s)
             ++errorFieldCount;
     }
 
-    // Post on the control the user activated, falling back to the form itself for an implicit submission, and to a
-    // field that was paired when the page has replaced the control while it checked the fields.
-    RefPtr<AccessibilityObject> target;
-    for (RefPtr element : { submitter, container, firstPairedField }) {
-        target = element ? CheckedRef { m_cache }->getOrCreate(*element) : nullptr;
-        if (target)
-            break;
-    }
+    // Post on the control the user activated so the assistive technology can reach the rest of the
+    // form through AXFormOwner, falling back to the form itself for an implicit submission.
+    Ref<Element> targetElement = submitter ? static_cast<Element&>(*submitter) : static_cast<Element&>(*form);
+    RefPtr target = CheckedRef { m_cache }->getOrCreate(targetElement.get());
     if (!target)
         return;
 
-    // Pressing Enter in a text field is an attempt too, but that field is not a button to come back to.
-    RefPtr submitterInput = dynamicDowncast<HTMLInputElement>(submitter.get());
-    bool targetIsSubmitter = submitter && submitter == target->element() && !(submitterInput && submitterInput->isTextField());
-
-    AXFORMLOG("Posting PossibleFormValidationError with errorFieldCount "_s, errorFieldCount, targetIsSubmitter ? ", on the button the user pressed."_s : "."_s);
-    CheckedRef { m_cache }->postPossibleFormValidationErrorNotification(*target, WTF::move(unannouncedText), errorFieldCount, targetIsSubmitter);
+    AXFORMLOG("Posting PossibleFormValidationError with errorFieldCount "_s, errorFieldCount, "."_s);
+    CheckedRef { m_cache }->postPossibleFormValidationErrorNotification(*target, WTF::move(unannouncedText), errorFieldCount);
 }
 
 } // namespace WebCore

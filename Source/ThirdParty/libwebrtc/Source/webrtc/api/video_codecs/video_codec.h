@@ -17,7 +17,6 @@
 #include <optional>
 #include <string>
 
-#include "absl/strings/string_view.h"
 #include "api/video/video_codec_constants.h"
 #include "api/video/video_codec_type.h"
 #include "api/video_codecs/scalability_mode.h"
@@ -110,7 +109,7 @@ struct VideoCodecAV1 {
 
 // Translates from name of codec to codec type and vice versa.
 RTC_EXPORT const char* CodecTypeToPayloadString(VideoCodecType type);
-RTC_EXPORT VideoCodecType PayloadStringToCodecType(absl::string_view name);
+RTC_EXPORT VideoCodecType PayloadStringToCodecType(const std::string& name);
 
 union VideoCodecUnion {
   VideoCodecVP8 VP8;

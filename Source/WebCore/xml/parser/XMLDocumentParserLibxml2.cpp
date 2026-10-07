@@ -625,8 +625,7 @@ RefPtr<XMLParserContext> XMLParserContext::createMemoryParser(xmlSAXHandlerPtr h
     initializeXMLParser();
 
     // appendFragmentSource() checks that the length doesn't overflow an int.
-    auto chunkCharacters = byteCast<char>(chunk.span());
-    xmlParserCtxtPtr parser = xmlCreateMemoryParserCtxt(chunkCharacters.data(), chunkCharacters.size());
+    xmlParserCtxtPtr parser = xmlCreateMemoryParserCtxt(chunk.legacyCStringPointer(), chunk.length());
 
     if (!parser)
         return nullptr;

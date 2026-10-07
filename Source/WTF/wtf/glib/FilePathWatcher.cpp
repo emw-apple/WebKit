@@ -27,7 +27,6 @@
 #include "FilePathWatcher.h"
 
 #include <wtf/TZoneMallocInlines.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GUniquePtr.h>
 #include <wtf/text/WTFString.h>
 
@@ -42,7 +41,7 @@ FilePathWatcher::FilePathWatcher(const String& path, Function<void()>&& handler)
         return;
 
     auto pathUtf8 = path.utf8();
-    GRefPtr file = gFileNewForPath(pathUtf8);
+    GRefPtr file = adoptGRef(g_file_new_for_path(pathUtf8.legacyCStringPointer()));
     GUniqueOutPtr<GError> error;
     m_monitor = adoptGRef(g_file_monitor_file(file.get(), G_FILE_MONITOR_WATCH_HARD_LINKS, nullptr, &error.outPtr()));
     if (!m_monitor) {

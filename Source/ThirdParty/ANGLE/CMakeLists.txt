@@ -250,7 +250,7 @@ if (USE_ANGLE_EGL OR ENABLE_WEBGL)
         endif ()
 
         add_library(ANGLE-shared SHARED ${_angle_shared_objects})
-        set(_angle_shared_libraries
+        target_link_libraries(ANGLE-shared PRIVATE
             ZLIB::ZLIB
             ${CMAKE_DL_LIBS}
             "-framework CoreGraphics"
@@ -260,9 +260,8 @@ if (USE_ANGLE_EGL OR ENABLE_WEBGL)
             "-framework QuartzCore"
         )
         if (WEBKIT_SDK_IS_MACOS)
-            list(APPEND _angle_shared_libraries "-framework IOKit")
+            target_link_libraries(ANGLE-shared PRIVATE "-framework IOKit")
         endif ()
-        target_link_libraries(ANGLE-shared PRIVATE ${_angle_shared_libraries})
 
         # FIXME: Only correct for iOS-family platforms. On macOS the Xcode build
         # resolves NORMAL_UMBRELLA_FRAMEWORKS_DIR to
@@ -280,19 +279,6 @@ if (USE_ANGLE_EGL OR ENABLE_WEBGL)
         endif ()
 
         _WEBKIT_ADD_CODE_SIGN(ANGLE-shared)
-
-        # The ANGLE test executables use internal symbols that libANGLE-shared does
-        # not export, so they link this archive of the same objects instead. Like
-        # libANGLE.a in the Xcode build, but it also contains the public gl*/egl*
-        # entry points.
-        add_library(ANGLE-static STATIC EXCLUDE_FROM_ALL ${_angle_shared_objects})
-        set_target_properties(ANGLE-static PROPERTIES
-            OUTPUT_NAME ANGLE
-            LINKER_LANGUAGE CXX
-        )
-        target_include_directories(ANGLE-static INTERFACE ${ANGLE_PRIVATE_INCLUDE_DIRECTORIES})
-        target_compile_definitions(ANGLE-static INTERFACE ${ANGLE_DEFINITIONS} ${_angle_prototypes})
-        target_link_libraries(ANGLE-static INTERFACE ${_angle_shared_libraries})
     endif ()
 else ()
     add_library(ANGLE ${ANGLE_LIBRARY_TYPE} ${ANGLE_SOURCES})
@@ -364,8 +350,3 @@ endif ()
 target_include_directories(ANGLEFramework INTERFACE ${ANGLE_FRAMEWORK_HEADERS_DIR} ${ANGLE_HEADERS_DIR})
 
 add_library(ANGLE::ANGLE ALIAS ANGLEFramework)
-
-# gtest is added after ANGLE (Source/CMakeLists.txt), so check the option, not the target.
-if (is_mac AND ENABLE_API_TESTS AND TARGET ANGLE-static)
-    include(Tests.cmake)
-endif ()

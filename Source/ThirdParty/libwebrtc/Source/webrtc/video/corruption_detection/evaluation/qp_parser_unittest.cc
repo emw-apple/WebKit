@@ -8,13 +8,14 @@
  * be found in the AUTHORS file in the root of the source tree.
  */
 
+#include "video/corruption_detection/evaluation/qp_parser.h"
+
 #include <cstdint>
 #include <optional>
 
 #include "api/video/video_codec_type.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
-#include "test/qp_parser_for_test.h"
 
 namespace webrtc {
 namespace {
@@ -118,28 +119,28 @@ constexpr uint8_t kQpSpatialLayer2 = 241u;
 constexpr uint8_t kQpSpatialLayer3 = 241u;
 
 TEST(QpParserTest, ParseQpVp8Error) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   std::optional<uint32_t> qp =
       parser.Parse(kVideoCodecVP8, 0, kWronglyCodedFrame);
   EXPECT_EQ(qp, std::nullopt);
 }
 
 TEST(QpParserTest, ParseQpVp8ThroughTemporalUnits) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   std::optional<uint32_t> qp =
       parser.Parse(kVideoCodecVP8, 0, kCodedFrameVp8Qp25);
   EXPECT_THAT(qp, 25u);
 }
 
 TEST(QpParserTest, ParseQpVp9ThroughTemporalUnits) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   std::optional<uint32_t> qp =
       parser.Parse(kVideoCodecVP9, 0, kCodedFrameVp9Qp96);
   EXPECT_THAT(qp, 96u);
 }
 
 TEST(QpParserTest, ParseQpH264ThroughTemporalUnits) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   std::optional<uint32_t> qp = parser.Parse(VideoCodecType::kVideoCodecH264, 0,
                                             kCodedFrameH264SpsPpsIdrQp38);
   EXPECT_THAT(qp, 38u);
@@ -149,14 +150,14 @@ TEST(QpParserTest, ParseQpH264ThroughTemporalUnits) {
 }
 
 TEST(QpParserTest, ParseQpAv1KeyFrame) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   std::optional<uint32_t> qp =
       parser.Parse(kVideoCodecAV1, 0, kCodedFrameAv1Frame1Qp81);
   EXPECT_THAT(qp, 81u);
 }
 
 TEST(QpParserTest, ParseQpAv1DeltaFrameError) {
-  QpParserForTest parser_error;
+  GenericQpParser parser_error;
   // When the first frame is skipped the `sequence_header` is not set, hence QP
   // must be unattainable.
   std::optional<uint32_t> qp =
@@ -165,7 +166,7 @@ TEST(QpParserTest, ParseQpAv1DeltaFrameError) {
 }
 
 TEST(QpParserTest, ParseQpAv1DeltaFrameProper) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   ASSERT_TRUE(
       parser.Parse(kVideoCodecAV1, 0, kCodedFrameAv1Frame1Qp81).has_value());
   std::optional<uint32_t> qp =
@@ -174,7 +175,7 @@ TEST(QpParserTest, ParseQpAv1DeltaFrameProper) {
 }
 
 TEST(QpParserTest, ParseQpAv1SvcL3T1SpatialLayer1) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   // `operating_point` = 2 would get the QP for the lowest resolution.
   std::optional<uint32_t> qp =
       parser.Parse(kVideoCodecAV1, 0, kL3T1Av1TemporaUnit,
@@ -183,7 +184,7 @@ TEST(QpParserTest, ParseQpAv1SvcL3T1SpatialLayer1) {
 }
 
 TEST(QpParserTest, ParseQpAv1SvcL3T1SpatialLayer2) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   // `operating_point` = 1 would get the QP for mid resolution.
   std::optional<uint32_t> qp =
       parser.Parse(kVideoCodecAV1, 0, kL3T1Av1TemporaUnit,
@@ -192,20 +193,12 @@ TEST(QpParserTest, ParseQpAv1SvcL3T1SpatialLayer2) {
 }
 
 TEST(QpParserTest, ParseQpAv1SvcL3T1SpatialLayer3) {
-  QpParserForTest parser;
+  GenericQpParser parser;
   // `operating_point` = 0 would get the QP for the highest resolution.
   std::optional<uint32_t> qp =
       parser.Parse(kVideoCodecAV1, 0, kL3T1Av1TemporaUnit,
                    /*operating_point=*/0);
   EXPECT_THAT(qp, kQpSpatialLayer3);
-}
-
-TEST(QpParserTest, ParseByCodecName) {
-  QpParserForTest parser;
-  EXPECT_THAT(parser.Parse("VP8", 0, kCodedFrameVp8Qp25), 25u);
-  EXPECT_THAT(parser.Parse("VP9", 0, kCodedFrameVp9Qp96), 96u);
-  EXPECT_THAT(parser.Parse("H264", 0, kCodedFrameH264SpsPpsIdrQp38), 38u);
-  EXPECT_THAT(parser.Parse("AV1", 0, kCodedFrameAv1Frame1Qp81), 81u);
 }
 
 }  // namespace

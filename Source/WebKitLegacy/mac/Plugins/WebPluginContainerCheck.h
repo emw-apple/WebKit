@@ -27,7 +27,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <wtf/RetainPtr.h>
 
 @class NSURLRequest;
 @class NSString;
@@ -43,14 +42,14 @@
 
 @interface WebPluginContainerCheck : NSObject
 {
-    RetainPtr<NSURLRequest> _request;
-    RetainPtr<NSString> _target;
+    NSURLRequest *_request;
+    NSString *_target;
     id <WebPluginContainerCheckController> _controller;
     id _resultObject;
     SEL _resultSelector;
     id _contextInfo;
     BOOL _done;
-    RetainPtr<WebPolicyDecisionListener> _listener;
+    WebPolicyDecisionListener *_listener;
 }
 
 + (id)checkWithRequest:(NSURLRequest *)request target:(NSString *)target resultObject:(id)obj selector:(SEL)selector controller:(id <WebPluginContainerCheckController>)controller contextInfo:(id)/*optional*/contextInfo; 

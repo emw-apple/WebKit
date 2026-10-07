@@ -8,7 +8,6 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -18,7 +17,6 @@
 #include "api/rtp_parameters.h"
 #include "api/test/video/function_video_decoder_factory.h"
 #include "api/test/video/function_video_encoder_factory.h"
-#include "api/units/timestamp.h"
 #include "api/video/color_space.h"
 #include "api/video/video_frame.h"
 #include "api/video/video_rotation.h"
@@ -37,7 +35,6 @@
 #include "test/call_test.h"
 #include "test/frame_generator_capturer.h"
 #include "test/gtest.h"
-#include "test/time_controller/simulated_time_controller.h"
 #include "test/video_test_constants.h"
 #include "video/config/video_encoder_config.h"
 
@@ -48,9 +45,7 @@ constexpr RtpHeaderExtensionId kVideoRotationExtensionId(2);
 
 class CodecEndToEndTest : public test::CallTest {
  public:
-  CodecEndToEndTest()
-      : CallTest(std::make_unique<GlobalSimulatedTimeController>(
-            /*start_time=*/Timestamp::Seconds(1))) {
+  CodecEndToEndTest() {
     RegisterRtpExtension(
         RtpExtension(RtpExtension::kColorSpaceUri, kColorSpaceExtensionId));
     RegisterRtpExtension(RtpExtension(RtpExtension::kVideoRotationUri,
@@ -79,7 +74,7 @@ class CodecObserver : public test::EndToEndTest,
         frame_counter_(0) {}
 
   void PerformTest() override {
-    EXPECT_TRUE(Wait(time_controller()))
+    EXPECT_TRUE(Wait())
         << "Timed out while waiting for enough frames to be decoded.";
   }
 
@@ -218,9 +213,7 @@ TEST_F(CodecEndToEndTest,
 class EndToEndTestH264 : public test::CallTest,
                          public ::testing::WithParamInterface<std::string> {
  public:
-  EndToEndTestH264()
-      : CallTest(std::make_unique<GlobalSimulatedTimeController>(
-            /*start_time=*/Timestamp::Seconds(1))) {
+  EndToEndTestH264() {
     field_trials().Set("WebRTC-SpsPpsIdrIsH264Keyframe", GetParam());
     RegisterRtpExtension(RtpExtension(RtpExtension::kVideoRotationUri,
                                       kVideoRotationExtensionId));

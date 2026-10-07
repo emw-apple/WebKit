@@ -29,7 +29,6 @@
 #import "WebBackForwardList.h"
 #import "WebHistoryItemPrivate.h"
 #import <wtf/RefPtr.h>
-#import <wtf/RetainPtr.h>
 #import <wtf/Vector.h>
 #import <wtf/text/WTFString.h>
 
@@ -65,11 +64,5 @@ extern void WKNotifyHistoryItemChanged();
 
     NSTimeInterval _lastVisitedTime;
     std::unique_ptr<Vector<String>> _redirectURLs;
-}
-@end
-
-@interface WebHistoryItem () {
-@package
-    RetainPtr<WebHistoryItemPrivate> _private;
 }
 @end

@@ -280,9 +280,7 @@ template<typename CharacterType> std::optional<ContentSecurityPolicySourceList::
     if (buffer.atEnd())
         return std::nullopt;
 
-    auto token = buffer.stringViewOfCharactersRemaining();
-
-    if (equalIgnoringASCIICase(token, "'none'"_s))
+    if (skipExactlyIgnoringASCIICase(buffer, "'none'"_s))
         return std::nullopt;
 
     Source source;
@@ -292,7 +290,7 @@ template<typename CharacterType> std::optional<ContentSecurityPolicySourceList::
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'strict-dynamic'"_s)
+    if (skipExactlyIgnoringASCIICase(buffer, "'strict-dynamic'"_s)
         && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)
         && (m_directiveName == ContentSecurityPolicyDirectiveNames::scriptSrc
             || m_directiveName == ContentSecurityPolicyDirectiveNames::scriptSrcElem || m_directiveName == ContentSecurityPolicyDirectiveNames::defaultSrc)) {
@@ -302,53 +300,53 @@ template<typename CharacterType> std::optional<ContentSecurityPolicySourceList::
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'self'"_s)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'self'"_s)) {
         m_allowSelf = !m_allowNonParserInsertedScripts;
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'unsafe-inline'"_s) && !isRestrictedDirectiveForMode(m_directiveName, m_contentSecurityPolicyModeForExtension)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'unsafe-inline'"_s) && !isRestrictedDirectiveForMode(m_directiveName, m_contentSecurityPolicyModeForExtension)) {
         m_allowInline = !m_allowNonParserInsertedScripts;
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'unsafe-eval'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'unsafe-eval'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
         m_allowEval = true;
         m_allowWasmEval = true;
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'trusted-types-eval'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'trusted-types-eval'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
         m_allowTrustedEval = true;
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'wasm-unsafe-eval'"_s)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'wasm-unsafe-eval'"_s)) {
         m_allowWasmEval = true;
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'unsafe-hashes'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'unsafe-hashes'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
         m_allowUnsafeHashes = true;
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'report-sample'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'report-sample'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
         m_reportSample = true;
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'report-sha256'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'report-sha256'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
         m_reportHash |= static_cast<HashAlgorithmSet>(ResourceCryptographicDigest::Algorithm::SHA256);
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'report-sha384'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'report-sha384'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
         m_reportHash |= static_cast<HashAlgorithmSet>(ResourceCryptographicDigest::Algorithm::SHA384);
         return source;
     }
 
-    if (equalIgnoringASCIICase(token, "'report-sha512'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
+    if (skipExactlyIgnoringASCIICase(buffer, "'report-sha512'"_s) && extensionModeAllowsKeywordsForDirective(m_contentSecurityPolicyModeForExtension, m_directiveName)) {
         m_reportHash |= static_cast<HashAlgorithmSet>(ResourceCryptographicDigest::Algorithm::SHA512);
         return source;
     }

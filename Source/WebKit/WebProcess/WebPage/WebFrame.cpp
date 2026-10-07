@@ -320,6 +320,7 @@ FrameInfoData WebFrame::info() const
     }
 
     return {
+        isMainFrame(),
         frameType,
         // FIXME: This should use the full request.
         ResourceRequest(url()),
@@ -329,43 +330,38 @@ FrameInfoData WebFrame::info() const
         frameID(),
         page ? std::optional { page->webPageProxyIdentifier() } : std::nullopt,
         document ? std::optional { document->identifier() } : std::nullopt,
+        getCurrentProcessID(),
         isFocused(),
         loadingFrame && loadingFrame->loader().errorOccurredInLoading(),
         WTF::move(metrics)
     };
 }
 
-std::optional<FrameTreeNodeData> WebFrame::frameTreeData() const
+FrameTreeNodeData WebFrame::frameTreeData() const
 {
+    FrameTreeNodeData data {
+        info(),
+        { },
+        { }
+    };
+
     if (!m_coreFrame) {
         ASSERT_NOT_REACHED();
-        return std::nullopt;
+        return data;
     }
 
-    Vector<FrameTreeNodeData> children;
-    children.reserveInitialCapacity(m_coreFrame->tree().childCount());
+    data.children.reserveInitialCapacity(m_coreFrame->tree().childCount());
+
     for (RefPtr child = m_coreFrame->tree().firstChild(); child; child = child->tree().nextSibling()) {
         RefPtr childWebFrame = WebFrame::fromCoreFrame(*child);
         if (!childWebFrame) {
             ASSERT_NOT_REACHED();
             continue;
         }
-        auto data = childWebFrame->frameTreeData();
-        if (!data) {
-            ASSERT_NOT_REACHED();
-            continue;
-        }
-        children.append(WTF::move(*data));
+        data.children.append(childWebFrame->frameTreeData());
     }
 
-    RefPtr page = m_coreFrame->page();
-
-    return FrameTreeNodeData {
-        info(),
-        WTF::move(children),
-        page ? page->mainFrameURL() : URL(),
-        getCurrentProcessID()
-    };
+    return data;
 }
 
 void WebFrame::invalidate()
@@ -557,14 +553,6 @@ void WebFrame::destroyProvisionalFrame()
     }
 }
 
-void WebFrame::updateSandboxFlags(SandboxFlags sandboxFlags)
-{
-    if (RefPtr localFrame = coreLocalFrame())
-        localFrame->updateSandboxFlags(sandboxFlags, Frame::NotifyUIProcess::No);
-    if (RefPtr provisionalFrame = m_provisionalFrame)
-        provisionalFrame->updateSandboxFlags(sandboxFlags, Frame::NotifyUIProcess::No);
-}
-
 void WebFrame::commitProvisionalFrame()
 {
     RefPtr localFrame = std::exchange(m_provisionalFrame, nullptr);
@@ -640,9 +628,6 @@ void WebFrame::removeFromTree()
 
     if (RefPtr client = localFrameLoaderClient())
         client->removeStorageAccess();
-
-    if (RefPtr localFrame = dynamicDowncast<LocalFrame>(*coreFrame))
-        localFrame->loader().closeURL();
 
     // Instrumentation is added in createSubframe()/createProvisionalFrame() and normally removed in
     // detachedFromParent2(). This removal path (a remote parent removing the frame ->
@@ -742,19 +727,14 @@ void WebFrame::didReceivePolicyDecision(PolicyListenerIdentifier listenerID, Pol
     // any other, and m_policyDocumentLoader is its own. A new window skips it too, since its navigation state
     // belongs to the window being opened rather than to this frame.
     if (policyDecision.policyAction != PolicyAction::Download && policyCheck.kind != PolicyCheckKind::NewWindow) {
-        if (RefPtr localFrame = m_provisionalFrame ? m_provisionalFrame.get() : coreLocalFrame()) {
+        if (RefPtr localFrame = dynamicDowncast<LocalFrame>(m_coreFrame.get())) {
             auto& loader = localFrame->loader();
             if (RefPtr policyDocumentLoader = loader.policyDocumentLoader()) {
                 if (policyDecision.navigationID)
                     policyDocumentLoader->setNavigationID(*policyDecision.navigationID);
                 policyDocumentLoader->setIsOriginKeyedFromUIProcess(policyDecision.isOriginKeyed);
-                if (forNavigationAction)
-                    policyDocumentLoader->setUnpartitionedStorageSite(WTF::move(policyDecision.unpartitionedStorageSite));
-            } else if (RefPtr provisionalDocumentLoader = loader.provisionalDocumentLoader()) {
+            } else if (RefPtr provisionalDocumentLoader = loader.provisionalDocumentLoader())
                 provisionalDocumentLoader->setIsOriginKeyedFromUIProcess(policyDecision.isOriginKeyed);
-                if (forNavigationAction)
-                    provisionalDocumentLoader->setUnpartitionedStorageSite(WTF::move(policyDecision.unpartitionedStorageSite));
-            }
         }
     }
 
@@ -1414,7 +1394,7 @@ void WebFrame::updateLocalFrameRect(WebCore::LocalFrame& localFrame, WebCore::In
         frameView->setExposedContentRect(FloatRect { { }, frameView->size() });
 #endif
 
-    if (oldRect.size() == newRect.size())
+    if (!rectChanged)
         return;
 
     if (RefPtr drawingArea = m_page ? m_page->drawingArea() : nullptr) {

@@ -711,20 +711,18 @@ LValue Output::select(LValue value, LValue left, LValue right, SelectPredictabil
     LBasicBlock leftTakenBlock = newBlock();
     LBasicBlock rightTakenBlock = newBlock();
 
-    m_block->setSuccessors(
+    m_block->appendNewControlValue(
+        m_proc, B3::Branch, origin(), value,
         FrequentedBlock(leftTakenBlock, predictability != SelectPredictability::RightLikely ? FrequencyClass::Normal : FrequencyClass::Rare),
         FrequentedBlock(rightTakenBlock, predictability != SelectPredictability::LeftLikely ? FrequencyClass::Normal : FrequencyClass::Rare));
-    m_block->appendNew<Value>(m_proc, B3::Branch, origin(), value);
 
     LValue phi = continuation->appendNew<B3::Value>(m_proc, B3::Phi, left->type(), origin());
 
     leftTakenBlock->appendNew<B3::UpsilonValue>(m_proc, origin(), left, phi);
-    leftTakenBlock->setSuccessors(B3::FrequentedBlock(continuation));
-    leftTakenBlock->appendNew<Value>(m_proc, B3::Jump, origin());
+    leftTakenBlock->appendNewControlValue(m_proc, B3::Jump, origin(), B3::FrequentedBlock(continuation));
 
     rightTakenBlock->appendNew<B3::UpsilonValue>(m_proc, origin(), right, phi);
-    rightTakenBlock->setSuccessors(B3::FrequentedBlock(continuation));
-    rightTakenBlock->appendNew<Value>(m_proc, B3::Jump, origin());
+    rightTakenBlock->appendNewControlValue(m_proc, B3::Jump, origin(), B3::FrequentedBlock(continuation));
 
     m_block = continuation;
     return phi;
@@ -781,8 +779,7 @@ LValue Output::atomicStrongCAS(LValue expected, LValue newValue, TypedPointer po
 
 void Output::jump(LBasicBlock destination)
 {
-    m_block->setSuccessors(B3::FrequentedBlock(destination));
-    m_block->appendNew<Value>(m_proc, B3::Jump, origin());
+    m_block->appendNewControlValue(m_proc, B3::Jump, origin(), B3::FrequentedBlock(destination));
 }
 
 void Output::branch(LValue condition, LBasicBlock taken, Weight takenWeight, LBasicBlock notTaken, Weight notTakenWeight)
@@ -792,10 +789,10 @@ void Output::branch(LValue condition, LBasicBlock taken, Weight takenWeight, LBa
         return;
     }
 
-    m_block->setSuccessors(
+    m_block->appendNewControlValue(
+        m_proc, B3::Branch, origin(), condition,
         FrequentedBlock(taken, takenWeight.frequencyClass()),
         FrequentedBlock(notTaken, notTakenWeight.frequencyClass()));
-    m_block->appendNew<Value>(m_proc, B3::Branch, origin(), condition);
 }
 
 void Output::check(LValue condition, WeightedTarget taken, Weight notTakenWeight)
@@ -812,8 +809,7 @@ void Output::check(LValue condition, WeightedTarget taken)
 
 void Output::ret(LValue value)
 {
-    m_block->clearSuccessors();
-    m_block->appendNew<Value>(m_proc, B3::Return, origin(), value);
+    m_block->appendNewControlValue(m_proc, B3::Return, origin(), value);
 }
 
 void Output::verify(LValue value)
@@ -826,8 +822,7 @@ void Output::verify(LValue value)
 
 void Output::unreachable()
 {
-    m_block->clearSuccessors();
-    m_block->appendNew<Value>(m_proc, B3::Oops, origin());
+    m_block->appendNewControlValue(m_proc, B3::Oops, origin());
 }
 
 void Output::appendSuccessor(WeightedTarget target)
@@ -862,8 +857,7 @@ PatchpointValue* Output::patchpoint(LType type)
 
 void Output::trap()
 {
-    m_block->clearSuccessors();
-    m_block->appendNew<Value>(m_proc, B3::Oops, origin());
+    m_block->appendNewControlValue(m_proc, B3::Oops, origin());
 }
 
 ValueFromBlock Output::anchor(LValue value)

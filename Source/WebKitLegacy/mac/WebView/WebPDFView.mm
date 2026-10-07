@@ -100,7 +100,7 @@ extern "C" NSString *_NSPathForSystemFramework(NSString *framework);
 // WebPDFPrefUpdatingProxy is a class that forwards everything it gets to a target and updates the PDF viewing prefs
 // after each of those messages.  We use it as a way to hook all the places that the PDF viewing attrs change.
 @interface WebPDFPrefUpdatingProxy : NSProxy {
-    __weak WebPDFView *view;
+    WebPDFView *view;
 }
 - (id)initWithView:(WebPDFView *)view;
 @end
@@ -194,7 +194,14 @@ static BOOL _PDFSelectionsAreEqual(PDFSelection *selectionA, PDFSelection *selec
 
 - (void)dealloc
 {
-    [PDFSubview setDelegate:nil];
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [dataSource release];
+    RetainPtr pdfSubview = PDFSubview;
+    [pdfSubview setDelegate:nil];
+    [pdfSubview release];
+    SUPPRESS_UNRETAINED_ARG [path release];
+    SUPPRESS_UNRETAINED_ARG [PDFSubviewProxy release];
+    SUPPRESS_UNRETAINED_ARG [textMatches release];
     [super dealloc];
 }
 
@@ -305,7 +312,7 @@ static BOOL _PDFSelectionsAreEqual(PDFSelection *selectionA, PDFSelection *selec
     if (self) {
         [self setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
         
-        PDFSubview = adoptNS([[[[self class] _PDFViewClass] alloc] initWithFrame:frame]);
+        PDFSubview = [[[[self class] _PDFViewClass] alloc] initWithFrame:frame];
 
         ASSERT(PDFSubview);
         
@@ -317,7 +324,7 @@ static BOOL _PDFSelectionsAreEqual(PDFSelection *selectionA, PDFSelection *selec
         written = NO;
         // Messaging this proxy is the same as messaging PDFSubview, with the side effect that the
         // PDF viewing defaults are updated afterwards
-        PDFSubviewProxy = adoptNS((PDFView *)[[WebPDFPrefUpdatingProxy alloc] initWithView:self]);
+        PDFSubviewProxy = (PDFView *)[[WebPDFPrefUpdatingProxy alloc] initWithView:self];
     }
     
     return self;
@@ -558,7 +565,7 @@ static BOOL _PDFSelectionsAreEqual(PDFSelection *selectionA, PDFSelection *selec
     if (dataSource == ds)
         return;
 
-    dataSource = ds;
+    dataSource = [ds retain];
     
     // FIXME: There must be some better place to put this. There is no comment in ChangeLog
     // explaining why it's in this method.
@@ -644,7 +651,7 @@ static BOOL _PDFSelectionsAreEqual(PDFSelection *selectionA, PDFSelection *selec
 
 - (NSUInteger)countMatchesForText:(NSString *)string inDOMRange:(DOMRange *)range options:(WebFindOptions)options limit:(NSUInteger)limit markMatches:(BOOL)markMatches
 {
-    if (range && !containsCrossingDocumentBoundaries(makeSimpleRange(*protect(core(range))), *protect(protect(core([protect(dataSource) webFrame]))->document())))
+    if (range && !containsCrossingDocumentBoundaries(makeSimpleRange(*core(range)), *core([protect(dataSource) webFrame])->document()))
         return 0;
 
     RetainPtr<PDFSelection> previousMatch;
@@ -995,8 +1002,7 @@ static BOOL _PDFSelectionsAreEqual(PDFSelection *selectionA, PDFSelection *selec
 
     // Call to the frame loader because this is where our security checks are made.
     RefPtr frame = core([protect(dataSource) webFrame]);
-    Ref document = *frame->document();
-    WebCore::FrameLoadRequest frameLoadRequest { document.copyRef(), document->securityOrigin(), { URL }, { }, WebCore::InitiatedByMainFrame::Unknown };
+    WebCore::FrameLoadRequest frameLoadRequest { *frame->document(), frame->document()->securityOrigin(), { URL }, { }, WebCore::InitiatedByMainFrame::Unknown };
     frameLoadRequest.setReferrerPolicy(WebCore::ReferrerPolicy::NoReferrer);
     frame->loader().loadFrameRequest(WTF::move(frameLoadRequest), event.get(), nullptr);
 }
@@ -1304,9 +1310,11 @@ ALLOW_DEPRECATED_DECLARATIONS_END
             path = nil;
         } else {
             fileHandle = { };
-            path = temporaryFilePath.createNSString();
+            path = temporaryFilePath.createNSString().autorelease();
         }
     }
+    
+    SUPPRESS_UNRETAINED_ARG [path retain];
     
     return path;
 }
@@ -1384,6 +1392,8 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 - (void)_setTextMatches:(NSArray *)array
 {
+    [array retain];
+    SUPPRESS_UNRETAINED_ARG [textMatches release];
     textMatches = array;
 }
 

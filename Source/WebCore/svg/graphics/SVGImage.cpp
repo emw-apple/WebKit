@@ -66,7 +66,6 @@
 #include "StyleComputedStyle+GettersInlines.h"
 #include "StyleDocumentScope.h"
 #include "StyleEnvironmentVariables.h"
-#include "StyleImageDrawingExtras.h"
 #include "StyleLinkParameters.h"
 #include "StyleScope.h"
 #include "TypedElementDescendantIteratorInlines.h"
@@ -110,6 +109,45 @@ RefPtr<SVGSVGElement> SVGImage::rootElement() const
         return nullptr;
 
     return DocumentSVG::rootElement(*localMainFrame->document());
+}
+
+FloatSize SVGImage::resolvedIntrinsicSize(float density) const
+{
+    constexpr float defaultWidth = 300;
+    constexpr float defaultHeight = 150;
+
+    RefPtr rootElement = this->rootElement();
+    if (!rootElement)
+        return { defaultWidth, defaultHeight };
+
+    std::optional<float> aspectRatio;
+    auto viewBox = rootElement->viewBox();
+    if (!viewBox.isEmpty())
+        aspectRatio = viewBox.width() / viewBox.height();
+
+    constexpr float defaultRatio = defaultWidth / defaultHeight;
+    float width = defaultWidth;
+    float height = defaultHeight;
+
+    // Four cases for { hasIntrinsicWidth, hasIntrinsicHeight }.
+    if (rootElement->hasIntrinsicWidth()) {
+        width = rootElement->intrinsicWidth() * density;
+        if (rootElement->hasIntrinsicHeight())
+            height = rootElement->intrinsicHeight() * density;  // Case 1: { true, true }
+        else if (aspectRatio)                                   // Case 2: { true, false }
+            height = width / *aspectRatio;
+    } else if (rootElement->hasIntrinsicHeight()) {
+        height = rootElement->intrinsicHeight() * density;
+        if (aspectRatio)                                        // Case 3: { false, true }
+            width = height * *aspectRatio;
+    } else if (aspectRatio) {
+        if (*aspectRatio >= defaultRatio)                       // Case 4: { false, false }
+            height = width / *aspectRatio;
+        else
+            width = height * *aspectRatio;
+    }
+
+    return { width, height };
 }
 
 bool SVGImage::renderingTaintsOrigin() const
@@ -192,9 +230,34 @@ IntSize SVGImage::containerSize() const
     return IntSize(currentSize);
 }
 
-void SVGImage::applyFragmentURL(const URL& fragmentURL)
+ImageDrawResult SVGImage::drawForContainer(GraphicsContext& context, const ContainerContext& containerContext, const FloatRect& dstRect, const FloatRect& srcRect, ImagePaintingOptions options)
 {
-    protect(frameView())->scrollToFragment(fragmentURL);
+    if (!m_page)
+        return ImageDrawResult::DidNothing;
+
+    // Temporarily reset image observer, we don't want to receive any changeInRect() calls due to this relayout.
+    ImageObserverDisableScope imageObserverDisabler(*this);
+
+#if ENABLE(AX_CUSTOM_COLOR_MODE)
+    applyInvertContent(containerContext.invertContent);
+#endif
+
+    auto containerSize = containerContext.containerSize;
+    IntSize roundedContainerSize = roundedIntSize(containerSize);
+    setContainerSize(roundedContainerSize);
+
+    FloatRect scaledSrc = srcRect;
+    scaledSrc.scale(1 / containerContext.containerZoom);
+
+    // Compensate for the container size rounding by adjusting the source rect.
+    FloatSize adjustedSrcSize = scaledSrc.size();
+    adjustedSrcSize.scale(roundedContainerSize.width() / containerSize.width(), roundedContainerSize.height() / containerSize.height());
+    scaledSrc.setSize(adjustedSrcSize);
+
+    applyLinkParameters(containerContext.linkParameters);
+    protect(frameView())->scrollToFragment(containerContext.initialFragmentURL);
+
+    return draw(context, ConcreteObjectSize::fixed(size()), dstRect, scaledSrc, options);
 }
 
 void SVGImage::applyLinkParameters(const Style::LinkParameters& parameters)
@@ -213,14 +276,13 @@ void SVGImage::applyLinkParameters(const Style::LinkParameters& parameters)
 }
 
 #if ENABLE(AX_CUSTOM_COLOR_MODE)
-void SVGImage::applyInvertContent(InvertContent invert)
+void SVGImage::applyInvertContent(std::optional<bool> invert)
 {
     RefPtr page = m_page;
     if (!page)
         return;
 
-    bool shouldInvert = invert == InvertContent::FromResource ? m_fallbackInvertContent : invert == InvertContent::Yes;
-    page->settings().setAxCustomColorModeEnabled(shouldInvert);
+    page->settings().setAxCustomColorModeEnabled(invert.value_or(m_fallbackInvertContent));
 
     if (RefPtr document = page->localTopDocument()) {
         ScriptDisallowedScope::DisableAssertionsInScope disabledScope;
@@ -241,12 +303,12 @@ bool SVGImage::hasHDRContent() const
     return false;
 }
 
-RefPtr<NativeImage> SVGImage::nativeImage(ConcreteObjectSize concreteObjectSize, const ColorSpace& colorSpace, const ImageDrawingExtras* extras)
+RefPtr<NativeImage> SVGImage::nativeImage(ConcreteObjectSize concreteObjectSize, const ColorSpace& colorSpace, const ImageDrawingExtras*)
 {
-    return nativeImage(concreteObjectSize.size(), colorSpace, extras);
+    return nativeImage(concreteObjectSize.size(), colorSpace);
 }
 
-RefPtr<NativeImage> SVGImage::nativeImage(const FloatSize& size, const ColorSpace& colorSpace, const ImageDrawingExtras* extras, ImagePaintingOptions options)
+RefPtr<NativeImage> SVGImage::nativeImage(const FloatSize& size, const ColorSpace& colorSpace)
 {
     if (!m_page)
         return nullptr;
@@ -262,8 +324,10 @@ RefPtr<NativeImage> SVGImage::nativeImage(const FloatSize& size, const ColorSpac
         return nullptr;
 
     ImageObserverDisableScope imageObserverDisabler(*this);
+    setContainerSize(size);
 
-    imageBuffer->context().drawImage(*this, ConcreteObjectSize::fixed(size), FloatPoint(), options, extras);
+    auto imageRect = FloatRect { { }, size };
+    imageBuffer->context().drawImage(*this, ConcreteObjectSize::fixed(size), imageRect, imageRect);
 
     return ImageBuffer::sinkIntoNativeImage(WTF::move(imageBuffer));
 }
@@ -278,11 +342,11 @@ RefPtr<NativeImage> SVGImage::currentPreTransformedNativeImage(ConcreteObjectSiz
     return nativeImage(concreteObjectSize, ColorSpace::SRGB(), extras);
 }
 
-void SVGImage::drawPattern(GraphicsContext& context, ConcreteObjectSize concreteObjectSize, const FloatRect& dstRect, const FloatRect& srcRect,
-    const AffineTransform& patternTransform, const FloatPoint& phase, const FloatSize& spacing, ImagePaintingOptions options, const ImageDrawingExtras* extras)
+void SVGImage::drawPatternForContainer(GraphicsContext& context, const ContainerContext& containerContext, const FloatRect& srcRect,
+    const AffineTransform& patternTransform, const FloatPoint& phase, const FloatSize& spacing, const FloatRect& dstRect, ImagePaintingOptions options)
 {
-    FloatRect zoomedContainerRect = FloatRect(FloatPoint(), concreteObjectSize.size());
-    zoomedContainerRect.scale(concreteObjectSize.zoom());
+    FloatRect zoomedContainerRect = FloatRect(FloatPoint(), containerContext.containerSize);
+    zoomedContainerRect.scale(containerContext.containerZoom);
 
     // The ImageBuffer size needs to be scaled to match the final resolution.
     AffineTransform transform = context.getCTM();
@@ -297,11 +361,7 @@ void SVGImage::drawPattern(GraphicsContext& context, ConcreteObjectSize concrete
     if (!buffer)
         return;
 
-    ImagePaintingOptions bufferOptions;
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-    bufferOptions = ImagePaintingOptions { options.invertContent() };
-#endif
-    draw(buffer->context(), concreteObjectSize, imageBufferSize, zoomedContainerRect, bufferOptions, extras);
+    drawForContainer(buffer->context(), containerContext, imageBufferSize, zoomedContainerRect);
     if (options.drawLuminanceMask() == DrawLuminanceMask::Yes)
         buffer->convertToLuminanceMask();
 
@@ -314,36 +374,10 @@ void SVGImage::drawPattern(GraphicsContext& context, ConcreteObjectSize concrete
     context.drawPattern(*buffer, dstRect, scaledSrcRect, unscaledPatternTransform, phase, spacing, options);
 }
 
-ImageDrawResult SVGImage::draw(GraphicsContext& context, ConcreteObjectSize concreteObjectSize, const FloatRect& dstRect, const FloatRect& srcRect, ImagePaintingOptions options, const ImageDrawingExtras* extras)
+ImageDrawResult SVGImage::draw(GraphicsContext& context, ConcreteObjectSize, const FloatRect& dstRect, const FloatRect& srcRect, ImagePaintingOptions options, const ImageDrawingExtras*)
 {
     if (!m_page)
         return ImageDrawResult::DidNothing;
-
-    // Temporarily reset image observer, we don't want to receive any changeInRect() calls due to this relayout.
-    ImageObserverDisableScope imageObserverDisabler(*this);
-
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-    // Decided per use; a draw that doesn't say gets the resource-wide decision.
-    applyInvertContent(options.invertContent());
-#endif
-
-    auto adjustedSrcRect = srcRect;
-    if (auto concreteSize = concreteObjectSize.size(); !concreteSize.isEmpty()) {
-        auto roundedContainerSize = roundedIntSize(concreteSize);
-        setContainerSize(roundedContainerSize);
-
-        adjustedSrcRect.scale(1 / concreteObjectSize.zoom());
-
-        // Compensate for the container size rounding by adjusting the source rect.
-        auto adjustedSrcSize = adjustedSrcRect.size();
-        adjustedSrcSize.scale(roundedContainerSize.width() / concreteSize.width(), roundedContainerSize.height() / concreteSize.height());
-        adjustedSrcRect.setSize(adjustedSrcSize);
-    }
-
-    if (auto* styleExtras = dynamicDowncast<Style::ImageDrawingExtras>(extras)) {
-        applyLinkParameters(styleExtras->linkParameters());
-        applyFragmentURL(styleExtras->fragmentURL());
-    }
 
     RefPtr view = frameView();
     ASSERT(view);
@@ -366,11 +400,11 @@ ImageDrawResult SVGImage::draw(GraphicsContext& context, ConcreteObjectSize conc
     if (orientation == ImageOrientation::Orientation::FromImage)
         orientation = ImageOrientation::Orientation::None;
 
-    FloatSize scale(dstRect.size() / adjustedSrcRect.size());
+    FloatSize scale(dstRect.size() / srcRect.size());
     
     // We can only draw the entire frame, clipped to the rect we want. So compute where the top left
     // of the image would be if we were drawing without clipping, and translate accordingly.
-    FloatSize topLeftOffset(adjustedSrcRect.location().x() * scale.width(), adjustedSrcRect.location().y() * scale.height());
+    FloatSize topLeftOffset(srcRect.location().x() * scale.width(), srcRect.location().y() * scale.height());
     FloatPoint destOffset = dstRect.location() - topLeftOffset;
 
     context.translate(destOffset);
@@ -388,14 +422,14 @@ ImageDrawResult SVGImage::draw(GraphicsContext& context, ConcreteObjectSize conc
     {
         ScriptDisallowedScope::DisableAssertionsInScope disabledScope;
         if (view->needsLayout())
-            protect(view->layoutContext())->layout();
+            view->layoutContext().layout();
     }
 
 #if PLATFORM(MAC)
     LocalDefaultSystemAppearance localAppearance(view->useDarkAppearance());
 #endif
 
-    view->paint(context, intersection(context.clipBounds(), enclosingIntRect(adjustedSrcRect)));
+    view->paint(context, intersection(context.clipBounds(), enclosingIntRect(srcRect)));
 
     if (compositingRequiresTransparencyLayer)
         context.endTransparencyLayer();
@@ -428,6 +462,52 @@ LocalFrameView* SVGImage::frameView() const
     return localMainFrame->view();
 }
 
+bool SVGImage::hasIntrinsicWidth() const
+{
+    RefPtr rootElement = this->rootElement();
+    return rootElement && rootElement->hasIntrinsicWidth();
+}
+
+bool SVGImage::hasIntrinsicHeight() const
+{
+    RefPtr rootElement = this->rootElement();
+    return rootElement && rootElement->hasIntrinsicHeight();
+}
+
+bool SVGImage::hasRelativeWidth() const
+{
+    // FIXME: Delete this function and replace all the calls to it with !hasIntrinsicWidth().
+    return false;
+}
+
+bool SVGImage::hasRelativeHeight() const
+{
+    // FIXME: Delete this function and replace all the calls to it with !hasIntrinsicHeight().
+    return false;
+}
+
+bool SVGImage::hasNaturalAspectRatio() const
+{
+    RefPtr rootElement = this->rootElement();
+    if (!rootElement)
+        return false;
+    return rootElement->hasIntrinsicDimensions();
+}
+
+void SVGImage::computeIntrinsicDimensions(float& intrinsicWidth, float& intrinsicHeight, FloatSize& intrinsicRatio)
+{
+    RefPtr rootElement = this->rootElement();
+    if (!rootElement)
+        return;
+
+    intrinsicWidth = rootElement->intrinsicWidth();
+    intrinsicHeight = rootElement->intrinsicHeight();
+
+    intrinsicRatio = rootElement->viewBox().size();
+    if (intrinsicRatio.isEmpty())
+        intrinsicRatio = FloatSize { intrinsicWidth, intrinsicHeight };
+}
+
 NaturalDimensions SVGImage::unorientedNaturalDimensions() const
 {
     RefPtr rootElement = this->rootElement();
@@ -449,7 +529,12 @@ NaturalDimensions SVGImage::unorientedNaturalDimensions() const
     return naturalDimensions;
 }
 
-void SVGImage::startAnimation()
+void SVGImage::startAnimationTimerFired()
+{
+    startAnimation();
+}
+
+void SVGImage::scheduleStartAnimation()
 {
     RefPtr rootElement = this->rootElement();
     if (!rootElement || !rootElement->animationsPaused())
@@ -457,7 +542,16 @@ void SVGImage::startAnimation()
     m_startAnimationTimer.startOneShot(0_s);
 }
 
-void SVGImage::startAnimationTimerFired()
+void SVGImage::startAnimation()
+{
+    RefPtr rootElement = this->rootElement();
+    if (!rootElement || !rootElement->animationsPaused())
+        return;
+    rootElement->unpauseAnimations();
+    rootElement->setCurrentTime(0);
+}
+
+void SVGImage::resumeAnimation()
 {
     RefPtr rootElement = this->rootElement();
     if (!rootElement || !rootElement->animationsPaused())
@@ -477,10 +571,6 @@ void SVGImage::stopAnimation()
 void SVGImage::resetAnimation()
 {
     stopAnimation();
-    RefPtr rootElement = this->rootElement();
-    if (!rootElement)
-        return;
-    rootElement->setCurrentTime(0);
 }
 
 bool SVGImage::isAnimating() const

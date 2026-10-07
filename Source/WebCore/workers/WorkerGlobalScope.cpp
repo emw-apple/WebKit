@@ -39,8 +39,6 @@
 #include "CryptoKeyData.h"
 #include "DOMTimer.h"
 #include "Document.h"
-#include "EventLoop.h"
-#include "EventNames.h"
 #include "FontCustomPlatformData.h"
 #include "FontFaceSet.h"
 #include "FrameConsoleClient.h"
@@ -59,7 +57,6 @@
 #include "ScriptSourceCode.h"
 #include "SecurityOrigin.h"
 #include "SecurityOriginPolicy.h"
-#include "SecurityPolicyViolationEvent.h"
 #include "ServiceWorker.h"
 #include "ServiceWorkerClientData.h"
 #include "ServiceWorkerGlobalScope.h"
@@ -121,7 +118,6 @@ WorkerGlobalScope::WorkerGlobalScope(WorkerThreadType type, const WorkerParamete
     , m_userAgent(params.userAgent)
     , m_isOnline(params.isOnline)
     , m_shouldBypassMainWorldContentSecurityPolicy(params.shouldBypassMainWorldContentSecurityPolicy)
-    , m_isSecureContext(params.isSecureContext == IsSecureContext::Yes)
     , m_topOrigin(WTF::move(topOrigin))
     , m_connectionProxy(connectionProxy)
     , m_socketProvider(socketProvider)
@@ -162,7 +158,7 @@ WorkerGlobalScope::~WorkerGlobalScope()
     m_performance = nullptr;
     m_crypto = nullptr;
 
-    // Notify proxy that we are going away. This can free the WorkerThread object and the proxy, so do not access them after this.
+    // Notify proxy that we are going away. This can free the WorkerThread object, so do not access it after this.
     if (auto* workerReportingProxy = thread()->workerReportingProxy())
         workerReportingProxy->workerGlobalScopeDestroyed();
 }
@@ -207,7 +203,7 @@ bool WorkerGlobalScope::isSecureContext() const
     if (!settingsValues().secureContextChecksEnabled)
         return true;
 
-    return m_isSecureContext;
+    return m_topOrigin->isPotentiallyTrustworthy();
 }
 
 // https://html.spec.whatwg.org/multipage/webappapis.html#parse-a-url
@@ -347,7 +343,7 @@ void WorkerGlobalScope::close()
         ASSERT_WITH_SECURITY_IMPLICATION(is<WorkerGlobalScope>(context));
         WorkerGlobalScope& workerGlobalScope = downcast<WorkerGlobalScope>(context);
         // Notify parent that this context is closed. Parent is responsible for calling WorkerThread::stop().
-        if (CheckedPtr workerReportingProxy = workerGlobalScope.thread()->workerReportingProxy())
+        if (auto* workerReportingProxy = workerGlobalScope.thread()->workerReportingProxy())
             workerReportingProxy->workerGlobalScopeClosed();
     } });
 }
@@ -468,11 +464,11 @@ ExceptionOr<void> WorkerGlobalScope::importScripts(const FixedVector<Variant<Ref
             NakedPtr<JSC::Exception> exception;
             ScriptSourceCode sourceCode(scriptLoader->script(), URL(scriptLoader->responseURL()), scriptLoader->isRedirected() ? URL(scriptLoader->url()) : URL());
             sourceProvider = downcast<ScriptBufferSourceProvider>(sourceCode.provider());
-            protect(script())->evaluate(sourceCode, exception);
+            script()->evaluate(sourceCode, exception);
             if (exception) {
                 if (mutedErrors)
                     return Exception { ExceptionCode::NetworkError, "Network response is CORS-cross-origin"_s };
-                protect(script())->setException(exception);
+                script()->setException(exception);
                 return { };
             }
         }
@@ -490,7 +486,7 @@ EventTarget* WorkerGlobalScope::errorEventTarget()
 
 void WorkerGlobalScope::logExceptionToConsole(const String& errorMessage, const String& sourceURL, int lineNumber, int columnNumber, RefPtr<ScriptCallStack>&&)
 {
-    if (CheckedPtr workerReportingProxy = thread()->workerReportingProxy())
+    if (auto* workerReportingProxy = thread()->workerReportingProxy())
         workerReportingProxy->postExceptionToWorkerObject(errorMessage, lineNumber, columnNumber, sourceURL);
 }
 
@@ -538,7 +534,7 @@ void WorkerGlobalScope::addMessage(MessageSource source, MessageLevel level, con
 std::optional<Vector<uint8_t>> WorkerGlobalScope::serializeAndWrapCryptoKey(CryptoKeyData&& keyData)
 {
     Ref protectedThis { *this };
-    CheckedPtr workerLoaderProxy = thread()->workerLoaderProxy();
+    auto* workerLoaderProxy = thread()->workerLoaderProxy();
     if (!workerLoaderProxy)
         return std::nullopt;
 
@@ -558,7 +554,7 @@ std::optional<Vector<uint8_t>> WorkerGlobalScope::serializeAndWrapCryptoKey(Cryp
 std::optional<Vector<uint8_t>> WorkerGlobalScope::unwrapCryptoKey(const Vector<uint8_t>& wrappedKey)
 {
     Ref protectedThis { *this };
-    CheckedPtr workerLoaderProxy = thread()->workerLoaderProxy();
+    auto* workerLoaderProxy = thread()->workerLoaderProxy();
     if (!workerLoaderProxy)
         return std::nullopt;
 
@@ -730,7 +726,7 @@ void WorkerGlobalScope::addImportedScriptSourceProvider(const URL& url, ScriptBu
 
 void WorkerGlobalScope::reportErrorToWorkerObject(const String& errorMessage)
 {
-    if (CheckedPtr workerReportingProxy = thread()->workerReportingProxy())
+    if (auto* workerReportingProxy = thread()->workerReportingProxy())
         workerReportingProxy->reportErrorToWorkerObject(errorMessage);
 }
 
@@ -778,13 +774,6 @@ void WorkerGlobalScope::updateServiceWorkerClientData()
     ASSERT(type() == WebCore::WorkerGlobalScope::Type::DedicatedWorker || type() == WebCore::WorkerGlobalScope::Type::SharedWorker);
     auto controllingServiceWorkerRegistrationIdentifier = activeServiceWorker() ? std::make_optional<ServiceWorkerRegistrationIdentifier>(activeServiceWorker()->registrationIdentifier()) : std::nullopt;
     swClientConnection().registerServiceWorkerClient(clientOrigin(), ServiceWorkerClientData::from(*this), controllingServiceWorkerRegistrationIdentifier, String { m_userAgent });
-}
-
-void WorkerGlobalScope::enqueueSecurityPolicyViolationEvent(SecurityPolicyViolationEventInit&& eventInit)
-{
-    protect(eventLoop())->queueTask(TaskSource::DOMManipulation, [protectedThis = Ref { *this }, event = SecurityPolicyViolationEvent::create(eventNames().securitypolicyviolationEvent, WTF::move(eventInit), Event::IsTrusted::Yes)] {
-        protectedThis->dispatchEvent(event);
-    });
 }
 
 void WorkerGlobalScope::notifyReportObservers(Ref<Report>&& reports)

@@ -51,9 +51,9 @@
 
 namespace WebCore {
 
-void AccessibilityObject::makeFirstResponderForPlatformWidget(ChromeClient& client, Widget& widget)
+void AccessibilityObject::makeFirstResponderForPlatformWidget(ChromeClient& client, PlatformWidget widget)
 {
-    client.makeFirstResponder((NSResponder *)protect(widget.platformWidget()).get());
+    client.makeFirstResponder((NSResponder *)widget);
 }
 
 Style::SpeakAs AccessibilityObject::speakAs() const

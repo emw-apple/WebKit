@@ -619,22 +619,6 @@ void NetworkProcessProxy::didReceiveAuthenticationChallenge(PAL::SessionID sessi
     });
 }
 
-void NetworkProcessProxy::requestLocalNetworkAccessPermission(PAL::SessionID sessionID, WebPageProxyIdentifier pageID, WebCore::ClientOrigin&& origin, WebCore::IPAddressSpace addressSpace, CompletionHandler<void(WebCore::PermissionState)>&& completionHandler)
-{
-    RefPtr store = websiteDataStoreFromSessionID(sessionID);
-    if (!store)
-        return completionHandler(WebCore::PermissionState::Denied);
-    store->requestLocalNetworkAccessPermission(pageID, WTF::move(origin), addressSpace, WTF::move(completionHandler));
-}
-
-void NetworkProcessProxy::queryLocalNetworkAccessPermission(PAL::SessionID sessionID, std::optional<WebPageProxyIdentifier> pageID, WebCore::ClientOrigin&& origin, WebCore::IPAddressSpace addressSpace, CompletionHandler<void(std::optional<WebCore::PermissionState>)>&& completionHandler)
-{
-    RefPtr store = websiteDataStoreFromSessionID(sessionID);
-    if (!store)
-        return completionHandler(WebCore::PermissionState::Prompt);
-    store->queryLocalNetworkAccessPermission(pageID, origin, addressSpace, WTF::move(completionHandler));
-}
-
 void NetworkProcessProxy::negotiatedLegacyTLS(WebPageProxyIdentifier pageID)
 {
     if (RefPtr page = WebProcessProxy::webPage(pageID))
@@ -653,13 +637,13 @@ void NetworkProcessProxy::didBlockLoadToKnownTracker(WebPageProxyIdentifier page
         page->didBlockLoadToKnownTracker(url);
 }
 
-void NetworkProcessProxy::considerProcessSwapForNavigationResponse(WebPageProxyIdentifier pageID, WebCore::NavigationIdentifier navigationID, BrowsingContextGroupSwitchDecision browsingContextGroupSwitchDecision, NavigationResponseProcessSwapReason reason, const WebCore::Site& responseSite, NetworkResourceLoadIdentifier existingNetworkResourceLoadIdentifierToResume, MonotonicTime originalNavigationStartTime, CompletionHandler<void(std::optional<WebCore::ProcessIdentifier> destinationWebProcess)>&& completionHandler)
+void NetworkProcessProxy::considerProcessSwapForNavigationResponse(WebPageProxyIdentifier pageID, WebCore::NavigationIdentifier navigationID, BrowsingContextGroupSwitchDecision browsingContextGroupSwitchDecision, NavigationResponseProcessSwapReason reason, const WebCore::Site& responseSite, NetworkResourceLoadIdentifier existingNetworkResourceLoadIdentifierToResume, MonotonicTime originalNavigationStartTime, CompletionHandler<void(bool success)>&& completionHandler)
 {
     RELEASE_LOG(ProcessSwapping, "%p - NetworkProcessProxy::considerProcessSwapForNavigationResponse: pageID=%" PRIu64 ", navigationID=%" PRIu64 ", reason=%u, browsingContextGroupSwitchDecision=%u, existingNetworkResourceLoadIdentifierToResume=%" PRIu64, this, pageID.toUInt64(), navigationID.toUInt64(), (unsigned)reason, (unsigned)browsingContextGroupSwitchDecision, existingNetworkResourceLoadIdentifierToResume.toUInt64());
 
     RefPtr page = WebProcessProxy::webPage(pageID);
     if (!page)
-        return completionHandler(std::nullopt);
+        return completionHandler(false);
 
     switch (reason) {
     case NavigationResponseProcessSwapReason::EnhancedSecurity:

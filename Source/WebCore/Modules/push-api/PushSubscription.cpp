@@ -104,7 +104,7 @@ ExceptionOr<RefPtr<JSC::ArrayBuffer>> PushSubscription::getKey(PushEncryptionKey
 
 void PushSubscription::unsubscribe(ScriptExecutionContext& scriptExecutionContext, DOMPromiseDeferred<IDLBoolean>&& promise)
 {
-    protect(scriptExecutionContext.eventLoop())->queueTask(TaskSource::Networking, [this, protectedThis = Ref { *this }, pushSubscriptionIdentifier = m_data.identifier, promise = WTF::move(promise)]() mutable {
+    scriptExecutionContext.eventLoop().queueTask(TaskSource::Networking, [this, protectedThis = Ref { *this }, pushSubscriptionIdentifier = m_data.identifier, promise = WTF::move(promise)]() mutable {
         if (!m_pushSubscriptionOwner) {
             promise.resolve(false);
             return;

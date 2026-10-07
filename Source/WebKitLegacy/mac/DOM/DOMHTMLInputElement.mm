@@ -69,7 +69,7 @@
 #import <wtf/GetPtr.h>
 #import <wtf/URL.h>
 
-#define IMPL protect(downcast<WebCore::HTMLInputElement>(reinterpret_cast<WebCore::Node*>(_internal)))
+#define IMPL protect(static_cast<WebCore::HTMLInputElement*>(reinterpret_cast<WebCore::Node*>(_internal)))
 
 @implementation DOMHTMLInputElement
 
@@ -603,8 +603,7 @@
 - (NSURL *)absoluteImageURL
 {
     WebCore::JSMainThreadNullState state;
-    CheckedPtr renderer = IMPL->renderer();
-    if (!renderer || !renderer->isImage())
+    if (!IMPL->renderer() || !IMPL->renderer()->isImage())
         return nil;
     return [self _getURLAttribute:@"src"];
 }

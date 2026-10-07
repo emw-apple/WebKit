@@ -47,10 +47,7 @@ namespace WebKit {
 
 using namespace WebCore;
 
-BrowsingContextGroup::BrowsingContextGroup(CrossOriginMode crossOriginMode)
-    : m_crossOriginMode(crossOriginMode)
-{
-}
+BrowsingContextGroup::BrowsingContextGroup() = default;
 
 BrowsingContextGroup::~BrowsingContextGroup() = default;
 
@@ -67,7 +64,7 @@ void BrowsingContextGroup::sharedProcessForSite(WebsiteDataStore& websiteDataSto
     if (!preferences.siteIsolationEnabled() || !preferences.siteIsolationSharedProcessEnabled())
         return completionHandler(nullptr);
 
-    if (site.isEmpty() || m_processMap.contains(site) || m_crossOriginMode == CrossOriginMode::Isolated)
+    if (site.isEmpty() || m_processMap.contains(site))
         return completionHandler(nullptr);
 
     if (isLoopbackOrLocalNetworkSite(site, preferences.localNetworkAccessEnabled()))
@@ -116,7 +113,7 @@ void BrowsingContextGroup::sharedProcessForSite(WebsiteDataStore& websiteDataSto
         return completionHandler(existingSharedProcess.get());
     }
 
-    Ref process = protect(pageConfiguration.processPool())->processForSite(websiteDataStore, WebProcessProxy::IsolatedProcessType::Shared, site, mainFrameSite, lockdownMode, enhancedSecurity, pageConfiguration, ProcessSwapDisposition::Other, m_crossOriginMode);
+    Ref process = protect(pageConfiguration.processPool())->processForSite(websiteDataStore, WebProcessProxy::IsolatedProcessType::Shared, site, mainFrameSite, lockdownMode, enhancedSecurity, pageConfiguration, ProcessSwapDisposition::Other);
     ASSERT(!process->isInProcessCache());
     Ref frameProcess = FrameProcess::create(process, *this, std::nullopt, mainFrameSite, preferences, LoadedWebArchive::No, BrowsingContextGroupUpdate::AddProcessAndInjectBrowsingContext);
     ASSERT(frameProcess->isSharedProcess());
@@ -129,8 +126,6 @@ void BrowsingContextGroup::sharedProcessForSite(WebsiteDataStore& websiteDataSto
 
 Ref<FrameProcess> BrowsingContextGroup::ensureProcessForSite(const Site& site, const Site& mainFrameSite, WebProcessProxy& process, const WebPreferences& preferences, LoadedWebArchive loadedWebArchive, BrowsingContextGroupUpdate browsingContextGroupUpdate)
 {
-    ASSERT(process.isDummyProcessProxy() || process.crossOriginMode() == m_crossOriginMode);
-
     if (preferences.siteIsolationEnabled()) {
         RefPtr sharedProcess = liveSharedProcess();
         if (sharedProcess && (m_sharedProcessSites.contains(site) || process.isSharedProcess())) {
@@ -383,7 +378,7 @@ bool BrowsingContextGroup::hasVisiblePage() const
     return false;
 }
 
-void BrowsingContextGroup::forEachRemotePage(const WebPageProxy& page, NOESCAPE const Function<void(RemotePageProxy&)>& function)
+void BrowsingContextGroup::forEachRemotePage(const WebPageProxy& page, Function<void(RemotePageProxy&)>&& function)
 {
     auto it = m_remotePages.find(page);
     if (it == m_remotePages.end())

@@ -23,6 +23,7 @@
 
 #include "BitmapTexture.h"
 #include "ImageBuffer.h"
+#include "ImageObserver.h"
 #include "TextureMapper.h"
 
 namespace WebCore {
@@ -34,8 +35,10 @@ void TextureMapperTiledBackingStore::updateContentsFromImageIfNeeded(TextureMapp
     if (!m_image)
         return;
 
-    Ref image = *m_image;
-    updateContents(textureMapper, image, image->size(), { { }, image->size() });
+    updateContents(textureMapper, m_image.get(), m_image->size(), enclosingIntRect(m_image->rect()));
+
+    if (auto observer = m_image->imageObserver())
+        observer->didDraw(*m_image);
     m_image = nullptr;
 }
 
@@ -151,9 +154,9 @@ void TextureMapperTiledBackingStore::createOrDestroyTilesIfNeeded(const FloatSiz
     }
 }
 
-void TextureMapperTiledBackingStore::updateContents(TextureMapper& textureMapper, NativeImage& image, const FloatSize& totalSize, const IntRect& dirtyRect)
+void TextureMapperTiledBackingStore::updateContents(TextureMapper& textureMapper, Image* image, const FloatSize& totalSize, const IntRect& dirtyRect)
 {
-    createOrDestroyTilesIfNeeded(totalSize, textureMapper.maxTextureSize(), image.hasAlpha());
+    createOrDestroyTilesIfNeeded(totalSize, textureMapper.maxTextureSize(), !image->currentFrameKnownToBeOpaque());
     for (auto& tile : m_tiles)
         tile.updateContents(image, dirtyRect);
 }

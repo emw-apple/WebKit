@@ -31,7 +31,6 @@
 #include <wtf/UUID.h>
 #include <wtf/UniStdExtras.h>
 #include <wtf/glib/Application.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GSpanExtras.h>
 #include <wtf/glib/GUniquePtr.h>
@@ -287,7 +286,7 @@ static void bindPulse(Vector<UTF8CString>& args)
     if (pulseServer) {
         auto pulseServerString = UTF8CStringView::unsafeFromUTF8(pulseServer);
         if (startsWith(pulseServerString.span(), "unix:"_s))
-            bindIfExists(args, UTF8CStringView::fromUTF8(pulseServerString.spanIncludingNullTerminator().subspan(5)), BindFlags::ReadWrite);
+            bindIfExists(args, UTF8CStringView::fromUTF8(pulseServerString.span().subspan(5)), BindFlags::ReadWrite);
         // else it uses tcp
     } else {
         const char* runtimeDir = g_get_user_runtime_dir();
@@ -476,8 +475,6 @@ static void bindOpenGL(Vector<UTF8CString>& args)
         // Adreno
         "--dev-bind-try"_s, "/dev/kgsl-3d0"_s, "/dev/kgsl-3d0"_s,
         "--dev-bind-try"_s, "/dev/ion"_s, "/dev/ion"_s,
-        // WSL2 (Mesa d3d12)
-        "--dev-bind-try"_s, "/dev/dxg"_s, "/dev/dxg"_s,
 #if PLATFORM(WPE)
         "--dev-bind-try"_s, "/dev/fb0"_s, "/dev/fb0"_s,
         "--dev-bind-try"_s, "/dev/fb1"_s, "/dev/fb1"_s,
@@ -750,17 +747,17 @@ static std::optional<UTF8CString> directoryContainingDBusSocket(StringView dbusA
     if (!dbusAddressString.startsWith("unix:"_s))
         return std::nullopt;
 
-    if (auto pathStart = dbusAddressString.find("path="_s); pathStart != notFound) {
+    if (auto pathStart = dbusAddressString.find("path="_s)) {
         pathStart += strlen("path=");
 
         auto pathEnd = dbusAddressString.find(',', pathStart);
         auto path = pathEnd == notFound ? dbusAddressString.substring(pathStart) : dbusAddressString.substring(pathStart, pathEnd - pathStart);
-        GRefPtr<GFile> file = gFileNewForPath(path.utf8());
+        GRefPtr<GFile> file = adoptGRef(g_file_new_for_path(path.utf8().legacyCStringPointer()));
         GRefPtr<GFile> parent = adoptGRef(g_file_get_parent(file.get()));
         if (!parent)
             return std::nullopt;
 
-        return UTF8CString::unsafeFromUTF8(g_file_peek_path(parent.get()));
+        return UTF8CString { byteCast<char8_t>(g_file_peek_path(parent.get())) };
     }
 
     return std::nullopt;
@@ -786,7 +783,7 @@ GRefPtr<GSubprocess> bubblewrapSpawn(GSubprocessLauncher* launcher, const Proces
     if (launchOptions.processType == ProcessLauncher::ProcessType::Network)
         return adoptGRef(g_subprocess_launcher_spawnv(launcher, argv.span().data(), error));
 
-    auto runDir = UTF8CString::unsafeFromUTF8(g_get_user_runtime_dir());
+    UTF8CString runDir { byteCast<char8_t>(g_get_user_runtime_dir()) };
     Vector<UTF8CString> sandboxArgs = {
         "--unshare-uts"_s,
 
@@ -809,16 +806,16 @@ GRefPtr<GSubprocess> bubblewrapSpawn(GSubprocessLauncher* launcher, const Proces
 
         "--ro-bind-try"_s, "/usr/share"_s, "/usr/share"_s,
         "--ro-bind-try"_s, "/usr/local/share"_s, "/usr/local/share"_s,
-        "--ro-bind-try"_s, ASCIILiteral { DATADIR }, ASCIILiteral { DATADIR },
+        "--ro-bind-try"_s, ASCIILiteral::fromLiteralUnsafe(DATADIR), ASCIILiteral::fromLiteralUnsafe(DATADIR),
 
         // We only grant access to the libdirs webkit is built with and
         // guess system libdirs. This will always have some edge cases.
         "--ro-bind-try"_s, "/lib"_s, "/lib"_s,
         "--ro-bind-try"_s, "/usr/lib"_s, "/usr/lib"_s,
         "--ro-bind-try"_s, "/usr/local/lib"_s, "/usr/local/lib"_s,
-        "--ro-bind-try"_s, ASCIILiteral { LIBDIR }, ASCIILiteral { LIBDIR },
+        "--ro-bind-try"_s, ASCIILiteral::fromLiteralUnsafe(LIBDIR), ASCIILiteral::fromLiteralUnsafe(LIBDIR),
 #if defined(WEBKIT_SWIFT_STDLIB_LIBRARY_PATH)
-        "--ro-bind-try"_s, ASCIILiteral { WEBKIT_SWIFT_STDLIB_LIBRARY_PATH }, ASCIILiteral { WEBKIT_SWIFT_STDLIB_LIBRARY_PATH },
+        "--ro-bind-try"_s, ASCIILiteral::fromLiteralUnsafe(WEBKIT_SWIFT_STDLIB_LIBRARY_PATH), ASCIILiteral::fromLiteralUnsafe(WEBKIT_SWIFT_STDLIB_LIBRARY_PATH),
 #endif
 #if CPU(ADDRESS64)
         "--ro-bind-try"_s, "/lib64"_s, "/lib64"_s,
@@ -830,7 +827,7 @@ GRefPtr<GSubprocess> bubblewrapSpawn(GSubprocessLauncher* launcher, const Proces
         "--ro-bind-try"_s, "/usr/local/lib32"_s, "/usr/local/lib32"_s,
 #endif
 
-        "--ro-bind-try"_s, ASCIILiteral { PKGLIBEXECDIR }, ASCIILiteral { PKGLIBEXECDIR },
+        "--ro-bind-try"_s, ASCIILiteral::fromLiteralUnsafe(PKGLIBEXECDIR), ASCIILiteral::fromLiteralUnsafe(PKGLIBEXECDIR),
     };
 
     if (enableDebugPermissions()) {
@@ -852,7 +849,7 @@ GRefPtr<GSubprocess> bubblewrapSpawn(GSubprocessLauncher* launcher, const Proces
 
     if (launchOptions.processType == ProcessLauncher::ProcessType::DBusProxy) {
         sandboxArgs.appendList<UTF8CString>({
-            "--ro-bind"_s, ASCIILiteral { DBUS_PROXY_EXECUTABLE }, ASCIILiteral { DBUS_PROXY_EXECUTABLE },
+            "--ro-bind"_s, ASCIILiteral::fromLiteralUnsafe(DBUS_PROXY_EXECUTABLE), ASCIILiteral::fromLiteralUnsafe(DBUS_PROXY_EXECUTABLE),
             "--bind"_s, sandboxedUserRuntimeDirectory(), sandboxedUserRuntimeDirectory(),
         });
 
@@ -886,7 +883,7 @@ GRefPtr<GSubprocess> bubblewrapSpawn(GSubprocessLauncher* launcher, const Proces
         // On distros using a suid bwrap it drops this env var
         // so we have to pass it through to the children.
         sandboxArgs.appendList<UTF8CString>({
-            "--setenv"_s, "LD_LIBRARY_PATH"_s, UTF8CString::unsafeFromUTF8(libraryPath),
+            "--setenv"_s, "LD_LIBRARY_PATH"_s, UTF8CString { byteCast<char8_t>(libraryPath) },
         });
     }
 
@@ -983,7 +980,7 @@ GRefPtr<GSubprocess> bubblewrapSpawn(GSubprocessLauncher* launcher, const Proces
     g_subprocess_launcher_take_fd(launcher, bwrapFd, bwrapFd);
 
     Vector<UTF8CString> bwrapArgs = {
-        ASCIILiteral { BWRAP_EXECUTABLE },
+        ASCIILiteral::fromLiteralUnsafe(BWRAP_EXECUTABLE),
         "--args"_s,
         String::number(bwrapFd).utf8(),
         "--"_s,

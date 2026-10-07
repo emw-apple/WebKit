@@ -97,6 +97,7 @@
 #include "RenderView.h"
 #include "ResolvedStyle.h"
 #include "SVGElementTypeHelpers.h"
+#include "SVGImage.h"
 #include "SVGLengthContext.h"
 #include "SVGRenderSupport.h"
 #include "SVGSVGElement.h"
@@ -741,14 +742,6 @@ void RenderElement::setMayHaveLayerInSubtreeIncludingAncestors()
         renderer->m_mayHaveLayerInSubtree = true;
 }
 
-void RenderElement::setMayHaveNonScalingStrokeInSubtreeIncludingAncestors()
-{
-    m_mayHaveNonScalingStrokeInSubtree = true;
-
-    for (auto* renderer = parent(); renderer && !renderer->isRenderSVGRoot() && !renderer->m_mayHaveNonScalingStrokeInSubtree; renderer = renderer->parent())
-        renderer->m_mayHaveNonScalingStrokeInSubtree = true;
-}
-
 static RenderLayer* findNextLayer(const RenderElement& currRenderer, const RenderLayer& parentLayer, const RenderObject* siblingToTraverseFrom, bool checkParent = true)
 {
     // Step 1: If our layer is a child of the desired parent, then return our layer.
@@ -908,8 +901,7 @@ void RenderElement::propagateStyleToAnonymousChildren(StylePropagationType propa
         if (!elementChild->isAnonymous() || elementChild->style().pseudoElementType() || elementChild->isViewTransitionContainingBlock())
             continue;
 
-        auto display = elementChild->style().display();
-        bool isBlockOrRuby = is<RenderBlock>(elementChild.get()) || display == Style::DisplayType::InlineRuby || display == Style::DisplayType::RubyBase;
+        bool isBlockOrRuby = is<RenderBlock>(elementChild.get()) || elementChild->style().display() == Style::DisplayType::InlineRuby;
         if (propagationType == StylePropagationType::BlockAndRubyChildren && !isBlockOrRuby)
             continue;
 
@@ -918,6 +910,7 @@ void RenderElement::propagateStyleToAnonymousChildren(StylePropagationType propa
             continue;
 
         auto newStyle = [&] {
+            auto display = elementChild->style().display();
             if (display == Style::DisplayType::RubyBase || display == Style::DisplayType::InlineRuby)
                 return createAnonymousStyleForRuby(style(), display);
             return Style::ComputedStyle::createAnonymousStyleWithDisplay(style(), display);
@@ -1257,9 +1250,6 @@ void RenderElement::insertedIntoTree()
     if (m_mayHaveLayerInSubtree)
         setMayHaveLayerInSubtreeIncludingAncestors();
 
-    if (m_mayHaveNonScalingStrokeInSubtree)
-        setMayHaveNonScalingStrokeInSubtreeIncludingAncestors();
-
     // Keep our layer hierarchy updated. Optimize for the common case where we don't have any children
     // and don't have a layer attached to ourselves.
     if (firstChild() || hasLayer()) {
@@ -1518,7 +1508,7 @@ template<typename FillLayers> static bool mustRepaintFillLayers(const RenderElem
 
     // Make sure we have a valid image.
     RefPtr image = layer.image().tryStyleImage();
-    if (!image || !image->canRender(&renderer))
+    if (!image || !image->canRender(&renderer, renderer.style().usedZoom()))
         return false;
 
     if (!layer.positionX().isKnownZero() || !layer.positionY().isKnownZero())
@@ -1770,7 +1760,7 @@ bool RenderElement::borderImageIsLoadedAndCanBeRendered() const
     ASSERT(style().border().hasBorder());
 
     RefPtr borderImage = style().borderImageSource().tryStyleImage();
-    return borderImage && borderImage->canRender(this) && borderImage->isLoaded(this);
+    return borderImage && borderImage->canRender(this, style().usedZoom()) && borderImage->isLoaded(this);
 }
 
 bool RenderElement::mayCauseRepaintInsideViewport(const IntRect* optionalViewportRect) const
@@ -1959,8 +1949,12 @@ bool RenderElement::repaintForPausedImageAnimationsIfNeeded(const IntRect& visib
 
     repaint();
 
-    if (RefPtr image = cachedImage.image())
-        image->startAnimation();
+    if (RefPtr image = cachedImage.image()) {
+        if (auto* svgImage = dynamicDowncast<SVGImage>(*image))
+            svgImage->scheduleStartAnimation();
+        else
+            image->startAnimation();
+    }
 
     // For directly-composited animated GIFs it does not suffice to call repaint() to resume animation. We need to mark the image as changed.
     if (CheckedPtr modelObject = dynamicDowncast<RenderBoxModelObject>(*this))

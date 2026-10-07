@@ -25,19 +25,17 @@
 
 #if !PLATFORM(IOS_FAMILY)
 
-#import <wtf/RetainPtr.h>
-
 @class WebView;
 @class WebHTMLView;
 
 @interface WebTextCompletionController : NSObject <NSTableViewDelegate, NSTableViewDataSource> {
 @private
-    __weak WebView *_view;
-    __weak WebHTMLView *_htmlView;
-    RetainPtr<NSWindow> _popupWindow;
-    __weak NSTableView *_tableView;
-    RetainPtr<NSArray> _completions;
-    RetainPtr<NSString> _originalString;
+    WebView *_view;
+    WebHTMLView *_htmlView;
+    NSWindow *_popupWindow;
+    NSTableView *_tableView;
+    NSArray *_completions;
+    NSString *_originalString;
     int prefixLength;
 }
 - (id)initWithWebView:(WebView *)view HTMLView:(WebHTMLView *)htmlView;

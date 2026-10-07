@@ -11,8 +11,6 @@
 #ifndef INCLUDE_LIBYUV_SCALE_ARGB_H_
 #define INCLUDE_LIBYUV_SCALE_ARGB_H_
 
-#include <stdint.h>
-
 #include "libyuv/basic_types.h"
 #include "libyuv/scale.h"  // For FilterMode
 

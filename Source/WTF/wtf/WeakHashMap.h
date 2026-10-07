@@ -41,8 +41,7 @@ public:
     using MapType = HashMap<WeakKeyType, ValueType>;
 
     struct PeekType {
-        // PeekType is a short-lived view created during iteration and never stored, so a raw reference is safe.
-        SUPPRESS_UNCOUNTED_MEMBER SUPPRESS_UNCHECKED_MEMBER KeyType& key;
+        KeyType& key;
         ValueType& value;
     };
 
@@ -173,17 +172,17 @@ public:
     const_iterator end() const { return WeakHashMapConstIterator(*this, m_map.end()); }
 
     template<typename Functor>
-    AddResult ensure(const KeyType* key, NOESCAPE const Functor& functor)
+    AddResult ensure(const KeyType* key, NOESCAPE Functor&& functor)
     {
         amortizedCleanupIfNeeded();
-        auto result = m_map.ensure(key, functor);
+        auto result = m_map.ensure(key, std::forward<Functor>(functor));
         return AddResult { WeakHashMapIterator(*this, result.iterator), result.isNewEntry };
     }
 
     template<typename Functor>
-    AddResult ensure(const KeyType& key, NOESCAPE const Functor& functor)
+    AddResult ensure(const KeyType& key, NOESCAPE Functor&& functor)
     {
-        return ensure(&key, functor);
+        return ensure(&key, std::forward<Functor>(functor));
     }
 
     template<typename T>
@@ -310,7 +309,7 @@ public:
     }
 
     template<typename Functor>
-    bool removeIf(NOESCAPE const Functor& functor)
+    bool removeIf(NOESCAPE Functor&& functor)
     {
         bool result = m_map.removeIf([&](auto& entry) {
             auto* key = entry.key.get();

@@ -33,8 +33,7 @@ enum FileSystemHandleKind {
     ExportToWrappedFunction,
     Exposed=(Window,Worker),
     EnabledBySetting=FileSystemEnabled,
-    SecureContext,
-    Serializable
+    SecureContext
 ] interface FileSystemHandle {
     readonly attribute FileSystemHandleKind kind;
     readonly attribute USVString name;

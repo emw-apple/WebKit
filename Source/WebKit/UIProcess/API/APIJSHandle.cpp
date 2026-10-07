@@ -26,7 +26,6 @@
 #include "config.h"
 #include "APIJSHandle.h"
 
-#include "APIFrameInfo.h"
 #include "WebProcessMessages.h"
 #include "WebProcessProxy.h"
 
@@ -39,7 +38,6 @@ Ref<JSHandle> JSHandle::create(WebKit::JSHandleInfo&& info)
 
 JSHandle::JSHandle(WebKit::JSHandleInfo&& info)
     : m_info(WTF::move(info))
-    , m_sourceFrame(FrameInfo::create(WebKit::FrameInfoData { m_info.frameInfo }))
 {
 }
 

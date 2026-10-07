@@ -12,7 +12,6 @@
 #include "common/unsafe_buffers.h"
 
 #include <algorithm>
-#include <array>
 #include <iterator>
 #include <sstream>
 #include <thread>
@@ -217,41 +216,6 @@ size_t EGLStringArrayHash(const char **ary)
     return hash;
 }
 
-// EGL_PLATFORM_ANGLE_VULKAN_DEVICE_UUID_ANGLE and
-// EGL_PLATFORM_ANGLE_VULKAN_DRIVER_UUID_ANGLE are pointers to kVulkanUUIDSize
-// bytes rather than values, so everything that outlives eglGetPlatformDisplay
-// holds a copy of the pointed-to bytes.  Keying the display map on the pointer
-// itself would both separate displays that requested the same device through
-// different buffers and alias displays whose buffers happened to be reused at
-// the same address.
-//
-// An absent attribute yields an all-zero UUID, matching the convention used for
-// the other attributes in the key.
-VulkanUUID EGLAttribToVulkanUUID(EGLAttrib attrib)
-{
-    VulkanUUID uuid = {};
-    if (attrib != 0)
-    {
-        // SAFETY: the extension requires the attribute to point to
-        // kVulkanUUIDSize bytes, which is exactly the size of `uuid`.
-        ANGLE_UNSAFE_BUFFERS(
-            memcpy(uuid.data(), reinterpret_cast<const uint8_t *>(attrib), kVulkanUUIDSize));
-    }
-    return uuid;
-}
-
-// DisplayState keeps an absent attribute distinct from a UUID value, because
-// the Vulkan backend matches a physical device by UUID only when one was
-// actually requested.
-std::optional<VulkanUUID> EGLAttribToOptionalVulkanUUID(EGLAttrib attrib)
-{
-    if (attrib == 0)
-    {
-        return std::nullopt;
-    }
-    return EGLAttribToVulkanUUID(attrib);
-}
-
 struct ANGLEPlatformDisplay
 {
     ANGLEPlatformDisplay() = default;
@@ -268,9 +232,6 @@ struct ANGLEPlatformDisplay
                          EGLAttrib displayKey,
                          EGLAttrib nativePlatformType,
                          EGLAttrib x11VisualID,
-                         EGLAttrib vulkanDeviceUUID,
-                         EGLAttrib vulkanDriverUUID,
-                         EGLAttrib vulkanDriverID,
                          EGLAttrib enabledFeatureOverrides,
                          EGLAttrib disabledFeatureOverrides,
                          EGLAttrib disableAllNonOverriddenFeatures)
@@ -282,9 +243,6 @@ struct ANGLEPlatformDisplay
           displayKey(displayKey),
           nativePlatformType(nativePlatformType),
           x11VisualID(x11VisualID),
-          vulkanDeviceUUID(EGLAttribToVulkanUUID(vulkanDeviceUUID)),
-          vulkanDriverUUID(EGLAttribToVulkanUUID(vulkanDriverUUID)),
-          vulkanDriverID(vulkanDriverID),
           disableAllNonOverriddenFeatures(static_cast<bool>(disableAllNonOverriddenFeatures))
     {
         enabledFeatureOverridesHash =
@@ -296,9 +254,9 @@ struct ANGLEPlatformDisplay
     auto tie() const
     {
         return std::tie(nativeDisplayType, powerPreference, platformANGLEType, deviceIdHigh,
-                        deviceIdLow, displayKey, nativePlatformType, x11VisualID, vulkanDeviceUUID,
-                        vulkanDriverUUID, vulkanDriverID, enabledFeatureOverridesHash,
-                        disabledFeatureOverridesHash, disableAllNonOverriddenFeatures);
+                        deviceIdLow, displayKey, nativePlatformType, x11VisualID,
+                        enabledFeatureOverridesHash, disabledFeatureOverridesHash,
+                        disableAllNonOverriddenFeatures);
     }
 
     EGLNativeDisplayType nativeDisplayType{EGL_DEFAULT_DISPLAY};
@@ -309,9 +267,6 @@ struct ANGLEPlatformDisplay
     EGLAttrib displayKey{0};
     EGLAttrib nativePlatformType{0};
     EGLAttrib x11VisualID{0};
-    VulkanUUID vulkanDeviceUUID{};
-    VulkanUUID vulkanDriverUUID{};
-    EGLAttrib vulkanDriverID{0};
     size_t enabledFeatureOverridesHash;
     size_t disabledFeatureOverridesHash;
     bool disableAllNonOverriddenFeatures;
@@ -365,23 +320,6 @@ class PlatformDisplayMap : angle::NonCopyable
             }
         }
         return nullptr;
-    }
-
-    // Erasing by identity spares the caller of getOrInsert() from having to
-    // reproduce the key later.  Some of the attributes a key is built from are
-    // pointers into memory the application owns, which it is free to release
-    // once eglGetPlatformDisplay has returned.
-    void eraseDisplay(const Display *display)
-    {
-        std::lock_guard<angle::SimpleMutex> lock(mMutex);
-        for (auto iter = mDisplays.begin(); iter != mDisplays.end(); ++iter)
-        {
-            if (iter->second == display)
-            {
-                mDisplays.erase(iter);
-                return;
-            }
-        }
     }
 
     void erase(const Key &key)
@@ -914,29 +852,6 @@ void UpdateAttribsFromEnvironment(AttributeMap &attribMap)
 
 static constexpr uint32_t kScratchBufferLifetime = 64u;
 
-class [[nodiscard]] ScopedResetThreadContextOnError : angle::NonCopyable
-{
-  public:
-    ScopedResetThreadContextOnError(Thread *thread, bool resetOnError)
-        : mThread(thread), mResetOnError(resetOnError)
-    {}
-
-    ~ScopedResetThreadContextOnError()
-    {
-        if (mResetOnError)
-        {
-            mThread->setCurrent(nullptr);
-        }
-    }
-
-    // No error, so reset won't happen
-    void success() { mResetOnError = false; }
-
-  private:
-    Thread *mThread;
-    bool mResetOnError;
-};
-
 }  // anonymous namespace
 
 SyncSet::SyncSet() : mHandleAllocator(gl::IMPLEMENTATION_MAX_OBJECT_HANDLES) {}
@@ -946,7 +861,7 @@ SyncSet::~SyncSet()
     clearPools();
 }
 
-Error SyncSet::createSync(const ThreadSafeDisplay *display,
+Error SyncSet::createSync(Display *display,
                           const gl::Context *currentContext,
                           EGLenum type,
                           const AttributeMap &attribs,
@@ -988,7 +903,7 @@ Error SyncSet::createSync(const ThreadSafeDisplay *display,
     return NoError();
 }
 
-ScopedSyncRef SyncSet::getSync(ThreadSafeDisplay *display, SyncID syncID) const
+ScopedSyncRef SyncSet::getSync(Display *display, SyncID syncID) const
 {
     std::lock_guard<angle::SimpleMutex> lock(mMutex);
     auto iter = mSyncMap.find(syncID.value);
@@ -999,7 +914,7 @@ ScopedSyncRef SyncSet::getSync(ThreadSafeDisplay *display, SyncID syncID) const
     return ScopedSyncRef();
 }
 
-void SyncSet::destroySync(const ThreadSafeDisplay *display, SyncID syncID)
+void SyncSet::destroySync(Display *display, SyncID syncID)
 {
     std::lock_guard<angle::SimpleMutex> lock(mMutex);
     auto iter = mSyncMap.find(syncID.value);
@@ -1018,7 +933,7 @@ void SyncSet::destroySync(const ThreadSafeDisplay *display, SyncID syncID)
     }
 }
 
-void SyncSet::releaseSync(const ThreadSafeDisplay *display, Sync *sync)
+void SyncSet::releaseSync(Display *display, Sync *sync)
 {
     if (sync == nullptr)
     {
@@ -1031,7 +946,7 @@ void SyncSet::releaseSync(const ThreadSafeDisplay *display, Sync *sync)
     }
 }
 
-void SyncSet::releaseSyncImpl(const ThreadSafeDisplay *display, Sync *sync)
+void SyncSet::releaseSyncImpl(Display *display, Sync *sync)
 {
     sync->onDestroy(display);
     SyncPool &pool = mSyncPools[sync->getType()];
@@ -1088,101 +1003,16 @@ DisplayState::~DisplayState() {}
 
 void DisplayState::notifyDeviceLost() const
 {
-    // Notify all contexts and surfaces that the device has been lost. This needs to be protected by
-    // contextMap lock so that it is set atomically. This is the only place it gets set to true.
-    contextMap.notifyDeviceLost(&deviceLost);
-}
-
-// ThreadSafeDisplay implementation:
-bool ThreadSafeDisplay::isInitialized() const
-{
-    return (mRefCount.load(std::memory_order_acquire) & kInitializedBit) != 0;
-}
-
-bool ThreadSafeDisplay::isTerminating() const
-{
-    return (mRefCount.load(std::memory_order_acquire) & kTerminatingBit) != 0;
-}
-
-bool ThreadSafeDisplay::isInitializedAndNotTerminating() const
-{
-    // A single load ensures the initialized and terminating bits are observed as a consistent
-    // pair.  With two separate atomics, a reader could load an already-stale initialized flag and
-    // then observe the terminating bit after terminate() cleared it, reporting a state that never
-    // existed.
-    constexpr uint32_t kMask = kInitializedBit | kTerminatingBit;
-    return (mRefCount.load(std::memory_order_acquire) & kMask) == kInitializedBit;
-}
-
-void ThreadSafeDisplay::setInitialized()
-{
-    // Read-modify-write rather than a plain store: the reference count bits in the same word may
-    // be concurrently modified by other threads.
-    mRefCount.fetch_or(kInitializedBit, std::memory_order_release);
-}
-
-void ThreadSafeDisplay::setUninitialized()
-{
-    mRefCount.fetch_and(~kInitializedBit, std::memory_order_release);
-}
-
-bool ThreadSafeDisplay::isDeviceLost() const
-{
-    ASSERT(isInitialized());
-    return mState.deviceLost.load(std::memory_order_relaxed);
-}
-
-ScopedSyncRef ThreadSafeDisplay::getSync(egl::SyncID syncID) const
-{
-    // Looking up a sync does not modify the display, but the returned ScopedSyncRef releases the
-    // sync through ThreadSafeDisplay::releaseSync(), which does.
-    return mSyncSet.getSync(const_cast<ThreadSafeDisplay *>(this), syncID);
-}
-
-bool ThreadSafeDisplay::isValidSync(SyncID syncID) const
-{
-    return getSync(syncID).get() != nullptr;
-}
-
-void ThreadSafeDisplay::releaseSync(Sync *sync)
-{
-    mSyncSet.releaseSync(this, sync);
-}
-
-void ThreadSafeDisplay::destroySync(Sync *sync)
-{
-    if (sync == nullptr)
+    if (deviceLost)
     {
         return;
     }
-    mSyncSet.destroySync(this, sync->id());
-}
 
-Error ThreadSafeDisplay::createSync(const gl::Context *currentContext,
-                                    EGLenum type,
-                                    const AttributeMap &attribs,
-                                    Sync **outSync)
-{
-    ASSERT(isInitialized());
+    contextMap.forEach([](gl::Context *context) {
+        context->markContextLost(gl::GraphicsResetStatus::UnknownContextReset);
+    });
 
-    if (mThreadSafeImpl->testDeviceLost())
-    {
-        ANGLE_TRY(restoreLostDevice());
-    }
-
-    return mSyncSet.createSync(this, currentContext, type, attribs, outSync);
-}
-
-Error ThreadSafeDisplay::restoreLostDevice() const
-{
-    // If reset notifications have been requested, application must delete all contexts first
-    const bool noResetNotificationRequested = mState.contextMap.forEach(
-        [](gl::Context *context) { return !context->isResetNotificationEnabled(); });
-    if (!noResetNotificationRequested)
-    {
-        return egl::Error(EGL_CONTEXT_LOST);
-    }
-    return mThreadSafeImpl->restoreLostDevice(this);
+    deviceLost = true;
 }
 
 // Note that ANGLE support on Ozone platform is limited. Our preferred support Matrix for
@@ -1244,16 +1074,10 @@ Display *Display::GetDisplayFromNativeDisplay(EGLenum platform,
         updatedAttribMap.get(EGL_FEATURE_ALL_DISABLED_ANGLE, 0);
     const EGLAttrib nativePlatformType = GetPlatformTypeFromAttribs(platform, updatedAttribMap);
     const EGLAttrib x11VisualID        = updatedAttribMap.get(EGL_X11_VISUAL_ID_ANGLE, 0);
-    const EGLAttrib vulkanDeviceUUID =
-        updatedAttribMap.get(EGL_PLATFORM_ANGLE_VULKAN_DEVICE_UUID_ANGLE, 0);
-    const EGLAttrib vulkanDriverUUID =
-        updatedAttribMap.get(EGL_PLATFORM_ANGLE_VULKAN_DRIVER_UUID_ANGLE, 0);
-    const EGLAttrib vulkanDriverID =
-        updatedAttribMap.get(EGL_PLATFORM_ANGLE_VULKAN_DRIVER_ID_ANGLE, 0);
     const ANGLEPlatformDisplay combinedDisplayKey(
         nativeDisplay, powerPreference, platformANGLEType, deviceIdHigh, deviceIdLow, displayKey,
-        nativePlatformType, x11VisualID, vulkanDeviceUUID, vulkanDriverUUID, vulkanDriverID,
-        enabledFeatureOverrides, disabledFeatureOverrides, disableAllNonOverriddenFeatures);
+        nativePlatformType, x11VisualID, enabledFeatureOverrides, disabledFeatureOverrides,
+        disableAllNonOverriddenFeatures);
 
     display = GetANGLEPlatformDisplayMap()->getOrInsert(
         combinedDisplayKey, [platform, nativeDisplay]() -> Display * {
@@ -1308,7 +1132,7 @@ Display *Display::GetDisplayFromDevice(Device *device, const AttributeMap &attri
 }
 
 Display::Display(EGLenum platform, EGLNativeDisplayType displayId, Device *eglDevice)
-    : ThreadSafeDisplay(displayId),
+    : mState(displayId),
       mImplementation(nullptr),
       mGPUSwitchedBinding(this, kGPUSwitchedSubjectIndex),
       mAttributeMap(),
@@ -1318,7 +1142,9 @@ Display::Display(EGLenum platform, EGLNativeDisplayType displayId, Device *eglDe
       mInvalidImageMap(),
       mInvalidStreamSet(),
       mInvalidSurfaceMap(),
+      mInitialized(false),
       mCaps(),
+      mDisplayExtensions(),
       mDisplayExtensionString(),
       mVendorString(),
       mVersionString(),
@@ -1335,7 +1161,8 @@ Display::Display(EGLenum platform, EGLNativeDisplayType displayId, Device *eglDe
       mGlobalSemaphoreShareGroupUsers(0),
       mImageHandleAllocator(gl::IMPLEMENTATION_MAX_OBJECT_HANDLES),
       mSurfaceHandleAllocator(gl::IMPLEMENTATION_MAX_OBJECT_HANDLES, 64),
-      mTerminatedByApi(false)
+      mTerminatedByApi(false),
+      mRefCount(0)
 {}
 
 Display::~Display()
@@ -1347,7 +1174,19 @@ Display::~Display()
         case EGL_PLATFORM_WAYLAND_EXT:
         case EGL_PLATFORM_SURFACELESS_MESA:
         {
-            GetANGLEPlatformDisplayMap()->eraseDisplay(this);
+            GetANGLEPlatformDisplayMap()->erase(ANGLEPlatformDisplay(
+                mState.displayId,
+                mAttributeMap.get(EGL_POWER_PREFERENCE_ANGLE, EGL_LOW_POWER_ANGLE),
+                mAttributeMap.get(EGL_PLATFORM_ANGLE_TYPE_ANGLE,
+                                  EGL_PLATFORM_ANGLE_TYPE_DEFAULT_ANGLE),
+                mAttributeMap.get(EGL_PLATFORM_ANGLE_DEVICE_ID_HIGH_ANGLE, 0),
+                mAttributeMap.get(EGL_PLATFORM_ANGLE_DEVICE_ID_LOW_ANGLE, 0),
+                mAttributeMap.get(EGL_PLATFORM_ANGLE_DISPLAY_KEY_ANGLE, 0),
+                GetPlatformTypeFromAttribs(mPlatform, mAttributeMap),
+                mAttributeMap.get(EGL_X11_VISUAL_ID_ANGLE, 0),
+                mAttributeMap.get(EGL_FEATURE_OVERRIDES_ENABLED_ANGLE, 0),
+                mAttributeMap.get(EGL_FEATURE_OVERRIDES_DISABLED_ANGLE, 0),
+                mAttributeMap.get(EGL_FEATURE_ALL_DISABLED_ANGLE, 0)));
             break;
         }
         case EGL_PLATFORM_DEVICE_EXT:
@@ -1384,14 +1223,12 @@ void Display::onSubjectStateChange(angle::SubjectIndex index, angle::SubjectMess
 
 void Display::setupDisplayPlatform(rx::DisplayImpl *impl)
 {
-    ASSERT(!isInitialized());
+    ASSERT(!mInitialized);
     ASSERT(impl != nullptr);
     mDisplayMutex.assertLocked();
 
     SafeDelete(mImplementation);
     mImplementation = impl;
-
-    mThreadSafeImpl = impl->getThreadSafeDisplayImpl();
 
     // TODO(anglebug.com/42265835): Remove PlatformMethods.
     const angle::PlatformMethods *platformMethods =
@@ -1414,15 +1251,6 @@ void Display::setupDisplayPlatform(rx::DisplayImpl *impl)
     mState.featureOverrides.disabled = EGLStringArrayToStringVector(featuresForceDisabled);
     mState.featureOverrides.allDisabled =
         static_cast<bool>(mAttributeMap.get(EGL_FEATURE_ALL_DISABLED_ANGLE, 0));
-
-    // Take the UUIDs by value here, while eglGetPlatformDisplay is still
-    // running.  The backend consults them from eglInitialize, by which time the
-    // caller is free to have released the buffers the attributes point to.
-    mState.vulkanDeviceUUID = EGLAttribToOptionalVulkanUUID(
-        mAttributeMap.get(EGL_PLATFORM_ANGLE_VULKAN_DEVICE_UUID_ANGLE, 0));
-    mState.vulkanDriverUUID = EGLAttribToOptionalVulkanUUID(
-        mAttributeMap.get(EGL_PLATFORM_ANGLE_VULKAN_DRIVER_UUID_ANGLE, 0));
-
     mImplementation->addObserver(&mGPUSwitchedBinding);
 }
 
@@ -1580,7 +1408,7 @@ Error Display::initialize()
         mManagersMutex->addRef();
     }
 
-    setInitialized();
+    mInitialized = true;
 
     return NoError();
 }
@@ -1644,7 +1472,7 @@ Error Display::terminate(Thread *thread, TerminateReason terminateReason)
 
     // All subsequent calls assume the display to be valid and terminated by app.
     // If it is not terminated, if it isn't initialized, early return.
-    if (!mTerminatedByApi || !isInitialized())
+    if (!mTerminatedByApi || !mInitialized)
     {
         return NoError();
     }
@@ -1737,7 +1565,7 @@ Error Display::terminate(Thread *thread, TerminateReason terminateReason)
 
     mState.deviceLost = false;
 
-    setUninitialized();
+    mInitialized = false;
 
     gl::UninitializeDebugAnnotations();
 
@@ -1795,7 +1623,7 @@ Error Display::createWindowSurface(const Config *configuration,
                                    const AttributeMap &attribs,
                                    Surface **outSurface)
 {
-    if (mThreadSafeImpl->testDeviceLost())
+    if (mImplementation->testDeviceLost())
     {
         ANGLE_TRY(restoreLostDevice());
     }
@@ -1830,7 +1658,7 @@ Error Display::createPbufferSurface(const Config *configuration,
 {
     ASSERT(isInitialized());
 
-    if (mThreadSafeImpl->testDeviceLost())
+    if (mImplementation->testDeviceLost())
     {
         ANGLE_TRY(restoreLostDevice());
     }
@@ -1861,7 +1689,7 @@ Error Display::createPbufferFromClientBuffer(const Config *configuration,
 {
     ASSERT(isInitialized());
 
-    if (mThreadSafeImpl->testDeviceLost())
+    if (mImplementation->testDeviceLost())
     {
         ANGLE_TRY(restoreLostDevice());
     }
@@ -1892,7 +1720,7 @@ Error Display::createPixmapSurface(const Config *configuration,
 {
     ASSERT(isInitialized());
 
-    if (mThreadSafeImpl->testDeviceLost())
+    if (mImplementation->testDeviceLost())
     {
         ANGLE_TRY(restoreLostDevice());
     }
@@ -1924,7 +1752,7 @@ Error Display::createImage(const gl::Context *context,
 {
     ASSERT(isInitialized());
 
-    if (mThreadSafeImpl->testDeviceLost())
+    if (mImplementation->testDeviceLost())
     {
         ANGLE_TRY(restoreLostDevice());
     }
@@ -1996,7 +1824,7 @@ Error Display::createContext(const Config *configuration,
     ASSERT(!mTerminatedByApi);
     ASSERT(isInitialized());
 
-    if (mThreadSafeImpl->testDeviceLost())
+    if (mImplementation->testDeviceLost())
     {
         ANGLE_TRY(restoreLostDevice());
     }
@@ -2101,13 +1929,28 @@ Error Display::createContext(const Config *configuration,
     return NoError();
 }
 
+Error Display::createSync(const gl::Context *currentContext,
+                          EGLenum type,
+                          const AttributeMap &attribs,
+                          Sync **outSync)
+{
+    ASSERT(isInitialized());
+
+    if (mImplementation->testDeviceLost())
+    {
+        ANGLE_TRY(restoreLostDevice());
+    }
+
+    return mSyncSet.createSync(this, currentContext, type, attribs, outSync);
+}
+
 Error Display::makeCurrent(Thread *thread,
                            gl::Context *previousContext,
                            egl::Surface *drawSurface,
                            egl::Surface *readSurface,
                            gl::Context *context)
 {
-    if (!isInitialized())
+    if (!mInitialized)
     {
         return NoError();
     }
@@ -2135,7 +1978,6 @@ Error Display::makeCurrent(Thread *thread,
         ScopedContextMutexLock lock(context != nullptr ? &context->getContextMutex() : nullptr);
 
         thread->setCurrent(context);
-        ScopedResetThreadContextOnError resetOnError(thread, contextChanged);
 
         ANGLE_TRY(mImplementation->makeCurrent(this, drawSurface, readSurface, context));
 
@@ -2147,8 +1989,6 @@ Error Display::makeCurrent(Thread *thread,
                 context->addRef();
             }
         }
-
-        resetOnError.success();
     }
 
     // Tick all the scratch buffers to make sure they get cleaned up eventually if they stop being
@@ -2175,6 +2015,18 @@ Error Display::makeCurrent(Thread *thread,
     }
 
     return NoError();
+}
+
+Error Display::restoreLostDevice()
+{
+    // If reset notifications have been requested, application must delete all contexts first
+    const bool noResetNotificationRequested = mState.contextMap.forEach(
+        [](gl::Context *context) { return !context->isResetNotificationEnabled(); });
+    if (!noResetNotificationRequested)
+    {
+        return egl::Error(EGL_CONTEXT_LOST);
+    }
+    return mImplementation->restoreLostDevice(this);
 }
 
 Error Display::destroySurfaceImpl(Surface *surface, SurfaceMap *surfaces)
@@ -2328,6 +2180,11 @@ Error Display::destroyContext(Thread *thread, gl::Context *context)
     return NoError();
 }
 
+void Display::releaseSync(Sync *sync)
+{
+    mSyncSet.releaseSync(this, sync);
+}
+
 void Display::destroyImage(Image *image)
 {
     return destroyImageImpl(image, &mImageMap);
@@ -2343,11 +2200,26 @@ Error Display::destroySurface(Surface *surface)
     return destroySurfaceImpl(surface, &mState.surfaceMap);
 }
 
+void Display::destroySync(Sync *sync)
+{
+    if (sync == nullptr)
+    {
+        return;
+    }
+    mSyncSet.destroySync(this, sync->id());
+}
+
+bool Display::isDeviceLost() const
+{
+    ASSERT(isInitialized());
+    return mState.deviceLost;
+}
+
 bool Display::testDeviceLost()
 {
     ASSERT(isInitialized());
 
-    if (!mState.deviceLost && mThreadSafeImpl->testDeviceLost())
+    if (!mState.deviceLost && mImplementation->testDeviceLost())
     {
         notifyDeviceLost();
     }
@@ -2409,6 +2281,16 @@ const Caps &Display::getCaps() const
     return mCaps;
 }
 
+bool Display::isInitialized() const
+{
+    return mInitialized.load(std::memory_order_acquire) && !isTerminating();
+}
+
+bool Display::isTerminating() const
+{
+    return (mRefCount.load(std::memory_order_acquire) & kTerminatingBit) != 0;
+}
+
 bool Display::isValidConfig(const Config *config) const
 {
     return mConfigSet.contains(config);
@@ -2432,6 +2314,11 @@ bool Display::isValidImage(ImageID imageID) const
 bool Display::isValidStream(const Stream *stream) const
 {
     return mStreamSet.find(const_cast<Stream *>(stream)) != mStreamSet.end();
+}
+
+bool Display::isValidSync(SyncID syncID) const
+{
+    return getSync(syncID).get() != nullptr;
 }
 
 bool Display::hasExistingWindowSurface(EGLNativeWindowType window)
@@ -2692,20 +2579,17 @@ void Display::initializeFrontendFeatures()
 
     ANGLE_FEATURE_CONDITION(&mFrontendFeatures, forceMinimumMaxVertexAttributes, false);
 
-    // Incompatible redefinition of mutable textures is very tricky.  Changing the texture's base
-    // level at the same time makes it much more tricky and is severely untested in dEQP.  There are
-    // numerous GLES driver bugs around this combination of features.  Some backends of ANGLE are
-    // also prone to bugs in this area.  This feature can be used to disallow this combination on
-    // hardened contexts.
-    ANGLE_FEATURE_CONDITION(&mFrontendFeatures,
-                            disallowNonZeroBaseLevelAndIncompatibleLevelsOnHardenedContexts, false);
-
     // When the IR is built, use it by default.
 #ifdef ANGLE_IR
     ANGLE_FEATURE_CONDITION(&mFrontendFeatures, useIr, true);
 #endif
 
     mImplementation->initializeFrontendFeatures(&mFrontendFeatures);
+}
+
+const DisplayExtensions &Display::getExtensions() const
+{
+    return mDisplayExtensions;
 }
 
 const std::string &Display::getExtensionString() const
@@ -3033,6 +2917,11 @@ const egl::Image *Display::getImage(egl::ImageID imageID) const
     return iter != mImageMap.end() ? iter->second : nullptr;
 }
 
+ScopedSyncRef Display::getSync(egl::SyncID syncID) const
+{
+    return mSyncSet.getSync(const_cast<Display *>(this), syncID);
+}
+
 gl::Context *Display::getContext(gl::ContextID contextID)
 {
     return mState.contextMap.find(contextID);
@@ -3047,6 +2936,11 @@ egl::Image *Display::getImage(egl::ImageID imageID)
 {
     auto iter = mImageMap.find(imageID.value);
     return iter != mImageMap.end() ? iter->second : nullptr;
+}
+
+ScopedSyncRef Display::getSync(egl::SyncID syncID)
+{
+    return mSyncSet.getSync(this, syncID);
 }
 
 // static

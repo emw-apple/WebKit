@@ -1166,7 +1166,7 @@ void WebContextMenuProxyMac::didShowContextMenu(NSMenu *)
 
 void WebContextMenuProxyMac::didDismissContextMenu(NSMenu *menu)
 {
-    protect(page())->didDismissContextMenu(frameInfo());
+    protect(page())->didDismissContextMenu();
 
     if (m_captionStyleMenuController && [m_captionStyleMenuController hasAncestor:menu])
         captionStyleMenuDidClose();

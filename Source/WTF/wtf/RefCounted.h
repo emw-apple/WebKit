@@ -21,7 +21,6 @@
 #pragma once
 
 #include <wtf/RefCountDebugger.h>
-#include <wtf/SwiftBridging.h>
 
 namespace WTF {
 
@@ -82,17 +81,10 @@ public:
             delete const_cast<T*>(static_cast<const T*>(this));
     }
 
-#if defined(__swift__) && ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
-    void swiftRef() const
-    {
-        ref();
-    }
-#endif
-
 protected:
     RefCounted() = default;
     ~RefCounted() = default;
-} SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT BASE_CLASS_SWIFT_SHARED_REFERENCE(.swiftRef, .deref);
+} SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
 } // namespace WTF
 

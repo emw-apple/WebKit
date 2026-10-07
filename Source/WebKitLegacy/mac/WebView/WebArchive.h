@@ -29,13 +29,14 @@
 #import <Foundation/Foundation.h>
 #import <WebKitLegacy/WebKitAvailability.h>
 
+@class WebArchivePrivate;
 @class WebResource;
 
 /*!
     @const WebArchivePboardType
     @abstract The pasteboard type constant used when adding or accessing a WebArchive on the pasteboard.
 */
-extern NSString * const WebArchivePboardType WEBKIT_DEPRECATED_MAC(10_3, 10_14);
+extern NSString *WebArchivePboardType WEBKIT_DEPRECATED_MAC(10_3, 10_14);
 
 /*!
     @class WebArchive
@@ -46,6 +47,10 @@ extern NSString * const WebArchivePboardType WEBKIT_DEPRECATED_MAC(10_3, 10_14);
 */
 WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14)
 @interface WebArchive : NSObject <NSCoding, NSCopying>
+{
+@package
+    WebArchivePrivate *_private;
+}
 
 /*!
     @method initWithMainResource:subresources:subframeArchives:

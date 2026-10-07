@@ -30,7 +30,6 @@
 
 #include "LibWebRTCCodecs.h"
 #include "WebProcess.h"
-#include <WebCore/SharedBuffer.h>
 #include <wtf/StdUnorderedMap.h>
 #include <wtf/TZoneMallocInlines.h>
 
@@ -67,7 +66,7 @@ public:
 private:
     RemoteVideoDecoder(LibWebRTCCodecs::Decoder&, Ref<RemoteVideoDecoderCallbacks>&&);
 
-    Ref<DecodePromise> decode(WebCore::VideoEncodedData&&) final;
+    Ref<DecodePromise> decode(EncodedFrame&&) final;
     Ref<GenericPromise> flush() final;
     void reset() final;
     void close() final;
@@ -149,8 +148,7 @@ void RemoteVideoCodecFactory::createDecoder(const String& codec, const WebCore::
         return;
     }
     auto colorSpace = config.colorSpace;
-    bool isAnnexB = (*type == WebCore::VideoCodecType::H264 || *type == WebCore::VideoCodecType::H265) && config.description.isEmpty();
-    libWebRTCCodecs->createDecoderAndWaitUntilReady(*type, codec, isAnnexB, WTF::move(colorSpace), [width = config.width, height = config.height, description = Vector<uint8_t> { config.description }, createCallback = WTF::move(createCallback), outputCallback = WTF::move(outputCallback)](auto* internalDecoder) mutable {
+    libWebRTCCodecs->createDecoderAndWaitUntilReady(*type, codec, WTF::move(colorSpace), [width = config.width, height = config.height, description = Vector<uint8_t> { config.description }, createCallback = WTF::move(createCallback), outputCallback = WTF::move(outputCallback)](auto* internalDecoder) mutable {
         if (!internalDecoder) {
             createCallback(makeUnexpected("Decoder creation failed"_s));
             return;
@@ -207,7 +205,7 @@ RemoteVideoDecoder::~RemoteVideoDecoder()
     protect(WebProcess::singleton().libWebRTCCodecs())->releaseDecoder(m_internalDecoder);
 }
 
-Ref<RemoteVideoDecoder::DecodePromise> RemoteVideoDecoder::decode(WebCore::VideoEncodedData&& frame)
+Ref<RemoteVideoDecoder::DecodePromise> RemoteVideoDecoder::decode(EncodedFrame&& frame)
 {
     if (frame.duration)
         m_callbacks->addDuration(frame.timestamp, *frame.duration);

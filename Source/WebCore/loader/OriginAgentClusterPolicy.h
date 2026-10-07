@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <WebCore/IsSecureContext.h>
 #include <WebCore/OriginKeyed.h>
 #include <WebCore/PlatformExportMacros.h>
 
@@ -35,6 +34,6 @@ class ResourceResponse;
 class ScriptExecutionContext;
 
 // https://html.spec.whatwg.org/multipage/origin.html#origin-keyed-agent-clusters
-WEBCORE_EXPORT OriginKeyed obtainOriginAgentClusterPolicy(const ResourceResponse&, IsSecureContext, const ScriptExecutionContext*);
+WEBCORE_EXPORT OriginKeyed obtainOriginAgentClusterPolicy(const ResourceResponse&, const ScriptExecutionContext*);
 
 } // namespace WebCore

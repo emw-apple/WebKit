@@ -62,15 +62,15 @@ void WorkerDebugger::attachDebugger()
 {
     JSC::Debugger::attachDebugger();
 
-    protect(m_globalScope->script())->attachDebugger(this);
+    m_globalScope->script()->attachDebugger(this);
 }
 
 void WorkerDebugger::detachDebugger(bool isBeingDestroyed)
 {
     JSC::Debugger::detachDebugger(isBeingDestroyed);
 
-    if (CheckedPtr script = m_globalScope->script())
-        script->detachDebugger(this);
+    if (m_globalScope->script())
+        m_globalScope->script()->detachDebugger(this);
     if (!isBeingDestroyed)
         recompileAllJSFunctions();
 }

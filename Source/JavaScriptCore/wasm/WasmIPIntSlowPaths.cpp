@@ -1024,13 +1024,13 @@ WASM_IPINT_EXTERN_CPP_DECL(trace, CallFrame* callFrame, uint8_t* pc, uint8_t* mc
         IPINT_END();
 
     Wasm::IPIntCallee* callee = IPINT_CALLEE(callFrame);
-    SAFE_DATALOGF("<%p> %p%s / %p: executing +0x%x, %s, pc = %p, mc = %p\n",
+    dataLogF("<%p> %p%s / %p: executing +0x%x, %s, pc = %p, mc = %p\n",
         &Thread::currentSingleton(),
         instance,
-        makeString(callee->indexOrName()).utf8(),
+        makeString(callee->indexOrName()).ascii().data(),
         callFrame,
         static_cast<uint32_t>(pc - callee->bytecode()),
-        opcodeName(pc),
+        opcodeName(pc).characters(),
         pc, mc);
     IPINT_END();
 }

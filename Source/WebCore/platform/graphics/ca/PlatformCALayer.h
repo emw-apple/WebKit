@@ -29,7 +29,6 @@
 #include <WebCore/FloatPoint3D.h>
 #include <WebCore/FloatRoundedRect.h>
 #include <WebCore/LayerHostingContextIdentifier.h>
-#include <WebCore/PlatformCALayerClient.h>
 #include <WebCore/PlatformLayer.h>
 #include <WebCore/PlatformLayerIdentifier.h>
 #include <WebCore/ScrollingNodeID.h>
@@ -50,8 +49,10 @@ class EventRegion;
 class FilterOperations;
 class GraphicsContext;
 class GraphicsLayer;
+class LayerPool;
 class PlatformCALayer;
 class PlatformCAAnimation;
+class PlatformCALayerClient;
 class TiledBacking;
 
 struct AppleVisualEffectData;
@@ -361,7 +362,7 @@ public:
 #endif
 
     virtual Ref<PlatformCALayer> createCompatibleLayer(LayerType, PlatformCALayerClient*) const = 0;
-    Ref<PlatformCALayer> createCompatibleLayerWithSize(LayerType, PlatformCALayerClient*, IntSize) const;
+    Ref<PlatformCALayer> createCompatibleLayerOrTakeFromPool(LayerType, PlatformCALayerClient*, IntSize);
 
     virtual void enumerateRectsBeingDrawn(GraphicsContext&, void (^block)(FloatRect)) = 0;
 
@@ -379,6 +380,7 @@ public:
     static ContentsFormat contentsFormatForLayer(PlatformCALayerClient* = nullptr);
 
     virtual void markFrontBufferVolatileForTesting() { }
+    void moveToLayerPool();
 
     virtual void dumpAdditionalProperties(TextStream&, OptionSet<PlatformLayerTreeAsTextFlags>);
 
@@ -389,6 +391,8 @@ public:
 
 protected:
     PlatformCALayer(LayerType, PlatformCALayerClient* owner);
+
+    virtual LayerPool* layerPool();
 
     const LayerType m_layerType;
     const PlatformLayerIdentifier m_layerID;

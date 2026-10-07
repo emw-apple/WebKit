@@ -534,9 +534,13 @@ void NetworkConnectionToWebProcess::didReceiveInvalidMessage(IPC::Connection&, I
     protect(m_networkProcess->parentProcessConnection())->send(Messages::NetworkProcessProxy::TerminateWebProcess(m_webProcessIdentifier, messageName), 0);
 }
 
-void NetworkConnectionToWebProcess::queryLocalNetworkAccessPermission(std::optional<WebPageProxyIdentifier> webPageProxyID, WebCore::ClientOrigin&& origin, WebCore::IPAddressSpace addressSpace, CompletionHandler<void(std::optional<WebCore::PermissionState>)>&& completion)
+void NetworkConnectionToWebProcess::queryLocalNetworkAccessPermission(WebCore::ClientOrigin&& origin, WebCore::IPAddressSpace addressSpace, CompletionHandler<void(std::optional<WebCore::PermissionState>)>&& completion)
 {
-    protect(m_networkProcess->parentProcessConnection())->sendWithAsyncReply(Messages::NetworkProcessProxy::QueryLocalNetworkAccessPermission(sessionID(), webPageProxyID, origin, addressSpace), WTF::move(completion));
+    CheckedPtr session = networkSession();
+    // No session is not a decision, and Prompt is how "nothing recorded" is already reported.
+    if (!session)
+        return completion(WebCore::PermissionState::Prompt);
+    completion(session->localNetworkAccessPermission(origin, addressSpace));
 }
 
 void NetworkConnectionToWebProcess::createSocketChannel(const ResourceRequest& request, const String& protocol, WebSocketIdentifier identifier, WebPageProxyIdentifier webPageProxyID, std::optional<FrameIdentifier> frameID, std::optional<PageIdentifier> pageID, const ClientOrigin& clientOrigin, bool hadMainFrameMainResourcePrivateRelayed, bool allowPrivacyProxy, OptionSet<AdvancedPrivacyProtections> advancedPrivacyProtections, WebCore::StoredCredentialsPolicy storedCredentialsPolicy, WebCore::IsInitiatedByDedicatedWorker isInitiatedByDedicatedWorker)
@@ -633,25 +637,13 @@ void NetworkConnectionToWebProcess::scheduleResourceLoad(NetworkResourceLoadPara
 
     if (existingLoaderToResume) {
         if (CheckedPtr session = networkSession()) {
-            auto claim = session->takeLoaderAwaitingWebProcessTransfer(*existingLoaderToResume, m_webProcessIdentifier);
-            switch (claim.outcome) {
-            case NetworkSession::LoaderAwaitingWebProcessTransferOutcome::Success:
+            if (auto existingLoader = session->takeLoaderAwaitingWebProcessTransfer(*existingLoaderToResume)) {
                 CONNECTION_RELEASE_LOG(Loading, "scheduleResourceLoad: Resuming existing NetworkResourceLoader");
-                completeQueuedExistingLoaderResume(claim.loader.releaseNonNull(), WTF::move(loadParameters));
+                m_networkResourceLoaders.add(*identifier, *existingLoader);
+                existingLoader->transferToNewWebProcess(*this, loadParameters);
                 return;
-            case NetworkSession::LoaderAwaitingWebProcessTransferOutcome::WrongCaller:
-                MESSAGE_CHECK(false);
-                return;
-            case NetworkSession::LoaderAwaitingWebProcessTransferOutcome::Pending:
-                if (!session->queuePendingLoaderClaim(*existingLoaderToResume, *this, WTF::move(loadParameters))) {
-                    CONNECTION_RELEASE_LOG_ERROR(Loading, "scheduleResourceLoad: Pending-claim queue full for parked loader %" PRIu64, existingLoaderToResume->toUInt64());
-                    MESSAGE_CHECK(false);
-                }
-                return;
-            case NetworkSession::LoaderAwaitingWebProcessTransferOutcome::NotFound:
-                CONNECTION_RELEASE_LOG_ERROR(Loading, "scheduleResourceLoad: Could not find existing NetworkResourceLoader to resume, will do a fresh load");
-                break;
             }
+            CONNECTION_RELEASE_LOG_ERROR(Loading, "scheduleResourceLoad: Could not find existing NetworkResourceLoader to resume, will do a fresh load");
         } else
             CONNECTION_RELEASE_LOG_ERROR(Loading, "scheduleResourceLoad: Could not find network session of existing NetworkResourceLoader to resume, will do a fresh load");
     }
@@ -666,20 +658,6 @@ void NetworkConnectionToWebProcess::scheduleResourceLoad(NetworkResourceLoadPara
     Ref loader = m_networkResourceLoaders.add(*identifier, NetworkResourceLoader::create(WTF::move(loadParameters), *this)).iterator->value;
 
     loader->startWithServiceWorker();
-}
-
-void NetworkConnectionToWebProcess::completeQueuedExistingLoaderResume(Ref<NetworkResourceLoader>&& loader, NetworkResourceLoadParameters&& loadParameters)
-{
-    auto identifier = loadParameters.identifier;
-    ASSERT(identifier);
-    m_networkResourceLoaders.add(*identifier, loader.copyRef());
-    loader->transferToNewWebProcess(*this, loadParameters);
-}
-
-void NetworkConnectionToWebProcess::terminateForInvalidLoaderResumeClaim()
-{
-    RELEASE_LOG_FAULT(IPC, "NetworkConnectionToWebProcess::terminateForInvalidLoaderResumeClaim: WebContent process %" PRIu64 " queued a resume for a parked NetworkResourceLoader assigned to a different process; requesting termination", m_webProcessIdentifier.toUInt64());
-    protect(m_networkProcess->parentProcessConnection())->send(Messages::NetworkProcessProxy::TerminateWebProcess(m_webProcessIdentifier, IPC::MessageName::NetworkConnectionToWebProcess_ScheduleResourceLoad), 0);
 }
 
 void NetworkConnectionToWebProcess::performSynchronousLoad(NetworkResourceLoadParameters&& loadParameters, CompletionHandler<void(const ResourceError&, const ResourceResponse, Vector<uint8_t>&&)>&& reply)
@@ -747,22 +725,6 @@ void NetworkConnectionToWebProcess::browsingContextRemoved(WebPageProxyIdentifie
             cache->browsingContextRemoved(webPageProxyID, webPageID, webFrameID);
     }
     m_lastRootActivityCompletionCodesForTesting.remove(webPageID);
-}
-
-void NetworkConnectionToWebProcess::recordLocalNetworkAccessFrame(FrameIdentifier frameID, LocalNetworkAccessFrameRecord&& record)
-{
-    m_localNetworkAccessFrameRecords.set(frameID, WTF::move(record));
-}
-
-auto NetworkConnectionToWebProcess::localNetworkAccessFrameRecord(FrameIdentifier frameID, std::optional<FrameIdentifier> parentFrameID) const -> std::optional<LocalNetworkAccessFrameRecord>
-{
-    if (auto iterator = m_localNetworkAccessFrameRecords.find(frameID); iterator != m_localNetworkAccessFrameRecords.end())
-        return iterator->value;
-    if (!parentFrameID)
-        return std::nullopt;
-    if (auto iterator = m_localNetworkAccessFrameRecords.find(*parentFrameID); iterator != m_localNetworkAccessFrameRecords.end())
-        return iterator->value;
-    return std::nullopt;
 }
 
 void NetworkConnectionToWebProcess::prefetchDNS(const String& hostname)
@@ -2147,7 +2109,6 @@ void NetworkConnectionToWebProcess::destroyWebTransportSession(WebTransportSessi
 
 void NetworkConnectionToWebProcess::clearFrameLoadRecordsForStorageAccess(WebCore::FrameIdentifier frameID)
 {
-    m_localNetworkAccessFrameRecords.remove(frameID);
     if (CheckedPtr session = networkSession()) {
         if (RefPtr resourceLoadStatistics = session->resourceLoadStatistics())
             resourceLoadStatistics->clearFrameLoadRecordsForStorageAccess(frameID);
@@ -2184,23 +2145,6 @@ void NetworkConnectionToWebProcess::takeInvalidMessageStringForTesting(Completio
     if (error.isNull())
         error = emptyString();
     callback(WTF::move(error));
-}
-
-void NetworkConnectionToWebProcess::addSyntheticParkedLoaderForTesting(NetworkResourceLoadIdentifier identifier, WebCore::ProcessIdentifier destination, CompletionHandler<void(bool)>&& reply)
-{
-    CheckedPtr session = networkSession();
-    if (!session) {
-        reply(false);
-        return;
-    }
-    reply(session->addSyntheticLoaderAwaitingWebProcessTransferForTesting(identifier, destination));
-}
-
-void NetworkConnectionToWebProcess::removeSyntheticParkedLoaderForTesting(NetworkResourceLoadIdentifier identifier, CompletionHandler<void()>&& reply)
-{
-    if (CheckedPtr session = networkSession())
-        session->removeSyntheticLoaderAwaitingWebProcessTransferForTesting(identifier);
-    reply();
 }
 #endif
 

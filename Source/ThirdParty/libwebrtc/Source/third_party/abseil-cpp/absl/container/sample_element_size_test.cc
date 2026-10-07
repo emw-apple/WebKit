@@ -13,14 +13,12 @@
 // limitations under the License.
 
 #include <cstddef>
-#include <cstring>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/base/config.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/container/internal/hashtablez_sampler.h"

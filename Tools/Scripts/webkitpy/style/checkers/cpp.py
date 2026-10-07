@@ -1510,36 +1510,6 @@ def regex_for_lambdas_and_blocks(line, line_number, file_state, error):
 regex_for_lambdas_and_blocks.__last_error = None
 
 
-def check_lambda_parameter_list(clean_lines, line_number, file_state, error):
-    """Looks for lambdas with an empty parameter list or a space before their parameter list.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      file_state: A _FileState instance which maintains information about
-                  the state of things in the file.
-      error: The function to call with any errors found.
-    """
-
-    if file_state.is_c_or_objective_c():
-        return
-
-    line = clean_lines.elided[line_number]
-
-    # Skips subscripts, operator[], delete[] and Objective-C messages.
-    lambda_start = (r'(?:^|[^\w\])\s]|\breturn)\s*\[(?!\s*[\w.]+\s+\w+\s*\])(?:[^\[\]:]|::)*\]'
-                    r'(?:<[^<>]*(?:<[^<>]*>[^<>]*)*>)?')
-    empty_parameter_list = r'\(\s*\)(?=\s*(?:\{|->|(?:mutable|constexpr|consteval|static|noexcept|ALWAYS_INLINE_LAMBDA)\b))'
-
-    if search(lambda_start + r'\s*' + empty_parameter_list, line):
-        error(line_number, 'readability/lambda_parens', 4,
-              'Omit () for a lambda without parameters.')
-
-    if search(lambda_start + r'\s+(?!' + empty_parameter_list + r')\(', line):
-        error(line_number, 'whitespace/parens', 4,
-              'Extra space before ( in lambda.')
-
-
 def check_for_non_standard_constructs(clean_lines, line_number,
                                       class_state, error):
     r"""Logs an error if we see certain non-ANSI constructs ignored by gcc-2.
@@ -2556,23 +2526,6 @@ def check_spacing(file_extension, clean_lines, line_number, file_state, error):
               'Semicolon defining empty statement for this loop. Use { } instead.')
 
 
-def is_in_objective_c_dictionary_literal(clean_lines, line_number):
-    """Returns True if the innermost bracket enclosing the start of the line is an Objective-C @{ dictionary literal."""
-    depth = 0
-    for current_line_number in range(line_number - 1, -1, -1):
-        line = clean_lines.elided[current_line_number]
-        for position in range(len(line) - 1, -1, -1):
-            character = line[position]
-            if character in ')]}':
-                depth += 1
-            elif character in '([{':
-                if depth:
-                    depth -= 1
-                    continue
-                return character == '{' and line[position - 1:position] == '@'
-    return False
-
-
 def check_member_initialization_list(clean_lines, line_number, error):
     """ Look for style errors in member initialization list of classes.
 
@@ -2594,8 +2547,7 @@ def check_member_initialization_list(clean_lines, line_number, error):
     # with the colon or comma preceding the member on that line.
     begin_line = line
     # match the start of initialization list
-    if (search(r'^(?P<indentation>\s*)((explicit\s+)?[^(\s|\?)]+\([^\?]*\)\s?\:|^(\s|\?)*\:)([^\:]|\Z)[^;]*$', line)
-            and not is_in_objective_c_dictionary_literal(clean_lines, line_number)):
+    if search(r'^(?P<indentation>\s*)((explicit\s+)?[^(\s|\?)]+\([^\?]*\)\s?\:|^(\s|\?)*\:)([^\:]|\Z)[^;]*$', line):
         if search(r'[^:]\:[^\:\s]+', line) and not search(r'^\s*:\s\S+', line):
             error(line_number, 'whitespace/init', 4,
                 'Missing spaces around :')
@@ -2705,7 +2657,7 @@ def check_namespace_indentation(clean_lines, line_number, file_extension, file_s
 _ALLOW_ALL_UPPERCASE_ENUM = ['JSTokenType']
 
 # Enum value allowlist
-_ALLOW_ABBREVIATION_ENUM_VALUES = ['AM', 'CF', 'COOP', 'CSS', 'GPU', 'JSON', 'LTR', 'PM', 'RTL', 'URL', 'XHR']
+_ALLOW_ABBREVIATION_ENUM_VALUES = ['AM', 'CF', 'COOP', 'GPU', 'JSON', 'LTR', 'PM', 'RTL', 'URL', 'XHR']
 
 
 def check_enum_members(clean_lines, line_number, enum_state, error):
@@ -2773,47 +2725,9 @@ def get_initial_spaces_for_line(clean_line):
     return initial_spaces
 
 
-_OBJECTIVE_C_SELECTOR_CONTINUATION = r'(?P<keyword>\s+\w+):(?!:)'
-
-
-def get_objective_c_method_declaration_colon_columns(clean_lines, line_number):
-    """Returns the columns of the selector colons above the line if it continues a multi-line
-    Objective-C method declaration that starts with '- (' or '+ (', or None otherwise."""
-    colon_columns = []
-    current_line_number = line_number
-    while current_line_number > 0 and match(_OBJECTIVE_C_SELECTOR_CONTINUATION, clean_lines.elided[current_line_number]):
-        current_line_number -= 1
-        line = clean_lines.elided[current_line_number]
-        continuation = match(_OBJECTIVE_C_SELECTOR_CONTINUATION, line)
-        if continuation:
-            colon_columns.append(continuation.end('keyword'))
-            continue
-        if not (line.startswith('- (') or line.startswith('+ (')):
-            return None
-        # The first selector colon follows the parenthesized return type.
-        depth = 0
-        for position in range(2, len(line)):
-            if line[position] == '(':
-                depth += 1
-            elif line[position] == ')':
-                depth -= 1
-                if not depth:
-                    colon_column = line.find(':', position)
-                    if colon_column >= 0:
-                        colon_columns.append(colon_column)
-                    break
-        return colon_columns
-    return None
-
-
 def check_indentation_amount(clean_lines, line_number, error):
     line = clean_lines.elided[line_number]
     initial_spaces = get_initial_spaces_for_line(line)
-
-    # Objective-C selector pieces may be aligned on their colons.
-    colon_columns = get_objective_c_method_declaration_colon_columns(clean_lines, line_number)
-    if colon_columns and line.find(':') in colon_columns:
-        return
 
     if initial_spaces % 4:
         error(line_number, 'whitespace/indent', 3,
@@ -3022,83 +2936,6 @@ def check_wtf_to_array(clean_lines, line_number, file_state, error):
     using_std_to_array = search(r'\bstd::to_array\s*[<(]', line)
     if using_std_to_array:
         error(line_number, 'runtime/wtf_to_array', 4, "Use 'WTF::toArray()' instead of 'std::to_array()'.")
-
-
-def check_utf8cstring_from_utf8(clean_lines, line_number, file_state, error):
-    """Looks for a UTF8CString constructed from 'byteCast<char8_t>()', which should use
-    'UTF8CString::unsafeFromUTF8()' or 'UTF8CString::fromUTF8()' instead.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      file_state: A _FileState instance which maintains information about
-                  the state of things in the file.
-      error: The function to call with any errors found.
-    """
-
-    # This check doesn't apply to C or Objective-C implementation files.
-    if file_state.is_c_or_objective_c():
-        return
-
-    line = clean_lines.elided[line_number]  # Get rid of comments and strings.
-
-    if search(r'\bUTF8CString(\s+\w+)?\s*[({]\s*byteCast\s*<\s*char8_t\s*>\s*\(', line):
-        error(line_number, 'runtime/utf8cstring_from_utf8', 4,
-              "Use 'UTF8CString::unsafeFromUTF8()' or 'UTF8CString::fromUTF8()' instead of constructing a UTF8CString from 'byteCast<char8_t>()'.")
-
-
-# Matches '.append(T { })', '->append(T())', 'append(Foo::Bar<Baz>{})', 'append({ })', etc.
-# The call is either through a receiver ('.' or '->'), or bare / base-qualified ('append(',
-# 'Base::append(') where it cannot be a declaration such as 'void append(Foo());': at the start
-# of the line, after 'return', or after one of '(', ',', '=', '{', '?', ';'.  A lowercase final
-# name component is a function call such as 'append(foo())', not a type; 'std::optional' and
-# 'std::pair' are the only lowercase type names recognized.
-_RE_PATTERN_APPEND_DEFAULT_CONSTRUCTED_TEMPORARY = re.compile(
-    r'(?:(?:\.|->)\s*|(?:^|(?<=[(,={?;])|\breturn\b)\s*(?:::)?(?:\w+(?:\s*<[^;()]*>)?::)*)'
-    r'append\s*\(\s*'
-    r'(?:(?P<type>(?:::)?(?:\w+::)*[A-Z]\w*(?:\s*<[^;()]*>)?|std::(?:optional|pair)(?:\s*<[^;()]*>)?)\s*(?:\{\s*\}|\(\s*\))'
-    r'|(?P<empty_braces>\{\s*\}))'
-    r'\s*\)')
-
-
-def check_construct_and_append(clean_lines, line_number, file_state, error):
-    """Looks for 'append(T { })', 'append(T())', or 'append({ })' which should be replaced with 'constructAndAppend()'.
-
-    append() constructs a default-constructed temporary in the caller's stack frame,
-    moves it into the container, and destroys it, while constructAndAppend() constructs
-    the element in place.  The receiver's type is unknown here, so the message is
-    conditional on it being a container that has constructAndAppend().  When the element
-    type is a WTF::Variant with a 'T' alternative, a bare constructAndAppend() would construct
-    the first alternative instead, so the message also names 'constructAndAppend(WTF::InPlaceType<T>)'.
-    'append({ })' always constructs the element type itself, so only constructAndAppend()
-    is suggested for it.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      file_state: A _FileState instance which maintains information about
-                  the state of things in the file.
-      error: The function to call with any errors found.
-    """
-
-    # This check doesn't apply to C or Objective-C implementation files.
-    if file_state.is_c_or_objective_c():
-        return
-
-    line = clean_lines.elided[line_number]  # Get rid of comments and strings.
-
-    for append_match in _RE_PATTERN_APPEND_DEFAULT_CONSTRUCTED_TEMPORARY.finditer(line):
-        if append_match.group('empty_braces'):
-            error(line_number, 'runtime/construct_and_append', 4,
-                  "If this is a WTF::Vector or Deque, use 'constructAndAppend()' to construct the element in place "
-                  "instead of constructing, moving from, and destroying a value-initialized temporary, which costs code size and caller stack space.")
-            continue
-        type_name = append_match.group('type')
-        error(line_number, 'runtime/construct_and_append', 4,
-              "If this is a WTF::Vector, SegmentedVector, or Deque of '%s', use 'constructAndAppend()'; if its element type is a "
-              "WTF::Variant with a '%s' alternative, use 'constructAndAppend(WTF::InPlaceType<%s>)'.  Either constructs the element in place "
-              "instead of constructing, moving from, and destroying a '%s' temporary, which costs code size and caller stack space."
-              % (type_name, type_name, type_name, type_name))
 
 
 def check_unsafe_get(clean_lines, line_number, file_state, error):
@@ -3319,242 +3156,6 @@ def check_wtf_xpc_object_ptr(clean_lines, line_number, file_state, error):
         return
 
 
-_GLIB_STRING_WRAPPERS = {
-    'g_build_filename': 'gBuildFilename',
-    'g_dbus_connection_emit_signal': 'gDBusConnectionEmitSignal',
-    'g_error_new': 'SAFE_G_ERROR_NEW',
-    'g_file_new_for_path': 'gFileNewForPath',
-    'g_key_file_load_from_data': 'gKeyFileLoadFromData',
-    'g_markup_escape_text': 'gMarkupEscapeText',
-    'g_object_new': 'gObjectNew',
-    'g_quark_from_string': 'gQuarkFromString',
-    'g_set_error': 'SAFE_G_SET_ERROR',
-    'g_signal_emit': 'gSignalEmit',
-    'g_strdup': 'gStrdup',
-    'g_strdup_printf': 'SAFE_G_STRDUP_PRINTF',
-    'g_task_return_new_error': 'SAFE_G_TASK_RETURN_NEW_ERROR',
-    'g_value_set_string': 'gValueSetString',
-    'g_variant_builder_add': 'gVariantBuilderAdd',
-    'g_variant_new': 'gVariantNew',
-    'g_variant_new_string': 'gVariantNewString',
-    'g_warning': 'SAFE_G_WARNING',
-}
-
-# The SAFE_G_* macros do not convert the format argument, so a pointer passed there cannot be replaced.
-_GLIB_PRINTF_FORMAT_ARGUMENT_INDEX = {
-    'g_error_new': 2,
-    'g_set_error': 3,
-    'g_strdup_printf': 0,
-    'g_task_return_new_error': 3,
-    'g_warning': 0,
-}
-
-_GSTREAMER_STRING_WRAPPERS = {
-    'gst_structure_new': 'gstStructureNew',
-    'gst_structure_set': 'gstStructureSet',
-}
-
-
-_POSIX_STRING_WRAPPERS = {
-    'access': 'posixAccess',
-    'chflags': 'posixChflags',
-    'chmod': 'posixChmod',
-    'dlopen': 'posixDlopen',
-    'fopen': 'posixFopen',
-    'lstat': 'posixLstat',
-    'mkdir': 'posixMkdir',
-    'open': 'posixOpen',
-    'opendir': 'posixOpendir',
-    'realpath': 'posixRealpath',
-    'rename': 'posixRename',
-    'shm_open': 'posixShmOpen',
-    'shm_unlink': 'posixShmUnlink',
-    'stat': 'posixStat',
-    'statvfs': 'posixStatvfs',
-    'statx': 'posixStatx',
-    'symlink': 'posixSymlink',
-    'unlink': 'posixUnlink',
-}
-
-def _enclosing_function_call(clean_lines, line_number, position):
-    """Returns the name of the function whose argument list contains the given position, or None.
-
-    Looks back across previous lines, so that arguments on continuation lines are attributed to their call.
-    """
-
-    return _enclosing_function_call_and_argument_index(clean_lines, line_number, position)[0]
-
-
-def _enclosing_function_call_and_argument_index(clean_lines, line_number, position):
-    """Returns the name of the function whose argument list contains the given position, and the index of the
-    argument containing it, or (None, None).
-    """
-
-    depth = 0
-    argument_index = 0
-    for current_line_number in range(line_number, max(line_number - 10, -1), -1):
-        line = clean_lines.elided[current_line_number]
-        end = position if current_line_number == line_number else len(line)
-        for index in range(end - 1, -1, -1):
-            character = line[index]
-            if character == ')':
-                depth += 1
-            elif character == '(':
-                if depth:
-                    depth -= 1
-                    continue
-                # A leading '::' names the global function, but any other qualifier names a different one.
-                name = search(r'(?:^|[^\w.>:])(?:::)?(\w+)\s*$', line[:index])
-                return (name.group(1), argument_index) if name else (None, None)
-            elif character == ',' and not depth:
-                argument_index += 1
-            elif character in ';{}' and not depth:
-                return (None, None)
-    return (None, None)
-
-
-def _check_string_wrappers(clean_lines, line_number, file_state, error, wrappers, header, category, format_argument_indices):
-    """Looks for functions in wrappers called with legacyCStringPointer(), which should use the wrappers in header."""
-
-    if file_state.is_c_or_objective_c():
-        return
-
-    line = clean_lines.elided[line_number]  # Get rid of comments and strings.
-    if 'legacyCStringPointer' not in line:
-        return
-
-    reported_functions = set()
-    for pointer_call in re.finditer(r'\blegacyCStringPointer\s*\(', line):
-        function, argument_index = _enclosing_function_call_and_argument_index(clean_lines, line_number, pointer_call.start())
-        wrapper = wrappers.get(function)
-        if not wrapper or function in reported_functions:
-            continue
-        if argument_index == format_argument_indices.get(function):
-            continue
-        reported_functions.add(function)
-        error(line_number, category, 4,
-              "Use '%s()' from %s instead of '%s()', and pass the typed string instead of calling legacyCStringPointer()." % (wrapper, header, function))
-
-
-def check_glib_string_wrappers(clean_lines, line_number, file_state, error):
-    """Looks for GLib functions called with legacyCStringPointer(), which should use the wrappers in wtf/glib/GLibExtras.h or GStreamerCommon.h.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      file_state: A _FileState instance which maintains information about
-                  the state of things in the file.
-      error: The function to call with any errors found.
-    """
-
-    _check_string_wrappers(clean_lines, line_number, file_state, error, _GLIB_STRING_WRAPPERS, '<wtf/glib/GLibExtras.h>', 'runtime/glib_string_wrappers', _GLIB_PRINTF_FORMAT_ARGUMENT_INDEX)
-    _check_string_wrappers(clean_lines, line_number, file_state, error, _GSTREAMER_STRING_WRAPPERS, '"GStreamerCommon.h"', 'runtime/glib_string_wrappers', {})
-
-
-def check_posix_string_wrappers(clean_lines, line_number, file_state, error):
-    """Looks for POSIX functions called with legacyCStringPointer(), which should use the wrappers in wtf/posix/POSIXExtras.h.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      file_state: A _FileState instance which maintains information about
-                  the state of things in the file.
-      error: The function to call with any errors found.
-    """
-
-    _check_string_wrappers(clean_lines, line_number, file_state, error, _POSIX_STRING_WRAPPERS, '<wtf/posix/POSIXExtras.h>', 'runtime/posix_string_wrappers', {})
-
-
-_STRING_EXPRESSION = r'((?:[A-Za-z_]\w*(?:\(\s*\))?\s*(?:\.|->)\s*)*[A-Za-z_]\w*(?:\(\s*\))?)'
-_LEGACY_CSTRING_POINTER_WITH_LENGTH_PATTERN = re.compile(
-    r'\b' + _STRING_EXPRESSION + r'\s*\.\s*legacyCStringPointer\s*\(\s*\)\s*,\s*' + _STRING_EXPRESSION + r'\s*\.\s*(?:length|size)\s*\(\s*\)')
-
-
-def check_legacy_cstring_pointer_with_length(clean_lines, line_number, file_state, error):
-    """Looks for legacyCStringPointer() passed along with the length of the same string, which does not need a null terminator.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      file_state: A _FileState instance which maintains information about
-                  the state of things in the file.
-      error: The function to call with any errors found.
-    """
-
-    if file_state.is_c_or_objective_c():
-        return
-
-    line = clean_lines.elided[line_number]  # Get rid of comments and strings.
-    if 'legacyCStringPointer' not in line:
-        return
-
-    for match in _LEGACY_CSTRING_POINTER_WITH_LENGTH_PATTERN.finditer(line):
-        if re.sub(r'\s', '', match.group(1)) != re.sub(r'\s', '', match.group(2)):
-            continue
-        error(line_number, 'runtime/legacy_cstring_pointer_with_length', 4,
-              "Store '%s.span()', or 'byteCast<char>(%s.span())' for a const char* parameter, in a local and pass its data() and size() "
-              "instead of calling legacyCStringPointer(), since the length is passed too. Use 'gBytesNew()' or 'gBytesNewStatic()' from "
-              "<wtf/glib/GLibExtras.h> instead of 'g_bytes_new()' or 'g_bytes_new_static()'."
-              % (match.group(1), match.group(1)))
-
-
-# printf-style logging and assertion macros that convert typed string arguments themselves.
-_TYPED_STRING_PRINTF_MACROS = frozenset([
-    'ASSERT_WITH_MESSAGE',
-    'ASSERT_WITH_MESSAGE_UNUSED',
-    'LOG',
-    'LOG_ERROR',
-    'LOG_ONCE',
-    'LOG_VERBOSE',
-    'LOG_WITH_LEVEL',
-    'RELEASE_ASSERT_WITH_MESSAGE',
-    'SAFE_DATALOGF',
-    'SAFE_FPRINTF',
-    'SAFE_PRINTF',
-    'SAFE_SPRINTF',
-    'SAFE_WTFLOGALWAYS',
-])
-
-
-def _is_typed_string_printf_macro(name):
-    if name in _TYPED_STRING_PRINTF_MACROS:
-        return True
-    # RELEASE_LOG() and its variants, including per-file wrappers such as WEBPAGEPROXY_RELEASE_LOG(). The
-    # _FORWARDABLE variants take typed message parameters rather than printf arguments.
-    return 'RELEASE_LOG' in name and 'FORWARDABLE' not in name
-
-
-def check_log_string_conversions(clean_lines, line_number, file_state, error):
-    """Looks for strings unwrapped to a pointer for a logging macro that converts typed strings itself.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      file_state: A _FileState instance which maintains information about
-                  the state of things in the file.
-      error: The function to call with any errors found.
-    """
-
-    if file_state.is_c_or_objective_c():
-        return
-
-    line = clean_lines.elided[line_number]  # Get rid of comments and strings.
-    if 'legacyCStringPointer' not in line and '.data()' not in line:
-        return
-
-    for pointer_call in re.finditer(r'\blegacyCStringPointer\s*\(|\.(ascii|latin1)\s*\(\s*\)\s*\.\s*data\s*\(', line):
-        macro = _enclosing_function_call(clean_lines, line_number, pointer_call.start())
-        if not macro or not _is_typed_string_printf_macro(macro):
-            continue
-        if pointer_call.group(1):
-            error(line_number, 'runtime/log_string_conversion', 4,
-                  "Pass '.utf8()' instead of '.%s().data()' to '%s()'. It converts typed strings itself, and %s loses non-ASCII characters."
-                  % (pointer_call.group(1), macro, 'ASCII conversion' if pointer_call.group(1) == 'ascii' else 'a Latin-1 pointer'))
-        else:
-            error(line_number, 'runtime/log_string_conversion', 4,
-                  "Pass the typed string instead of calling legacyCStringPointer(). '%s()' converts typed strings itself." % macro)
-
-
 def check_auto_with_adopt(clean_lines, line_number, file_state, error):
     """Looks for usage of 'auto' with adopt functions, which should use the explicit smart pointer type.
 
@@ -3765,12 +3366,11 @@ def check_braces(clean_lines, line_number, file_state, error):
         # character on the previous non-blank line is ';', ':', '{', '}',
         # ')', or ') const' and doesn't begin with 'if|for|while|switch|else'.
         # We also allow '#' for #endif and '=' for array initialization,
-        # and '- (' and '+ (' for Objective-C methods, including selector
-        # pieces continuing a multi-line Objective-C method declaration.
+        # and '- (' and '+ (' for Objective-C methods.
         # Also we don't complain if the last non-whitespace character
         # on the previous non-blank line is '{' because it's likely to
         # indicate the begining of a nested code block.
-        previous_line, previous_line_number = get_previous_non_blank_line(clean_lines, line_number)
+        previous_line = get_previous_non_blank_line(clean_lines, line_number)[0]
         # Function qualifiers that allow braces on next line (grouped with const variants)
         qualifiers = []
         for base in ['override', 'final', 'noexcept', 'LIFETIME_BOUND']:
@@ -3782,7 +3382,6 @@ def check_braces(clean_lines, line_number, file_state, error):
             and previous_line.find('#') < 0
             and previous_line.find('- (') != 0
             and previous_line.find('+ (') != 0
-            and get_objective_c_method_declaration_colon_columns(clean_lines, previous_line_number) is None
             and not search(r'{\s*$', previous_line)):
             error(line_number, 'whitespace/braces', 4,
                   'This { should be at the end of the previous line')
@@ -4344,10 +3943,6 @@ def check_safer_cpp(clean_lines, line_number, error):
     if uses_snprintf:
         error(line_number, 'safercpp/printf', 4, "snprintf is unsafe. Use SAFE_SPRINTF instead.")
 
-    uses_datalogf = search(r'(?<![.>])\bdataLogF\s*\(', line)
-    if uses_datalogf:
-        error(line_number, 'safercpp/printf', 4, "dataLogF is unsafe. Use SAFE_DATALOGF instead.")
-
     uses_xpc_dictionary_get_data = search(r'xpc_dictionary_get_data\(', line)
     if uses_xpc_dictionary_get_data:
         error(line_number, 'safercpp/xpc_dictionary_get_data', 4, "Use xpcDictionaryGetData() instead of xpc_dictionary_get_data().")
@@ -4468,17 +4063,11 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
     check_wtf_checked_size(clean_lines, line_number, file_state, error)
     check_wtf_move(clean_lines, line_number, file_state, error)
     check_wtf_to_array(clean_lines, line_number, file_state, error)
-    check_utf8cstring_from_utf8(clean_lines, line_number, file_state, error)
-    check_construct_and_append(clean_lines, line_number, file_state, error)
     check_unsafe_get(clean_lines, line_number, file_state, error)
     check_wtf_make_unique(clean_lines, line_number, file_state, error)
     check_wtf_never_destroyed(clean_lines, line_number, file_state, error)
     check_wtf_os_object_ptr(clean_lines, line_number, file_state, error)
     check_wtf_xpc_object_ptr(clean_lines, line_number, file_state, error)
-    check_glib_string_wrappers(clean_lines, line_number, file_state, error)
-    check_posix_string_wrappers(clean_lines, line_number, file_state, error)
-    check_legacy_cstring_pointer_with_length(clean_lines, line_number, file_state, error)
-    check_log_string_conversions(clean_lines, line_number, file_state, error)
     check_auto_with_adopt(clean_lines, line_number, file_state, error)
     check_adopt_of_dynamic_cast(clean_lines, line_number, file_state, error)
     check_lock_guard(clean_lines, line_number, file_state, error)
@@ -4488,7 +4077,6 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
     check_braces(clean_lines, line_number, file_state, error)
     check_exit_statement_simplifications(clean_lines, line_number, error)
     check_spacing(file_extension, clean_lines, line_number, file_state, error)
-    check_lambda_parameter_list(clean_lines, line_number, file_state, error)
     check_member_initialization_list(clean_lines, line_number, error)
     check_check(clean_lines, line_number, error)
     check_for_comparisons_to_zero(clean_lines, line_number, error)
@@ -5752,7 +5340,6 @@ class CppChecker(object):
         'readability/fn_size',
         'readability/function',
         'readability/inheritance',
-        'readability/lambda_parens',
         'readability/multiline_comment',
         'readability/multiline_string',
         'readability/parameter_name',
@@ -5770,28 +5357,23 @@ class CppChecker(object):
         'runtime/bitfields',
         'runtime/callonmainthread',
         'runtime/casting',
-        'runtime/construct_and_append',
         'runtime/ctype_function',
         'runtime/dispatch_queue_autorelease_pool',
         'runtime/dispatch_set_target_queue',
         'runtime/enum_bitfields',
         'runtime/explicit',
-        'runtime/glib_string_wrappers',
         'runtime/init',
         'runtime/int',
         'runtime/invalid_increment',
         'runtime/ismainthread',
         'runtime/leaky_pattern',
-        'runtime/legacy_cstring_pointer_with_length',
         'runtime/lock_guard',
         'runtime/log',
-        'runtime/log_string_conversion',
         'runtime/mainthreadlazyneverdestroyed',
         'runtime/mainthreadneverdestroyed',
         'runtime/max_min_macros',
         'runtime/memset',
         'runtime/once_flag',
-        'runtime/posix_string_wrappers',
         'runtime/printf',
         'runtime/printf_format',
         'runtime/references',
@@ -5803,7 +5385,6 @@ class CppChecker(object):
         'runtime/threadsafe_fn',
         'runtime/unsafe_get_ptr',
         'runtime/unsigned',
-        'runtime/utf8cstring_from_utf8',
         'runtime/virtual',
         'runtime/adopt_dynamic_cast',
         'runtime/auto_with_adopt',

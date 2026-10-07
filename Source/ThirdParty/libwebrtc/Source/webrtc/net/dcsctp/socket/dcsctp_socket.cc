@@ -435,8 +435,7 @@ void DcSctpSocket::RestoreFromState(const DcSctpSocketHandoverState& state) {
       capabilities.negotiated_maximum_outgoing_streams =
           state.capabilities.negotiated_maximum_outgoing_streams;
 
-      webrtc::Timestamp now = callbacks_.Now();
-      send_queue_.RestoreFromState(now, state);
+      send_queue_.RestoreFromState(state);
 
       CreateTransmissionControlBlock(
           capabilities, my_verification_tag, TSN(state.my_initial_tsn),
@@ -444,7 +443,7 @@ void DcSctpSocket::RestoreFromState(const DcSctpSocketHandoverState& state) {
           TSN(state.peer_initial_tsn), static_cast<size_t>(0),
           TieTag(state.tie_tag));
 
-      tcb_->RestoreFromState(now, state);
+      tcb_->RestoreFromState(state);
 
       SetState(State::kEstablished, "restored from handover state");
       callbacks_.OnConnected();
@@ -969,7 +968,7 @@ bool DcSctpSocket::HandleUnrecognizedChunk(
     webrtc::StringBuilder sb;
     sb << "Received unknown chunk of type: "
        << static_cast<int>(descriptor.type) << " with report-error bit set";
-    callbacks_.OnError(ErrorKind::kParseFailed, sb.Release());
+    callbacks_.OnError(ErrorKind::kParseFailed, sb.str());
     RTC_DLOG(LS_VERBOSE)
         << log_prefix()
         << "Unknown chunk, with type indicating it should be reported.";
@@ -1110,7 +1109,7 @@ bool DcSctpSocket::ValidateHasTCB() {
 void DcSctpSocket::ReportFailedToParseChunk(int chunk_type) {
   webrtc::StringBuilder sb;
   sb << "Failed to parse chunk of type: " << chunk_type;
-  callbacks_.OnError(ErrorKind::kParseFailed, sb.Release());
+  callbacks_.OnError(ErrorKind::kParseFailed, sb.str());
 }
 
 void DcSctpSocket::HandleData(const CommonHeader& /* header */,
@@ -1908,9 +1907,8 @@ DcSctpSocket::GetHandoverStateAndClose() {
     state.socket_state = DcSctpSocketHandoverState::SocketState::kClosed;
   } else if (state_ == State::kEstablished) {
     state.socket_state = DcSctpSocketHandoverState::SocketState::kConnected;
-    webrtc::Timestamp now = callbacks_.Now();
-    tcb_->AddHandoverState(now, state);
-    send_queue_.AddHandoverState(now, state);
+    tcb_->AddHandoverState(state);
+    send_queue_.AddHandoverState(state);
     InternalClose(ErrorKind::kNoError, "handover");
   }
 

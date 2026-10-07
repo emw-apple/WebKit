@@ -27,7 +27,6 @@
 
 #include "APIObject.h"
 #include "FrameLoadState.h"
-#include "LoadedWebArchive.h"
 #include "MessageReceiver.h"
 #include "ProvisionalFrameCreationParameters.h"
 #include "Untrusted.h"
@@ -212,7 +211,7 @@ public:
     void didExplicitOpen(URL&&, String&& mimeType);
     void didReceiveServerRedirectForProvisionalLoad(URL&&);
     void didFailProvisionalLoad();
-    void didCommitLoad(const String& contentType, bool containsPluginDocument, WebCore::DocumentSecurityPolicy&&, HashSet<WebCore::SecurityOriginData>&& cspOriginsThatUpgradeInsecureNavigations, const WebCore::SecurityOriginData& originReportedByWebProcess, LoadedWebArchive);
+    void didCommitLoad(const String& contentType, bool containsPluginDocument, WebCore::DocumentSecurityPolicy&&, HashSet<WebCore::SecurityOriginData>&& cspOriginsThatUpgradeInsecureNavigations);
     void didFinishLoad();
     void didFailLoad();
     void didSameDocumentNavigation(URL&&); // eg. anchor navigation, session state change.
@@ -368,7 +367,6 @@ private:
 
     enum class ForInitialization : bool { No, Yes };
     void updateDocumentSecurityOrigin(WebFrameProxy*, ForInitialization = ForInitialization::No);
-    WebCore::SecurityOriginData committedDocumentSecurityOriginData() const;
 
     RefPtr<WebFrameProxy> deepLastChild();
     WebFrameProxy* NODELETE firstChild() const;
@@ -414,15 +412,11 @@ private:
     WebCore::ScrollbarMode m_scrollingMode;
     std::optional<WebCore::DocumentSecurityPolicy> m_documentSecurityPolicy;
     RefPtr<WebCore::SecurityOrigin> m_documentSecurityOrigin;
-    // Only for recording what this frame claims to have committed; not a substitute for
-    // m_documentSecurityOrigin, which the UI process derives itself and so can trust.
-    std::optional<WebCore::SecurityOriginData> m_committedOriginReportedByWebProcess;
     HashSet<WebCore::SecurityOriginData> m_cspOriginsThatUpgradeInsecureNavigations;
-} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(refWebFrameProxy, derefWebFrameProxy);
+} SWIFT_SHARED_REFERENCE(refWebFrameProxy, derefWebFrameProxy) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
 } // namespace WebKit
 
-#if !ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
 inline void refWebFrameProxy(WebKit::WebFrameProxy* WTF_NONNULL obj)
 {
     obj->ref();
@@ -432,7 +426,6 @@ inline void derefWebFrameProxy(WebKit::WebFrameProxy* WTF_NONNULL obj)
 {
     obj->deref();
 }
-#endif
 
 SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebFrameProxy)
     static bool isType(const API::Object& object) { return object.type() == API::Object::Type::Frame; }

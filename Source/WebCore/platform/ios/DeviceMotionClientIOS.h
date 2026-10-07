@@ -32,10 +32,8 @@
 #include "DeviceMotionData.h"
 #include "DeviceOrientationUpdateProvider.h"
 #include "MotionManagerClient.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/CheckedRef.h>
 #include <wtf/RefPtr.h>
-#include <wtf/RetainPtr.h>
 #include <wtf/TZoneMalloc.h>
 
 OBJC_CLASS WebCoreMotionManager;
@@ -64,8 +62,8 @@ public:
     void setDidBeginCheckedPtrDeletion() final { CanMakeCheckedPtr::setDidBeginCheckedPtrDeletion(); }
 
 private:
-    RetainPtr<WebCoreMotionManager> m_motionManager;
-    CheckedPtr<DeviceMotionController> m_controller;
+    WebCoreMotionManager* m_motionManager { nullptr };
+    DeviceMotionController* m_controller { nullptr };
     RefPtr<DeviceMotionData> m_currentDeviceMotionData;
     const RefPtr<DeviceOrientationUpdateProvider> m_deviceOrientationUpdateProvider;
     bool m_updating { false };

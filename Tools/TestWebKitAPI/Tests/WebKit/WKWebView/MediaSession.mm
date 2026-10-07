@@ -29,7 +29,7 @@
 
 #import "Helpers/PlatformUtilities.h"
 #import "Helpers/Test.h"
-#import "Helpers/cocoa/SiteIsolationTestUtilities.h"
+#import "Helpers/cocoa/MediaRemoteSoftLink.h"
 #import "Helpers/cocoa/TestWKWebView.h"
 #import <WebKit/WKPreferencesPrivate.h>
 #import <WebKit/WKWebViewConfigurationPrivate.h>
@@ -47,8 +47,6 @@
 #import <wtf/text/StringHash.h>
 #import <wtf/text/WTFString.h>
 
-#import "Helpers/cocoa/MediaRemoteSoftLink.h"
-
 #if !USE(APPLE_INTERNAL_SDK)
 @interface MRCommandInfo : NSObject
 @property (nonatomic, readonly) MRMediaRemoteCommand command;
@@ -65,8 +63,6 @@ public:
     {
         _configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
         [_configuration setMediaTypesRequiringUserActionForPlayback:WKAudiovisualMediaTypeAudio];
-        if (siteIsolationEnabled())
-            enableSiteIsolation(_configuration.get());
 
         _webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 300, 300) configuration:_configuration.get() addToWindow:YES]);
 
@@ -80,8 +76,6 @@ public:
     {
         [_webView clearMessageHandlers:_messageHandlers.get()];
     }
-
-    virtual bool siteIsolationEnabled() const { return false; }
 
     TestWKWebView* webView() { return _webView.get(); }
 
@@ -422,36 +416,6 @@ TEST_F(MediaSessionTest, MinimalCommands)
     std::ranges::sort(actualCommands);
 
     EXPECT_EQ(expectedCommands, actualCommands);
-}
-
-class MediaSessionSiteIsolationTest : public MediaSessionTest {
-    bool siteIsolationEnabled() const final { return true; }
-};
-
-TEST_F(MediaSessionSiteIsolationTest, SeekCommandsRegisteredAfterSupportsSeekingChanges)
-{
-    loadPageAndBecomeNowPlaying(@"media-remote");
-
-    Vector<MRMediaRemoteCommand> expectedSeekCommands {
-        MRMediaRemoteCommandSeekToPlaybackPosition,
-        MRMediaRemoteCommandSkipForward,
-        MRMediaRemoteCommandSkipBackward,
-    };
-
-    auto enabledCommands = [&] {
-        return makeVector(getSupportedCommands().get(), [] (MRCommandInfo *command) -> std::optional<MRMediaRemoteCommand> {
-            if (!command.enabled)
-                return std::nullopt;
-            return command.command;
-        });
-    };
-
-    EXPECT_TRUE(Util::waitFor([&] {
-        auto commands = enabledCommands();
-        return std::ranges::all_of(expectedSeekCommands, [&] (auto command) {
-            return commands.contains(command);
-        });
-    }));
 }
 
 } // namespace TestWebKitAPI

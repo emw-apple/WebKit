@@ -41,9 +41,7 @@ class TextureMapperGCGLPlatformLayer;
 class GraphicsContextGLEGL : public GLContextWrapper, public GraphicsContextGLANGLE {
     WTF_MAKE_TZONE_ALLOCATED(GraphicsContextGLEGL);
 public:
-#if !USE(COORDINATED_GRAPHICS)
     WEBCORE_EXPORT static RefPtr<GraphicsContextGLEGL> create(WebCore::GraphicsContextGLAttributes&&);
-#endif
     virtual ~GraphicsContextGLEGL();
 
     // GraphicsContextGLANGLE overrides.
@@ -54,12 +52,10 @@ public:
 #if ENABLE(MEDIA_STREAM) || ENABLE(WEB_CODECS)
     RefPtr<VideoFrame> surfaceBufferToVideoFrame(SurfaceBuffer) final;
 #endif
+    RefPtr<PixelBuffer> readCompositedResults() final;
 
-#if !USE(COORDINATED_GRAPHICS)
-    RefPtr<PixelBuffer> readCompositedResults() override;
     bool reshapeDrawingBuffer() override;
     void prepareForDisplay() override;
-#endif
 
 #if ENABLE(WEBXR)
     GCGLExternalSync createExternalSync(ExternalSyncSource&&) final;
@@ -77,14 +73,16 @@ public:
 protected:
     explicit GraphicsContextGLEGL(WebCore::GraphicsContextGLAttributes&&);
 
-    void attachDrawingBufferTexture();
-
     RefPtr<GraphicsLayerContentsDisplayDelegate> m_layerContentsDisplayDelegate;
 
 private:
     bool platformInitializeContext() final;
-#if !USE(COORDINATED_GRAPHICS)
     bool platformInitialize() override;
+
+    void swapCompositorTexture();
+
+#if USE(COORDINATED_GRAPHICS) && USE(LIBEPOXY)
+    GCGLuint setupCurrentTexture();
 #endif
 
     // GLContextWrapper
@@ -93,12 +91,16 @@ private:
     bool unmakeCurrentImpl() override;
     unsigned glVersion() const override;
 
-    mutable unsigned m_version { 0 };
-
-#if !USE(COORDINATED_GRAPHICS)
     GCGLuint m_compositorTexture { 0 };
     bool m_isCompositorTextureInitialized { false };
+    mutable unsigned m_version { 0 };
 
+#if USE(COORDINATED_GRAPHICS) && USE(LIBEPOXY)
+    GCGLuint m_textureID { 0 };
+    GCGLuint m_compositorTextureID { 0 };
+#endif
+
+#if !USE(COORDINATED_GRAPHICS)
     const std::unique_ptr<TextureMapperGCGLPlatformLayer> m_texmapLayer;
 
     friend class TextureMapperGCGLPlatformLayer;

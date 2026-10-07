@@ -32,15 +32,14 @@ use std::{
     }, //
 };
 
-use crate::{
-    ffi::{
-        mut_slice_into_ffi_raw_parts,
-        slice_into_ffi_raw_parts, //
-    },
-    io::stdio::{
-        DatagramSocket,
-        PollFor, //
-    }, //
+#[cfg(feature = "libc")]
+use crate::ffi::{
+    mut_slice_into_ffi_raw_parts,
+    slice_into_ffi_raw_parts, //
+};
+use crate::io::stdio::{
+    DatagramSocket,
+    PollFor, //
 };
 
 use super::{
@@ -120,26 +119,11 @@ impl<Socket: DatagramSocket, Reactor: PollFor<Socket> + Send> AbstractSocket
 {
 }
 
-/// Check if an I/O error corresponds to `ENOBUFS` (kernel socket buffer exhaustion).
-#[inline]
-fn os_has_no_resource(err: &io::Error) -> bool {
-    #[cfg(unix)]
-    {
-        matches!(err.raw_os_error(), Some(libc::ENOBUFS | libc::ENOMEM))
-    }
-    #[cfg(not(unix))]
-    {
-        false
-    }
-}
-
 impl DatagramSocket for UnixDatagram {
     fn send(&mut self, datagram: &[u8]) -> AbstractSocketResult {
         loop {
             return match UnixDatagram::send(self, datagram) {
                 Ok(bytes) => AbstractSocketResult::Ok(bytes),
-                Err(e) if matches!(e.kind(), io::ErrorKind::Interrupted) => continue,
-                Err(e) if os_has_no_resource(&e) => AbstractSocketResult::Ok(datagram.len()),
                 Err(e) => crate::retry_on_interrupt!(e),
             };
         }
@@ -211,23 +195,23 @@ impl<Io: AsRawFd + Send> DatagramSocket for UseFd<Io> {
             target_os = "freebsd",
             target_os = "netbsd",
             target_os = "openbsd",
-            target_vendor = "apple",
+            target_os = "macos",
+            target_os = "ios",
         ))]
+        let flag = 0;
+        #[cfg(any(windows, target_os = "none"))]
         let flag = 0;
         loop {
             let rc = unsafe {
                 // Safety: the socket file descriptor is exclusively owned.
                 libc::send(self.as_raw_fd(), buf as _, len, flag)
             };
-            if rc < 0 {
+            return if rc < 0 {
                 let err = io::Error::last_os_error();
-                if os_has_no_resource(&err) {
-                    return AbstractSocketResult::Ok(datagram.len());
-                }
-                return crate::retry_on_interrupt!(err);
+                crate::retry_on_interrupt!(err)
             } else {
-                return AbstractSocketResult::Ok(rc as usize);
-            }
+                AbstractSocketResult::Ok(rc as usize)
+            };
         }
     }
 

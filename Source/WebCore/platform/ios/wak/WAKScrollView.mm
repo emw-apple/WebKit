@@ -33,7 +33,6 @@
 #import "WAKViewInternal.h"
 #import "WAKWindow.h"
 #import "WebEvent.h"
-#import <wtf/RetainPtr.h>
 
 @interface WAKClipView(PrivateAPI)
 - (void)_setDocumentView:(WAKView *)aView;
@@ -61,10 +60,7 @@ static void _notificationCallback(WKViewRef v, WKViewNotificationType type, void
     }
 }
 
-@implementation WAKScrollView {
-    RetainPtr<WAKView> _documentView; // Only here so the ObjC instance stays around.
-    RetainPtr<WAKClipView> _contentView;
-}
+@implementation WAKScrollView
 
 @synthesize delegate;
 
@@ -76,7 +72,7 @@ static void _notificationCallback(WKViewRef v, WKViewNotificationType type, void
     self = [super _initWithViewRef:(WKViewRef)view];
     WAKRelease(view);
 
-    _contentView = adoptNS([[WAKClipView alloc] initWithFrame:rect]);
+    _contentView = [[WAKClipView alloc] initWithFrame:rect];
     [self addSubview:_contentView];
 
     return self;
@@ -84,8 +80,8 @@ static void _notificationCallback(WKViewRef v, WKViewNotificationType type, void
 
 - (void)dealloc
 {
-    _documentView.autorelease();
-    _contentView = nullptr;
+    [_documentView autorelease];
+    [_contentView release];
     [super dealloc];
 }
 
@@ -128,7 +124,8 @@ static void _notificationCallback(WKViewRef v, WKViewNotificationType type, void
 - (void)setDocumentView:(WAKView *)view
 {
     if (view != _documentView) {
-        _documentView = view;
+        [_documentView release];
+        _documentView = [view retain];
         [_contentView _setDocumentView:view];
     }
 }
@@ -356,7 +353,7 @@ static BOOL scrollViewToPoint(WAKScrollView *scrollView, CGPoint point)
 - (CGRect)unobscuredContentRect
 {
     // Only called by WebCore::ScrollView::unobscuredContentRect
-    RetainPtr<WAKView> view = self;
+    WAKView* view = self;
     while ((view = [view superview])) {
         if ([view isKindOfClass:[WAKScrollView class]])
             return [self documentVisibleRect];
@@ -374,7 +371,7 @@ static BOOL scrollViewToPoint(WAKScrollView *scrollView, CGPoint point)
 - (CGRect)exposedContentRect
 {
     // Only called by WebCore::ScrollView::exposedContentRect
-    RetainPtr<WAKView> view = self;
+    WAKView* view = self;
     while ((view = [view superview])) {
         if ([view isKindOfClass:[WAKScrollView class]])
             return [self documentVisibleRect];
@@ -391,7 +388,7 @@ static BOOL scrollViewToPoint(WAKScrollView *scrollView, CGPoint point)
 
 - (void)setActualScrollPosition:(CGPoint)point
 {
-    RetainPtr<WAKView> view = self;
+    WAKView* view = self;
     while ((view = [view superview])) {
         if ([view isKindOfClass:[WAKScrollView class]]) {
             // No need for coordinate transformation if what is being scrolled is a subframe
@@ -410,7 +407,7 @@ static BOOL scrollViewToPoint(WAKScrollView *scrollView, CGPoint point)
 {
     NSMutableString *description = [NSMutableString stringWithFormat:@"<%@: ; ", [super description]];
 
-    [description appendFormat:@"documentView: WAK: %p; ", _documentView.get()];
+    [description appendFormat:@"documentView: WAK: %p; ", _documentView];
 
     CGRect frame = [self documentVisibleRect];
     [description appendFormat:@"documentVisible = (%g %g; %g %g); ", frame.origin.x, frame.origin.y, frame.size.width, frame.size.height];

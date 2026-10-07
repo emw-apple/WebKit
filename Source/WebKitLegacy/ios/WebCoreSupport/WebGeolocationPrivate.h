@@ -25,7 +25,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface WebGeolocation : NSObject
+@class WebGeolocationPrivate;
+
+@interface WebGeolocation : NSObject {
+@private
+    WebGeolocationPrivate *_private;
+}
 
 - (void)setIsAllowed:(BOOL)allowed;
 @end

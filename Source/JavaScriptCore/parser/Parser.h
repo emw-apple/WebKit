@@ -634,7 +634,7 @@ public:
         return false;
     }
     template <typename Func>
-    void forEachUsedVariable(NOESCAPE const Func& func)
+    void forEachUsedVariable(const Func& func)
     {
         for (const UniquedStringImplPtrSet& set : m_usedVariables) {
             for (UniquedStringImpl* impl : set) {

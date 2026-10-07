@@ -81,11 +81,8 @@ void RealtimeOutgoingAudioSourceLibWebRTC::audioSamplesAvailable(const MediaTime
     {
         Locker locker { m_sampleConverterLock };
         if (m_sampleConverter && !gst_audio_info_is_equal(&m_inputStreamDescription, &desc.getInfo())) {
-            GST_DEBUG("Audio format changed, clearing audio buffers cache and sample converter");
-            {
-                Locker locker { m_adapterLock };
-                gst_adapter_clear(m_adapter.get());
-            }
+            // FIXME: https://bugs.webkit.org/show_bug.cgi?id=324342
+            GST_ERROR("Audio format renegotiation is not possible yet.");
             m_sampleConverter = nullptr;
         }
 
@@ -108,8 +105,7 @@ void RealtimeOutgoingAudioSourceLibWebRTC::audioSamplesAvailable(const MediaTime
         auto* buffer = gst_sample_get_buffer(sample.get());
         gst_adapter_push(m_adapter.get(), gst_buffer_ref(buffer));
     }
-
-    LibWebRTCProvider::signalingThread().BlockingCall([protectedThis = protect(*this)] {
+    LibWebRTCProvider::callOnWebRTCSignalingThread([protectedThis = protect(*this)] {
         protectedThis->pullAudioData();
     });
 }
@@ -143,13 +139,12 @@ void RealtimeOutgoingAudioSourceLibWebRTC::pullAudioData()
 {
     Locker sampleConverterLocker { m_sampleConverterLock };
 
-    if (!m_sampleConverter) {
-        ASSERT_NOT_REACHED();
+    // FIXME: https://bugs.webkit.org/show_bug.cgi?id=324342
+    if (!m_sampleConverter)
         return;
-    }
 
     if (!GST_AUDIO_INFO_IS_VALID(&m_inputStreamDescription) || !GST_AUDIO_INFO_IS_VALID(&m_outputStreamDescription)) {
-        ASSERT_NOT_REACHED();
+        GST_INFO("No stream description set yet.");
         return;
     }
 
@@ -175,10 +170,6 @@ void RealtimeOutgoingAudioSourceLibWebRTC::pullAudioData()
         }
 
         GRefPtr inBuffer = adoptGRef(gst_buffer_make_writable(gst_adapter_take_buffer(m_adapter.get(), inChunkSampleCount * m_inputStreamDescription.bpf)));
-        if (!inBuffer) {
-            GST_ERROR("Could not take writable buffer from adapter.");
-            return;
-        }
         if (silenced) {
             GST_TRACE("Audio buffer will contain silence");
             webkitGstAudioFormatFillSilence(m_outputStreamDescription.finfo, m_audioBuffer.mutableSpan().data(), outBufferSize);

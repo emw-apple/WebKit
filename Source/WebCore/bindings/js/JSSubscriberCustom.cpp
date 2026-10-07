@@ -33,8 +33,7 @@ namespace WebCore {
 template<typename Visitor>
 void JSSubscriber::visitAdditionalChildrenInGCThread(Visitor& visitor)
 {
-    // Do not ref `wrapped()` here since this function may get called on a GC thread.
-    SUPPRESS_UNCOUNTED_ARG wrapped().visitAdditionalChildrenInGCThread(visitor);
+    wrapped().visitAdditionalChildrenInGCThread(visitor);
 }
 
 DEFINE_VISIT_ADDITIONAL_CHILDREN_IN_GC_THREAD(JSSubscriber);

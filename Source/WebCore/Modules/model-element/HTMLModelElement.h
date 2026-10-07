@@ -47,10 +47,6 @@
 #include <WebCore/VisibilityChangeClient.h>
 #include <wtf/UniqueRef.h>
 
-#if ENABLE(MODEL_ELEMENT_IMMERSIVE) || ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-#include <WebCore/ModelPresentationMode.h>
-#endif
-
 #if ENABLE(MODEL_ELEMENT_STAGE_MODE)
 #include <WebCore/StageModeOperations.h>
 #endif
@@ -90,9 +86,6 @@ class HTMLModelElementEventListener;
 class HTMLModelElement final : public HTMLElement, private CachedRawResourceClient, public ModelPlayerClient, public ActiveDOMObject, public VisibilityChangeClient {
     WTF_MAKE_TZONE_ALLOCATED(HTMLModelElement);
     WTF_OVERRIDE_DELETE_FOR_CHECKED_PTR(HTMLModelElement);
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-    friend class ElementVolumetricScene;
-#endif
 public:
     USING_CAN_MAKE_WEAKPTR(HTMLElement);
 
@@ -220,11 +213,6 @@ public:
     void updateAnchorFromCSS();
 #endif
 
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-    RefPtr<ModelPlayer> liveModelPlayer() const;
-    bool isPresentedInVolumetricScene() const { return m_presentationMode == ModelPresentationMode::Volumetric; }
-#endif
-
     void paintCurrentFrameInContext(GraphicsContext&, const FloatRect&);
 
     size_t NODELETE memoryCost() const;
@@ -242,11 +230,6 @@ public:
 
     WEBCORE_EXPORT String modelElementStateForTesting() const;
 
-#if ENABLE(MODEL_PROCESS)
-    WEBCORE_EXPORT void sceneGraphAsTextForTesting(const ModelSceneGraphAsTextOptions&, CompletionHandler<void(String&&)>&&) const;
-    String dumpLabelForTesting(unsigned treeOrderPosition) const;
-#endif
-
 private:
     HTMLModelElement(const QualifiedName&, Document&);
 
@@ -258,7 +241,6 @@ private:
     void deletePendingModelPlayer();
     void unloadModelPlayer(bool onSuspend);
     void reloadModelPlayer();
-    void updatePlayerVisibility();
     void startLoadModelTimer();
     void loadModelTimerFired();
 
@@ -386,11 +368,6 @@ private:
     bool isModelUnloading() const;
     bool isModelUnloaded() const;
 
-#if ENABLE(MODEL_ELEMENT_IMMERSIVE) || ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-    ModelPresentationMode presentationMode() const { return m_presentationMode; }
-    void setPresentationMode(ModelPresentationMode);
-#endif
-
     URL m_sourceURL;
     CachedResourceHandle<CachedRawResource> m_resource;
     String m_originalMIMEType;
@@ -443,12 +420,10 @@ private:
     UniqueRef<EnvironmentMapPromise> m_environmentMapReadyPromise;
 #endif
 
-#if ENABLE(MODEL_ELEMENT_IMMERSIVE) || ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-    ModelPresentationMode m_presentationMode { ModelPresentationMode::Inline };
-#endif
-
 #if ENABLE(MODEL_ELEMENT_IMMERSIVE)
+    bool m_detachedForImmersive { false };
     unsigned m_immersiveDetachGeneration { 0 };
+    void setDetachedForImmersive(bool);
 
     Vector<CompletionHandler<void(ExceptionOr<RefPtr<ModelPlayer>>)>> m_modelPlayerCreationCallbacks;
     void ensureModelPlayer(CompletionHandler<void(ExceptionOr<RefPtr<ModelPlayer>>)>&&);

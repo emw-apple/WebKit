@@ -59,8 +59,7 @@ WI.Animation = class Animation extends WI.Object
             name: payload.name,
             cssAnimationName: payload.cssAnimationName,
             cssTransitionProperty: payload.cssTransitionProperty,
-            // The Animation domain only exists on the page target, which `WI.assumingMainTarget()` returns.
-            stackTrace: WI.StackTrace.fromPayload(WI.assumingMainTarget(), payload.stackTrace, {deliveredOnTarget: true}),
+            stackTrace: WI.StackTrace.fromPayload(WI.assumingMainTarget(), payload.stackTrace),
         });
 
         // COMPATIBILITY (macOS 15.4, iOS 18.4): `Animation` removed the `effect` property in favor of `Animation.requestEffect`.

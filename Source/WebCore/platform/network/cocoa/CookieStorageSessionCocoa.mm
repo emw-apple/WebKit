@@ -274,13 +274,7 @@ std::pair<String, bool> CookieStorageSession::cookiesForSession(const URL& first
             if (includeSecureCookies == IncludeSecureCookies::No)
                 continue;
         }
-        String cookieName { cookie.name };
-        String cookieValue { cookie.value };
-        if (cookiesFor == CookiesFor::DOMAccess) {
-            cookieName = CookieUtil::cookieStringForScript(cookieName);
-            cookieValue = CookieUtil::cookieStringForScript(cookieValue);
-        }
-        cookiesBuilder.append(cookiesBuilder.isEmpty() ? ""_s : "; "_s, cookieName, '=', cookieValue);
+        cookiesBuilder.append(cookiesBuilder.isEmpty() ? ""_s : "; "_s, [cookie name], '=', [cookie value]);
     }
     return { cookiesBuilder.toString(), didAccessSecureCookies };
 

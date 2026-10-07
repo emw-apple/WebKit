@@ -1422,8 +1422,6 @@ ScriptFetchParameters::Type AbstractModuleRecord::moduleType() const
         return ScriptFetchParameters::Type::JavaScript;
     case SourceProviderSourceType::WebAssembly:
         return ScriptFetchParameters::Type::WebAssembly;
-    case SourceProviderSourceType::CSS:
-        return ScriptFetchParameters::Type::CSS;
     case SourceProviderSourceType::ImportMap:
         RELEASE_ASSERT_NOT_REACHED();
         return ScriptFetchParameters::Type::None;

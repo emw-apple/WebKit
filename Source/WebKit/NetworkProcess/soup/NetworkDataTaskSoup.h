@@ -67,6 +67,7 @@ private:
     enum class WasBlockingCookies : bool { No, Yes };
     bool shouldBlockCookies(const WebCore::ResourceRequest&, WasBlockingCookies) const;
     void createRequest(WebCore::ResourceRequest&&, WasBlockingCookies);
+    void continueCreateRequestForRedirection(WebCore::ResourceRequest&&, WasBlockingCookies);
     void clearRequest();
 
     struct SendRequestData {

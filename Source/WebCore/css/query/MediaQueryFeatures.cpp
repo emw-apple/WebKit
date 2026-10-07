@@ -364,24 +364,6 @@ static const NumberSchema& devicePixelRatioFeatureSchema()
     return schema;
 }
 
-static const IdentifierSchema& devicePostureFeatureSchema()
-{
-    static MainThreadNeverDestroyed<IdentifierSchema> schema {
-        "device-posture"_s,
-        FixedVector { CSSValueContinuous, CSSValueFolded },
-        OptionSet<MediaQueryDynamicDependency>(),
-        [](auto& context) {
-            if (!context.document->settings().devicePostureAPIEnabled())
-                return MatchingIdentifiers { };
-
-            RefPtr page = context.document->frame()->page();
-            bool continuous = !page || (page->chrome().client().devicePostureType() == DevicePostureType::Continuous);
-            return MatchingIdentifiers { continuous ? CSSValueContinuous : CSSValueFolded };
-        }
-    };
-    return schema;
-}
-
 static const LengthSchema& deviceWidthFeatureSchema()
 {
     static MainThreadNeverDestroyed<LengthSchema> schema {
@@ -931,11 +913,6 @@ const FeatureSchema& devicePixelRatio()
     return devicePixelRatioFeatureSchema();
 }
 
-const FeatureSchema& devicePosture()
-{
-    return devicePostureFeatureSchema();
-}
-
 const FeatureSchema& deviceWidth()
 {
     return deviceWidthFeatureSchema();
@@ -1083,7 +1060,6 @@ Vector<const FeatureSchema*> allSchemas()
         &deviceAspectRatio(),
         &deviceHeight(),
         &devicePixelRatio(),
-        &devicePosture(),
         &deviceWidth(),
         &dynamicRange(),
         &forcedColors(),

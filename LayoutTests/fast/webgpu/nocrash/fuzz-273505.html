@@ -68,7 +68,6 @@ async function run() {
     renderBundleEncoder.draw(0);
     renderBundleEncoder.finish();
     await device.queue.onSubmittedWorkDone();
-    videoFrame.close();
     debug('Pass')
     globalThis.testRunner?.notifyDone();
 }

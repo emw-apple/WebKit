@@ -208,10 +208,6 @@ extension WebPage {
         /// Indicates whether background text extraction is enabled, used for testing.
         @_spi(Testing)
         public var backgroundTextExtractionEnabled: Bool = false
-
-        /// Indicates whether site isolation is enabled, used for testing.
-        @_spi(Testing)
-        public var siteIsolationEnabled: Bool = false
     }
 }
 

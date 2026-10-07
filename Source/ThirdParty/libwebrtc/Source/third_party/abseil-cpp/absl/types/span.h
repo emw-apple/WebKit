@@ -39,7 +39,8 @@
 //    * bounds-checked access to `absl::Span` is accomplished with `at()`
 //      however `std::span` now supports the same as of the draft C++26 standard
 //    * `absl::Span` has compiler-provided move and copy constructors and
-//      assignment.
+//      assignment. This is due to them being specified as `constexpr`, but that
+//      implies const in C++11.
 //    * `absl::Span` has no `bytes()`, `size_bytes()`, `as_bytes()`, or
 //      `as_writable_bytes()` methods
 //    * `absl::Span` has no static extent template parameter, nor constructors
@@ -84,6 +85,9 @@ ABSL_NAMESPACE_END
 
 // If std::ranges is available, mark Span as satisfying the `view` and
 // `borrowed_range` concepts, just like std::span.
+#if !defined(__has_include)
+#define __has_include(header) 0
+#endif
 #if __has_include(<version>)
 #include <version>  // NOLINT(misc-include-cleaner)
 #endif
@@ -216,7 +220,7 @@ class ABSL_ATTRIBUTE_VIEW Span {
   using absl_internal_is_view = std::true_type;
 
   // NOLINTNEXTLINE
-  static constexpr size_type npos = static_cast<size_type>(-1);
+  static const size_type npos = ~(size_type(0));
 
   constexpr Span() noexcept : Span(nullptr, 0) {}
   constexpr Span(pointer array ABSL_ATTRIBUTE_LIFETIME_BOUND,
@@ -505,6 +509,9 @@ class ABSL_ATTRIBUTE_VIEW Span {
   pointer ptr_;
   size_type len_;
 };
+
+template <typename T>
+const typename Span<T>::size_type Span<T>::npos;
 
 // Span relationals
 

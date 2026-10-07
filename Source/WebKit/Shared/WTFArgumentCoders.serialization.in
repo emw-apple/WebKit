@@ -230,6 +230,7 @@ template: struct WebKit::RemoteMediaResourceIdentifierType
 template: struct WebKit::RemotePathImplIdentifierType
 template: struct WebKit::RemoteRenderingBackendIdentifierType
 template: struct WebKit::RemoteSerializedImageBufferIdentifierType
+template: struct WebKit::RemoteSnapshotIdentifierType
 template: struct WebKit::RemoteSnapshotRecorderIdentifierType
 template: struct WebKit::RemoteVideoFrameIdentifierType
 template: struct WebKit::VideoDecoderIdentifierType

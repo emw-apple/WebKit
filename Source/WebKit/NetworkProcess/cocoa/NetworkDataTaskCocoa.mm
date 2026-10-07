@@ -555,10 +555,8 @@ void NetworkDataTaskCocoa::willPerformHTTPRedirection(WebCore::ResourceResponse&
             auto protectedThis = weakThis.get();
             if (!protectedThis || !protectedThis->m_session)
                 return completionHandler({ });
-            if (!request.isNull()) {
+            if (!request.isNull())
                 protectedThis->restrictRequestReferrerToOriginIfNeeded(request);
-                updateTaskWithFirstPartyForSameSiteCookies(protectedThis->m_task.get(), request);
-            }
             protectedThis->m_previousRequest = request;
             completionHandler(WTF::move(request));
         });

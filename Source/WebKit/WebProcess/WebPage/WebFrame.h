@@ -146,13 +146,12 @@ public:
     void createProvisionalFrame(ProvisionalFrameCreationParameters&&);
     void commitProvisionalFrame();
     void destroyProvisionalFrame();
-    void updateSandboxFlags(WebCore::SandboxFlags);
     void loadDidCommitInAnotherProcess(WebCore::ProcessIdentifier hostingProcessID, std::optional<WebCore::LayerHostingContextIdentifier>);
     WebCore::LocalFrame* provisionalFrame() { return m_provisionalFrame.get(); }
 
     Awaitable<std::optional<FrameInfoData>> getFrameInfo();
     FrameInfoData info() const;
-    std::optional<FrameTreeNodeData> frameTreeData() const;
+    FrameTreeNodeData frameTreeData() const;
 
     WebCore::FrameIdentifier frameID() const { return m_frameID; }
 
@@ -251,7 +250,7 @@ public:
 
     RefPtr<WebImage> createSelectionSnapshot() const;
 
-#if ENABLE(TWO_PHASE_CLICKS) || ENABLE(UI_SIDE_COMPOSITING)
+#if ENABLE(TWO_PHASE_CLICKS)
     std::optional<TransactionID> firstLayerTreeTransactionIDAfterDidCommitLoad() const { return m_firstLayerTreeTransactionIDAfterDidCommitLoad; }
     void setFirstLayerTreeTransactionIDAfterDidCommitLoad(TransactionID transactionID) { m_firstLayerTreeTransactionIDAfterDidCommitLoad = transactionID; }
 #endif
@@ -360,7 +359,7 @@ private:
     bool m_wasRemovedInAnotherProcess { false };
     bool m_hasAppliedInitialRemoteFrameRect { false };
 
-#if ENABLE(TWO_PHASE_CLICKS) || ENABLE(UI_SIDE_COMPOSITING)
+#if ENABLE(TWO_PHASE_CLICKS)
     std::optional<TransactionID> m_firstLayerTreeTransactionIDAfterDidCommitLoad;
 #endif
     std::optional<NavigatingToAppBoundDomain> m_isNavigatingToAppBoundDomain;

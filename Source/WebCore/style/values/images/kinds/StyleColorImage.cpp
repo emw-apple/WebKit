@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2026 Apple Inc. All rights reserved.
- * Copyright (C) 2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -28,9 +27,8 @@
 #include "StyleColorImage.h"
 
 #include "CSSColorImageValue.h"
+#include "ColorImageGeneratedImage.h"
 #include "DeprecatedCSSOMValue.h"
-#include "GraphicsContext.h"
-#include "ImageBuffer.h"
 #include "RenderElement.h"
 #include "StyleColorResolver.h"
 
@@ -38,7 +36,7 @@ namespace WebCore {
 namespace Style {
 
 ColorImage::ColorImage(Color&& color)
-    : GeneratedImage { Type::ColorImage }
+    : GeneratedImage { Type::ColorImage, ColorImage::isFixedSize }
     , m_color { WTF::move(color) }
 {
 }
@@ -75,48 +73,26 @@ void ColorImage::load(CachedResourceLoader&, const ResourceLoaderOptions&)
 {
 }
 
-ImageDrawResult ColorImage::draw(GraphicsContext& context, const RenderElement& renderer, ConcreteObjectSize concreteObjectSize, const FloatRect& destination, const FloatRect&, ImagePaintingOptions options, bool) const
+RefPtr<WebCore::Image> ColorImage::image(const RenderElement* renderer, const FloatSize& size, const GraphicsContext&, bool) const
 {
-    auto size = concreteObjectSize.size() * concreteObjectSize.zoom();
+    if (!renderer)
+        return &WebCore::Image::nullImage();
+
     if (size.isEmpty())
-        return ImageDrawResult::DidNothing;
+        return nullptr;
 
-    WebCore::Image::fillWithSolidColor(context, destination, resolvedColor(renderer), options.compositeOperator());
-    return ImageDrawResult::DidDraw;
-}
-
-ImageDrawResult ColorImage::drawAsPattern(GraphicsContext& context, const RenderElement& renderer, ConcreteObjectSize concreteObjectSize, const FloatRect& destination, const FloatRect& tile, const AffineTransform& patternTransform, const FloatPoint& phase, const FloatSize& spacing, ImagePaintingOptions options, bool) const
-{
-    auto size = concreteObjectSize.size() * concreteObjectSize.zoom();
-    if (size.isEmpty() || context.paintingDisabled())
-        return ImageDrawResult::DidNothing;
-
-    auto color = resolvedColor(renderer);
-
-    if (spacing.isZero()) {
-        WebCore::Image::fillWithSolidColor(context, destination, color, options.compositeOperator());
-        return ImageDrawResult::DidDraw;
-    }
-
-    // FIXME: Add support to GraphicsContext for drawing patterns without requiring an ImageBuffer or NativeImage, using a callback or recorded DisplayList instead.
-    RefPtr imageBuffer = context.createAlignedImageBuffer(size);
-    if (!imageBuffer)
-        return ImageDrawResult::DidNothing;
-
-    imageBuffer->context().fillRect(FloatRect { { }, size }, color);
-    context.drawPattern(*imageBuffer, destination, tile, patternTransform, phase, spacing, options);
-
-    return ImageDrawResult::DidDraw;
+    auto color = ColorResolver { renderer->style() }.colorResolvingCurrentColor(m_color);
+    return ColorImageGeneratedImage::create(color, size);
 }
 
 bool ColorImage::knownToBeOpaque(const RenderElement& renderer) const
 {
-    return resolvedColor(renderer).isOpaque();
+    return ColorResolver { renderer.style() }.colorResolvingCurrentColor(m_color).isOpaque();
 }
 
-WebCore::Color ColorImage::resolvedColor(const RenderElement& renderer) const
+FloatSize ColorImage::fixedSize(const RenderElement&) const
 {
-    return ColorResolver { renderer.style() }.colorResolvingCurrentColor(m_color);
+    return { };
 }
 
 } // namespace Style

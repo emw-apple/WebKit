@@ -100,7 +100,6 @@ private:
     void styleAttributeChanged(const AtomString& newStyleString, AttributeModificationReason);
     void synchronizeStyleAttributeInternalImpl();
     void synchronizeStyleAttributeForSelectorInvalidation();
-    bool isStyleAttributeAllowedByContentSecurityPolicy(const AtomString& styleString, OrdinalNumber startLineNumber);
 
     void inlineStyleChanged();
     CSSStyleProperties* inlineStyleCSSOMWrapper();

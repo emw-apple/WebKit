@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013-2014 Google Inc. All rights reserved.
- * Copyright (C) 2014-2026 Apple Inc. All rights reserved.
+ * Copyright (C) 2014-2022 Apple Inc. All rights reserved.
  * Copyright (C) 2025-2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
@@ -406,6 +406,7 @@ inline void BuilderCustom::applyValueWebkitTextZoom(BuilderState& builderState, 
 inline void BuilderCustom::applyInitialFontFamily(BuilderState& builderState)
 {
     auto& fontDescription = builderState.fontDescription();
+    auto initialDesc = FontCascadeDescription();
 
     // We need to adjust the size to account for the generic family change from monospace to non-monospace.
     if (fontDescription.useFixedDefaultSize()) {
@@ -413,7 +414,8 @@ inline void BuilderCustom::applyInitialFontFamily(BuilderState& builderState)
             builderState.setFontDescriptionFontSize(fontSizeForKeyword(sizeIdentifier, false, builderState.document()));
     }
 
-    builderState.setFontDescriptionFamilies(FontFamilies { standardFamily, FontFamilyKind::Generic });
+    if (!initialDesc.firstFamily().name.isEmpty())
+        builderState.setFontDescriptionFamilies(FontFamilies { initialDesc.families(), fontDescription.hasAuthorSpecifiedNonGenericPrimaryFont() });
 }
 
 inline void BuilderCustom::applyInheritFontFamily(BuilderState& builderState)

@@ -265,9 +265,9 @@ void WebRemoteFrameClient::broadcastFrameTreeSyncDataToOtherProcesses(FrameTreeS
     WebFrameLoaderClient::broadcastFrameTreeSyncDataToOtherProcesses(WTF::move(data));
 }
 
-void WebRemoteFrameClient::didNotifyUserActivation(MonotonicTime activationTime, std::optional<WebCore::UserGestureTokenIdentifier> forcedActivationToken)
+void WebRemoteFrameClient::didNotifyUserActivation(MonotonicTime activationTime)
 {
-    WebFrameLoaderClient::didNotifyUserActivation(activationTime, forcedActivationToken);
+    WebFrameLoaderClient::didNotifyUserActivation(activationTime);
 }
 
 void WebRemoteFrameClient::didConsumeUserActivation()

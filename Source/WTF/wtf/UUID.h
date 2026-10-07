@@ -207,9 +207,9 @@ public:
     }
 
     template<typename Func>
-    auto handle(NOESCAPE const Func& func) const -> decltype(auto)
+    auto handle(Func&& func) const -> decltype(auto)
     {
-        return handleWithAdapters(func,
+        return handleWithAdapters(std::forward<Func>(func),
             hex(m_bits.high >> 32, 8, Lowercase),
             '-',
             hex((m_bits.high >> 16) & 0xffff, 4, Lowercase),

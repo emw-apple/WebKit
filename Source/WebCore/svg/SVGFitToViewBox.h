@@ -39,7 +39,7 @@ class SVGFitToViewBox {
 public:
     static AffineTransform viewBoxToViewTransform(const FloatRect& viewBoxRect, const SVGPreserveAspectRatioValue&, float viewWidth, float viewHeight);
 
-    using PropertyRegistry = SVGPropertyOwnerRegistryBase<SVGFitToViewBox>;
+    using PropertyRegistry = SVGPropertyOwnerRegistry<SVGFitToViewBox>;
 
     const FloatRect& viewBox() const LIFETIME_BOUND { return m_viewBox->currentValue(); }
     const SVGPreserveAspectRatioValue& preserveAspectRatio() const LIFETIME_BOUND { return m_preserveAspectRatio->currentValue(); }

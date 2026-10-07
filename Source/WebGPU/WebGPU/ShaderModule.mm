@@ -44,6 +44,24 @@
 
 namespace WebGPU::Metal {
 
+struct ShaderModuleParameters {
+    String wgslCode;
+    const WGPUShaderModuleCompilationHint* hints;
+};
+
+static std::optional<ShaderModuleParameters> findShaderModuleParameters(const WGPUShaderModuleDescriptor& descriptor)
+{
+    auto* wgsl = findChainedStruct<WGPUShaderSourceWGSL>(descriptor.nextInChain);
+    if (!wgsl)
+        return std::nullopt;
+
+    auto wgslCode = fromAPI(wgsl->code);
+    if (!wgslCode)
+        return std::nullopt;
+
+    return { { WTF::move(wgslCode), descriptor.hints } };
+}
+
 static MTLCompileOptions *compileOptions(const WGSL::DeviceState& deviceState)
 {
     static bool requireSafeMath = false;
@@ -109,15 +127,15 @@ void ShaderModule::createLibraryAsync(id<MTLDevice> device, NSString *msl, NSStr
     }).get()];
 }
 
-static RefPtr<ShaderModule> earlyCompileShaderModule(Device& device, Variant<WGSL::SuccessfulCheck, WGSL::FailedCheck>&& checkResult, std::span<const WebGPU::ShaderModuleCompilationHint> suppliedHints, String&& label)
+static RefPtr<ShaderModule> earlyCompileShaderModule(Device& device, Variant<WGSL::SuccessfulCheck, WGSL::FailedCheck>&& checkResult, const WGPUShaderModuleDescriptor& suppliedHints, String&& label)
 {
     HashMap<String, Ref<PipelineLayout>> hints;
     HashMap<String, WGSL::PipelineLayout*> wgslHints;
     Vector<WGSL::PipelineLayout> wgslPipelineLayouts;
-    wgslPipelineLayouts.reserveCapacity(suppliedHints.size());
-    for (const auto& hint : suppliedHints) {
-        auto& hintKey = hint.entryPoint;
-        Ref layout = metal(hint.layout.get());
+    wgslPipelineLayouts.reserveCapacity(suppliedHints.hintCount);
+    for (const auto& hint : hintsSpan(suppliedHints)) {
+        auto hintKey = fromAPI(hint.entryPoint);
+        Ref layout = WebGPU::Metal::fromAPI(hint.layout);
         hints.add(hintKey, layout);
         WGSL::PipelineLayout* convertedPipelineLayout = nullptr;
         if (layout->numberOfBindGroupLayouts()) {
@@ -159,10 +177,10 @@ static const HashSet<String> buildFeatureSet(const Vector<WGPUFeatureName>& feat
     return result;
 }
 
-static Ref<ShaderModule> handleShaderSuccessOrFailure(WebGPU::Metal::Device &object, Variant<WGSL::SuccessfulCheck, WGSL::FailedCheck> &checkResult, const WebGPU::ShaderModuleDescriptor &descriptor)
+static Ref<ShaderModule> handleShaderSuccessOrFailure(WebGPU::Metal::Device &object, Variant<WGSL::SuccessfulCheck, WGSL::FailedCheck> &checkResult, const WGPUShaderModuleDescriptor &descriptor, std::optional<ShaderModuleParameters> &shaderModuleParameters)
 {
     if (std::holds_alternative<WGSL::SuccessfulCheck>(checkResult)) {
-        if (!descriptor.hints.empty()) {
+        if (shaderModuleParameters->hints && descriptor.hintCount) {
             // FIXME: re-enable early compilation later on once deferred compilation is fully implemented
             // https://bugs.webkit.org/show_bug.cgi?id=254258
             UNUSED_PARAM(earlyCompileShaderModule);
@@ -181,13 +199,17 @@ static Ref<ShaderModule> handleShaderSuccessOrFailure(WebGPU::Metal::Device &obj
     return ShaderModule::createInvalid(object, failedCheck);
 }
 
-Ref<ShaderModule> Device::createShaderModule(const WebGPU::ShaderModuleDescriptor& descriptor)
+Ref<ShaderModule> Device::createShaderModule(const WGPUShaderModuleDescriptor& descriptor)
 {
     if (!isValid())
         return ShaderModule::createInvalid(*this);
 
+    auto shaderModuleParameters = findShaderModuleParameters(descriptor);
+    if (!shaderModuleParameters)
+        return ShaderModule::createInvalid(*this);
+
     auto supportedFeatures = buildFeatureSet(m_capabilities.features);
-    auto checkResult = WGSL::staticCheck(descriptor.code, std::nullopt, WGSL::Configuration {
+    auto checkResult = WGSL::staticCheck(shaderModuleParameters->wgslCode, std::nullopt, WGSL::Configuration {
         .maxBuffersPlusVertexBuffersForVertexStage = maxBuffersPlusVertexBuffersForVertexStage(),
         .maxBuffersForFragmentStage = maxBuffersForFragmentStage(),
         .maxBuffersForComputeStage = maxBuffersForComputeStage(),
@@ -195,7 +217,7 @@ Ref<ShaderModule> Device::createShaderModule(const WebGPU::ShaderModuleDescripto
         .supportedFeatures = WTF::move(supportedFeatures)
     });
 
-    return handleShaderSuccessOrFailure(*this, checkResult, descriptor);
+    return handleShaderSuccessOrFailure(*this, checkResult, descriptor, shaderModuleParameters);
 }
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(ShaderModule);
@@ -755,34 +777,86 @@ ShaderModule::~ShaderModule() = default;
 
 struct Messages {
     const Vector<WGSL::CompilationMessage>& messages;
-    WebGPU::CompilationMessageType type;
+    WGPUCompilationMessageType type;
 };
 
-static void appendMessages(Vector<WebGPU::CompilationMessage>& result, const Messages& messages)
-{
-    for (const auto& compilationMessage : messages.messages) {
-        result.append({
-            .message = compilationMessage.message(),
-            .type = messages.type,
-            .lineNum = compilationMessage.lineNumber(),
-            .linePos = compilationMessage.lineOffset(),
-            .offset = compilationMessage.offset(),
-            .length = compilationMessage.length(),
-        });
+struct CompilationMessageData {
+    CompilationMessageData(Vector<WGPUCompilationMessage>&& compilationMessages, Vector<String>&& messages)
+        : compilationMessages(WTF::move(compilationMessages))
+        , messages(WTF::move(messages))
+    {
     }
+
+    CompilationMessageData(const CompilationMessageData&) = delete;
+    CompilationMessageData(CompilationMessageData&&) = default;
+
+    Vector<WGPUCompilationMessage> compilationMessages;
+    Vector<String> messages;
+};
+
+static CompilationMessageData convertMessages(const Messages& messages1, const std::optional<Messages>& messages2 = std::nullopt)
+{
+    Vector<WGPUCompilationMessage> flattenedCompilationMessages;
+    Vector<String> flattenedMessages;
+
+    auto populateMessages = [&](const Messages& compilationMessages) {
+        for (const auto& compilationMessage : compilationMessages.messages)
+            flattenedMessages.append(compilationMessage.message());
+    };
+
+    populateMessages(messages1);
+    if (messages2)
+        populateMessages(*messages2);
+
+    auto populateCompilationMessages = [&](const Messages& compilationMessages, size_t base) {
+        for (size_t i = 0; i < compilationMessages.messages.size(); ++i) {
+            const auto& compilationMessage = compilationMessages.messages[i];
+            flattenedCompilationMessages.append({
+                .message = flattenedMessages[i + base],
+                .type = compilationMessages.type,
+                .lineNum = compilationMessage.lineNumber(),
+                .linePos = compilationMessage.lineOffset(),
+                .offset = compilationMessage.offset(),
+                .length = compilationMessage.length(),
+                .utf16LinePos = compilationMessage.lineOffset(),
+                .utf16Offset = compilationMessage.offset(),
+                .utf16Length = compilationMessage.length(),
+            });
+        }
+    };
+
+    populateCompilationMessages(messages1, 0);
+    if (messages2)
+        populateCompilationMessages(*messages2, messages1.messages.size());
+
+    return { WTF::move(flattenedCompilationMessages), WTF::move(flattenedMessages) };
 }
 
-void ShaderModule::compilationInfo(CompletionHandler<void(WebGPU::CompilationInfo&&)>&& callback)
+void ShaderModule::getCompilationInfo(CompletionHandler<void(WGPUCompilationInfoRequestStatus, const WGPUCompilationInfo&)>&& callback)
 {
-    WebGPU::CompilationInfo compilationInfo;
     WTF::switchOn(m_checkResult, [&](const WGSL::SuccessfulCheck& successfulCheck) {
-        appendMessages(compilationInfo.messages, { successfulCheck.warnings, WebGPU::CompilationMessageType::Warning });
+        auto compilationMessageData(convertMessages({ successfulCheck.warnings, WGPUCompilationMessageType_Warning }));
+        WGPUCompilationInfo compilationInfo {
+            .messageCount = static_cast<uint32_t>(compilationMessageData.compilationMessages.size()),
+            .messages = compilationMessageData.compilationMessages.span().data(),
+        };
+        callback(WGPUCompilationInfoRequestStatus_Success, compilationInfo);
     }, [&](const WGSL::FailedCheck& failedCheck) {
-        appendMessages(compilationInfo.messages, { failedCheck.errors, WebGPU::CompilationMessageType::Error });
-        appendMessages(compilationInfo.messages, { failedCheck.warnings, WebGPU::CompilationMessageType::Warning });
+        auto compilationMessageData(convertMessages(
+            { failedCheck.errors, WGPUCompilationMessageType_Error },
+            { { failedCheck.warnings, WGPUCompilationMessageType_Warning } }));
+        WGPUCompilationInfo compilationInfo {
+            .messageCount = static_cast<uint32_t>(compilationMessageData.compilationMessages.size()),
+            .messages = compilationMessageData.compilationMessages.span().data(),
+        };
+        callback(WGPUCompilationInfoRequestStatus_Error, compilationInfo);
     }, [&](std::monostate) {
+        WGPUCompilationInfo compilationInfo {
+            .messageCount = 0u,
+            .messages = nullptr,
+        };
+        callback(WGPUCompilationInfoRequestStatus_Error, compilationInfo);
     });
-    callback(WTF::move(compilationInfo));
 }
 
 void ShaderModule::setLabel(String&& label)
@@ -1101,30 +1175,16 @@ void wgpuShaderModuleRelease(WGPUShaderModule shaderModule)
     WebGPU::Metal::fromAPI(shaderModule).deref();
 }
 
-static void getCompilationInfo(WGPUShaderModule shaderModule, CompletionHandler<void(WGPUCompilationInfoRequestStatus, const WGPUCompilationInfo&)>&& callback)
-{
-    Ref protectedShaderModule = WebGPU::Metal::fromAPI(shaderModule);
-    // The request succeeds for shader modules that compiled.
-    auto status = protectedShaderModule->isValid() ? WGPUCompilationInfoRequestStatus_Success : WGPUCompilationInfoRequestStatus_Error;
-    protectedShaderModule->compilationInfo([status, callback = WTF::move(callback)](WebGPU::CompilationInfo&& compilationInfo) mutable {
-        auto messages = WebGPU::Metal::toAPI(compilationInfo);
-        callback(status, WGPUCompilationInfo {
-            .messageCount = messages.size(),
-            .messages = messages.span().data(),
-        });
-    });
-}
-
 void wgpuShaderModuleGetCompilationInfo(WGPUShaderModule shaderModule, WGPUCompilationInfoCallback callback, void * userdata)
 {
-    getCompilationInfo(shaderModule, [callback, userdata](WGPUCompilationInfoRequestStatus status, const WGPUCompilationInfo& compilationInfo) {
+    protect(WebGPU::Metal::fromAPI(shaderModule))->getCompilationInfo([callback, userdata](WGPUCompilationInfoRequestStatus status, const WGPUCompilationInfo& compilationInfo) {
         callback(status, &compilationInfo, userdata);
     });
 }
 
 void wgpuShaderModuleGetCompilationInfoWithBlock(WGPUShaderModule shaderModule, WGPUCompilationInfoBlockCallback callback)
 {
-    getCompilationInfo(shaderModule, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCompilationInfoRequestStatus status, const WGPUCompilationInfo& compilationInfo) {
+    protect(WebGPU::Metal::fromAPI(shaderModule))->getCompilationInfo([callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCompilationInfoRequestStatus status, const WGPUCompilationInfo& compilationInfo) {
         callback(status, &compilationInfo);
     });
 }

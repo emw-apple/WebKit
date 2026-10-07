@@ -233,10 +233,10 @@ public:
     {
         ASSERT(&a != &b);
 
-        if (a.initialLetter != b.initialLetter)
+        if (a.lineClamp != b.lineClamp || a.initialLetter != b.initialLetter)
             return true;
 
-        if (a.shapeMargin != b.shapeMargin || a.shapeImageThreshold != b.shapeImageThreshold)
+        if (a.shapeMargin != b.shapeMargin)
             return true;
 
         if (a.columnGap != b.columnGap || a.rowGap != b.rowGap)
@@ -388,7 +388,9 @@ public:
     #endif
             || a.listStyleType != b.listStyleType
             || a.listStyleImage != b.listStyleImage
-            || a.blockEllipsis != b.blockEllipsis)
+            || a.blockEllipsis != b.blockEllipsis
+            || a.borderHorizontalSpacing != b.borderHorizontalSpacing
+            || a.borderVerticalSpacing != b.borderVerticalSpacing)
             return true;
 
         if (a.textStrokeWidth != b.textStrokeWidth)
@@ -474,10 +476,8 @@ public:
             return true;
 
         if (&a.inheritedData() != &b.inheritedData()) {
-            if (a.inheritedData().textAutosizingAdjustedLineHeight != b.inheritedData().textAutosizingAdjustedLineHeight
-                || a.inheritedData().lineHeight != b.inheritedData().lineHeight
-                || a.inheritedData().borderHorizontalSpacing != b.inheritedData().borderHorizontalSpacing
-                || a.inheritedData().borderVerticalSpacing != b.inheritedData().borderVerticalSpacing)
+            if (a.inheritedData().lineHeight != b.inheritedData().lineHeight
+                || a.inheritedData().textAutosizingAdjustedLineHeight != b.inheritedData().textAutosizingAdjustedLineHeight)
                 return true;
 
             if (a.inheritedData().fontData != b.inheritedData().fontData)
@@ -592,7 +592,7 @@ public:
 
     static bool rareDataChangeRequiresLayerRepaint(const NonInheritedRareData& a, const NonInheritedRareData& b, OptionSet<DifferenceContextSensitiveProperty>& changedContextSensitiveProperties)
     {
-        if (a.blendMode != b.blendMode)
+        if (a.effectiveBlendMode != b.effectiveBlendMode)
             return true;
 
         if (a.backdropFilter != b.backdropFilter) {

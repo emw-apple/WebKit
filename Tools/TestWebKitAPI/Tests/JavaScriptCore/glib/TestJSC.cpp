@@ -31,7 +31,6 @@
 #include <wtf/MainThread.h>
 #include <wtf/Threading.h>
 #include <wtf/Vector.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GUniquePtr.h>
 #include <wtf/text/CString.h>
@@ -1696,13 +1695,13 @@ static void multiplyFooV(Foo* foo, GPtrArray* multipliers)
 
 static int fooGetProperty(Foo* foo, const char* name)
 {
-    auto addResult = foo->properties.add(UTF8CString::unsafeFromUTF8(name), 0);
+    auto addResult = foo->properties.add(UTF8CString { byteCast<char8_t>(name) }, 0);
     return addResult.iterator->value;
 }
 
 static void fooSetProperty(Foo* foo, const char* name, int value)
 {
-    auto addResult = foo->properties.add(UTF8CString::unsafeFromUTF8(name), value);
+    auto addResult = foo->properties.add(UTF8CString { byteCast<char8_t>(name) }, value);
     if (!addResult.isNewEntry)
         addResult.iterator->value = value;
 }
@@ -1815,7 +1814,7 @@ static JSCClassVTable fooVTable = {
         }
 
         auto* foo = static_cast<Foo*>(instance);
-        return foo->properties.remove(UTF8CString::unsafeFromUTF8(name));
+        return foo->properties.remove(UTF8CString { byteCast<char8_t>(name) });
     },
     // enumerate_properties
     [](JSCClass* jscClass, JSCContext* context, gpointer instance) -> char** {
@@ -1828,7 +1827,7 @@ static JSCClassVTable fooVTable = {
         std::sort(names.begin(), names.end());
         for (const auto& name : names) {
             if (g_str_has_prefix(name.legacyCStringPointer(), "prop_enum_"))
-                g_ptr_array_add(properties.get(), gStrdup(name));
+                g_ptr_array_add(properties.get(), g_strdup(name.legacyCStringPointer()));
         }
         if (!properties->len)
             return nullptr;

@@ -1,29 +1,51 @@
+//@ skip if $architecture == "arm64" && $hostOS == "linux"
+//@ slow!
+// https://bugs.webkit.org/show_bug.cgi?id=247454
+// https://bugs.webkit.org/show_bug.cgi?id=325270
 import * as assert from "../assert.js";
-
-const concreteCast = read("type-index-abstract-heap-types-subtype-validation-concrete-cast.wasm", "binary");
-const funcrefToExternref = read("type-index-abstract-heap-types-subtype-validation-funcref-to-externref.wasm", "binary");
-const externrefToAnyref = read("type-index-abstract-heap-types-subtype-validation-externref-to-anyref.wasm", "binary");
-const i31refToAnyref = read("type-index-abstract-heap-types-subtype-validation-i31ref-to-anyref.wasm", "binary");
-const structrefToEqref = read("type-index-abstract-heap-types-subtype-validation-structref-to-eqref.wasm", "binary");
+import { compile, instantiate } from "../gc/wast-wrapper.js";
 
 function testSubtypeValidation() {
-    new WebAssembly.Module(concreteCast);
+    compile(`
+      (module
+        (type $S (struct))
+        (func (param (ref null $S)) (result)
+          (drop (local.get 0)))
+        (func (param anyref) (result)
+          (call 0 (ref.cast (ref null $S) (local.get 0)))))
+    `);
 
     assert.throws(
-        () => new WebAssembly.Module(funcrefToExternref),
+        () => compile(`
+          (module
+            (func (param funcref) (result)
+              (drop (ref.cast externref (local.get 0)))))
+        `),
         WebAssembly.CompileError,
         "ref.cast"
     );
 
     assert.throws(
-        () => new WebAssembly.Module(externrefToAnyref),
+        () => compile(`
+          (module
+            (func (param externref) (result anyref)
+              (ref.cast anyref (local.get 0))))
+        `),
         WebAssembly.CompileError,
         "ref.cast"
     );
 
-    new WebAssembly.Module(i31refToAnyref);
+    compile(`
+      (module
+        (func (param i31ref) (result anyref)
+          (ref.cast anyref (local.get 0))))
+    `);
 
-    new WebAssembly.Module(structrefToEqref);
+    compile(`
+      (module
+        (func (param structref) (result eqref)
+          (ref.cast eqref (local.get 0))))
+    `);
 }
 
 for (let i = 0; i < wasmTestLoopCount; ++i)

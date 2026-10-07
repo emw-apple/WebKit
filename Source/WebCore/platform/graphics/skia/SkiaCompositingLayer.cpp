@@ -244,7 +244,6 @@ void SkiaCompositingLayer::setFilters(const FilterOperations& filterOperations)
 void SkiaCompositingLayer::setBackdropFilters(const FilterOperations& filterOperations)
 {
     m_backdrop.filter = SkiaCompositingLayerFilters::create(filterOperations, SkTileMode::kClamp);
-    m_backdrop.filterOperations = filterOperations;
 }
 
 void SkiaCompositingLayer::setBackdropFiltersRect(const FloatRoundedRect& clipRect)
@@ -422,12 +421,6 @@ const std::optional<SkiaCompositingLayer::Filter> SkiaCompositingLayer::filter()
         return m_filter;
 
     return m_animationsState->filter ? m_animationsState->filter : m_filter;
-}
-
-bool SkiaCompositingLayer::hasFilter() const
-{
-    auto filter = this->filter();
-    return filter && filter->filter;
 }
 
 std::optional<SkiaCompositingLayer::AnimationsState> SkiaCompositingLayer::syncAnimations(MonotonicTime time)
@@ -1201,7 +1194,7 @@ sk_sp<SkImage> SkiaCompositingLayer::maskImage()
     return m_maskImage;
 }
 
-void SkiaCompositingLayer::paintWithIntermediateSurface(SkCanvas& canvas, PaintContext& context, const IntRect& contentsRect, SkPaint* paint, NOESCAPE const PaintFunction& paintFunction)
+void SkiaCompositingLayer::paintWithIntermediateSurface(SkCanvas& canvas, PaintContext& context, const IntRect& contentsRect, SkPaint* paint, PaintFunction&& paintFunction)
 {
     auto bounds = canvas.getDeviceClipBounds();
     if (bounds.isEmpty())
@@ -1258,47 +1251,6 @@ static std::optional<TransformationMatrix> inverseLayerPlaneTransform(const Tran
     return layerTransform.to2dTransform().inverse();
 }
 
-static int maxFilterSurfaceSize()
-{
-    return PlatformDisplay::sharedDisplay().skiaGrContext()->maxTextureSize() / 2;
-}
-
-template<typename BoundsFunction>
-static FloatRect filterSourceBounds(const SkCanvas& canvas, const TransformationMatrix& layerTransform, const FloatSize& scale, const SkImageFilter& filter, NOESCAPE const BoundsFunction& boundsWithinClip)
-{
-    const auto deviceToLayer = inverseLayerPlaneTransform(TransformationMatrix(canvas.getLocalToDevice()).multiply(layerTransform));
-    if (!deviceToLayer)
-        return { };
-
-    const auto deviceClip = FloatRect(canvas.getDeviceClipBounds());
-    const auto clipBounds = layerPlaneClipBounds(*deviceToLayer, deviceClip);
-    if (clipBounds.isEmpty())
-        return { };
-
-    const int maxSurfaceSize = maxFilterSurfaceSize();
-    auto fitsSurface = [&](const FloatRect& bounds) {
-        return bounds.width() * scale.width() <= maxSurfaceSize && bounds.height() * scale.height() <= maxSurfaceSize;
-    };
-
-    // Like Chromium, also include the content outside the visible part that the filter reads, for example
-    // content whose drop shadow falls into the visible part. If that is too large, use the visible part only.
-    const auto reach = filter.filterBounds(clipBounds, SkMatrix::I(), SkImageFilter::kReverse_MapDirection);
-    if (reach.width64() <= std::numeric_limits<int>::max() && reach.height64() <= std::numeric_limits<int>::max()) {
-        const FloatRect bounds = boundsWithinClip(IntRect(reach));
-        if (fitsSurface(bounds))
-            return bounds;
-    }
-
-    const FloatRect bounds = boundsWithinClip(clipBounds);
-    if (fitsSurface(bounds))
-        return bounds;
-
-    // Within a smaller clip the source covers at most its intersection with the bounds above.
-    return boundsWithinClip(layerPlaneClipBounds(*deviceToLayer, deviceClip, [&](const IntRect& clipBounds) {
-        return fitsSurface(intersection(bounds, FloatRect(clipBounds)));
-    }));
-}
-
 void SkiaCompositingLayer::paintBackdrop(SkCanvas& canvas, PaintContext& context)
 {
 #if ENABLE(DAMAGE_TRACKING)
@@ -1330,7 +1282,6 @@ void SkiaCompositingLayer::paintBackdrop(SkCanvas& canvas, PaintContext& context
         SetForScope scopedBlendMode(context.blendMode, std::nullopt);
         SetForScope scopedReplicaTransform(context.accumulatedReplicaTransform, TransformationMatrix());
         SetForScope scopedSkipAfterBackdrop(context.skipAfterBackdrop, false);
-        SetForScope scopedColorFilter(context.colorFilter, nullptr);
         backdropRoot()->paintSelfAndChildren(canvas, context);
     };
 
@@ -1339,20 +1290,14 @@ void SkiaCompositingLayer::paintBackdrop(SkCanvas& canvas, PaintContext& context
     if (!inverseTransform)
         return;
 
-    // The backdrop covers what the filter reads for the visible part, within the border box.
-    const auto localBounds = filterSourceBounds(canvas, clipTransform, filterSurfaceScale(context), *m_backdrop.filter, [&](const IntRect& clipBounds) {
-        return intersection(m_backdrop.clipRect.rect(), FloatRect(clipBounds));
-    });
-
     SkPaint paint;
     paint.setAlphaf(context.opacity);
-    paint.setImageFilter(SkiaCompositingLayerFilters::create(m_backdrop.filterOperations, SkTileMode::kMirror, SkRect(localBounds)));
-    paint.setColorFilter(context.colorFilter);
+    paint.setImageFilter(m_backdrop.filter);
     if (context.blendMode)
         paint.setBlendMode(*context.blendMode);
     // Per spec, a backdrop blur mirrors the image at the border box, and an aligned surface could include pixels from outside it.
     // https://drafts.csswg.org/filter-effects-2/#BackdropFilterProperty
-    paintWithFilter(canvas, context, clipTransform, *inverseTransform, localBounds, paint, FilterSurfaceAlignment::LocalCoordinates, WTF::move(paintBackdropRootSubtree));
+    paintWithFilter(canvas, context, clipTransform, *inverseTransform, m_backdrop.clipRect.rect(), paint, FilterSurfaceAlignment::LocalCoordinates, WTF::move(paintBackdropRootSubtree));
 }
 
 void SkiaCompositingLayer::paintWithMaskAndBackdrop(SkCanvas& canvas, PaintContext& context)
@@ -1367,7 +1312,7 @@ void SkiaCompositingLayer::paintWithMaskAndBackdrop(SkCanvas& canvas, PaintConte
     if (!context.shouldDraw()) {
         collectGroupDamage(canvas, context);
 
-        if (m_backdrop.filter && !hasFilter())
+        if (m_backdrop.filter && !context.paintingBackdropForLayer)
             paintBackdrop(canvas, context);
 
         paintWithBlendMode(canvas, context);
@@ -1397,11 +1342,16 @@ void SkiaCompositingLayer::paintWithMaskAndBackdrop(SkCanvas& canvas, PaintConte
             canvas.clipShader(maskShader);
     }
 
-    // A filter of the layer applies to its backdrop too, so paintWithFilterAndMask() paints the backdrop then.
-    if (m_backdrop.filter && !hasFilter())
+    if (m_backdrop.filter && !context.paintingBackdropForLayer)
         paintBackdrop(canvas, context);
 
     paintWithBlendMode(canvas, context);
+}
+
+static int maxFilterSurfaceSize()
+{
+    // Skia pads the intermediate images of a filter, so leave room below the maximum texture size.
+    return PlatformDisplay::sharedDisplay().skiaGrContext()->maxTextureSize() / 2;
 }
 
 static std::optional<SkMatrix> computeDeviceAlignedSurfaceTransform(const TransformationMatrix& layerToDevice, const FloatRect& localBounds)
@@ -1419,7 +1369,7 @@ static std::optional<SkMatrix> computeDeviceAlignedSurfaceTransform(const Transf
     return matrix;
 }
 
-void SkiaCompositingLayer::paintWithFilter(SkCanvas& canvas, PaintContext& context, const TransformationMatrix& layerTransform, const TransformationMatrix& inverseLayerTransform, const FloatRect& localBounds, const SkPaint& layerPaint, FilterSurfaceAlignment alignment, NOESCAPE const PaintFunction& paintFunction)
+void SkiaCompositingLayer::paintWithFilter(SkCanvas& canvas, PaintContext& context, const TransformationMatrix& layerTransform, const TransformationMatrix& inverseLayerTransform, const FloatRect& localBounds, const SkPaint& layerPaint, FilterSurfaceAlignment alignment, PaintFunction&& paintFunction)
 {
     // Like Chromium, paint the subtree into a surface in the layer plane at a fixed scale, filter it there and
     // draw the result with the layer transform. SkCanvas::saveLayer() would pick the layer resolution at the
@@ -1544,26 +1494,50 @@ void SkiaCompositingLayer::paintWithFilterAndMask(SkCanvas& canvas, PaintContext
         return;
     }
 
-    auto paintBackdropSelfAndChildren = [&](SkCanvas& canvas, PaintContext& context) {
-        if (m_backdrop.filter)
-            paintBackdrop(canvas, context);
-        paintSelfAndChildren(canvas, context);
-    };
-
     // If we have a filter that can be simplified as a color filter
     // we don't need to create an intermediate surface.
     SkColorFilter* colorFilterPtr = nullptr;
     if (filter->filter->asAColorFilter(&colorFilterPtr)) {
         sk_sp<SkColorFilter> colorFilter(colorFilterPtr);
         SetForScope scopedColorFilter(context.colorFilter, colorFilter);
-        paintBackdropSelfAndChildren(canvas, context);
+        paintSelfAndChildren(canvas, context);
+        return;
+    }
+
+#if ENABLE(DAMAGE_TRACKING)
+    if (!context.shouldDraw()) {
+        // A filter also reads pixels from outside the layer. So if anything in the subtree has changed,
+        // the whole overlap region has changed, not only the part that has been changed. If nothing has
+        // changed, the region still matches the last frame and no damage is needed. Changes to this
+        // layer's own group properties are left to collectGroupDamage().
+        if (!hasGroupPropertyDamage() && hasDamageInSubtree()) {
+            auto mode = m_mask ? ComputeOverlapRegionMode::Mask : ComputeOverlapRegionMode::Union;
+            addGroupDamage(canvas, context, computeConsolidatedOverlapRegionRects(canvas, context, mode));
+        }
+
+        paintSelfAndChildren(canvas, context);
+        return;
+    }
+#endif
+
+    const auto layerTransform = combinedTransform(context);
+    const auto inverseTransform = inverseLayerPlaneTransform(layerTransform);
+    if (!inverseTransform) {
+        stopPaintingIntoBackdropIfNeeded(context);
+        return;
+    }
+
+    // The canvas may already carry a transform of its own, when painting into an intermediate surface, so the
+    // device clip maps into the layer plane through both.
+    const auto deviceToLayer = inverseLayerPlaneTransform(TransformationMatrix(canvas.getLocalToDevice()).multiply(layerTransform));
+    if (!deviceToLayer) {
+        stopPaintingIntoBackdropIfNeeded(context);
         return;
     }
 
     // We re-use the logic for the overlap region computation to compute the local bounds of the
     // whole subtree, which size the surface the filter is applied in. It has to cover the visible area.
-    const auto layerTransform = combinedTransform(context);
-    const auto inverseTransform = inverseLayerPlaneTransform(layerTransform);
+    const auto deviceClip = FloatRect(canvas.getDeviceClipBounds());
     auto computeLocalBounds = [&](const IntRect& clipBounds) {
         ComputeOverlapRegionData data {
             .mode = ComputeOverlapRegionMode::Union,
@@ -1576,43 +1550,26 @@ void SkiaCompositingLayer::paintWithFilterAndMask(SkCanvas& canvas, PaintContext
         return FloatRect(data.overlapRegion.bounds());
     };
 
-#if ENABLE(DAMAGE_TRACKING)
-    if (!context.shouldDraw()) {
-        // A filter also reads pixels from outside the layer. So if anything in the subtree has changed,
-        // the whole overlap region has changed, not only the part that has been changed. If nothing has
-        // changed, the region still matches the last frame and no damage is needed. Changes to this
-        // layer's own group properties are left to collectGroupDamage().
-        if (!hasGroupPropertyDamage() && hasDamageInSubtree()) {
-            auto mode = m_mask ? ComputeOverlapRegionMode::Mask : ComputeOverlapRegionMode::Union;
-            auto overlapRects = computeConsolidatedOverlapRegionRects(canvas, context, mode);
+    const auto scale = filterSurfaceScale(context);
+    const int maxSurfaceSize = maxFilterSurfaceSize();
+    auto fitsSurface = [&](const FloatRect& bounds) {
+        return bounds.width() * scale.width() <= maxSurfaceSize && bounds.height() * scale.height() <= maxSurfaceSize;
+    };
 
-            if (inverseTransform) {
-                auto outputBounds = filterSourceBounds(canvas, layerTransform, filterSurfaceScale(context), *filter->filter, computeLocalBounds);
-                if (!outputBounds.isEmpty()) {
-                    outputBounds.expand(toFloatBoxExtent(filter->outsets));
-                    overlapRects.append(projectedBoundingBox(TransformationMatrix(canvas.getLocalToDevice()).multiply(layerTransform), outputBounds, canvas.getDeviceClipBounds()));
-                }
-            }
-
-            addGroupDamage(canvas, context, overlapRects);
-        }
-
-        paintBackdropSelfAndChildren(canvas, context);
-        return;
+    auto localBounds = computeLocalBounds(layerPlaneClipBounds(*deviceToLayer, deviceClip));
+    if (!fitsSurface(localBounds)) {
+        // Within a smaller clip the subtree covers at most its intersection with the bounds above.
+        localBounds = computeLocalBounds(layerPlaneClipBounds(*deviceToLayer, deviceClip, [&](const IntRect& clipBounds) {
+            return fitsSurface(intersection(localBounds, FloatRect(clipBounds)));
+        }));
     }
-#endif
-
-    if (!inverseTransform)
-        return;
-
-    const auto localBounds = filterSourceBounds(canvas, layerTransform, filterSurfaceScale(context), *filter->filter, computeLocalBounds);
 
     SkPaint layerPaint;
     layerPaint.setImageFilter(filter->filter);
 
     auto paintFilteredSubtree = [&](SkCanvas& canvas, PaintContext& context) {
         paintWithFilter(canvas, context, layerTransform, *inverseTransform, localBounds, layerPaint, FilterSurfaceAlignment::DevicePixels, [&](SkCanvas& canvas, PaintContext& context) {
-            paintBackdropSelfAndChildren(canvas, context);
+            paintSelfAndChildren(canvas, context);
         });
     };
 
@@ -1662,8 +1619,6 @@ void SkiaCompositingLayer::paintWithReplica(SkCanvas& canvas, PaintContext& cont
 void SkiaCompositingLayer::recursivePaint(SkCanvas& canvas, PaintContext& context)
 {
     if (context.skipAfterBackdrop)
-        return;
-    if (stopPaintingIntoBackdropIfNeeded(context))
         return;
     if (!isVisible())
         return;

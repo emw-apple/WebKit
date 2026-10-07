@@ -36,13 +36,13 @@
 namespace WebCore {
 
 template<typename F>
-static auto visitArrayBufferView(JSC::ArrayBufferView& bufferView, NOESCAPE const F& f)
+static auto visitArrayBufferView(JSC::ArrayBufferView& bufferView, F&& f)
 {
     // Always try Uint8ClampedArray first, as it should be the most frequent.
     if (auto* array = dynamicDowncast<JSC::Uint8ClampedArray>(bufferView))
-        return f(*array);
+        return std::forward<F>(f)(*array);
     if (auto* array = dynamicDowncast<JSC::Float16Array>(bufferView))
-        return f(*array);
+        return std::forward<F>(f)(*array);
     RELEASE_ASSERT_NOT_REACHED("Unexpected ArrayBufferView type");
 }
 

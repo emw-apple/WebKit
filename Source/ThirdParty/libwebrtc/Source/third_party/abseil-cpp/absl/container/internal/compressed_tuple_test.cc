@@ -25,7 +25,6 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/base/config.h"
 #include "absl/container/internal/test_instance_tracker.h"
 #include "absl/memory/memory.h"
 #include "absl/utility/utility.h"

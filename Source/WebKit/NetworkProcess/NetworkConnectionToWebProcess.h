@@ -44,7 +44,6 @@
 #include <JavaScriptCore/ConsoleTypes.h>
 #include <WebCore/ExceptionData.h>
 #include <WebCore/FrameIdentifier.h>
-#include <WebCore/IPAddressSpace.h>
 #include <WebCore/LayoutMilestone.h>
 #include <WebCore/LoadSchedulingMode.h>
 #include <WebCore/MessagePortChannelProvider.h>
@@ -57,7 +56,6 @@
 #include <WebCore/PushSubscriptionIdentifier.h>
 #include <WebCore/RTCDataChannelIdentifier.h>
 #include <WebCore/RegistrableDomain.h>
-#include <WebCore/SecurityOriginData.h>
 #include <WebCore/WebSocketIdentifier.h>
 #include <WebCore/WebTransportConnectionInfo.h>
 #include <optional>
@@ -191,13 +189,6 @@ public:
     bool compressionDictionaryEnabled() const { return m_sharedPreferencesForWebProcess.compressionDictionaryEnabled; }
     bool localNetworkAccessEnabled() const { return m_sharedPreferencesForWebProcess.localNetworkAccessEnabled; }
 
-    struct LocalNetworkAccessFrameRecord {
-        WebCore::IPAddressSpace addressSpace;
-        WebCore::SecurityOriginData origin;
-    };
-    void recordLocalNetworkAccessFrame(WebCore::FrameIdentifier, LocalNetworkAccessFrameRecord&&);
-    std::optional<LocalNetworkAccessFrameRecord> localNetworkAccessFrameRecord(WebCore::FrameIdentifier, std::optional<WebCore::FrameIdentifier> parentFrameID) const;
-
     void didCleanupResourceLoader(NetworkResourceLoader&);
     void transferKeptAliveLoad(NetworkResourceLoader&);
     void setOnLineState(bool);
@@ -298,10 +289,6 @@ public:
 
     std::optional<NetworkActivityTracker::CompletionCode> NODELETE lastRootActivityCompletionCodeForTesting(WebCore::PageIdentifier) const;
 
-    // Called by NetworkSession when draining the deferred-claim queue for a parked loader.
-    void completeQueuedExistingLoaderResume(Ref<NetworkResourceLoader>&&, NetworkResourceLoadParameters&&);
-    void terminateForInvalidLoaderResumeClaim();
-
 private:
     NetworkConnectionToWebProcess(NetworkProcess&, WebCore::ProcessIdentifier, PAL::SessionID, NetworkProcessConnectionParameters&&, IPC::Connection::Identifier&&);
 
@@ -326,8 +313,6 @@ private:
     void isResourceLoadFinished(WebCore::ResourceLoaderIdentifier, CompletionHandler<void(bool)>&&);
 #if ENABLE(IPC_TESTING_API)
     void takeInvalidMessageStringForTesting(CompletionHandler<void(String&&)>&&);
-    void addSyntheticParkedLoaderForTesting(NetworkResourceLoadIdentifier, WebCore::ProcessIdentifier destination, CompletionHandler<void(bool)>&&);
-    void removeSyntheticParkedLoaderForTesting(NetworkResourceLoadIdentifier, CompletionHandler<void()>&&);
 #endif
 
     void removeLoadIdentifier(WebCore::ResourceLoaderIdentifier);
@@ -374,7 +359,7 @@ private:
     void setCaptureExtraNetworkLoadMetricsEnabled(bool);
 
     void createSocketChannel(const WebCore::ResourceRequest&, const String& protocol, WebCore::WebSocketIdentifier, WebPageProxyIdentifier, std::optional<WebCore::FrameIdentifier>, std::optional<WebCore::PageIdentifier>, const WebCore::ClientOrigin&, bool hadMainFrameMainResourcePrivateRelayed, bool allowPrivacyProxy, OptionSet<WebCore::AdvancedPrivacyProtections>, WebCore::StoredCredentialsPolicy, WebCore::IsInitiatedByDedicatedWorker);
-    void queryLocalNetworkAccessPermission(std::optional<WebPageProxyIdentifier>, WebCore::ClientOrigin&&, WebCore::IPAddressSpace, CompletionHandler<void(std::optional<WebCore::PermissionState>)>&&);
+    void queryLocalNetworkAccessPermission(WebCore::ClientOrigin&&, WebCore::IPAddressSpace, CompletionHandler<void(std::optional<WebCore::PermissionState>)>&&);
     void countWebSocketChannelsForTesting(CompletionHandler<void(uint32_t)>&&);
 
     void establishSharedWorkerServerConnection();
@@ -547,7 +532,6 @@ private:
     NetworkResourceLoadMap m_networkResourceLoaders;
     Vector<ResourceNetworkActivityTracker> m_networkActivityTrackers;
     HashMap<WebCore::PageIdentifier, NetworkActivityTracker::CompletionCode> m_lastRootActivityCompletionCodesForTesting;
-    HashMap<WebCore::FrameIdentifier, LocalNetworkAccessFrameRecord> m_localNetworkAccessFrameRecords;
 
     HashMap<WebCore::ResourceLoaderIdentifier, std::unique_ptr<WebCore::NetworkLoadInformation>> m_networkLoadInformationByID;
 

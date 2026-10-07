@@ -261,17 +261,8 @@ void RenderListBox::computeIntrinsicLogicalWidthContributions()
     if (auto fixedLogicalWidth = style().logicalWidth().tryFixed(); fixedLogicalWidth && fixedLogicalWidth->isPositive()) {
         m_maxContentLogicalWidthContribution = adjustContentBoxLogicalWidthForBoxSizing(*fixedLogicalWidth);
         m_minContentLogicalWidthContribution = m_maxContentLogicalWidthContribution;
-    } else {
+    } else
         std::tie(m_minContentLogicalWidthContribution, m_maxContentLogicalWidthContribution) = computeIntrinsicLogicalWidths();
-
-        auto& logicalWidth = style().logicalWidth();
-        if (logicalWidth.isCalcSize() && (logicalWidth.isMinContent() || logicalWidth.isMaxContent())) {
-            // A calc-size() contributes the result of its calculation, not the size of its basis.
-            auto keywordLogicalWidth = logicalWidth.isMaxContent() ? m_maxContentLogicalWidthContribution : m_minContentLogicalWidthContribution;
-            m_minContentLogicalWidthContribution = resolveCalcSizeLogicalWidth(logicalWidth.calcSize(), keywordLogicalWidth, 0_lu);
-            m_maxContentLogicalWidthContribution = m_minContentLogicalWidthContribution;
-        }
-    }
 
     constrainIntrinsicLogicalWidthsByMinMax(m_minContentLogicalWidthContribution, m_maxContentLogicalWidthContribution);
 
@@ -390,7 +381,7 @@ std::optional<LayoutRect> RenderListBox::localBoundsOfOptGroup(const HTMLOptGrou
     return boundingBox;
 }
 
-void RenderListBox::paintItem(PaintInfo& paintInfo, const LayoutPoint& paintOffset, NOESCAPE const PaintFunction& paintFunction)
+void RenderListBox::paintItem(PaintInfo& paintInfo, const LayoutPoint& paintOffset, const PaintFunction& paintFunction)
 {
     int listItemsSize = numItems();
     int firstVisibleItem = m_indexOfFirstVisibleItemInsidePaddingBeforeArea.value_or(indexOffset());
@@ -708,7 +699,12 @@ void RenderListBox::autoscroll(const IntPoint&)
 
     if (endIndex >= 0) {
         m_inAutoscroll = true;
-        protect(selectElement())->updateListBoxSelectionForDrag(endIndex);
+
+        if (!selectElement().multiple())
+            protect(selectElement())->setActiveSelectionAnchorIndex(endIndex);
+
+        selectElement().setActiveSelectionEndIndex(endIndex);
+        protect(selectElement())->updateListBoxSelection(!selectElement().multiple());
         m_inAutoscroll = false;
     }
 }
@@ -718,7 +714,7 @@ void RenderListBox::stopAutoscroll()
     if (selectElement().isDisabledFormControl())
         return;
 
-    protect(selectElement())->handleListBoxMouseRelease();
+    protect(selectElement())->listBoxOnChange();
 }
 
 bool RenderListBox::scrollToRevealElementAtListIndex(int index)

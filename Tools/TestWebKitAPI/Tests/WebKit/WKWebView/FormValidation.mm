@@ -33,7 +33,6 @@
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/WebKit.h>
 #import <WebKit/_WKContentWorldConfiguration.h>
-#import <wtf/BlockPtr.h>
 
 namespace TestWebKitAPI {
 

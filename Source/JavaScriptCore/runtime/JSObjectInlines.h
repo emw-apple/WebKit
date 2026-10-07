@@ -37,7 +37,6 @@
 #include <JavaScriptCore/MegamorphicCache.h>
 #include <JavaScriptCore/ObjectInitializationScope.h>
 #include <JavaScriptCore/SparseArrayValueMap.h>
-#include <JavaScriptCore/StructureCreateInlines.h>
 #include <JavaScriptCore/StructureInlines.h>
 #include <JavaScriptCore/TypedArrayType.h>
 #include <JavaScriptCore/VM.h>
@@ -1037,7 +1036,7 @@ inline void JSObject::setPrivateBrand(JSGlobalObject* globalObject, JSValue bran
 // Function forEachOwnIndexedProperty should only used in the fast path
 // for copying own non-GetterSetter indexed properties.
 template<JSObject::SortMode mode, typename Functor>
-void JSObject::forEachOwnIndexedProperty(JSGlobalObject* globalObject, NOESCAPE const Functor& functor)
+void JSObject::forEachOwnIndexedProperty(JSGlobalObject* globalObject, const Functor& functor)
 {
     ASSERT(structure()->canPerformFastPropertyEnumerationCommon());
     ASSERT(canHaveExistingOwnIndexedProperties() && !canHaveExistingOwnIndexedGetterSetterProperties());

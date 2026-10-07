@@ -25,9 +25,7 @@
 
 [
     Exposed=(Window,Worker),
-    ReportExtraMemoryCost,
-    Serializable,
-    Transferable
+    ReportExtraMemoryCost
 ] interface ImageBitmap {
     readonly attribute unsigned long width;
     readonly attribute unsigned long height;

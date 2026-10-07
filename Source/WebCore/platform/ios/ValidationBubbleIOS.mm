@@ -32,13 +32,11 @@
 #import "UIViewControllerUtilities.h"
 #import <UIKit/UIGeometry.h>
 #import <objc/message.h>
+#import <pal/ios/UIKitSoftLink.h>
 #import <pal/spi/ios/UIKitSPI.h>
-#import <wtf/NeverDestroyed.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/SoftLinking.h>
 #import <wtf/text/WTFString.h>
-
-#import <pal/ios/UIKitSoftLink.h>
 
 // Add a bit of vertical and horizontal padding between the
 // label and its parent view, to avoid laying out the label
@@ -68,7 +66,7 @@ static UILabel *label(WebValidationBubbleViewController *controller)
 static void updateLabelFrame(WebValidationBubbleViewController *controller)
 {
     auto frameWithPadding = UIEdgeInsetsInsetRect(controller.view.bounds, controller.view.safeAreaInsets);
-    [protect(label(controller)) setFrame:UIEdgeInsetsInsetRect(frameWithPadding, UIEdgeInsetsMake(validationBubbleVerticalPadding, validationBubbleHorizontalPadding, validationBubbleVerticalPadding, validationBubbleHorizontalPadding))];
+    label(controller).frame = UIEdgeInsetsInsetRect(frameWithPadding, UIEdgeInsetsMake(validationBubbleVerticalPadding, validationBubbleHorizontalPadding, validationBubbleVerticalPadding, validationBubbleHorizontalPadding));
 }
 
 static void callSuper(WebValidationBubbleViewController *instance, SEL selector)
@@ -102,17 +100,17 @@ static void WebValidationBubbleViewController_viewSafeAreaInsetsDidChange(WebVal
     updateLabelFrame(instance);
 }
 
-static WebValidationBubbleViewController *allocWebValidationBubbleViewControllerInstance() NS_RETURNS_RETAINED
+static WebValidationBubbleViewController *allocWebValidationBubbleViewControllerInstance()
 {
-    static NeverDestroyed<RetainPtr<Class>> theClass = [] {
-        RetainPtr<Class> theClass = objc_allocateClassPair(PAL::getUIViewControllerClassSingleton(), "WebValidationBubbleViewController", 0);
+    static Class theClass = [] {
+        auto theClass = objc_allocateClassPair(PAL::getUIViewControllerClassSingleton(), "WebValidationBubbleViewController", 0);
         class_addMethod(theClass, @selector(viewDidLoad), (IMP)WebValidationBubbleViewController_viewDidLoad, "v@:");
         class_addMethod(theClass, @selector(viewWillLayoutSubviews), (IMP)WebValidationBubbleViewController_viewWillLayoutSubviews, "v@:");
         class_addMethod(theClass, @selector(viewSafeAreaInsetsDidChange), (IMP)WebValidationBubbleViewController_viewSafeAreaInsetsDidChange, "v@:");
         objc_registerClassPair(theClass);
         return theClass;
     }();
-    return (WebValidationBubbleViewController *)[theClass.get() alloc];
+    return (WebValidationBubbleViewController *)[theClass alloc];
 }
 
 @interface WebValidationBubbleTapRecognizer : NSObject
@@ -175,9 +173,9 @@ ValidationBubble::ValidationBubble(UIView *view, String&& message, const Setting
     [m_popoverController setModalPresentationStyle:UIModalPresentationPopover];
     m_tapRecognizer = adoptNS([[WebValidationBubbleTapRecognizer alloc] initWithPopoverController:m_popoverController.get()]);
 
-    RetainPtr validationLabel = label(m_popoverController);
-    [validationLabel setText:m_message.createNSString()];
-    m_fontSize = [validationLabel font].pointSize;
+    UILabel *validationLabel = label(m_popoverController.get());
+    validationLabel.text = m_message.createNSString().get();
+    m_fontSize = validationLabel.font.pointSize;
     CGSize labelSize = [validationLabel sizeThatFits:CGSizeMake(validationBubbleMaxLabelWidth, CGFLOAT_MAX)];
     [m_popoverController setPreferredContentSize:CGSizeMake(labelSize.width + validationBubbleHorizontalPadding * 2, labelSize.height + validationBubbleVerticalPadding * 2)];
 }
@@ -204,7 +202,7 @@ void ValidationBubble::show()
     // dismissing a popover that is being presented.
     RefPtr<ValidationBubble> protectedThis(this);
     m_startingToPresentViewController = true;
-    [protect(m_presentingViewController) presentViewController:m_popoverController.get() animated:NO completion:[protectedThis]() {
+    [m_presentingViewController presentViewController:m_popoverController.get() animated:NO completion:[protectedThis]() {
         // Hide this popover from VoiceOver and instead announce the message.
         [protectedThis->m_popoverController view].accessibilityElementsHidden = YES;
         protectedThis->m_startingToPresentViewController = false;
@@ -225,19 +223,21 @@ static UIViewController *fallbackViewController(UIView *view)
     return nil;
 }
 
-void ValidationBubble::setAnchorRect(const IntRect& anchorRect, UIViewController *initialPresentingViewController)
+void ValidationBubble::setAnchorRect(const IntRect& anchorRect, UIViewController *presentingViewController)
 {
     m_anchorRect = anchorRect;
 
     RetainPtr view = m_view.get();
-    RetainPtr presentingViewController = initialPresentingViewController ? initialPresentingViewController : fallbackViewController(view.get());
+    if (!presentingViewController)
+        presentingViewController = fallbackViewController(view.get());
+
     if (!presentingViewController)
         return;
 
     UIPopoverPresentationController *presentationController = [m_popoverController popoverPresentationController];
     m_popoverDelegate = adoptNS([[WebValidationBubbleDelegate alloc] init]);
     presentationController.delegate = m_popoverDelegate.get();
-    presentationController.passthroughViews = @[ [presentingViewController view], view.get() ];
+    presentationController.passthroughViews = @[ presentingViewController.view, view.get() ];
     presentationController.sourceView = view.get();
     presentationController.sourceRect = CGRectMake(anchorRect.x(), anchorRect.y(), anchorRect.width(), anchorRect.height());
     m_presentingViewController = presentingViewController;

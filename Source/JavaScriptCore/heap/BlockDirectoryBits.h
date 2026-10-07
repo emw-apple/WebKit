@@ -204,7 +204,7 @@ public:
     }
 
     template<typename Func>
-    void forEachSegment(NOESCAPE const Func& func)
+    void forEachSegment(const Func& func)
     {
         unsigned index = 0;
         for (auto& segment : m_segments)

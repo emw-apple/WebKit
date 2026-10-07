@@ -47,7 +47,7 @@ public:
     SVGAnimatedNumberList& rotateAnimated() { return m_rotate; }
 
 protected:
-    SVGTextPositioningElement(const QualifiedName&, Document&, const SVGPropertyRegistry&);
+    SVGTextPositioningElement(const QualifiedName&, Document&, UniqueRef<SVGPropertyRegistry>&&);
 
     void attributeChanged(const QualifiedName&, const AtomString& oldValue, const AtomString& newValue, AttributeModificationReason) override;
     void svgAttributeChanged(const QualifiedName&) override;

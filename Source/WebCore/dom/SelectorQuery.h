@@ -82,7 +82,7 @@ private:
 #endif // ENABLE(CSS_SELECTOR_JIT)
 
     FixedVector<SelectorData> m_selectors;
-    enum class MatchType : uint8_t {
+    mutable enum MatchType {
         CompilableSingle,
         CompilableSingleWithRootFilter,
         CompilableMultipleSelectorMatch,
@@ -96,8 +96,7 @@ private:
         ClassNameMatch,
         AttributeExactMatch,
         MultipleSelectorMatch,
-    };
-    mutable MatchType m_matchType;
+    } m_matchType;
 };
 
 class SelectorQuery {

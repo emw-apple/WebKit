@@ -14,7 +14,6 @@
 #include <cstdint>
 #include <iterator>
 #include <span>
-#include <tuple>
 
 #include "rtc_base/buffer.h"
 #include "test/gmock.h"
@@ -28,6 +27,7 @@ using rtcp::Nack;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::make_tuple;
 using ::testing::MockFunction;
 using ::testing::UnorderedElementsAreArray;
 
@@ -69,7 +69,7 @@ TEST(RtcpPacketNackTest, Create) {
 
   Buffer packet = nack.Build();
 
-  EXPECT_THAT(std::make_tuple(packet.data(), packet.size()),
+  EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kPacket));
 }
 
@@ -91,7 +91,7 @@ TEST(RtcpPacketNackTest, CreateWrap) {
 
   Buffer packet = nack.Build();
 
-  EXPECT_THAT(std::make_tuple(packet.data(), packet.size()),
+  EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kWrapPacket));
 }
 

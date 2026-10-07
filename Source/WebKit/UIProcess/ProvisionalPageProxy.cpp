@@ -94,7 +94,7 @@ ProvisionalPageProxy::ProvisionalPageProxy(WebPageProxy& page, Ref<FrameProcess>
     , m_request(request)
     , m_processSwapRequestedByClient(processSwapRequestedByClient)
     , m_isProcessSwappingOnNavigationResponse(isProcessSwappingOnNavigationResponse)
-    , m_shouldReuseMainFrame(page.shouldReuseMainFrameOnProcessSwap(m_browsingContextGroup))
+    , m_shouldReuseMainFrame(page.shouldReuseMainFrameOnProcessSwap())
     , m_provisionalLoadURL(isProcessSwappingOnNavigationResponse ? request.url() : URL())
 #if USE(RUNNINGBOARD)
     , m_provisionalLoadActivity(protect(m_frameProcess->process().throttler())->foregroundActivity("Provisional Load"_s))
@@ -260,6 +260,7 @@ void ProvisionalPageProxy::cancel()
     error.setType(WebCore::ResourceError::Type::Cancellation);
     auto securityOriginData = SecurityOriginData::fromURLWithoutStrictOpaqueness(m_request.url());
     FrameInfoData frameInfo {
+        true, // isMainFrame
         FrameType::Local,
         m_request,
         securityOriginData,
@@ -268,6 +269,7 @@ void ProvisionalPageProxy::cancel()
         mainFrame->frameID(),
         m_page ? std::optional { m_page->identifier() } : std::nullopt,
         std::nullopt,
+        mainFrame->processID(),
         mainFrame->isFocused(),
     };
     didFailProvisionalLoadForFrame(WTF::move(frameInfo), ResourceRequest { m_request }, m_navigationID, String { m_provisionalLoadURL.string() }, WTF::move(error), WebCore::WillContinueLoading::No, UserData { }, WebCore::WillInternallyHandleFailure::No); // Will delete |this|.
@@ -307,7 +309,6 @@ void ProvisionalPageProxy::initializeWebPage(RefPtr<API::WebsitePolicies>&& webs
 
     RefPtr mainFrame = m_mainFrame;
     auto creationParameters = page->creationParametersForProvisionalPage(process, *drawingArea, mainFrame->frameID());
-    creationParameters.browsingContextGroupIdentifier = m_browsingContextGroup->identifier();
     if (preferences->siteIsolationEnabled() && !isRestoringFromBFCache) {
         creationParameters.remotePageParameters = RemotePageParameters {
             m_request.url(),
@@ -505,8 +506,7 @@ void ProvisionalPageProxy::didFailProvisionalLoadForFrame(FrameInfoData&& frameI
 
 void ProvisionalPageProxy::didCommitLoadForFrame(IPC::Connection& connection, FrameIdentifier frameID, FrameInfoData&& frameInfo, ResourceRequest&& request, std::optional<WebCore::NavigationIdentifier> navigationID, String&& mimeType, bool frameHasCustomContentProvider, FrameLoadType frameLoadType, bool hasCertificateInfo, bool usedLegacyTLS, bool privateRelayed, String&& proxyName, WebCore::ResourceResponseSource source, bool containsPluginDocument, HasInsecureContent hasInsecureContent, MouseEventPolicy mouseEventPolicy, DocumentSecurityPolicy&& documentSecurityPolicy, IPC::Untrusted<HashSet<WebCore::SecurityOriginData>>&& untrustedCSPOrigins, const UserData& userData, RestoredFromBackForwardCache restoredFromBackForwardCache, RefPtr<FrameState>&& redirectReplaceFrameState)
 {
-    // Re-wrapped by commitProvisionalPage() and validated by WebPageProxy::didCommitLoadForFrame.
-    auto cspOriginsThatUpgradeInsecureNavigations = WTF::move(untrustedCSPOrigins).unsafeExtractWithoutValidation(IPC::UnvalidatedReason::ValidatedElsewhere);
+    auto cspOriginsThatUpgradeInsecureNavigations = WTF::move(untrustedCSPOrigins).unsafeExtractWithoutValidation(IPC::UnvalidatedReason::NeedsReview);
     if (!validateInput(frameID, navigationID))
         return;
 
@@ -608,7 +608,7 @@ void ProvisionalPageProxy::decidePolicyForNavigationActionSync(IPC::Connection& 
 {
     auto& frameInfo = data.frameInfo;
     auto navigationID = data.navigationID;
-    if (!m_mainFrame || m_mainFrame->frameID() != frameInfo.frameID || navigationID != m_navigationID) {
+    if (!frameInfo.isMainFrame || (m_mainFrame && m_mainFrame->frameID() != frameInfo.frameID) || navigationID != m_navigationID) {
         reply(PolicyDecision { std::nullopt, WebCore::PolicyAction::Ignore, navigationID });
         return;
     }

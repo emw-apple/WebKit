@@ -468,19 +468,18 @@ bool canScrollInDirection(const ContainerNode& container, FocusDirection directi
 
 bool canScrollInDirection(const LocalFrame* frame, FocusDirection direction)
 {
-    RefPtr view = frame->view();
-    if (!view)
+    if (!frame->view())
         return false;
     ScrollbarMode verticalMode;
     ScrollbarMode horizontalMode;
-    view->calculateScrollbarModesForLayout(horizontalMode, verticalMode);
+    protect(frame->view())->calculateScrollbarModesForLayout(horizontalMode, verticalMode);
     if ((direction == FocusDirection::Left || direction == FocusDirection::Right) && ScrollbarMode::AlwaysOff == horizontalMode)
         return false;
     if ((direction == FocusDirection::Up || direction == FocusDirection::Down) &&  ScrollbarMode::AlwaysOff == verticalMode)
         return false;
-    LayoutSize size = view->totalContentsSize();
-    LayoutPoint scrollPosition = view->scrollPosition();
-    LayoutRect rect = view->unobscuredContentRectIncludingScrollbars();
+    LayoutSize size = frame->view()->totalContentsSize();
+    LayoutPoint scrollPosition = protect(frame->view())->scrollPosition();
+    LayoutRect rect = protect(frame->view())->unobscuredContentRectIncludingScrollbars();
 
     // FIXME: wrong in RTL documents.
     switch (direction) {
@@ -547,7 +546,7 @@ LayoutRect nodeRectInAbsoluteCoordinates(const ContainerNode& containerNode, boo
 
 LayoutRect frameRectInAbsoluteCoordinates(LocalFrame* frame)
 {
-    return rectToAbsoluteCoordinates(frame, protect(frame->view())->visibleContentRect());
+    return rectToAbsoluteCoordinates(frame, frame->view()->visibleContentRect());
 }
 
 // This method calculates the exitPoint from the startingRect and the entryPoint into the candidate rect.
@@ -624,7 +623,7 @@ bool areElementsOnSameLine(const FocusCandidate& firstCandidate, const FocusCand
     if (!firstCandidate.visibleNode->renderer()->isInlineBox() || !secondCandidate.visibleNode->renderer()->isInlineBox())
         return false;
 
-    if (protect(firstCandidate.visibleNode->renderer())->containingBlock() != protect(secondCandidate.visibleNode->renderer())->containingBlock())
+    if (firstCandidate.visibleNode->renderer()->containingBlock() != secondCandidate.visibleNode->renderer()->containingBlock())
         return false;
 
     return true;
@@ -710,7 +709,7 @@ void distanceDataForNode(FocusDirection direction, const FocusCandidate& current
     RefPtr localMainFrame = dynamicDowncast<LocalFrame>(candidate.visibleNode->document().page()->mainFrame());
     if (!localMainFrame)
         return;
-    LayoutSize viewSize = protect(localMainFrame->view())->visibleContentRect().size();
+    LayoutSize viewSize = localMainFrame->view()->visibleContentRect().size();
     candidate.alignment = alignmentForRects(direction, currentRect, nodeRect, viewSize);
 }
 

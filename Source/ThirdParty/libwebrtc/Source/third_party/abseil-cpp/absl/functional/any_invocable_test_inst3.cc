@@ -18,7 +18,6 @@
 
 // SKIP_ABSL_INLINE_NAMESPACE_CHECK
 
-#include "gtest/gtest.h"
 #include "absl/functional/any_invocable_test.h"
 
 namespace absl_any_invocable_test {

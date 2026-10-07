@@ -84,8 +84,6 @@ DeviceOrientationData* DeviceOrientationClientIOS::lastOrientation() const
 
 void DeviceOrientationClientIOS::deviceOrientationControllerDestroyed()
 {
-    m_controller = nullptr;
-
     if (m_deviceOrientationUpdateProvider) {
         m_deviceOrientationUpdateProvider->stopUpdatingDeviceOrientation(*this);
         return;
@@ -110,7 +108,7 @@ void DeviceOrientationClientIOS::orientationChanged(double alpha, double beta, d
     m_currentDeviceOrientation = DeviceOrientationData::create(alpha, beta, gamma, compassHeading, compassAccuracy);
 #endif
 
-    protect(m_controller)->didChangeDeviceOrientation(m_currentDeviceOrientation.get());
+    m_controller->didChangeDeviceOrientation(m_currentDeviceOrientation.get());
 }
 
 } // namespace WebCore

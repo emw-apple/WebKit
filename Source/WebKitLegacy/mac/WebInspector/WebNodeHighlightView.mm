@@ -47,7 +47,7 @@
 #if PLATFORM(IOS_FAMILY)
 - (void)_removeAllLayers
 {
-    for (CAShapeLayer *layer in _layers.get())
+    for (CAShapeLayer *layer in _layers)
         [layer removeFromSuperlayer];
     [_layers removeAllObjects];
 }
@@ -59,10 +59,10 @@
     if (!self)
         return nil;
 
-    _webNodeHighlight = webNodeHighlight;
+    _webNodeHighlight = [webNodeHighlight retain];
 
 #if PLATFORM(IOS_FAMILY)
-    _layers = adoptNS([[NSMutableArray alloc] init]);
+    _layers = [[NSMutableArray alloc] init];
 #endif
 
     return self;
@@ -73,12 +73,15 @@
     [self detachFromWebNodeHighlight];
 #if PLATFORM(IOS_FAMILY)
     [self _removeAllLayers];
+    [_layers release];
 #endif
     [super dealloc];
 }
 
 - (void)detachFromWebNodeHighlight
 {
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_webNodeHighlight release];
     _webNodeHighlight = nil;
 }
 
@@ -314,17 +317,16 @@ static void layerPath(CAShapeLayer *layer, const FloatQuad& outerQuad)
 
 - (void)layoutSublayers:(CALayer *)parentLayer
 {
-    RetainPtr webNodeHighlight = _webNodeHighlight;
-    if (!webNodeHighlight)
+    if (!_webNodeHighlight)
         return;
 
     WebThreadLock();
 
-    if (![webNodeHighlight inspectorController])
+    if (![_webNodeHighlight inspectorController])
         return;
 
     InspectorOverlay::Highlight h;
-    protect([webNodeHighlight inspectorController].get())->getHighlight(h, InspectorOverlay::CoordinateSystem::View);
+    protect([_webNodeHighlight inspectorController].get())->getHighlight(h, InspectorOverlay::CoordinateSystem::View);
 
     if (h.type == InspectorOverlay::Highlight::Type::Node)
         [self _layoutForNodeHighlight:&h parent:parentLayer];

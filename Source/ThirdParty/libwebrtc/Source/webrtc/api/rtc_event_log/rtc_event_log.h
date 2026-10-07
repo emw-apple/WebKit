@@ -26,8 +26,8 @@ class RtcEventLog {
   enum : size_t { kUnlimitedOutput = 0 };
   enum : int64_t { kImmediateOutput = 0 };
 
-  // Note: Legacy encoding is removed from production runtime targets and is
-  // retained strictly for offline tools, historical log analysis, and tests.
+  // TODO(eladalon):  Get rid of the legacy encoding and this enum once all
+  // clients have migrated to the new format.
   enum class EncodingType { Legacy, NewFormat, ProtoFree };
 
   virtual ~RtcEventLog() = default;

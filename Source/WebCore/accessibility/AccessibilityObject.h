@@ -244,7 +244,6 @@ public:
     bool isChecked() const override { return false; }
     bool isEnabled() const override { return false; }
     bool isSelected() const override;
-    String selectedOptionCheckmark() const final;
     bool isTabItemSelected() const;
     bool isFocused() const override { return false; }
     bool isIndeterminate() const override { return false; }
@@ -429,7 +428,7 @@ public:
     bool hasAttributedText() const;
     // Defined in AccessibilityObjectCocoa.mm: NSResponder is WAKResponder on iOS, which can
     // only be completed in an Objective-C++ translation unit.
-    static void makeFirstResponderForPlatformWidget(ChromeClient&, Widget&);
+    static void makeFirstResponderForPlatformWidget(ChromeClient&, PlatformWidget);
 #endif
     String textContentPrefixFromListMarker() const override;
 

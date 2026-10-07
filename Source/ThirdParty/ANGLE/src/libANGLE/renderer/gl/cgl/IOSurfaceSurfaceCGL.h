@@ -64,8 +64,10 @@ class IOSurfaceSurfaceCGL : public SurfaceGL
 
     bool hasEmulatedAlphaChannel() const override;
 
-    void attachToFramebuffer(const gl::Context *context, gl::Framebuffer *framebuffer) override;
-    void detachFromFramebuffer(gl::Framebuffer *framebuffer) override;
+    egl::Error attachToFramebuffer(const gl::Context *context,
+                                   gl::Framebuffer *framebuffer) override;
+    egl::Error detachFromFramebuffer(const gl::Context *context,
+                                     gl::Framebuffer *framebuffer) override;
 
   private:
     angle::Result initializeAlphaChannel(const gl::Context *context, GLuint texture);

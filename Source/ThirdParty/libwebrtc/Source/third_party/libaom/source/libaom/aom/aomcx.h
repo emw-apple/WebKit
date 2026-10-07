@@ -1639,7 +1639,7 @@ enum aome_enc_control_id {
    */
   AV1E_GET_GOP_INFO = 174,
 
-  /*!\brief Codec control function to validate HBD input, int parameter.
+  /*!\brief Codec control function to validate HBD input.
    *
    * AV1 allows the encoder to validate the high bitdepth (HBD) input and
    * ensure that every pixel is within the valid range. To disable/enable,
@@ -1647,8 +1647,7 @@ enum aome_enc_control_id {
    */
   AOME_SET_VALIDATE_HBD_INPUT = 175,
 
-  /*!\brief Codec control function to toggle loopfilter mode_ref_delta_enabled,
-   * int parameter.
+  /*!\brief Codec control function to toggle loopfilter mode_ref_delta_enabled.
    *
    * - 0 = disable
    * - 1 = enable (default)

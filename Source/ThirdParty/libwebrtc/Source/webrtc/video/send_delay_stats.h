@@ -16,18 +16,22 @@
 
 #include <map>
 
-#include "api/sequence_checker.h"
 #include "api/units/timestamp.h"
 #include "call/video_send_stream.h"
 #include "modules/include/module_common_types_public.h"
-#include "rtc_base/system/no_unique_address.h"
+#include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/thread_annotations.h"
 #include "system_wrappers/include/clock.h"
 #include "video/stats_counter.h"
 
 namespace webrtc {
 
-// Used to collect delay stats for video streams.
+// Used to collect delay stats for video streams. The class gets callbacks
+// from more than one threads and internally uses a mutex for data access
+// synchronization.
+// TODO(bugs.webrtc.org/11993): OnSendPacket and OnSentPacket will eventually
+// be called consistently on the same thread. Once we're there, we should be
+// able to avoid locking (at least for the fast path).
 class SendDelayStats {
  public:
   explicit SendDelayStats(Clock* clock);
@@ -57,20 +61,18 @@ class SendDelayStats {
   };
 
   void UpdateHistograms();
-  void RemoveOld(Timestamp now) RTC_RUN_ON(worker_sequence_checker_);
+  void RemoveOld(Timestamp now) RTC_EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
   Clock* const clock_;
-
-  RTC_NO_UNIQUE_ADDRESS SequenceChecker worker_sequence_checker_;
+  Mutex mutex_;
 
   std::map<uint16_t, Packet, SequenceNumberOlderThan> packets_
-      RTC_GUARDED_BY(worker_sequence_checker_);
-  size_t num_old_packets_ RTC_GUARDED_BY(worker_sequence_checker_);
-  size_t num_skipped_packets_ RTC_GUARDED_BY(worker_sequence_checker_);
+      RTC_GUARDED_BY(mutex_);
+  size_t num_old_packets_ RTC_GUARDED_BY(mutex_);
+  size_t num_skipped_packets_ RTC_GUARDED_BY(mutex_);
 
   // Mapped by SSRC.
-  std::map<uint32_t, AvgCounter> send_delay_counters_
-      RTC_GUARDED_BY(worker_sequence_checker_);
+  std::map<uint32_t, AvgCounter> send_delay_counters_ RTC_GUARDED_BY(mutex_);
 };
 
 }  // namespace webrtc

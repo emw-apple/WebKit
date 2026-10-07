@@ -13,7 +13,6 @@ PACKAGES=(
     flite
     gawk
     gcc
-    gi-docgen
     gperf
     grep
     groff
@@ -21,7 +20,6 @@ PACKAGES=(
     gstreamer
     gtk-doc
     gzip
-    harfbuzz-icu
     intltool
     itstool
     lcms2
@@ -30,7 +28,6 @@ PACKAGES=(
     libjpeg-turbo
     libjxl
     libkate
-    libmanette
     libpng
     libseccomp
     libsysprof-capture
@@ -47,28 +44,23 @@ PACKAGES=(
     patch
     perl-file-copy-recursive
     pkg-config
-    ruby
-    ruby-erb
     sed
     sqlite
     texinfo
     volk
-    wayland
-    wayland-protocols
     which
     woff2
-    xdg-dbus-proxy
 
     # These are dependencies necessary for running tests.
+    # Note: ruby-json and ruby-highline are available in the AUR.
     apache
     binutils
     curl
     gdb
     psmisc
     pulseaudio
-    python-gobject
     python-legacy-cgi
-    python-psutil
+    python2-psutil
     ttf-liberation
     time
 
@@ -83,7 +75,6 @@ PACKAGES=(
     libpsl
     libxcb
     orc
-    perl-xml-libxml
     python-setuptools
     yasm
 

@@ -64,10 +64,9 @@ bool AccessibilityMenuList::press()
     auto notification = AXNotification::PressDidFail;
     if (selectElement && !selectElement->isDisabledFormControl()) {
         // Note that hiding or showing the popup could trigger JS.
-        if (selectElement->isOpen()) {
+        if (selectElement->popupIsVisible())
             selectElement->hidePopup();
-            selectElement->hidePickerPopoverElement();
-        } else
+        else
             selectElement->showPopup();
 
         notification = AXNotification::PressDidSucceed;
@@ -111,7 +110,7 @@ bool AccessibilityMenuList::isCollapsed() const
 
 #if !PLATFORM(IOS_FAMILY)
     RefPtr selectElement = dynamicDowncast<HTMLSelectElement>(element());
-    return !(selectElement && selectElement->usesMenuList() && selectElement->isOpen());
+    return !(selectElement && selectElement->usesMenuList() && selectElement->popupIsVisible());
 #else
     return true;
 #endif

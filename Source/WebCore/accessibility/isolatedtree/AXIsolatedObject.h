@@ -290,7 +290,6 @@ private:
     bool isChecked() const final { return boolAttributeValue(AXProperty::IsChecked); }
     bool isEnabled() const final { return boolAttributeValue(AXProperty::IsEnabled); }
     bool isSelected() const final { return boolAttributeValue(AXProperty::IsSelected); }
-    String selectedOptionCheckmark() const final { return stringAttributeValue(AXProperty::SelectedOptionCheckmark); }
     bool isFocused() const final;
     bool isMultiSelectable() const final { return boolAttributeValue(AXProperty::IsMultiSelectable); }
     bool isVisited() const final { return boolAttributeValue(AXProperty::IsVisited); }

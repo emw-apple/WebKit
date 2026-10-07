@@ -98,8 +98,6 @@ public:
 
     enum class ForceFullLayout : bool { No, Yes };
     std::optional<LayoutRect> layout(RenderBlockFlow::MarginInfo&, ForceFullLayout = ForceFullLayout::No);
-    // Builds the display content without line layout. Returns false when the content needs the full layout.
-    bool layoutSVGText();
     void paint(PaintInfo&, const LayoutPoint& paintOffset, const RenderBoxModelObject* layerRenderer = nullptr);
     bool hitTest(const HitTestRequest&, HitTestResult&, const HitTestLocation&, const LayoutPoint& accumulatedOffset, HitTestAction, const RenderBoxModelObject* layerRenderer = nullptr);
     void adjustForPagination();
@@ -112,14 +110,11 @@ public:
     LayoutUnit contentLogicalHeight() const;
     std::optional<LayoutUnit> clampedContentLogicalHeight() const;
     bool NODELETE hasEllipsisInBlockDirectionOnLastFormattedLine() const;
-    bool contentFitsWithinMaximumLines() const { return m_inlineContent && m_inlineContent->contentFitsWithinMaximumLines(); }
     bool contains(const RenderElement& renderer) const;
 
     bool NODELETE isPaginated() const;
     size_t NODELETE lineCount() const;
     size_t NODELETE lineCountIgnoringBlockLevelBoxes() const;
-    // Lines with contentful inline content (block-in-inline and empty lines don't count) ending within logicalHeight from the border box top, and whether any ends past it.
-    std::pair<size_t, bool> NODELETE lineCountForHeight(LayoutUnit logicalHeight) const;
     bool hasContent() const { return !!m_inlineContent; }
     bool NODELETE hasContentfulInlineOrBlockLine() const;
     bool NODELETE hasContentfulInlineLine() const;
@@ -134,7 +129,7 @@ public:
     InlineIterator::LeafBoxIterator boxFor(const RenderElement&) const;
     InlineIterator::InlineBoxIterator firstInlineBoxFor(const RenderBoxModelObject&) const;
     InlineIterator::InlineBoxIterator firstRootInlineBox() const;
-    InlineIterator::BoxIterator lastBox() const;
+    InlineIterator::InlineBoxIterator lastRootInlineBox() const;
     InlineIterator::LineBoxIterator firstLineBox() const;
     InlineIterator::LineBoxIterator lastLineBox() const;
 

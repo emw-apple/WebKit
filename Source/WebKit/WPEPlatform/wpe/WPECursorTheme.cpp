@@ -29,7 +29,6 @@
 #include <array>
 #include <stdio.h>
 #include <wtf/FileSystem.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GUniquePtr.h>
 #include <wtf/TZoneMallocInlines.h>
 
@@ -40,12 +39,12 @@ WTF_MAKE_TZONE_ALLOCATED_IMPL(CursorTheme);
 static UTF8CString cursorsPath(UTF8CStringView basePath, Vector<UTF8CString>& inherited)
 {
     auto inheritedThemes = [&]() -> GUniquePtr<char*> {
-        auto index = gBuildFilename(basePath, "index.theme");
-        if (!g_file_test(index.utf8(), G_FILE_TEST_EXISTS))
+        GUniquePtr<char> index(g_build_filename(basePath.utf8(), "index.theme", nullptr));
+        if (!g_file_test(index.get(), G_FILE_TEST_EXISTS))
             return nullptr;
 
         GUniquePtr<GKeyFile> keyFile(g_key_file_new());
-        if (!g_key_file_load_from_file(keyFile.get(), index.utf8(), G_KEY_FILE_NONE, nullptr))
+        if (!g_key_file_load_from_file(keyFile.get(), index.get(), G_KEY_FILE_NONE, nullptr))
             return nullptr;
 
         return GUniquePtr<char*>(g_key_file_get_string_list(keyFile.get(), "Icon Theme", "Inherits", nullptr, nullptr));
@@ -55,13 +54,13 @@ static UTF8CString cursorsPath(UTF8CStringView basePath, Vector<UTF8CString>& in
     String canonicalPathOfIndex = FileSystem::realPath(pathOfIndex);
     GUniquePtr<char> canonicalDirectoryOfIndex(g_path_get_dirname(canonicalPathOfIndex.utf8().legacyCStringPointer()));
     auto actualBasePath = g_file_test(canonicalDirectoryOfIndex.get(), G_FILE_TEST_IS_DIR) ? UTF8CStringView::unsafeFromUTF8(canonicalDirectoryOfIndex.get()) : basePath;
-    auto baseCursorsPath = gBuildFilename(actualBasePath, "cursors");
+    GUniquePtr<char> baseCursorsPath(g_build_filename(actualBasePath.utf8(), "cursors", nullptr));
 
     if (auto inherits = inheritedThemes()) {
         for (unsigned i = 0; inherits.get()[i]; ++i) {
             GUniquePtr<char> parentPath(g_path_get_dirname(actualBasePath.utf8()));
-            auto inheritedBasePath = gBuildFilename(parentPath.get(), inherits.get()[i]);
-            auto path = cursorsPath(inheritedBasePath, inherited);
+            GUniquePtr<char> inheritedBasePath(g_build_filename(parentPath.get(), inherits.get()[i], nullptr));
+            auto path = cursorsPath(UTF8CStringView::unsafeFromUTF8(inheritedBasePath.get()), inherited);
             auto exists = !path.isNull() && inherited.containsIf([&](const auto& item) {
                 return item == path;
             });
@@ -70,8 +69,8 @@ static UTF8CString cursorsPath(UTF8CStringView basePath, Vector<UTF8CString>& in
         }
     }
 
-    if (g_file_test(baseCursorsPath.utf8(), G_FILE_TEST_IS_DIR))
-        return UTF8CString { baseCursorsPath.span() };
+    if (g_file_test(baseCursorsPath.get(), G_FILE_TEST_IS_DIR))
+        return UTF8CString { byteCast<char8_t>(baseCursorsPath.get()) };
 
     return { };
 }
@@ -272,12 +271,12 @@ static std::optional<CursorTheme::CursorImage> readImage(FILE* file, const Xcuso
 
 Vector<CursorTheme::CursorImage> CursorTheme::loadCursor(UTF8CStringView name, uint32_t size, std::optional<uint32_t> maxImages)
 {
-    auto path = gBuildFilename(m_path, name);
-    if (!g_file_test(path.utf8(), G_FILE_TEST_EXISTS)) {
+    GUniquePtr<char> path(g_build_filename(m_path.legacyCStringPointer(), name.utf8(), nullptr));
+    if (!g_file_test(path.get(), G_FILE_TEST_EXISTS)) {
         path = nullptr;
         for (auto& theme : m_inherited) {
-            path = gBuildFilename(theme, name);
-            if (g_file_test(path.utf8(), G_FILE_TEST_EXISTS))
+            path.reset(g_build_filename(theme.legacyCStringPointer(), name.utf8(), nullptr));
+            if (g_file_test(path.get(), G_FILE_TEST_EXISTS))
                 break;
             path = nullptr;
         }
@@ -286,7 +285,7 @@ Vector<CursorTheme::CursorImage> CursorTheme::loadCursor(UTF8CStringView name, u
     if (!path)
         return { };
 
-    FILE* file = fopen(path.utf8(), "r");
+    FILE* file = fopen(path.get(), "r");
     if (!file)
         return { };
 

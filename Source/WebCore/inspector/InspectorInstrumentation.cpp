@@ -42,7 +42,6 @@
 #include "EventTargetInlines.h"
 #include "FrameCSSAgent.h"
 #include "FrameDOMAgent.h"
-#include "FrameDOMStorageAgent.h"
 #include "FrameDebuggerAgent.h"
 #include "FrameInspectorController.h"
 #include "FrameRuntimeAgent.h"
@@ -80,7 +79,6 @@
 #include "RenderView.h"
 #include "ScriptController.h"
 #include "ScriptExecutionContext.h"
-#include "SecurityOrigin.h"
 #include "ServiceWorkerGlobalScope.h"
 #include "WebConsoleAgent.h"
 #include "WebDebuggerAgent.h"
@@ -444,13 +442,13 @@ void InspectorInstrumentation::characterDataModifiedImpl(InstrumentingAgents& in
 void InspectorInstrumentation::willSendXMLHttpRequestImpl(InstrumentingAgents& instrumentingAgents, const String& url)
 {
     if (CheckedPtr domDebuggerAgent = instrumentingAgents.enabledDOMDebuggerAgent())
-        domDebuggerAgent->willSendXMLHttpRequest(protect(instrumentingAgents.enabledWebDebuggerAgent()), url);
+        domDebuggerAgent->willSendXMLHttpRequest(instrumentingAgents.enabledWebDebuggerAgent(), url);
 }
 
 void InspectorInstrumentation::willFetchImpl(InstrumentingAgents& instrumentingAgents, const String& url)
 {
     if (CheckedPtr domDebuggerAgent = instrumentingAgents.enabledDOMDebuggerAgent())
-        domDebuggerAgent->willFetch(protect(instrumentingAgents.enabledWebDebuggerAgent()), url);
+        domDebuggerAgent->willFetch(instrumentingAgents.enabledWebDebuggerAgent(), url);
 }
 
 void InspectorInstrumentation::didInstallTimerImpl(InstrumentingAgents& instrumentingAgents, int timerId, Seconds timeout, bool singleShot, ScriptExecutionContext& context)
@@ -741,7 +739,7 @@ void InspectorInstrumentation::willSendRequestImpl(InstrumentingAgents& instrume
     if (CheckedPtr networkProxy = instrumentingAgents.enabledNetworkProxy())
         networkProxy->willSendRequest(identifier, loader, request, redirectResponse, cachedResource, resourceLoader);
     if (CheckedPtr domDebuggerAgent = instrumentingAgents.enabledDOMDebuggerAgent())
-        domDebuggerAgent->willSendRequest(protect(instrumentingAgents.enabledWebDebuggerAgent()), request);
+        domDebuggerAgent->willSendRequest(instrumentingAgents.enabledWebDebuggerAgent(), request);
 }
 
 void InspectorInstrumentation::willSendRequestOfTypeImpl(InstrumentingAgents& instrumentingAgents, ResourceLoaderIdentifier identifier, DocumentLoader* loader, ResourceRequest& request, Inspector::UncachedLoadType loadType)
@@ -751,7 +749,7 @@ void InspectorInstrumentation::willSendRequestOfTypeImpl(InstrumentingAgents& in
     if (CheckedPtr networkProxy = instrumentingAgents.enabledNetworkProxy())
         networkProxy->willSendRequestOfType(identifier, loader, request, loadType);
     if (CheckedPtr domDebuggerAgent = instrumentingAgents.enabledDOMDebuggerAgent())
-        domDebuggerAgent->willSendRequestOfType(protect(instrumentingAgents.enabledWebDebuggerAgent()), request);
+        domDebuggerAgent->willSendRequestOfType(instrumentingAgents.enabledWebDebuggerAgent(), request);
 }
 
 void InspectorInstrumentation::didLoadResourceFromMemoryCacheImpl(InstrumentingAgents& instrumentingAgents, DocumentLoader* loader, CachedResource* cachedResource)
@@ -1011,8 +1009,6 @@ bool InspectorInstrumentation::willInterceptImpl(InstrumentingAgents& instrument
 {
     if (CheckedPtr networkAgent = instrumentingAgents.enabledNetworkAgent())
         return networkAgent->willIntercept(request);
-    if (CheckedPtr networkProxy = instrumentingAgents.enabledNetworkProxy())
-        return networkProxy->willIntercept(request);
     return false;
 }
 
@@ -1020,8 +1016,6 @@ bool InspectorInstrumentation::shouldInterceptRequestImpl(InstrumentingAgents& i
 {
     if (CheckedPtr networkAgent = instrumentingAgents.enabledNetworkAgent())
         return networkAgent->shouldInterceptRequest(loader);
-    if (CheckedPtr networkProxy = instrumentingAgents.enabledNetworkProxy())
-        return networkProxy->shouldInterceptRequest(loader);
     return false;
 }
 
@@ -1029,8 +1023,6 @@ bool InspectorInstrumentation::shouldInterceptResponseImpl(InstrumentingAgents& 
 {
     if (CheckedPtr networkAgent = instrumentingAgents.enabledNetworkAgent())
         return networkAgent->shouldInterceptResponse(response);
-    if (CheckedPtr networkProxy = instrumentingAgents.enabledNetworkProxy())
-        return networkProxy->shouldInterceptResponse(response);
     return false;
 }
 
@@ -1038,16 +1030,12 @@ void InspectorInstrumentation::interceptRequestImpl(InstrumentingAgents& instrum
 {
     if (CheckedPtr networkAgent = instrumentingAgents.enabledNetworkAgent())
         networkAgent->interceptRequest(loader, WTF::move(handler));
-    else if (CheckedPtr networkProxy = instrumentingAgents.enabledNetworkProxy())
-        networkProxy->interceptRequest(loader, WTF::move(handler));
 }
 
 void InspectorInstrumentation::interceptResponseImpl(InstrumentingAgents& instrumentingAgents, const ResourceResponse& response, ResourceLoaderIdentifier identifier, CompletionHandler<void(const ResourceResponse&, RefPtr<FragmentedSharedBuffer>)>&& handler)
 {
     if (CheckedPtr networkAgent = instrumentingAgents.enabledNetworkAgent())
         networkAgent->interceptResponse(response, identifier, WTF::move(handler));
-    else if (CheckedPtr networkProxy = instrumentingAgents.enabledNetworkProxy())
-        networkProxy->interceptResponse(response, identifier, WTF::move(handler));
 }
 
 // JavaScriptCore InspectorDebuggerAgent should know Console MessageTypes.
@@ -1199,27 +1187,8 @@ void InspectorInstrumentation::consoleStopRecordingCanvasImpl(InstrumentingAgent
         canvasAgent->consoleStopRecordingCanvas(device);
 }
 
-void InspectorInstrumentation::didDispatchDOMStorageEventImpl(InstrumentingAgents& instrumentingAgents, Page& page, const String& key, const String& oldValue, const String& newValue, StorageType storageType, const SecurityOrigin& securityOrigin)
+void InspectorInstrumentation::didDispatchDOMStorageEventImpl(InstrumentingAgents& instrumentingAgents, const String& key, const String& oldValue, const String& newValue, StorageType storageType, const SecurityOrigin& securityOrigin)
 {
-    // Notify at most one agent: same-origin frames share a StorageArea, and the frontend keys
-    // DOMStorageObject on the StorageId alone.
-    CheckedPtr<FrameDOMStorageAgent> frameDOMStorageAgent;
-    page.forEachLocalFrame([&](LocalFrame& frame) {
-        if (frameDOMStorageAgent)
-            return;
-
-        RefPtr document = frame.document();
-        if (!document || !document->securityOrigin().equal(securityOrigin))
-            return;
-
-        frameDOMStorageAgent = frame.inspectorController().instrumentingAgents().enabledFrameDOMStorageAgent();
-    });
-
-    if (frameDOMStorageAgent) {
-        frameDOMStorageAgent->didDispatchDOMStorageEvent(key, oldValue, newValue, storageType, securityOrigin);
-        return;
-    }
-
     if (CheckedPtr domStorageAgent = instrumentingAgents.enabledDOMStorageAgent())
         domStorageAgent->didDispatchDOMStorageEvent(key, oldValue, newValue, storageType, securityOrigin);
 }
@@ -1404,12 +1373,6 @@ void InspectorInstrumentation::willDestroyWebGPUDeviceImpl(InstrumentingAgents& 
         canvasAgent->willDestroyWebGPUDevice(device);
 }
 
-void InspectorInstrumentation::didChangeWebGPUDeviceLabelImpl(InstrumentingAgents& instrumentingAgents, GPUDevice& device)
-{
-    if (CheckedPtr canvasAgent = instrumentingAgents.enabledCanvasAgent())
-        canvasAgent->didChangeWebGPUDeviceLabel(device);
-}
-
 void InspectorInstrumentation::didChangeGPUDeviceClientNodesImpl(InstrumentingAgents& instrumentingAgents, GPUDevice& device)
 {
     if (CheckedPtr canvasAgent = instrumentingAgents.enabledCanvasAgent())
@@ -1434,12 +1397,6 @@ void InspectorInstrumentation::willDestroyWebGPUComputePipelineImpl(Instrumentin
         canvasAgent->willDestroyWebGPUComputePipeline(pipeline);
 }
 
-void InspectorInstrumentation::didChangeWebGPUComputePipelineLabelImpl(InstrumentingAgents& instrumentingAgents, GPUComputePipeline& pipeline)
-{
-    if (CheckedPtr canvasAgent = instrumentingAgents.enabledCanvasAgent())
-        canvasAgent->didChangeWebGPUComputePipelineLabel(pipeline);
-}
-
 void InspectorInstrumentation::didCreateWebGPURenderPipelineImpl(InstrumentingAgents& instrumentingAgents, GPUDevice& device, GPURenderPipeline& pipeline)
 {
     if (CheckedPtr canvasAgent = instrumentingAgents.enabledCanvasAgent())
@@ -1450,12 +1407,6 @@ void InspectorInstrumentation::willDestroyWebGPURenderPipelineImpl(Instrumenting
 {
     if (CheckedPtr canvasAgent = instrumentingAgents.enabledCanvasAgent())
         canvasAgent->willDestroyWebGPURenderPipeline(pipeline);
-}
-
-void InspectorInstrumentation::didChangeWebGPURenderPipelineLabelImpl(InstrumentingAgents& instrumentingAgents, GPURenderPipeline& pipeline)
-{
-    if (CheckedPtr canvasAgent = instrumentingAgents.enabledCanvasAgent())
-        canvasAgent->didChangeWebGPURenderPipelineLabel(pipeline);
 }
 
 bool InspectorInstrumentation::isWebGPURenderPipelineDisabledImpl(InstrumentingAgents& instrumentingAgents, GPURenderPipeline& pipeline)

@@ -36,7 +36,6 @@
 #include "PageClient.h"
 #include "ProcessLauncher.h"
 #include "ProcessThrottler.h"
-#include "RemoteSnapshotIdentifier.h"
 #include "RemoteWorkerInitializationData.h"
 #include "ResponsivenessTimer.h"
 #include "ScopedActiveMessageReceiveQueue.h"
@@ -54,8 +53,6 @@
 #include <WebCore/PageIdentifier.h>
 #include <WebCore/ProcessIdentifier.h>
 #include <WebCore/ProcessIdentity.h>
-#include <WebCore/RenderingMode.h>
-#include <WebCore/SecurityOriginData.h>
 #include <WebCore/ServiceWorkerIdentifier.h>
 #include <WebCore/SharedStringHash.h>
 #include <WebCore/Site.h>
@@ -100,21 +97,12 @@
 #include "WasmDebuggerDebuggable.h"
 #endif
 
-#if ENABLE(OFFSCREEN_CANVAS) && ENABLE(GPU_PROCESS)
-#include "ImageBufferBackendHandle.h"
-#include <WebCore/ImageBuffer.h>
-#include <WebCore/PlaceholderFrameIdentifier.h>
-#include <WebCore/PlaceholderRenderingContextIdentifier.h>
-#include <WebCore/PlatformLayerIdentifier.h>
-#endif
-
 namespace API {
 class Navigation;
 class PageConfiguration;
 }
 
 namespace WebCore {
-class ColorSpace;
 class DeferrableOneShotTimer;
 class ResourceRequest;
 struct CryptoKeyData;
@@ -122,6 +110,7 @@ struct NotificationData;
 struct PluginInfo;
 struct PrewarmInformation;
 struct WebProcessCreationParameters;
+class SecurityOriginData;
 struct WrappedCryptoKey;
 
 enum class AccessibilityMode : uint8_t;
@@ -446,10 +435,6 @@ public:
     const MachSendRight& taskNamePort() const { return m_taskNamePort; }
 #endif
 
-#if PLATFORM(IOS_FAMILY) && ENABLE(UIPROCESS_PERIODIC_MEMORY_MONITOR)
-    void didComputeAvailableMemory(uint64_t availableMemory);
-#endif
-
 #if HAVE(DISPLAY_LINK)
     DisplayLink::Client& displayLinkClient() LIFETIME_BOUND { return m_displayLinkClient; }
     std::optional<unsigned> nominalFramesPerSecondForDisplay(WebCore::PlatformDisplayID);
@@ -469,7 +454,7 @@ public:
     ShutdownPreventingScopeCounter::Token shutdownPreventingScope() { return m_shutdownPreventingScopeCounter.count(); }
 
     void didStartProvisionalLoadForMainFrame(const URL&);
-    void didCommitMainFrameLoad(const URL&);
+    void didCommitMainFrameLoadWithoutSiteIsolation(const URL&);
     void didStartUsingProcessForSiteIsolation(const std::optional<WebCore::Site>&, const WebCore::Site& mainFrameSite);
 
     // ProcessThrottlerClient
@@ -674,20 +659,8 @@ public:
     void takeInvalidMessageStringForTesting(CompletionHandler<void(String&&)>&&);
 #endif
 
-#if ENABLE(OFFSCREEN_CANVAS) && ENABLE(GPU_PROCESS)
-    void commitOffscreenCanvasPlaceholderFrame(WebCore::RemotePlaceholderRenderingContextIdentifier&&, WebCore::ImageBufferTransferHandle&&, std::optional<ImageBufferBackendHandle>&& layerContentsHandle, bool originClean, bool opaque, CompletionHandler<void(bool)>&&);
-    void offscreenCanvasPlaceholderCreated(WebCore::PlaceholderRenderingContextIdentifier);
-    void offscreenCanvasPlaceholderDestroyed(WebCore::PlaceholderRenderingContextIdentifier);
-    // Called by WebPageProxy, which is the authority on the page the layer belongs to.
-    void setOffscreenCanvasPlaceholderLayer(WebCore::PlaceholderRenderingContextIdentifier, WebPageProxyIdentifier, std::optional<WebCore::PlatformLayerIdentifier>);
-    static void removeOffscreenCanvasPlaceholdersForProcess(WebCore::ProcessIdentifier);
-#endif
-
     void setIneligbleForWebProcessCache() { m_isEligibleForWebProcessCache = false; }
     bool isEligibleForWebProcessCache() const { return m_isEligibleForWebProcessCache; }
-
-    void setCOOPCacheOrigin(const WebCore::SecurityOriginData& origin) { m_coopCacheOrigin = origin; }
-    const std::optional<WebCore::SecurityOriginData>& coopCacheOrigin() const LIFETIME_BOUND { return m_coopCacheOrigin; }
 
     void incrementFrameProcessCount() { ++m_frameProcessCount; }
     void decrementFrameProcessCount();
@@ -768,14 +741,6 @@ private:
 #if ENABLE(GPU_PROCESS)
     void createGPUProcessConnection(GPUProcessConnectionIdentifier, IPC::Connection::Handle&&);
     void gpuProcessConnectionDidBecomeUnresponsive(GPUProcessConnectionIdentifier);
-    void drawFrameToSnapshot(WebCore::FrameIdentifier, const WebCore::IntRect&, RemoteSnapshotIdentifier, WebCore::RenderingMode);
-#endif
-
-#if HAVE(IOSURFACE)
-    // Handled here rather than by the page, so that they are answered even once it is gone.
-    void completeDisplayOnlyImage(WebCore::PageIdentifier, RemoteSnapshotIdentifier, WebCore::FrameIdentifier rootFrameIdentifier, float scale, const WebCore::ColorSpace&, CompletionHandler<void(bool)>&&);
-    void releaseDisplayOnlyImage(WebCore::PageIdentifier, RemoteSnapshotIdentifier);
-    RefPtr<WebPageProxy> pageHostedAs(WebCore::PageIdentifier);
 #endif
 
 #if ENABLE(MODEL_PROCESS)
@@ -928,7 +893,6 @@ private:
     std::pair<LoadedWebArchive, HashSet<WebCore::RegistrableDomain>> m_allowedFirstPartiesForCookies { LoadedWebArchive::No, { } };
     bool m_isInProcessCache { false };
     bool m_isEligibleForWebProcessCache { true };
-    std::optional<WebCore::SecurityOriginData> m_coopCacheOrigin;
     bool m_isShuttingDown { false };
     bool m_isRunningProcess { false };
 
@@ -1049,7 +1013,7 @@ private:
 #if ENABLE(LOGD_BLOCKING_IN_WEBCONTENT)
     bool m_didReceiveLogsDuringLaunchForTesting { false };
 #endif // ENABLE(LOGD_BLOCKING_IN_WEBCONTENT)
-} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(refWebProcessProxy, derefWebProcessProxy);
+} SWIFT_SHARED_REFERENCE(refWebProcessProxy, derefWebProcessProxy) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
 WTF::TextStream& operator<<(WTF::TextStream&, const WebProcessProxy&);
 
@@ -1063,7 +1027,6 @@ inline RefPtr<WebProcessProxy> downcastToWebProcessProxy(AuxiliaryProcessProxy* 
 
 } // namespace WebKit
 
-#if !ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
 inline void refWebProcessProxy(WebKit::WebProcessProxy* WTF_NONNULL obj)
 {
     obj->ref();
@@ -1073,7 +1036,6 @@ inline void derefWebProcessProxy(WebKit::WebProcessProxy* WTF_NONNULL obj)
 {
     obj->deref();
 }
-#endif
 
 SPECIALIZE_TYPE_TRAITS_BEGIN(WebKit::WebProcessProxy)
 static bool isType(const WebKit::AuxiliaryProcessProxy& process) { return process.type() == WebKit::AuxiliaryProcessProxy::Type::WebContent; }

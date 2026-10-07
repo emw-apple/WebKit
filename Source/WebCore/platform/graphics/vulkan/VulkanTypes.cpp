@@ -36,7 +36,6 @@
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 #include <wtf/Scope.h>
-#include <wtf/posix/POSIXExtras.h>
 #include <wtf/text/StringBuilder.h>
 #include <wtf/text/UTF8CStringView.h>
 
@@ -328,7 +327,7 @@ static UnixFileDescriptor drmFileDescriptorForGBMDisplay()
 
     const auto& device = deviceManager.mainDevice();
     auto& deviceNode = device.renderNode.isNull() ? device.primaryNode : device.renderNode;
-    return { posixOpen(deviceNode, O_RDWR | O_CLOEXEC), UnixFileDescriptor::Adopt };
+    return { open(deviceNode.legacyCStringPointer(), O_RDWR | O_CLOEXEC), UnixFileDescriptor::Adopt };
 }
 #endif // USE(GBM)
 

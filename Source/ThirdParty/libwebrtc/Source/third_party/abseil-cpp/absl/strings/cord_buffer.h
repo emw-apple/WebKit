@@ -37,7 +37,6 @@
 #include "absl/numeric/bits.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_flat.h"
-#include "absl/strings/string_view.h"
 #include "absl/types/span.h"
 
 namespace absl {
@@ -291,7 +290,7 @@ class CordBuffer {
 
  private:
   // Make sure we don't accidentally over promise.
-  static_assert(kCustomLimit <= cord_internal::kMaxLargeFlatSize);
+  static_assert(kCustomLimit <= cord_internal::kMaxLargeFlatSize, "");
 
   // Assume the cost of an 'uprounded' allocation to CeilPow2(size) versus
   // the cost of allocating at least 1 extra flat <= 4KB:

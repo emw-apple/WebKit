@@ -222,6 +222,8 @@ namespace JSC {
 
         virtual void emitBytecodeInConditionContext(BytecodeGenerator&, Label&, Label&, FallThroughMode);
 
+        virtual ExpressionNode* stripUnaryPlus() { return this; }
+
         ResultType resultDescriptor() const { return m_resultType; }
 
         bool isOptionalChainBase() const { return m_isOptionalChainBase; }
@@ -1226,6 +1228,8 @@ namespace JSC {
 
     private:
         RegisterID* emitBytecode(BytecodeGenerator&, RegisterID* = nullptr) final;
+
+        ExpressionNode* stripUnaryPlus() final { return expr(); }
     };
 
     class NegateNode final : public UnaryOpNode {

@@ -30,7 +30,6 @@ WI.RuntimeManager = class RuntimeManager extends WI.Object
         super();
 
         this._activeExecutionContext = null;
-        this._useActiveCallFrame = true;
 
         WI.settings.consoleSavedResultAlias.addEventListener(WI.Setting.Event.Changed, function(event) {
             for (let target of WI.targets) {
@@ -85,21 +84,6 @@ WI.RuntimeManager = class RuntimeManager extends WI.Object
         this.dispatchEventToListeners(WI.RuntimeManager.Event.ActiveExecutionContextChanged);
     }
 
-    get useActiveCallFrame()
-    {
-        return this._useActiveCallFrame;
-    }
-
-    set useActiveCallFrame(useActiveCallFrame)
-    {
-        if (this._useActiveCallFrame === useActiveCallFrame)
-            return;
-
-        this._useActiveCallFrame = useActiveCallFrame;
-
-        this.dispatchEventToListeners(WI.RuntimeManager.Event.ActiveExecutionContextChanged);
-    }
-
     evaluateInInspectedWindow(expression, options, callback)
     {
         if (!this._activeExecutionContext) {
@@ -133,8 +117,13 @@ WI.RuntimeManager = class RuntimeManager extends WI.Object
 
         expression = sourceURLAppender(expression);
 
-        let activeCallFrame = this._useActiveCallFrame ? WI.debuggerManager.activeCallFrame : null;
-        let target = activeCallFrame?.target || this._activeExecutionContext.target;
+        let target = this._activeExecutionContext.target;
+        let executionContextId = this._activeExecutionContext.id;
+
+        if (WI.debuggerManager.activeCallFrame) {
+            target = WI.debuggerManager.activeCallFrame.target;
+            executionContextId = target.executionContext.id;
+        }
 
         function evalCallback(error, result, wasThrown, savedResultIndex)
         {
@@ -152,9 +141,9 @@ WI.RuntimeManager = class RuntimeManager extends WI.Object
                 callback(WI.RemoteObject.fromPayload(result, target), wasThrown, savedResultIndex);
         }
 
-        if (activeCallFrame) {
+        if (WI.debuggerManager.activeCallFrame) {
             target.DebuggerAgent.evaluateOnCallFrame.invoke({
-                callFrameId: activeCallFrame.id,
+                callFrameId: WI.debuggerManager.activeCallFrame.id,
                 expression,
                 objectGroup,
                 includeCommandLineAPI,
@@ -172,7 +161,7 @@ WI.RuntimeManager = class RuntimeManager extends WI.Object
             objectGroup,
             includeCommandLineAPI,
             doNotPauseOnExceptionsAndMuteConsole,
-            contextId: this._activeExecutionContext.id,
+            contextId: executionContextId,
             returnByValue,
             generatePreview,
             saveResult,
@@ -184,19 +173,18 @@ WI.RuntimeManager = class RuntimeManager extends WI.Object
     {
         console.assert(remoteObject instanceof WI.RemoteObject);
 
+        let target = this._activeExecutionContext.target;
+        let executionContextId = this._activeExecutionContext.id;
+
         function mycallback(error, savedResultIndex)
         {
             callback(savedResultIndex);
         }
 
-        if (remoteObject.objectId) {
-            remoteObject.target.RuntimeAgent.saveResult(remoteObject.asCallArgument(), mycallback);
-            return;
-        }
-
-        let activeCallFrame = this._useActiveCallFrame ? WI.debuggerManager.activeCallFrame : null;
-        let executionContext = activeCallFrame?.target.executionContext || this._activeExecutionContext;
-        executionContext.target.RuntimeAgent.saveResult(remoteObject.asCallArgument(), executionContext.id, mycallback);
+        if (remoteObject.objectId)
+            target.RuntimeAgent.saveResult(remoteObject.asCallArgument(), mycallback);
+        else
+            target.RuntimeAgent.saveResult(remoteObject.asCallArgument(), executionContextId, mycallback);
     }
 
     // Private

@@ -154,10 +154,7 @@ WheelEventHandlingResult ScrollingTreeFrameScrollingNodeMac::handleWheelEvent(co
         return WheelEventHandlingResult::handled();
 #endif
 
-    // The event deltas are in view pixels but this tree scrolls in unscaled content coordinates, so without
-    // this a tick would cover scale times too much content.
-    auto scale = delegatedPageScaleFactor();
-    bool handled = delegate().handleWheelEvent(scale == 1 ? wheelEvent : wheelEvent.copyScalingDeltas(scale));
+    bool handled = delegate().handleWheelEvent(wheelEvent);
     delegate().updateSnapScrollState();
     return WheelEventHandlingResult::result(handled);
 }
@@ -191,21 +188,18 @@ void ScrollingTreeFrameScrollingNodeMac::repositionScrollingLayers()
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
-    RetainPtr layer = static_cast<CALayer*>(scrolledContentsLayer());
+    auto* layer = static_cast<CALayer*>(scrolledContentsLayer());
     if (ScrollingThread::isCurrentThread()) {
         // If we're committing on the scrolling thread, it means that ThreadedScrollingTree is in "desynchronized" mode.
         // The main thread may already have set the same layer position, but here we need to trigger a scrolling thread commit to
         // ensure that the scroll happens even when the main thread commit is taking a long time. So make sure the layer property changes
         // when there has been a scroll position change.
         if (!scrollingTree()->isScrollingSynchronizedWithMainThread())
-            [layer setPosition:CGPointZero];
+            layer.position = CGPointZero;
     }
 
     // We use scroll position here because the root content layer is offset to account for scrollOrigin (see LocalFrameView::positionForRootContentLayer).
-    // A layer's own transform doesn't affect its position, so when the UI process puts the page scale on this
-    // layer we have to scale both the scroll position and the content root's offset. No-ops at scale 1.
-    auto rootContentsLayerPosition = LocalFrameView::positionForRootContentLayer(currentScrollPosition(), scrollOrigin(), obscuredContentInsets(), headerHeight());
-    [layer setPosition:LocalFrameView::scrolledContentsLayerPositionForDelegatedPageScale(currentScrollPosition(), delegatedPageScaleFactor(), rootContentsLayerPosition)];
+    layer.position = -currentScrollPosition();
     END_BLOCK_OBJC_EXCEPTIONS
 }
 
@@ -291,7 +285,7 @@ unsigned ScrollingTreeFrameScrollingNodeMac::exposedUnfilledArea() const
     PlatformLayerList tiles;
 
     while (!layerQueue.isEmpty() && tiles.isEmpty()) {
-        RetainPtr layer = layerQueue.takeFirst();
+        CALayer* layer = layerQueue.takeFirst();
         auto sublayers = adoptNS([[layer sublayers] copy]);
 
         // If this layer is the parent of a tile, it is the parent of all of the tiles and nothing else.

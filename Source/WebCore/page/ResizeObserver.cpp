@@ -63,8 +63,8 @@ ResizeObserver::ResizeObserver(Document& document, JSOrNativeResizeObserverCallb
 ResizeObserver::~ResizeObserver()
 {
     disconnect();
-    if (RefPtr document = m_document)
-        document->removeResizeObserver(*this);
+    if (m_document)
+        m_document->removeResizeObserver(*this);
 }
 
 void ResizeObserver::observeInternal(Element& target, const ResizeObserverBoxOptions boxOptions)

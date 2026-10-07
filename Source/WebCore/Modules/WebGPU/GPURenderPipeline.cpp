@@ -116,7 +116,6 @@ void GPURenderPipeline::setLabel(String&& label)
 {
     m_descriptor.label = label;
     protect(backing())->setLabel(WTF::move(label));
-    InspectorInstrumentation::didChangeWebGPURenderPipelineLabel(*this);
 }
 
 Ref<GPUBindGroupLayout> GPURenderPipeline::getBindGroupLayout(uint32_t index)

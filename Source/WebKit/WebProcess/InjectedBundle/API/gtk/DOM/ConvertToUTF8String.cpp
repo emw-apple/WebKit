@@ -22,7 +22,6 @@
 #include "ConvertToUTF8String.h"
 
 #include <wtf/URL.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/WTFString.h>
 
@@ -33,7 +32,7 @@ gchar* convertToUTF8String(WTF::String const& s)
     if (s.isNull())
         return nullptr;
 
-    return gStrdup(s.utf8());
+    return g_strdup(s.utf8().legacyCStringPointer());
 }
 
 gchar* convertToUTF8String(URL const& s)

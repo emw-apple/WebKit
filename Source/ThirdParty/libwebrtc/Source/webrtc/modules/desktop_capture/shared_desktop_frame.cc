@@ -56,7 +56,7 @@ SharedDesktopFrame::SharedDesktopFrame(scoped_refptr<Core> core)
                    (*core)->data(),
                    (*core)->shared_memory(),
                    (*core)->texture()),
-      core_(std::move(core)) {
+      core_(core) {
   CopyFrameInfoFrom(*(core_->get()));
 }
 

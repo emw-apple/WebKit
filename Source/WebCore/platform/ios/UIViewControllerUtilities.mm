@@ -47,8 +47,8 @@ UIViewController *viewController(UIView *view)
     if (![responder isKindOfClass:PAL::getUIViewControllerClassSingleton()])
         return nil;
 
-    RetainPtr controller = static_cast<UIViewController *>(responder);
-    return [controller viewIfLoaded] == view ? controller.autorelease() : nil;
+    auto controller = static_cast<UIViewController *>(responder);
+    return controller.viewIfLoaded == view ? controller : nil;
 }
 
 } // namespace WebCore

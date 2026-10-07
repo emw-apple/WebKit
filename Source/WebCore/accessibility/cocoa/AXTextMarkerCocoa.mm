@@ -115,7 +115,7 @@ RetainPtr<NSAttributedString> AXTextMarkerRange::toAttributedString(AXCoreObject
             return;
 
         if (result)
-            [result appendAttributedString:string];
+            [result appendAttributedString:string.autorelease()];
         else
             result = WTF::move(string);
     };
@@ -171,8 +171,8 @@ AXTextMarkerRange::AXTextMarkerRange(AXTextMarkerRangeRef textMarkerRangeRef)
 RetainPtr<AXTextMarkerRangeRef> AXTextMarkerRange::platformData() const
 {
     return adoptCF(AXTextMarkerRangeCreate(kCFAllocatorDefault
-        , m_start.platformData()
-        , m_end.platformData()
+        , m_start.platformData().autorelease()
+        , m_end.platformData().autorelease()
     ));
 }
 

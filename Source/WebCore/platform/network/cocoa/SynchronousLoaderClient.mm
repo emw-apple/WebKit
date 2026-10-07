@@ -33,7 +33,7 @@ namespace WebCore {
 void SynchronousLoaderClient::didReceiveAuthenticationChallenge(ResourceHandle*, const AuthenticationChallenge& challenge)
 {
     // FIXME: The user should be asked for credentials, as in async case.
-    [protect(challenge.sender()) continueWithoutCredentialForAuthenticationChallenge:protect(challenge.nsURLAuthenticationChallenge())];
+    [challenge.sender() continueWithoutCredentialForAuthenticationChallenge:challenge.nsURLAuthenticationChallenge()];
 }
 
 ResourceError SynchronousLoaderClient::platformBadResponseError()

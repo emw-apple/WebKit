@@ -30,6 +30,7 @@
 #include "GridFormattingContext.h"
 #include "GridItemRect.h"
 #include "GridLayoutConstraints.h"
+#include "GridLayoutUtils.h"
 #include "LayoutIntegrationBoxGeometryUpdater.h"
 #include "LayoutIntegrationBoxTreeUpdater.h"
 #include "RenderGrid.h"
@@ -113,21 +114,17 @@ static inline Layout::GridLayoutConstraints constraintsForGridContent(const Layo
     auto gridContainerZoom = gridContainerStyle->usedZoomForLength();
 
     auto inlineAxisMinMaxSizes = [&]() -> std::pair<std::optional<LayoutUnit>, std::optional<LayoutUnit>> {
-        auto adjustForBoxSizing = [&](LayoutUnit width) {
-            return gridContainerRenderer->adjustContentBoxLogicalWidthForBoxSizing(width);
+        return {
+            minimumSizeConstraint(gridContainerStyle->minWidth(), gridContainerZoom),
+            maximumSizeConstraint(gridContainerStyle->maxWidth(), gridContainerZoom)
         };
-        auto minWidth = minimumSizeConstraint(gridContainerStyle->minWidth(), gridContainerZoom).transform(adjustForBoxSizing);
-        auto maxWidth = maximumSizeConstraint(gridContainerStyle->maxWidth(), gridContainerZoom).transform(adjustForBoxSizing);
-        return { minWidth, maxWidth };
     }();
 
     auto blockAxisMinMaxSizes = [&]() -> std::pair<std::optional<LayoutUnit>, std::optional<LayoutUnit>> {
-        auto adjustForBoxSizing = [&](LayoutUnit height) {
-            return gridContainerRenderer->adjustContentBoxLogicalHeightForBoxSizing(height);
+        return {
+            minimumSizeConstraint(gridContainerStyle->minHeight(), gridContainerZoom),
+            maximumSizeConstraint(gridContainerStyle->maxHeight(), gridContainerZoom)
         };
-        auto minHeight = minimumSizeConstraint(gridContainerStyle->minHeight(), gridContainerZoom).transform(adjustForBoxSizing);
-        auto maxHeight = maximumSizeConstraint(gridContainerStyle->maxHeight(), gridContainerZoom).transform(adjustForBoxSizing);
-        return { minHeight, maxHeight };
     }();
 
     auto inlineAxisConstraint = Layout::AxisConstraint::definite(
@@ -190,7 +187,7 @@ void GridLayout::updateGridItemRenderers(const GridItemBorderBoxRects& previousG
     ASSERT(gridItemIndex == previousGridItemRects.size());
 }
 
-void GridLayout::updateFormattingContextRootRenderer(LayoutUnit blockContentSize, const Layout::GridItemRects& gridItemRects)
+void GridLayout::updateFormattingContextRootRenderer(const Layout::GridLayoutConstraints& layoutConstraints, const Layout::UsedTrackSizes& usedTrackSizes, const Layout::GridItemRects& gridItemRects)
 {
     CheckedRef renderGrid = gridBoxRenderer();
     auto& currentGrid = renderGrid->currentGrid();
@@ -209,7 +206,13 @@ void GridLayout::updateFormattingContextRootRenderer(LayoutUnit blockContentSize
 
     OrderIteratorPopulator orderIteratorPopulator(currentGrid.orderIterator());
 
-    renderGrid->setBorderBoxHeight(blockContentSize + renderGrid->borderAndPaddingLogicalHeight());
+    if (layoutConstraints.blockAxis.scenario() != Layout::AxisConstraint::FreeSpaceScenario::Definite) {
+        auto& rowSizes = usedTrackSizes.rowSizes;
+        auto usedRowGutter = Layout::GridFormattingContext::usedGapValue(renderGrid->style().rowGap(), renderGrid->style());
+        auto blockContentSize = std::reduce(rowSizes.begin(), rowSizes.end()) + Layout::GridLayoutUtils::totalGuttersSize(rowSizes.size(), usedRowGutter);
+        renderGrid->setBorderBoxHeight(blockContentSize + renderGrid->borderAndPaddingLogicalHeight());
+    } else
+        renderGrid->setBorderBoxHeight(layoutConstraints.blockAxis.availableSpace() + renderGrid->borderAndPaddingLogicalHeight());
 
     for (CheckedRef layoutBox : formattingContextBoxes(gridBox()))
         orderIteratorPopulator.collectChild(CheckedRef { downcast<RenderBox>(*layoutBox->rendererForIntegration()) });
@@ -226,24 +229,8 @@ void GridLayout::invalidateFormattingContextRootRenderer(RenderGrid& renderGrid)
 
 std::pair<LayoutUnit, LayoutUnit> GridLayout::computeIntrinsicWidths()
 {
-    CheckedRef gridContainerRenderer = gridBoxRenderer();
-    CheckedRef gridContainerStyle = gridContainerRenderer->style();
-    auto gridContainerZoom = gridContainerStyle->usedZoomForLength();
-
-    auto inlineAxisAutoRepeatConstraint = Layout::AutoRepeatConstraint {
-        { },
-        minimumSizeConstraint(gridContainerStyle->minWidth(), gridContainerZoom),
-        maximumSizeConstraint(gridContainerStyle->maxWidth(), gridContainerZoom)
-    };
-
-    auto blockAxisAutoRepeatConstraint = Layout::AutoRepeatConstraint {
-        gridContainerRenderer->availableLogicalHeightForContentBox(),
-        minimumSizeConstraint(gridContainerStyle->minHeight(), gridContainerZoom),
-        maximumSizeConstraint(gridContainerStyle->maxHeight(), gridContainerZoom)
-    };
-
     auto gridFormattingContext = Layout::GridFormattingContext { gridBox(), layoutState() };
-    auto intrinsicWidths = gridFormattingContext.computeIntrinsicWidths(inlineAxisAutoRepeatConstraint, blockAxisAutoRepeatConstraint);
+    auto intrinsicWidths = gridFormattingContext.computeIntrinsicWidths();
     return { intrinsicWidths.minimum, intrinsicWidths.maximum };
 }
 
@@ -253,9 +240,9 @@ void GridLayout::layout()
 
     auto previousGridItemRects = gridItemBorderBoxRects();
 
-    auto [ usedTrackSizes, gridItemRects, blockContentSize ] = Layout::GridFormattingContext { gridBox(), layoutState() }.layout(gridLayoutConstraints);
+    auto [ usedTrackSizes, gridItemRects ] = Layout::GridFormattingContext { gridBox(), layoutState() }.layout(gridLayoutConstraints);
     updateGridItemRenderers(previousGridItemRects);
-    updateFormattingContextRootRenderer(blockContentSize, gridItemRects);
+    updateFormattingContextRootRenderer(gridLayoutConstraints, usedTrackSizes, gridItemRects);
     layoutOutOfFlowBoxes(usedTrackSizes);
 
     CheckedRef renderGrid = gridBoxRenderer();

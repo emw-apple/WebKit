@@ -112,7 +112,6 @@ function setupCanvasContextScale(canvas) {
     const dpr = getDevicePixelRatio();
     const context = canvas.getContext('2d');
     context.scale(dpr, dpr);
-    canvas.dpr = dpr;
 }
 
 function XScrollableCanvasProvider(props, exporter, ...childrenFunctions) {
@@ -154,35 +153,7 @@ function XScrollableCanvasProvider(props, exporter, ...childrenFunctions) {
     window.addEventListener('resize', () => {
         presenterRef.setState({resize:true});
     });
-    const onDevicePixelRatioChange = () => presenterRef.setState({resize: true});
-    let devicePixelRatioQuery = null;
-    let queriedDevicePixelRatio = null;
-    const watchDevicePixelRatio = () => {
-        if (devicePixelRatioQuery)
-            devicePixelRatioQuery.removeEventListener('change', onDevicePixelRatioChange);
-        queriedDevicePixelRatio = getDevicePixelRatio();
-        devicePixelRatioQuery = window.matchMedia(`(resolution: ${queriedDevicePixelRatio}dppx)`);
-        devicePixelRatioQuery.addEventListener('change', onDevicePixelRatioChange);
-    };
-    let scrollRangeDevicePixelRatio = getDevicePixelRatio();
-    const updateScrollRangeForDevicePixelRatio = () => {
-        const devicePixelRatio = getDevicePixelRatio();
-        if (devicePixelRatio === scrollRangeDevicePixelRatio)
-            return;
-        const scale = devicePixelRatio / scrollRangeDevicePixelRatio;
-        scrollRangeDevicePixelRatio = devicePixelRatio;
-        const width = containerRef.state.width * scale;
-        containerRef.setState({width: width});
-        if (!containerRef.element)
-            return;
-        const scrollLeft = scrollRef.element.scrollLeft * scale;
-        containerRef.element.style.width = `${width}px`;
-        scrollRef.element.scrollLeft = scrollLeft;
-    };
-    const resizeContainerWidth = width => {
-        updateScrollRangeForDevicePixelRatio();
-        containerRef.setState({width: width});
-    };
+    const resizeContainerWidth = width => {containerRef.setState({width: width})};
     const getScrollableBoundingClientRect = () => scrollRef.element.getBoundingClientRect();
     const presenterRef = REF.createRef({
         state: {scrollLeft: 0},
@@ -190,17 +161,9 @@ function XScrollableCanvasProvider(props, exporter, ...childrenFunctions) {
             const scrollableWidth =  getScrollableBoundingClientRect().width;
             element.style.width = `${scrollableWidth}px`;
             resizeEventStream.add(scrollableWidth);
-            watchDevicePixelRatio();
-        },
-        onElementUnmount: (element) => {
-            devicePixelRatioQuery.removeEventListener('change', onDevicePixelRatioChange);
-            devicePixelRatioQuery = null;
         },
         onStateUpdate: (element, stateDiff, state) => {
             if (stateDiff.resize) {
-                updateScrollRangeForDevicePixelRatio();
-                if (devicePixelRatioQuery && !devicePixelRatioQuery.matches && queriedDevicePixelRatio !== getDevicePixelRatio())
-                    watchDevicePixelRatio();
                 const scrollableWidth =  getScrollableBoundingClientRect().width;
                 element.style.width = `${scrollableWidth}px`;
                 resizeEventStream.add(scrollableWidth);
@@ -241,7 +204,6 @@ function XScrollableCanvasProvider(props, exporter, ...childrenFunctions) {
     };
 
     const updateSelectedDotsRect = (dots, seriesRect) => {
-        updateScrollRangeForDevicePixelRatio();
         const contentRect = scrollRef.element.getBoundingClientRect();
         const dotLeft = dots[0]._dotCenter.x - dots[0]._dotRadius + dots[0]._cachedScrollLeft * getDevicePixelRatio();
         const dotRight = dots[dots.length - 1]._dotCenter.x + dots[dots.length - 1]._dotRadius + dots[dots.length - 1]._cachedScrollLeft * getDevicePixelRatio();
@@ -260,7 +222,6 @@ function XScrollableCanvasProvider(props, exporter, ...childrenFunctions) {
     };
 
     scrollEventStream.action(e => {
-        updateScrollRangeForDevicePixelRatio();
         selectedDotRect.left = Number.MAX_VALUE;
         selectedDotRect.right = 0;
         selectedDotRect.top = Number.MAX_VALUE;
@@ -285,7 +246,6 @@ function XScrollableCanvasProvider(props, exporter, ...childrenFunctions) {
     });
 
     scrollToEventStream.action(scrollLeft => {
-        updateScrollRangeForDevicePixelRatio();
         scrollRef.element.scrollTo({left: scrollLeft, behavior: "smooth"});
     });
 
@@ -432,12 +392,11 @@ function xScrollStreamRenderFactory(height, callback=null) {
         let startX = 0;
         let renderWidth = width;
         requestAnimationFrame(() => {
-            const dprChanged = element.dpr !== getDevicePixelRatio();
-            if (dprChanged || element.logicWidth !== width) {
+            if (element.logicWidth !== width) {
                 setupCanvasWidthWithDpr(element, width);
                 setupCanvasContextScale(element);
             }
-            if (dprChanged || element.logicHeight !== height) {
+            if (element.logicHeight !== height) {
                 setupCanvasHeightWithDpr(element, height);
                 setupCanvasContextScale(element);
             }

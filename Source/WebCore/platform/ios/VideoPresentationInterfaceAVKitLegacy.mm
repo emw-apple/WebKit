@@ -386,7 +386,7 @@ NS_ASSUME_NONNULL_END
     _fullscreenInterface = ThreadSafeWeakPtr { *interface };
 
     _playerLayerView = adoptNS([WebCore::allocWebAVPlayerLayerViewInstance() init]);
-    RetainPtr playerLayer = [_playerLayerView webPlayerLayer];
+    RetainPtr playerLayer = (WebAVPlayerLayer *)[_playerLayerView playerLayer];
     if (interface)
         [playerLayer setPresentationModel:interface->videoPresentationModel().get()];
 
@@ -478,7 +478,7 @@ NS_ASSUME_NONNULL_END
     if (!_delegate)
         return YES;
 
-    return [protect(_delegate) playerViewController:playerViewController shouldExitFullScreenWithReason:AVPlayerViewControllerExitFullScreenReasonDoneButtonTapped];
+    return [_delegate playerViewController:playerViewController shouldExitFullScreenWithReason:AVPlayerViewControllerExitFullScreenReasonDoneButtonTapped];
 }
 #endif
 
@@ -784,8 +784,8 @@ VideoPresentationInterfaceAVKitLegacy::VideoPresentationInterfaceAVKitLegacy(Pla
 
 VideoPresentationInterfaceAVKitLegacy::~VideoPresentationInterfaceAVKitLegacy()
 {
-    RetainPtr playerController = this->playerController();
-    if (playerController && [playerController isExternalPlaybackActive])
+    WebAVPlayerController* playerController = this->playerController();
+    if (playerController && playerController.externalPlaybackActive)
         externalPlaybackChanged(false, PlaybackSessionModel::ExternalPlaybackTargetType::TargetTypeNone, emptyString(), emptyString());
 }
 
@@ -801,17 +801,15 @@ AVPlayerViewController *VideoPresentationInterfaceAVKitLegacy::avPlayerViewContr
 
 void VideoPresentationInterfaceAVKitLegacy::setupFullscreen(const FloatRect& initialRect, const FloatSize& videoDimensions, UIView* parentView, HTMLMediaElementEnums::VideoFullscreenMode mode, bool allowsPictureInPicturePlayback, bool standby, bool blocksReturnToFullscreenFromPictureInPicture)
 {
-    [protect(playerController()) setContentDimensions:videoDimensions];
+    [playerController() setContentDimensions:videoDimensions];
     VideoPresentationInterfaceIOS::setupFullscreen(initialRect, videoDimensions, parentView, mode, allowsPictureInPicturePlayback, standby, blocksReturnToFullscreenFromPictureInPicture);
-    RetainPtr fullscreenPlayerLayer = this->fullscreenPlayerLayer();
-    RetainPtr captionsLayer = this->captionsLayer();
-    if (captionsLayer != [fullscreenPlayerLayer captionsLayer])
-        [fullscreenPlayerLayer setCaptionsLayer:captionsLayer];
+    if (fullscreenPlayerLayer().captionsLayer != captionsLayer())
+        fullscreenPlayerLayer().captionsLayer = captionsLayer();
 }
 
 WebAVPlayerLayer *VideoPresentationInterfaceAVKitLegacy::fullscreenPlayerLayer() const
 {
-    return [[m_playerViewController playerLayerView] webPlayerLayer];
+    return (WebAVPlayerLayer *)[m_playerViewController playerLayerView].playerLayer;
 }
 
 void VideoPresentationInterfaceAVKitLegacy::updateRouteSharingPolicy()
@@ -822,9 +820,8 @@ void VideoPresentationInterfaceAVKitLegacy::updateRouteSharingPolicy()
 
 void VideoPresentationInterfaceAVKitLegacy::hasVideoChanged(bool hasVideo)
 {
-    RetainPtr playerController = this->playerController();
-    [playerController setHasEnabledVideo:hasVideo];
-    [playerController setHasVideo:hasVideo];
+    [playerController() setHasEnabledVideo:hasVideo];
+    [playerController() setHasVideo:hasVideo];
 }
 
 bool VideoPresentationInterfaceAVKitLegacy::pictureInPictureWasStartedWhenEnteringBackground() const
@@ -843,7 +840,7 @@ void VideoPresentationInterfaceAVKitLegacy::setPlayerIdentifier(std::optional<Me
 
 bool VideoPresentationInterfaceAVKitLegacy::mayAutomaticallyShowVideoPictureInPicture() const
 {
-    return [protect(playerController()) isPlaying] && (m_standby || m_currentMode.isFullscreen()) && supportsPictureInPicture();
+    return [playerController() isPlaying] && (m_standby || m_currentMode.isFullscreen()) && supportsPictureInPicture();
 }
 
 void VideoPresentationInterfaceAVKitLegacy::setupPlayerViewController()
@@ -851,12 +848,11 @@ void VideoPresentationInterfaceAVKitLegacy::setupPlayerViewController()
     if (!m_playerViewController)
         m_playerViewController = adoptNS([[WebAVPlayerViewController alloc] initWithFullscreenInterface:this]);
 
-    RetainPtr playerController = this->playerController();
     [m_playerViewController setShowsPlaybackControls:NO];
-    [m_playerViewController setPlayerController:(AVPlayerController *)playerController.get()];
+    [m_playerViewController setPlayerController:(AVPlayerController *)playerController()];
     [m_playerViewController setDelegate:m_playerViewControllerDelegate.get()];
     [m_playerViewController setAllowsPictureInPicturePlayback:m_allowsPictureInPicturePlayback];
-    [playerController setAllowsPictureInPicture:m_allowsPictureInPicturePlayback];
+    [playerController() setAllowsPictureInPicture:m_allowsPictureInPicturePlayback];
     if (!m_routingContextUID.isEmpty())
         [m_playerViewController setWebKitOverrideRouteSharingPolicy:(NSUInteger)m_routeSharingPolicy routingContextUID:m_routingContextUID.createNSString().get()];
 
@@ -901,7 +897,7 @@ void VideoPresentationInterfaceAVKitLegacy::stopPictureInPicture()
 
 bool VideoPresentationInterfaceAVKitLegacy::isPlayingVideoInPictureInPicture() const
 {
-    return hasMode(WebCore::HTMLMediaElementEnums::VideoFullscreenModePictureInPicture) && [protect(playerController()) isPlaying];
+    return hasMode(WebCore::HTMLMediaElementEnums::VideoFullscreenModePictureInPicture) && [playerController() isPlaying];
 }
 
 void VideoPresentationInterfaceAVKitLegacy::setAllowsPictureInPicturePlayback(bool allowsPictureInPicturePlayback)
@@ -916,12 +912,12 @@ void VideoPresentationInterfaceAVKitLegacy::setShowsPlaybackControls(bool showsP
 
 void VideoPresentationInterfaceAVKitLegacy::setContentDimensions(const FloatSize& contentDimensions)
 {
-    [protect(playerController()) setContentDimensions:contentDimensions];
+    [playerController() setContentDimensions:contentDimensions];
 }
 
 bool VideoPresentationInterfaceAVKitLegacy::isExternalPlaybackActive() const
 {
-    return [protect(playerController()) isExternalPlaybackActive];
+    return [playerController() isExternalPlaybackActive];
 }
 
 bool VideoPresentationInterfaceAVKitLegacy::willRenderToLayer() const
@@ -931,12 +927,12 @@ bool VideoPresentationInterfaceAVKitLegacy::willRenderToLayer() const
 
 void VideoPresentationInterfaceAVKitLegacy::transferVideoViewToFullscreen()
 {
-    [protect(playerLayerView()) transferVideoViewTo:[m_playerViewController playerLayerView]];
+    [playerLayerView() transferVideoViewTo:[m_playerViewController playerLayerView]];
 }
 
 void VideoPresentationInterfaceAVKitLegacy::returnVideoView()
 {
-    [[m_playerViewController playerLayerView] transferVideoViewTo:protect(playerLayerView())];
+    [[m_playerViewController playerLayerView] transferVideoViewTo:playerLayerView()];
 }
 
 static std::optional<bool> isPictureInPictureSupported;
@@ -961,11 +957,9 @@ void VideoPresentationInterfaceAVKitLegacy::setupCaptionsLayer(CALayer *, const 
 {
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    RetainPtr captionsLayer = this->captionsLayer();
-    RetainPtr fullscreenPlayerLayer = this->fullscreenPlayerLayer();
-    [captionsLayer removeFromSuperlayer];
-    [fullscreenPlayerLayer setCaptionsLayer:captionsLayer];
-    [fullscreenPlayerLayer layoutSublayers];
+    [captionsLayer() removeFromSuperlayer];
+    fullscreenPlayerLayer().captionsLayer = captionsLayer();
+    [fullscreenPlayerLayer() layoutSublayers];
     [CATransaction commit];
 }
 

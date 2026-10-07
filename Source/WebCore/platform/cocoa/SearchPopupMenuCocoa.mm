@@ -35,7 +35,7 @@ static NSString * const itemsKey = @"items";
 static NSString * const searchesKey = @"searches";
 static NSString * const searchStringKey = @"searchString";
 
-static RetainPtr<NSString> searchFieldRecentSearchesPlistPath(NSString *baseDirectory)
+static NSString *searchFieldRecentSearchesPlistPath(NSString *baseDirectory)
 {
     return [baseDirectory stringByAppendingPathComponent:@"RecentSearches.plist"];
 }

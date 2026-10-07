@@ -59,8 +59,8 @@
     if (!(self = [super init]))
         return nil;
     
-    _request = adoptNS([request copy]);
-    _target = adoptNS([target copy]);
+    _request = [request copy];
+    _target = [target copy];
     _resultObject = [obj retain];
     _resultSelector = selector;
     _contextInfo = [contextInfo retain];
@@ -120,6 +120,7 @@
 {
     RetainPtr target = _target;
     RetainPtr request = _request;
+    RetainPtr listener = _listener;
     RetainPtr controller = _controller;
     WebView *webView = [controller webView];
 
@@ -132,8 +133,7 @@
 
     NSDictionary *action = [self _actionInformationWithURL:[request URL]];
 
-    _listener = adoptNS([[WebPolicyDecisionListener alloc] _initWithTarget:self action:@selector(_continueWithPolicy:)]);
-    RetainPtr listener = _listener;
+    _listener = [[WebPolicyDecisionListener alloc] _initWithTarget:self action:@selector(_continueWithPolicy:)];
 
     if (targetFrame == nil) {
         // would open new window
@@ -168,13 +168,18 @@
     if (_done)
         return;
 
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_request release];
     _request = nil;
+    
+    SUPPRESS_UNRETAINED_ARG [_target release];
     _target = nil;
 
-    [protect(_listener) _invalidate];
+    RetainPtr listener = _listener;
+    [listener _invalidate];
+    [listener release];
     _listener = nil;
 
-    // Retaining the member just to release it would be pointless.
     SUPPRESS_UNRETAINED_ARG [_resultObject autorelease];
     _resultObject = nil;
 

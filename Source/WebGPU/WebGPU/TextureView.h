@@ -32,7 +32,6 @@
 #import <wtf/Ref.h>
 #import <wtf/SwiftBridging.h>
 #import <wtf/TZoneMalloc.h>
-#import <wtf/TypeCasts.h>
 #import <wtf/WeakHashSet.h>
 #import <wtf/WeakPtr.h>
 
@@ -42,24 +41,11 @@ class CommandEncoder;
 class Device;
 class Texture;
 
-// A WebGPU::TextureViewDescriptor after
-// https://gpuweb.github.io/gpuweb/#abstract-opdef-resolving-gputextureviewdescriptor-defaults.
-struct ResolvedTextureViewDescriptor {
-    WebGPU::TextureFormat format;
-    WebGPU::TextureViewDimension dimension;
-    uint32_t baseMipLevel { 0 };
-    uint32_t mipLevelCount { 0 };
-    uint32_t baseArrayLayer { 0 };
-    uint32_t arrayLayerCount { 0 };
-    WebGPU::TextureAspect aspect { WebGPU::TextureAspect::All };
-    OptionSet<WebGPU::TextureUsage> usage;
-};
-
 // https://gpuweb.github.io/gpuweb/#gputextureview
 class TextureView final : public WebGPU::TextureView, public WGPUTextureViewImpl, public TrackedResource {
     WTF_MAKE_TZONE_ALLOCATED(TextureView);
 public:
-    static Ref<TextureView> create(id<MTLTexture> texture, const ResolvedTextureViewDescriptor& descriptor, const std::optional<WGPUExtent3D>& renderExtent, Texture& parentTexture, Device& device)
+    static Ref<TextureView> create(id<MTLTexture> texture, const WGPUTextureViewDescriptor& descriptor, const std::optional<WGPUExtent3D>& renderExtent, Texture& parentTexture, Device& device)
     {
         return adoptRef(*new TextureView(texture, descriptor, renderExtent, parentTexture, device));
     }
@@ -84,7 +70,7 @@ public:
     uint32_t width() const;
     uint32_t height() const;
     uint32_t depthOrArrayLayers() const;
-    OptionSet<WebGPU::TextureUsage> NODELETE usage() const;
+    WGPUTextureUsage NODELETE usage() const;
     uint32_t NODELETE sampleCount() const;
     WGPUTextureFormat NODELETE parentFormat() const;
     WGPUTextureFormat NODELETE format() const;
@@ -102,26 +88,25 @@ public:
     Texture& apiParentTexture() { return m_parentTexture; }
     uint32_t parentRelativeSlice() const;
     uint32_t parentRelativeMipLevel() const;
-    bool is2DTexture() const { return m_dimension == WebGPU::TextureViewDimension::_2d; }
-    bool is2DArrayTexture() const { return m_dimension == WebGPU::TextureViewDimension::_2dArray; }
-    bool is3DTexture() const { return m_dimension == WebGPU::TextureViewDimension::_3d; }
+    bool is2DTexture() const { return dimension() == WGPUTextureViewDimension_2D; }
+    bool is2DArrayTexture() const { return dimension() == WGPUTextureViewDimension_2DArray; }
+    bool is3DTexture() const { return dimension() == WGPUTextureViewDimension_3D; }
     id<MTLRasterizationRateMap> NODELETE rasterizationMapForSlice(uint32_t slice) const;
 
 private:
-    TextureView(id<MTLTexture>, const ResolvedTextureViewDescriptor&, const std::optional<WGPUExtent3D>&, Texture&, Device&);
+    TextureView(id<MTLTexture>, const WGPUTextureViewDescriptor&, const std::optional<WGPUExtent3D>&, Texture&, Device&);
     TextureView(Texture&, Device&);
 
     id<MTLTexture> m_texture { nil };
 
-    // std::nullopt only for invalid views.
-    const std::optional<WebGPU::TextureFormat> m_format;
-    const std::optional<WebGPU::TextureViewDimension> m_dimension;
+    const WGPUTextureFormat m_format { WGPUTextureFormat_Undefined };
+    const WGPUTextureViewDimension m_dimension { WGPUTextureViewDimension_Undefined };
     const uint32_t m_baseMipLevel { 0 };
     const uint32_t m_mipLevelCount { 0 };
     const uint32_t m_baseArrayLayer { 0 };
     const uint32_t m_arrayLayerCount { 0 };
-    const WebGPU::TextureAspect m_aspect { WebGPU::TextureAspect::All };
-    const OptionSet<WebGPU::TextureUsage> m_usage;
+    const WGPUTextureAspect m_aspect { WGPUTextureAspect_All };
+    const WGPUTextureUsage m_usage { WGPUTextureUsage_None };
     const std::optional<WGPUExtent3D> m_renderExtent;
 
     const Ref<Device> m_device;
@@ -139,8 +124,3 @@ inline void derefTextureView(WebGPU::Metal::TextureView* obj)
 {
     obj->deref();
 }
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebGPU::Metal::TextureView)
-    static bool isType(const WGPUTextureViewImpl&) { return true; }
-    static bool isType(const WebGPU::TextureView&) { return true; }
-SPECIALIZE_TYPE_TRAITS_END()

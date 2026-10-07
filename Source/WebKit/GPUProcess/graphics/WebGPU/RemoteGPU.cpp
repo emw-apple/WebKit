@@ -343,7 +343,8 @@ void RemoteGPU::createModelBacking(unsigned width, unsigned height, WebModel::Im
 #if ENABLE(GPU_PROCESS_MODEL)
     assertIsCurrent(workQueue());
 
-    MESSAGE_CHECK(width <= WKBridgeMaximumTextureDimension && height <= WKBridgeMaximumTextureDimension);
+    constexpr auto max2dTextureSize = 16384;
+    MESSAGE_CHECK(width <= max2dTextureSize && height <= max2dTextureSize);
     auto& inputSpecularTexture = specularTexture;
     auto& inputDiffuseTexture = diffuseTexture;
     {

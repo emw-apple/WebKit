@@ -38,7 +38,6 @@ public:
     virtual void loadFailed(const char* failingURI, GError*);
     virtual void estimatedProgressChanged();
 
-    using WebViewTest::loadURI;
     void loadURI(const char* uri);
     void loadHtml(const char* html, const char* baseURI, WebKitWebView* = nullptr);
     void loadPlainText(const char* plainText);
@@ -50,7 +49,7 @@ public:
     void loadAlternateHTML(const char* html, const char* contentURI, const char* baseURI);
     void reset();
 
-    void setRedirectURI(const UTF8CString& uri) { m_redirectURI = uri; }
+    void setRedirectURI(const char* uri) { m_redirectURI = UTF8CString { byteCast<char8_t>(uri) }; }
 
     enum LoadEvents {
         ProvisionalLoadStarted,

@@ -5,6 +5,7 @@ css/SelectorFilter.h
 dom/CollectionIndexCache.h
 dom/Node.cpp
 dom/Node.h
+inspector/agents/WebHeapAgent.cpp
 layout/formattingContexts/inline/AbstractLineBuilder.h
 layout/formattingContexts/inline/InlineContentBreaker.h
 layout/formattingContexts/inline/InlineFormattingContext.h
@@ -19,6 +20,10 @@ layout/layouttree/LayoutChildIterator.h
 layout/layouttree/LayoutContainingBlockChainIterator.h
 layout/layouttree/LayoutDescendantIterator.h
 layout/layouttree/LayoutIterator.h
+[ iOS ] page/cocoa/ContentChangeObserver.h
+platform/graphics/TextRunIterator.h
+[ iOS ] platform/ios/DeviceMotionClientIOS.h
+[ iOS ] platform/ios/DeviceOrientationClientIOS.h
 rendering/BackgroundPainter.h
 rendering/GlyphDisplayListCache.cpp
 rendering/GridTrackSizingAlgorithm.h
@@ -70,3 +75,4 @@ style/StyleScope.h
 style/StyleTreeResolver.h
 style/Styleable.h
 style/values/primitives/StyleLengthResolution.cpp
+svg/properties/SVGPropertyOwnerRegistry.h

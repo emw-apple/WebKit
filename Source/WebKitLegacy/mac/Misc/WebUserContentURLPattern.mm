@@ -25,7 +25,6 @@
 #import "WebUserContentURLPattern.h"
 
 #import <WebCore/UserContentURLPattern.h>
-#import <wtf/RetainPtr.h>
 #import <wtf/URL.h>
 
 
@@ -39,9 +38,7 @@
 @implementation WebUserContentURLPatternPrivate
 @end
 
-@implementation WebUserContentURLPattern {
-    RetainPtr<WebUserContentURLPatternPrivate> _private;
-}
+@implementation WebUserContentURLPattern
 
 - (id)initWithPatternString:(NSString *)patternString
 {
@@ -49,10 +46,19 @@
     if (!self)
         return nil;
 
-    _private = adoptNS([[WebUserContentURLPatternPrivate alloc] init]);
+    _private = [[WebUserContentURLPatternPrivate alloc] init];
     _private->pattern = WebCore::UserContentURLPattern(String(patternString));
 
     return self;
+}
+
+- (void)dealloc
+{
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_private release];
+    _private = nil;
+
+    [super dealloc];
 }
 
 - (BOOL)isValid

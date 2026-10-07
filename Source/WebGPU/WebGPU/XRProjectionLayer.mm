@@ -78,13 +78,12 @@ SOFT_LINK_FUNCTION_FOR_SOURCE(WebCore, CompositorServices, cp_rasterization_rate
 
 namespace WebGPU::Metal {
 
-// The layer keeps the C API formats, which the XR sub-image textures are created with.
-XRProjectionLayer::XRProjectionLayer(const WebGPU::XRProjectionLayerDescriptor& descriptor, Device& device)
+XRProjectionLayer::XRProjectionLayer(WGPUTextureFormat colorFormat, WGPUTextureFormat* optionalDepthStencilFormat, WGPUTextureUsage flags, double scale, Device& device)
     : m_sharedEvent(std::make_pair(nil, 0))
-    , m_colorFormat(toAPI(descriptor.colorFormat))
-    , m_optionalDepthStencilFormat(descriptor.depthStencilFormat ? std::optional { toAPI(*descriptor.depthStencilFormat) } : std::nullopt)
-    , m_flags(descriptor.textureUsage)
-    , m_scale(descriptor.scaleFactor)
+    , m_colorFormat(colorFormat)
+    , m_optionalDepthStencilFormat(optionalDepthStencilFormat ? *optionalDepthStencilFormat : std::optional<WGPUTextureFormat> { std::nullopt })
+    , m_flags(flags)
+    , m_scale(scale)
     , m_device(device)
 {
     m_colorTextures = [NSMutableDictionary dictionary];
@@ -192,9 +191,9 @@ void XRProjectionLayer::startFrame(size_t frameIndex, WTF::MachSendRight&& color
 #endif
 }
 
-Ref<XRProjectionLayer> XRBinding::createProjectionLayer(const WebGPU::XRProjectionLayerDescriptor& descriptor)
+Ref<XRProjectionLayer> XRBinding::createXRProjectionLayer(WGPUTextureFormat colorFormat, WGPUTextureFormat* optionalDepthStencilFormat, WGPUTextureUsage flags, double scale)
 {
-    return XRProjectionLayer::create(descriptor, m_device);
+    return XRProjectionLayer::create(colorFormat, optionalDepthStencilFormat, flags, scale, m_device);
 }
 
 } // namespace WebGPU::Metal

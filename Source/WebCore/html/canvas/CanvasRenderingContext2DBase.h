@@ -27,7 +27,6 @@
 
 #include "AffineTransform.h"
 #include "CanvasDirection.h"
-#include "CanvasDrawElementImageOptions.h"
 #include "CanvasElementImage.h"
 #include "CanvasFillRule.h"
 #include "CanvasImageSource.h"
@@ -200,10 +199,10 @@ public:
     ExceptionOr<void> drawImage(CanvasImageSource&&, float dx, float dy, float dw, float dh);
     ExceptionOr<void> drawImage(CanvasImageSource&&, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh);
 
-    ExceptionOr<void> drawElementImage(CanvasElementImageSource&&, float dx, float dy, std::optional<CanvasDrawElementImageOptions>);
-    ExceptionOr<void> drawElementImage(CanvasElementImageSource&&, float dx, float dy, float dw, float dh, std::optional<CanvasDrawElementImageOptions>);
-    ExceptionOr<void> drawElementImage(CanvasElementImageSource&&, float sx, float sy, float sw, float sh, float dx, float dy, std::optional<CanvasDrawElementImageOptions>);
-    ExceptionOr<void> drawElementImage(CanvasElementImageSource&&, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, std::optional<CanvasDrawElementImageOptions>);
+    ExceptionOr<Ref<DOMMatrix>> drawElementImage(CanvasElementImageSource&&, float dx, float dy);
+    ExceptionOr<Ref<DOMMatrix>> drawElementImage(CanvasElementImageSource&&, float dx, float dy, float dw, float dh);
+    ExceptionOr<Ref<DOMMatrix>> drawElementImage(CanvasElementImageSource&&, float sx, float sy, float sw, float sh, float dx, float dy);
+    ExceptionOr<Ref<DOMMatrix>> drawElementImage(CanvasElementImageSource&&, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh);
 
     void clearCanvas();
 
@@ -460,8 +459,8 @@ private:
     ExceptionOr<void> drawImage(WebCodecsVideoFrame&, const FloatRect& srcRect, const FloatRect& dstRect);
 #endif
 
-    ExceptionOr<void> drawElementImage(CanvasElementImageSource&&, const FloatRect& srcRect, const FloatRect& dstRect, std::optional<CanvasDrawElementImageOptions>);
-    ExceptionOr<void> drawSnapshot(const CanvasElementSnapshot&, const FloatRect& srcRect, const FloatRect& dstRect, std::optional<CanvasDrawElementImageOptions>);
+    ExceptionOr<Ref<DOMMatrix>> drawElementImage(CanvasElementImageSource&&, const FloatRect& srcRect, const FloatRect& dstRect);
+    ExceptionOr<Ref<DOMMatrix>> drawSnapshot(const CanvasElementSnapshot&, const FloatRect& srcRect, const FloatRect& dstRect);
 
     void beginCompositeLayer();
     void endCompositeLayer();

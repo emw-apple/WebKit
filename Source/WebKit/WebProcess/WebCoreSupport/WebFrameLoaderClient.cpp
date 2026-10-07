@@ -104,11 +104,18 @@ std::optional<NavigationActionData> WebFrameLoaderClient::navigationActionData(c
 
     auto originator = webPage->takeMainFrameNavigationInitiator();
 
+    bool originatingFrameIsMain = navigationAction.initiatedByMainFrame() == InitiatedByMainFrame::Yes;
+    if (!originatingFrameIsMain) {
+        if (RefPtr originatingFrame = WebProcess::singleton().webFrame(originatingFrameID))
+            originatingFrameIsMain = originatingFrame->isMainFrame();
+    }
+
     std::optional<WebPageProxyIdentifier> originatingPageID;
     if (RefPtr webPage = requester.pageID ? WebProcess::singleton().webPage(*requester.pageID) : nullptr)
         originatingPageID = webPage->webPageProxyIdentifier();
 
     auto originatingFrameInfoData = originator ? FrameInfoData { WTF::move(*originator) } : FrameInfoData {
+        originatingFrameIsMain,
         FrameType::Local,
         ResourceRequest { URL { requester.url } },
         requester.securityOrigin->data(),
@@ -117,6 +124,7 @@ std::optional<NavigationActionData> WebFrameLoaderClient::navigationActionData(c
         WTF::move(originatingFrameID),
         originatingPageID,
         document ? std::optional { document->identifier() } : std::nullopt,
+        getCurrentProcessID(),
         requestingFrame ? requestingFrame->isFocused() : false
     };
 
@@ -286,22 +294,16 @@ void WebFrameLoaderClient::broadcastFrameTreeSyncDataToOtherProcesses(FrameTreeS
         webPage->send(Messages::WebPageProxy::BroadcastFrameTreeSyncData(m_frame->frameID(), WTF::move(data)));
 }
 
-void WebFrameLoaderClient::didNotifyUserActivation(MonotonicTime activationTime, std::optional<WebCore::UserGestureTokenIdentifier> forcedActivationToken)
+void WebFrameLoaderClient::didNotifyUserActivation(MonotonicTime activationTime)
 {
     if (RefPtr webPage = m_frame->page())
-        webPage->send(Messages::WebPageProxy::DidNotifyUserActivation(m_frame->frameID(), activationTime, forcedActivationToken));
+        webPage->send(Messages::WebPageProxy::DidNotifyUserActivation(m_frame->frameID(), activationTime));
 }
 
 void WebFrameLoaderClient::didConsumeUserActivation()
 {
     if (RefPtr webPage = m_frame->page())
         webPage->send(Messages::WebPageProxy::DidConsumeUserActivation(m_frame->frameID()));
-}
-
-void WebFrameLoaderClient::didRevokeForcedUserActivation(WebCore::UserGestureTokenIdentifier forcedActivationToken)
-{
-    if (RefPtr webPage = m_frame->page())
-        webPage->send(Messages::WebPageProxy::DidRevokeForcedUserActivation(m_frame->frameID(), forcedActivationToken));
 }
 
 void WebFrameLoaderClient::didHandleFirstUserGesture(MonotonicTime gestureTime)

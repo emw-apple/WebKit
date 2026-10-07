@@ -1240,13 +1240,13 @@ void Navigation::setupInterceptionState(NavigateEvent& event, NavigationNavigati
         transition->resolveCommitted();
 }
 
-std::optional<NavigateEventDispatchResult> Navigation::handleSameDocumentNavigation(NavigateEvent& event, NavigationNavigationType navigationType, NavigationAPIMethodTracker* apiMethodTracker, AbortController& abortController, Document& document)
+std::optional<Navigation::DispatchResult> Navigation::handleSameDocumentNavigation(NavigateEvent& event, NavigationNavigationType navigationType, NavigationAPIMethodTracker* apiMethodTracker, AbortController& abortController, Document& document)
 {
     Vector<Ref<DOMPromise>> promiseList;
 
     for (auto& handler : event.handlers()) {
         auto callbackResult = handler->invoke();
-        if (callbackResult.type() == CallbackResultType::Success) {
+        if (callbackResult.type() != CallbackResultType::UnableToExecute) {
             Ref promise = callbackResult.releaseReturnValue();
             // Because rejection is reported as `navigateerror` event, we can mark this as handled.
             if (!promise->isSuspended())
@@ -1258,7 +1258,7 @@ std::optional<NavigateEventDispatchResult> Navigation::handleSameDocumentNavigat
     // A handler may have detached the document (e.g., by removing its iframe from the DOM).
     if (!document.isFullyActive()) {
         abortOngoingNavigation(event);
-        return NavigateEventDispatchResult::aborted();
+        return DispatchResult::Aborted;
     }
 
     // For intercepted traverse navigations, notify committed after handlers have been invoked but before
@@ -1336,7 +1336,7 @@ std::optional<NavigateEventDispatchResult> Navigation::handleSameDocumentNavigat
 
     // If a new event has been dispatched in our event handler then we were aborted above.
     if (m_ongoingNavigateEvent != &event)
-        return NavigateEventDispatchResult::aborted();
+        return DispatchResult::Aborted;
 
     return std::nullopt;
 }
@@ -1348,7 +1348,7 @@ void Navigation::runNavigatePrecommitHandlers(NavigateEvent& event, NavigationAP
     Vector<Ref<DOMPromise>> promiseList;
     for (auto& handler : event.precommitHandlers()) {
         auto callbackResult = handler->invoke(precommitController.get());
-        if (callbackResult.type() == CallbackResultType::Success) {
+        if (callbackResult.type() != CallbackResultType::UnableToExecute) {
             Ref promise = callbackResult.releaseReturnValue();
             // Because rejection is reported as `navigateerror` event, we can mark this as handled.
             if (!promise->isSuspended())
@@ -1371,7 +1371,7 @@ void Navigation::runNavigatePrecommitHandlers(NavigateEvent& event, NavigationAP
         protectedThis->setupInterceptionState(event.get(), event->navigationType(), event->destination(), document.get(), classicHistoryAPIState.get());
 
         auto dispatchResult = protectedThis->handleSameDocumentNavigation(event.get(), event->navigationType(), apiMethodTracker.get(), abortController.get(), document.get());
-        if (dispatchResult && dispatchResult->isAborted())
+        if (dispatchResult == DispatchResult::Aborted)
             return;
 
         protectedThis->resumeDeferredTraversalIfNeeded();
@@ -1417,11 +1417,11 @@ void Navigation::runNavigatePrecommitHandlers(NavigateEvent& event, NavigationAP
 }
 
 // https://html.spec.whatwg.org/multipage/nav-history-apis.html#inner-navigate-event-firing-algorithm
-NavigateEventDispatchResult Navigation::innerDispatchNavigateEvent(NavigationNavigationType navigationType, Ref<NavigationDestination>&& destination, const String& downloadRequestFilename, FormState* formState, SerializedScriptValue* classicHistoryAPIState, Element* sourceElement)
+Navigation::DispatchResult Navigation::innerDispatchNavigateEvent(NavigationNavigationType navigationType, Ref<NavigationDestination>&& destination, const String& downloadRequestFilename, FormState* formState, SerializedScriptValue* classicHistoryAPIState, Element* sourceElement)
 {
     if (hasEntriesAndEventsDisabled()) {
         ASSERT(m_methodTrackers.isEmpty());
-        return NavigateEventDispatchResult::completed();
+        return DispatchResult::Completed;
     }
 
     bool wasBeingDispatched = m_ongoingNavigateEvent && m_ongoingNavigateEvent->isBeingDispatched();
@@ -1431,7 +1431,7 @@ NavigateEventDispatchResult Navigation::innerDispatchNavigateEvent(NavigationNav
     // Prevent recursion on synchronous history navigation steps issued
     // from the navigate event handler.
     if (wasBeingDispatched && classicHistoryAPIState)
-        return NavigateEventDispatchResult::completed();
+        return DispatchResult::Completed;
 
     RefPtr apiMethodTracker = navigationType == NavigationNavigationType::Traverse
         ? m_methodTrackers.promoteUpcomingTraverseToOngoing(destination->key())
@@ -1449,7 +1449,7 @@ NavigateEventDispatchResult Navigation::innerDispatchNavigateEvent(NavigationNav
         if (apiMethodTracker)
             rejectFinishedPromise(apiMethodTracker.get(), Exception { ExceptionCode::QuotaExceededError, "Navigation rate limit exceeded"_s }, JSC::JSValue { });
 
-        return NavigateEventDispatchResult::aborted();
+        return DispatchResult::Aborted;
     }
 
     RefPtr document = window()->document();
@@ -1519,14 +1519,14 @@ NavigateEventDispatchResult Navigation::innerDispatchNavigateEvent(NavigationNav
     // If the frame was detached in our event.
     if (!frame()) {
         abortOngoingNavigation(event);
-        return NavigateEventDispatchResult::aborted();
+        return DispatchResult::Aborted;
     }
 
     if (event->defaultPrevented()) {
         // FIXME: If navigationType is "traverse", then consume history-action user activation.
         if (!event->signal().aborted())
             abortOngoingNavigation(event);
-        return NavigateEventDispatchResult::aborted();
+        return DispatchResult::Aborted;
     }
 
     bool endResultIsSameDocument = event->wasIntercepted() || destination->sameDocument();
@@ -1534,16 +1534,16 @@ NavigateEventDispatchResult Navigation::innerDispatchNavigateEvent(NavigationNav
     // FIXME: Prepare to run script given navigation's relevant settings object.
 
     if (event->wasIntercepted() && !createTransitionForInterception(event.get(), navigationType, *document))
-        return NavigateEventDispatchResult::aborted();
+        return DispatchResult::Aborted;
 
     if (document->settings().navigationAPIPrecommitHandlerEnabled() && !event->precommitHandlers().isEmpty()) {
         runNavigatePrecommitHandlers(event.get(), apiMethodTracker.get(), *abortController, *document, RefPtr { classicHistoryAPIState });
 
         // If a new event has been dispatched in a precommit handler then we were aborted above.
         if (m_ongoingNavigateEvent != event.ptr())
-            return NavigateEventDispatchResult::aborted();
+            return DispatchResult::Aborted;
 
-        return NavigateEventDispatchResult::deferredCommit();
+        return DispatchResult::DeferredCommit;
     }
 
     // Step 32:
@@ -1566,11 +1566,11 @@ NavigateEventDispatchResult Navigation::innerDispatchNavigateEvent(NavigationNav
 
     // FIXME: Step 35 Clean up after running script
 
-    return event->wasIntercepted() ? NavigateEventDispatchResult::intercepted() : NavigateEventDispatchResult::completed(event->identifier());
+    return event->wasIntercepted() ? DispatchResult::Intercepted : DispatchResult::Completed;
 }
 
 // https://html.spec.whatwg.org/multipage/nav-history-apis.html#fire-a-traverse-navigate-event
-NavigateEventDispatchResult Navigation::dispatchTraversalNavigateEvent(HistoryItem& historyItem)
+Navigation::DispatchResult Navigation::dispatchTraversalNavigateEvent(HistoryItem& historyItem)
 {
     RefPtr currentItem = frame() ? frame()->loader().history().currentItem() : nullptr;
     bool isSameDocument = currentItem && currentItem->documentSequenceNumber() == historyItem.documentSequenceNumber();
@@ -1589,7 +1589,7 @@ NavigateEventDispatchResult Navigation::dispatchTraversalNavigateEvent(HistoryIt
 }
 
 // https://html.spec.whatwg.org/multipage/nav-history-apis.html#fire-a-push/replace/reload-navigate-event
-NavigateEventDispatchResult Navigation::dispatchPushReplaceReloadNavigateEvent(const URL& url, NavigationNavigationType navigationType, bool isSameDocument, FormState* formState, SerializedScriptValue* classicHistoryAPIState, Element* sourceElement)
+bool Navigation::dispatchPushReplaceReloadNavigateEvent(const URL& url, NavigationNavigationType navigationType, bool isSameDocument, FormState* formState, SerializedScriptValue* classicHistoryAPIState, Element* sourceElement)
 {
     Ref destination = NavigationDestination::create(url, nullptr, isSameDocument);
     if (classicHistoryAPIState)
@@ -1600,14 +1600,14 @@ NavigateEventDispatchResult Navigation::dispatchPushReplaceReloadNavigateEvent(c
         sourceElement = nullptr;
     }
 
-    return innerDispatchNavigateEvent(navigationType, WTF::move(destination), { }, formState, classicHistoryAPIState, sourceElement);
+    return innerDispatchNavigateEvent(navigationType, WTF::move(destination), { }, formState, classicHistoryAPIState, sourceElement) == DispatchResult::Completed;
 }
 
 // https://html.spec.whatwg.org/multipage/nav-history-apis.html#fire-a-download-request-navigate-event
 bool Navigation::dispatchDownloadNavigateEvent(const URL& url, const String& downloadFilename, Element* sourceElement)
 {
     Ref destination = NavigationDestination::create(url, nullptr, false);
-    return innerDispatchNavigateEvent(NavigationNavigationType::Push, WTF::move(destination), downloadFilename, nullptr, nullptr, sourceElement).isCompleted();
+    return innerDispatchNavigateEvent(NavigationNavigationType::Push, WTF::move(destination), downloadFilename, nullptr, nullptr, sourceElement) == DispatchResult::Completed;
 }
 
 // https://html.spec.whatwg.org/multipage/nav-history-apis.html#inform-the-navigation-api-about-aborting-navigation
@@ -1619,12 +1619,6 @@ void Navigation::abortOngoingNavigationIfNeeded()
         if (m_ongoingNavigateEvent == ongoingNavigateEvent)
             break;
     }
-}
-
-void Navigation::abortOngoingNavigationIfStartedBy(NavigateEventIdentifier navigateEventIdentifier)
-{
-    if (RefPtr ongoingNavigateEvent = m_ongoingNavigateEvent; ongoingNavigateEvent && ongoingNavigateEvent->identifier() == navigateEventIdentifier)
-        abortOngoingNavigation(*ongoingNavigateEvent);
 }
 
 // https://html.spec.whatwg.org/multipage/nav-history-apis.html#inform-the-navigation-api-about-child-navigable-destruction

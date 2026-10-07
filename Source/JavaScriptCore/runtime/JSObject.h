@@ -173,7 +173,7 @@ public:
 
     enum class SortMode { Default, Ascending };
     template<SortMode mode = SortMode::Default, typename Functor>
-    void forEachOwnIndexedProperty(JSGlobalObject*, NOESCAPE const Functor&);
+    void forEachOwnIndexedProperty(JSGlobalObject*, const Functor&);
 
 private:
     static bool getOwnPropertySlotImpl(JSObject*, JSGlobalObject*, PropertyName, PropertySlot&);
@@ -561,7 +561,7 @@ public:
     // in-place.
     inline void nukeStructureAndSetButterfly(VM&, StructureID oldStructureID, Butterfly*); // Defined in JSObjectInlines.h
 
-    inline void setStructure(VM&, Structure*); // Defined in StructureCreateInlines.h
+    void setStructure(VM&, Structure*);
 
     JS_EXPORT_PRIVATE void convertToDictionary(VM&);
     JS_EXPORT_PRIVATE void convertToUncacheableDictionary(VM&);
@@ -802,7 +802,7 @@ private:
 
     JS_EXPORT_PRIVATE NEVER_INLINE ASCIILiteral putDirectToDictionaryWithoutExtensibility(VM&, PropertyName, JSValue, PutPropertySlot&);
     JS_EXPORT_PRIVATE void fillGetterPropertySlot(VM&, PropertySlot&, JSCell*, unsigned, PropertyOffset);
-    void fillCustomGetterPropertySlot(PropertySlot&, CustomGetterSetter*, unsigned, PropertyOffset);
+    void fillCustomGetterPropertySlot(PropertySlot&, CustomGetterSetter*, unsigned, Structure*, PropertyOffset);
 
     JS_EXPORT_PRIVATE bool getOwnStaticPropertySlot(VM&, PropertyName, PropertySlot&);
         
@@ -1060,6 +1060,13 @@ inline bool JSObject::isWithScope() const
     return type() == WithScopeType;
 }
 
+inline void JSObject::setStructure(VM& vm, Structure* structure)
+{
+    ASSERT(structure);
+    ASSERT(!butterfly() == !(structure->outOfLineCapacity() || structure->hasIndexingHeader(this)));
+    JSCell::setStructure(vm, structure);
+}
+
 inline JSObject* asObject(JSCell* cell)
 {
     ASSERT(cell);
@@ -1139,7 +1146,7 @@ ALWAYS_INLINE bool JSObject::getOwnNonIndexPropertySlot(VM& vm, Structure* struc
             return true;
         case CustomGetterSetterType:
             ASSERT(attributes & PropertyAttribute::CustomAccessorOrValue);
-            fillCustomGetterPropertySlot(slot, uncheckedDowncast<CustomGetterSetter>(cell), attributes, offset);
+            fillCustomGetterPropertySlot(slot, uncheckedDowncast<CustomGetterSetter>(cell), attributes, structure, offset);
             return true;
         default:
             break;
@@ -1150,16 +1157,22 @@ ALWAYS_INLINE bool JSObject::getOwnNonIndexPropertySlot(VM& vm, Structure* struc
     return true;
 }
 
-ALWAYS_INLINE void JSObject::fillCustomGetterPropertySlot(PropertySlot& slot, CustomGetterSetter* customGetterSetter, unsigned attributes, PropertyOffset offset)
+ALWAYS_INLINE void JSObject::fillCustomGetterPropertySlot(PropertySlot& slot, CustomGetterSetter* customGetterSetter, unsigned attributes, Structure* structure, PropertyOffset offset)
 {
     ASSERT(attributes & PropertyAttribute::CustomAccessorOrValue);
     if (customGetterSetter->inherits<DOMAttributeGetterSetter>()) {
         auto* domAttribute = uncheckedDowncast<DOMAttributeGetterSetter>(customGetterSetter);
-        slot.setCacheableCustom(this, attributes, domAttribute->getter(), domAttribute->setter(), domAttribute->domAttribute(), offset);
+        if (structure->isUncacheableDictionary())
+            slot.setCustom(this, attributes, domAttribute->getter(), domAttribute->setter(), domAttribute->domAttribute());
+        else
+            slot.setCacheableCustom(this, attributes, domAttribute->getter(), domAttribute->setter(), domAttribute->domAttribute(), offset);
         return;
     }
 
-    slot.setCacheableCustom(this, attributes, customGetterSetter->getter(), customGetterSetter->setter(), offset);
+    if (structure->isUncacheableDictionary())
+        slot.setCustom(this, attributes, customGetterSetter->getter(), customGetterSetter->setter());
+    else
+        slot.setCacheableCustom(this, attributes, customGetterSetter->getter(), customGetterSetter->setter(), offset);
 }
 
 // It may seem crazy to inline a function this large, especially a virtual function,

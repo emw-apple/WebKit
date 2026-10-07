@@ -148,8 +148,6 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
     }
 
 private:
-    friend class LLIntOffsetsExtractor;
-
     static constexpr unsigned singleCharacterStringCount = maxSingleCharacterString + 1;
 
     void initialize(VM*, JSString*&, ASCIILiteral value);

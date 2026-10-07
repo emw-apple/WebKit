@@ -55,7 +55,7 @@ struct BindableResources;
 class ComputePassEncoder final : public WebGPU::ComputePassEncoder, public WGPUComputePassEncoderImpl, public CommandsMixin {
     WTF_MAKE_TZONE_ALLOCATED(ComputePassEncoder);
 public:
-    static Ref<ComputePassEncoder> create(id<MTLComputeCommandEncoder> computeCommandEncoder, const WebGPU::ComputePassDescriptor& descriptor, CommandEncoder& parentEncoder, Device& device)
+    static Ref<ComputePassEncoder> create(id<MTLComputeCommandEncoder> computeCommandEncoder, const WGPUComputePassDescriptor& descriptor, CommandEncoder& parentEncoder, Device& device)
     {
         return adoptRef(*new ComputePassEncoder(computeCommandEncoder, descriptor, parentEncoder, device));
     }
@@ -79,8 +79,7 @@ public:
     void popDebugGroup();
     void pushDebugGroup(String&& groupLabel);
 
-    // std::nullopt dynamic offsets are not validated against the bind group layout.
-    void setBindGroup(uint32_t groupIndex, const BindGroup*, std::optional<std::span<const uint32_t>> dynamicOffsets);
+    void setBindGroup(uint32_t groupIndex, const BindGroup*, std::optional<Vector<uint32_t>>&& dynamicOffsets);
     void setPipeline(const ComputePipeline&);
     void setLabel(String&&) final;
 
@@ -94,7 +93,7 @@ public:
     void markEncoderStateWasNotOpen() { m_encoderStateWasNotOpen = true; }
 
 private:
-    ComputePassEncoder(id<MTLComputeCommandEncoder>, const WebGPU::ComputePassDescriptor&, CommandEncoder&, Device&);
+    ComputePassEncoder(id<MTLComputeCommandEncoder>, const WGPUComputePassDescriptor&, CommandEncoder&, Device&);
     ComputePassEncoder(CommandEncoder&, Device&, NSString*);
 
     bool NODELETE validatePopDebugGroup() const;
@@ -120,12 +119,11 @@ private:
     NSString *m_lastErrorString { nil };
     bool m_passEnded { false };
     bool m_encoderStateWasNotOpen { false };
-} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(refComputePassEncoder, derefComputePassEncoder);
+} SWIFT_SHARED_REFERENCE(refComputePassEncoder, derefComputePassEncoder) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
 
 } // namespace WebGPU::Metal
 
-#if !ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
 inline void refComputePassEncoder(WebGPU::Metal::ComputePassEncoder* obj)
 {
     obj->ref();
@@ -135,4 +133,3 @@ inline void derefComputePassEncoder(WebGPU::Metal::ComputePassEncoder* obj)
 {
     obj->deref();
 }
-#endif

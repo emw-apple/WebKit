@@ -28,11 +28,6 @@
 #include <wtf/PointerComparison.h>
 
 namespace WebCore {
-
-namespace CSS {
-struct ImageOrNone;
-}
-
 namespace Style {
 
 struct ImageOrNone {
@@ -56,7 +51,7 @@ struct ImageOrNone {
     std::optional<ImageWrapper> tryImage() const { return m_value ? std::make_optional(ImageWrapper { *m_value }) : std::nullopt; }
     RefPtr<Image> tryStyleImage() const { return m_value; }
 
-    template<typename... F> decltype(auto) switchOn(NOESCAPE F&&... f) const
+    template<typename... F> decltype(auto) switchOn(F&&... f) const
     {
         auto visitor = WTF::makeVisitor(std::forward<F>(f)...);
 
@@ -75,9 +70,6 @@ private:
 };
 
 // MARK: - Conversion
-
-template<> struct ToCSS<ImageOrNone> { auto operator()(const ImageOrNone&, const Style::ComputedStyle&) -> CSS::ImageOrNone; };
-template<> struct ToStyle<CSS::ImageOrNone> { auto operator()(const CSS::ImageOrNone&, const BuilderState&) -> ImageOrNone; };
 
 template<> struct CSSValueConversion<ImageOrNone> { auto operator()(BuilderState&, const CSSValue&) -> ImageOrNone; };
 

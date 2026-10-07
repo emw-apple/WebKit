@@ -38,7 +38,6 @@
 #import "DragInitiationResult.h"
 #import "DrawingAreaProxy.h"
 #import "EditingRange.h"
-#import "GPUProcessMessages.h"
 #import "GlobalFindInPageState.h"
 #import "InteractionInformationAtPosition.h"
 #import "KeyEventInterpretationContext.h"
@@ -50,7 +49,6 @@
 #import "PDFPluginIdentifier.h"
 #import "PageClient.h"
 #import "PaymentAuthorizationController.h"
-#import "PendingSnapshotDrawing.h"
 #import "PrintInfo.h"
 #import "ProvisionalPageProxy.h"
 #import "RemoteLayerTreeCommitBundle.h"
@@ -64,6 +62,7 @@
 #import "UIKitSPI.h"
 #import "UserData.h"
 #import "VideoPresentationManagerProxy.h"
+#import "ViewUpdateDispatcherMessages.h"
 #import "WKMouseDeviceObserver.h"
 #import "WebAuthenticatorCoordinatorProxy.h"
 #import "WebAutocorrectionContext.h"
@@ -72,7 +71,6 @@
 #import "WebPage.h"
 #import "WebPageMessages.h"
 #import "WebPageProxyInternals.h"
-#import "WebPageProxyMessages.h"
 #import "WebProcessMessages.h"
 #import "WebProcessPool.h"
 #import "WebProcessProxy.h"
@@ -99,10 +97,6 @@
 #import "APILoaderClient.h"
 #import "APINavigationClient.h"
 #import <wtf/text/WTFString.h>
-#endif
-
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-#import "VolumetricSceneContentContext.h"
 #endif
 
 #define WEBPAGEPROXY_RELEASE_LOG(channel, fmt, ...) RELEASE_LOG(channel, "%p - [pageProxyID=%llu, webPageID=%llu, PID=%i] WebPageProxy::" fmt, this, identifier().toUInt64(), webPageIDInMainFrameProcess().toUInt64(), m_legacyMainFrameProcess->processID(), ##__VA_ARGS__)
@@ -182,7 +176,31 @@ void WebPageProxy::requestFocusedElementInformation(CompletionHandler<void(const
     if (!hasRunningProcess())
         return callback({ });
 
-    sendWithAsyncReplyToFocusedOrMainFrameProcess(Messages::WebPage::RequestFocusedElementInformation(), Messages::WebPage::RequestFocusedElementInformation::Reply { WTF::move(callback) });
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::RequestFocusedElementInformation(), WTF::move(callback), webPageIDInMainFrameProcess());
+}
+
+void WebPageProxy::updateVisibleContentRects(const VisibleContentRectUpdateInfo& visibleContentRectUpdate, bool sendEvenIfUnchanged)
+{
+    if (visibleContentRectUpdate == internals().lastVisibleContentRectUpdate && !sendEvenIfUnchanged)
+        return;
+
+    internals().lastVisibleContentRectUpdate = visibleContentRectUpdate;
+
+    if (!hasRunningProcess())
+        return;
+
+    protect(m_legacyMainFrameProcess)->send(Messages::ViewUpdateDispatcher::VisibleContentRectUpdate(webPageIDInMainFrameProcess(), visibleContentRectUpdate), 0);
+}
+
+void WebPageProxy::updateVisibleContentRectsLocally(const VisibleContentRectUpdateInfo& visibleContentRectUpdate)
+{
+    internals().lastVisibleContentRectUpdate = visibleContentRectUpdate;
+}
+
+void WebPageProxy::resendLastVisibleContentRects()
+{
+    if (internals().lastVisibleContentRectUpdate)
+        protect(m_legacyMainFrameProcess)->send(Messages::ViewUpdateDispatcher::VisibleContentRectUpdate(webPageIDInMainFrameProcess(), *internals().lastVisibleContentRectUpdate), 0);
 }
 
 void WebPageProxy::updateStringForFind(const String& string)
@@ -191,6 +209,65 @@ void WebPageProxy::updateStringForFind(const String& string)
         return;
 
     WebKit::updateStringForFind(string);
+}
+
+static inline float adjustedUnexposedEdge(float documentEdge, float exposedRectEdge, float factor)
+{
+    if (exposedRectEdge < documentEdge)
+        return documentEdge - factor * (documentEdge - exposedRectEdge);
+    
+    return exposedRectEdge;
+}
+
+static inline float adjustedUnexposedMaxEdge(float documentEdge, float exposedRectEdge, float factor)
+{
+    if (exposedRectEdge > documentEdge)
+        return documentEdge + factor * (exposedRectEdge - documentEdge);
+    
+    return exposedRectEdge;
+}
+
+WebCore::FloatRect WebPageProxy::computeLayoutViewportRect(const FloatRect& unobscuredContentRect, const FloatRect& unobscuredContentRectRespectingInputViewBounds, const FloatRect& currentLayoutViewportRect, double displayedContentScale, LayoutViewportConstraint constraint) const
+{
+    RefPtr pageClient = this->pageClient();
+    if (!pageClient)
+        return { };
+
+    FloatRect constrainedUnobscuredRect = unobscuredContentRect;
+    FloatRect documentRect = pageClient->documentRect();
+
+    if (constraint == LayoutViewportConstraint::ConstrainedToDocumentRect)
+        constrainedUnobscuredRect.intersect(documentRect);
+
+    double minimumScale = pageClient->minimumZoomScale();
+    bool isBelowMinimumScale = displayedContentScale < minimumScale && !WebKit::scalesAreEssentiallyEqual(displayedContentScale, minimumScale);
+    if (isBelowMinimumScale) {
+        const CGFloat slope = 12;
+        CGFloat factor = std::max<CGFloat>(1 - slope * (minimumScale - displayedContentScale), 0);
+
+        constrainedUnobscuredRect.setX(adjustedUnexposedEdge(documentRect.x(), constrainedUnobscuredRect.x(), factor));
+        constrainedUnobscuredRect.setY(adjustedUnexposedEdge(documentRect.y(), constrainedUnobscuredRect.y(), factor));
+        constrainedUnobscuredRect.setWidth(adjustedUnexposedMaxEdge(documentRect.maxX(), constrainedUnobscuredRect.maxX(), factor) - constrainedUnobscuredRect.x());
+        constrainedUnobscuredRect.setHeight(adjustedUnexposedMaxEdge(documentRect.maxY(), constrainedUnobscuredRect.maxY(), factor) - constrainedUnobscuredRect.y());
+    }
+
+    bool resizesContent = pageClient->viewportMetaTagInteractiveWidget() == WebCore::InteractiveWidgetValue::ResizesContent;
+    FloatRect sizeSourceRect = resizesContent ? unobscuredContentRectRespectingInputViewBounds : unobscuredContentRect;
+    FloatSize constrainedSize = isBelowMinimumScale ? constrainedUnobscuredRect.size() : sizeSourceRect.size();
+    FloatRect unobscuredContentRectForViewport = isBelowMinimumScale ? constrainedUnobscuredRect : unobscuredContentRectRespectingInputViewBounds;
+
+    double heightExpansionFactor = internals().allowsLayoutViewportHeightExpansion ? protect(m_preferences)->layoutViewportHeightExpansionFactor() : 0;
+    auto layoutViewportSize = LocalFrameView::expandedLayoutViewportSize(internals().baseLayoutViewportSize, LayoutSize(documentRect.size()), heightExpansionFactor);
+    FloatRect layoutViewportRect = LocalFrameView::computeUpdatedLayoutViewportRect(LayoutRect(currentLayoutViewportRect), LayoutRect(documentRect), LayoutSize(constrainedSize), LayoutRect(unobscuredContentRectForViewport), layoutViewportSize, internals().minStableLayoutViewportOrigin, internals().maxStableLayoutViewportOrigin, constraint);
+    
+    if (layoutViewportRect != currentLayoutViewportRect)
+        LOG_WITH_STREAM(VisibleRects, stream << "WebPageProxy::computeLayoutViewportRect: new layout viewport  " << layoutViewportRect);
+    return layoutViewportRect;
+}
+
+FloatRect WebPageProxy::unconstrainedLayoutViewportRect() const
+{
+    return computeLayoutViewportRect(unobscuredContentRect(), unobscuredContentRectRespectingInputViewBounds(), layoutViewportRect(), displayedContentScale(), LayoutViewportConstraint::Unconstrained);
 }
 
 void WebPageProxy::scrollingNodeScrollViewWillStartPanGesture(ScrollingNodeID nodeID)
@@ -294,6 +371,19 @@ void WebPageProxy::setOverrideViewportArguments(const std::optional<ViewportArgu
         protect(m_legacyMainFrameProcess)->send(Messages::WebPage::SetOverrideViewportArguments(viewportArguments), webPageIDInMainFrameProcess());
 }
 
+bool WebPageProxy::updateLayoutViewportParameters(const MainFrameData& mainFrameData)
+{
+    if (internals().baseLayoutViewportSize == mainFrameData.baseLayoutViewportSize
+        && internals().minStableLayoutViewportOrigin == mainFrameData.minStableLayoutViewportOrigin
+        && internals().maxStableLayoutViewportOrigin == mainFrameData.maxStableLayoutViewportOrigin)
+        return false;
+    internals().baseLayoutViewportSize = mainFrameData.baseLayoutViewportSize;
+    internals().minStableLayoutViewportOrigin = mainFrameData.minStableLayoutViewportOrigin;
+    internals().maxStableLayoutViewportOrigin = mainFrameData.maxStableLayoutViewportOrigin;
+    LOG_WITH_STREAM(VisibleRects, stream << "WebPageProxy::updateLayoutViewportParameters: baseLayoutViewportSize: " << internals().baseLayoutViewportSize << " minStableLayoutViewportOrigin: " << internals().minStableLayoutViewportOrigin << " maxStableLayoutViewportOrigin: " << internals().maxStableLayoutViewportOrigin);
+    return true;
+}
+
 void WebPageProxy::updateSelectionWithTouches(IntPoint point, SelectionTouch touches, bool baseIsStart, CompletionHandler<void(const WebCore::IntPoint&, SelectionTouch, OptionSet<SelectionFlags>)>&& callback)
 {
     if (!hasRunningProcess())
@@ -305,12 +395,12 @@ void WebPageProxy::updateSelectionWithTouches(IntPoint point, SelectionTouch tou
 
 void WebPageProxy::willInsertFinalDictationResult()
 {
-    sendToFocusedOrMainFrameProcess(Messages::WebPage::WillInsertFinalDictationResult());
+    protect(m_legacyMainFrameProcess)->send(Messages::WebPage::WillInsertFinalDictationResult(), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::didInsertFinalDictationResult()
 {
-    sendToFocusedOrMainFrameProcess(Messages::WebPage::DidInsertFinalDictationResult());
+    protect(m_legacyMainFrameProcess)->send(Messages::WebPage::DidInsertFinalDictationResult(), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::replaceDictatedText(const String& oldText, const String& newText)
@@ -332,7 +422,7 @@ void WebPageProxy::requestAutocorrectionData(const String& textForAutocorrection
         callback({ });
         return;
     }
-    sendWithAsyncReplyToFocusedOrMainFrameProcess(Messages::WebPage::RequestAutocorrectionData(textForAutocorrection), Messages::WebPage::RequestAutocorrectionData::Reply { WTF::move(callback) });
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::RequestAutocorrectionData(textForAutocorrection), WTF::move(callback), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::applyAutocorrection(const String& correction, const String& originalText, bool isCandidate, CompletionHandler<void(String&&)>&& callback)
@@ -349,24 +439,16 @@ bool WebPageProxy::applyAutocorrection(const String& correction, const String& o
     return autocorrectionApplied;
 }
 
-void WebPageProxy::selectPositionAtBoundaryWithDirection(std::optional<WebCore::FrameIdentifier> frameID, const WebCore::IntPoint point, WebCore::TextGranularity granularity, WebCore::SelectionDirection direction, bool isInteractingWithFocusedElement, CompletionHandler<void()>&& callbackFunction)
+void WebPageProxy::selectPositionAtBoundaryWithDirection(const WebCore::IntPoint point, WebCore::TextGranularity granularity, WebCore::SelectionDirection direction, bool isInteractingWithFocusedElement, CompletionHandler<void()>&& callbackFunction)
 {
     if (!hasRunningProcess()) {
         callbackFunction();
         return;
     }
 
-    Ref process = processContainingFrame(frameID);
-    auto backgroundActivity = protect(process->throttler())->backgroundActivity("WebPageProxy::selectPositionAtBoundaryWithDirection"_s);
-    sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::SelectPositionAtBoundaryWithDirection(frameID, point, granularity, direction, isInteractingWithFocusedElement), Messages::WebPage::SelectPositionAtBoundaryWithDirection::Reply { [weakThis = WeakPtr { *this }, granularity, direction, isInteractingWithFocusedElement, callbackFunction = WTF::move(callbackFunction), backgroundActivity = WTF::move(backgroundActivity)](std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData) mutable {
-        RefPtr protectedThis = weakThis.get();
-        if (protectedThis && remoteUserInputEventData) {
-            // The gesture landed on a cross-origin frame; re-dispatch it into that frame's process.
-            protectedThis->selectPositionAtBoundaryWithDirection(remoteUserInputEventData->targetFrameID, roundedIntPoint(FloatPoint { remoteUserInputEventData->transformedPoint }), granularity, direction, isInteractingWithFocusedElement, WTF::move(callbackFunction));
-            return;
-        }
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::SelectPositionAtBoundaryWithDirection(point, granularity, direction, isInteractingWithFocusedElement), [callbackFunction = WTF::move(callbackFunction), backgroundActivity = protect(m_legacyMainFrameProcess->throttler())->backgroundActivity("WebPageProxy::selectPositionAtBoundaryWithDirection"_s)] () mutable {
         callbackFunction();
-    } });
+    }, webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::moveSelectionAtBoundaryWithDirection(WebCore::TextGranularity granularity, WebCore::SelectionDirection direction, CompletionHandler<void()>&& callbackFunction)
@@ -426,19 +508,7 @@ void WebPageProxy::prepareSelectionForContextMenuWithLocationInView(std::optiona
 
 void WebPageProxy::requestAutocorrectionContext()
 {
-    sendToFocusedOrMainFrameProcess(Messages::WebPage::HandleAutocorrectionContextRequest());
-}
-
-bool WebPageProxy::requestAutocorrectionContextAndWaitForReply(Seconds timeout)
-{
-    // The focused frame's process answers with a separate HandleAutocorrectionContext message, so wait on that
-    // process's connection, for its page, rather than the main frame's.
-    RefPtr frame = focusedOrMainFrame();
-    auto frameID = frame ? std::optional(frame->frameID()) : std::nullopt;
-    Ref process = processContainingFrame(frameID);
-    auto pageID = webPageIDInProcessForFrame(frameID);
-    process->send(Messages::WebPage::HandleAutocorrectionContextRequest(), pageID);
-    return protect(process->connection())->waitForAndDispatchImmediately<Messages::WebPageProxy::HandleAutocorrectionContext>(pageID, timeout, IPC::WaitForOption::DispatchIncomingSyncMessagesWhileWaiting) == IPC::Error::NoError;
+    protect(m_legacyMainFrameProcess)->send(Messages::WebPage::HandleAutocorrectionContextRequest(), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::handleAutocorrectionContext(const WebAutocorrectionContext& context)
@@ -465,24 +535,12 @@ void WebPageProxy::handleTwoFingerTapAtPoint(const WebCore::IntPoint& point, Opt
     protect(legacyMainFrameProcess())->send(Messages::WebPage::HandleTwoFingerTapAtPoint(point, modifiers, requestID), webPageIDInMainFrameProcess());
 }
 
-void WebPageProxy::selectWithTwoTouches(std::optional<WebCore::FrameIdentifier> frameID, const WebCore::IntPoint from, const WebCore::IntPoint to, GestureType gestureType, GestureRecognizerState gestureState, CompletionHandler<void(const WebCore::IntPoint&, GestureType, GestureRecognizerState, OptionSet<SelectionFlags>)>&& callback)
+void WebPageProxy::selectWithTwoTouches(const WebCore::IntPoint from, const WebCore::IntPoint to, GestureType gestureType, GestureRecognizerState gestureState, CompletionHandler<void(const WebCore::IntPoint&, GestureType, GestureRecognizerState, OptionSet<SelectionFlags>)>&& callback)
 {
     if (!hasRunningProcess())
         return callback({ }, GestureType::Loupe, GestureRecognizerState::Possible, { });
 
-    sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::SelectWithTwoTouches(frameID, from, to, gestureType, gestureState), Messages::WebPage::SelectWithTwoTouches::Reply { [weakThis = WeakPtr { *this }, from, to, gestureType, gestureState, callback = WTF::move(callback)](const WebCore::IntPoint& point, GestureType innerGestureType, GestureRecognizerState innerGestureState, OptionSet<SelectionFlags> flags, std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData) mutable {
-        RefPtr protectedThis = weakThis.get();
-        if (protectedThis && remoteUserInputEventData) {
-            // The gesture landed on a cross-origin frame; re-dispatch it into that frame's process.
-            auto transformedFrom = roundedIntPoint(FloatPoint { remoteUserInputEventData->transformedPoint });
-            protectedThis->selectWithTwoTouches(remoteUserInputEventData->targetFrameID, transformedFrom, to + (transformedFrom - from), gestureType, gestureState,
-                [from, callback = WTF::move(callback)](const WebCore::IntPoint&, GestureType gestureType, GestureRecognizerState gestureState, OptionSet<SelectionFlags> flags) mutable {
-                callback(from, gestureType, gestureState, flags);
-            });
-            return;
-        }
-        callback(point, innerGestureType, innerGestureState, flags);
-    } });
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::SelectWithTwoTouches(from, to, gestureType, gestureState), WTF::move(callback), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::startInteractionWithPositionInformation(std::optional<WebCore::FrameIdentifier> frameID, const InteractionInformationAtPosition& positionInformation)
@@ -626,7 +684,7 @@ void WebPageProxy::requestRectsForGranularityWithSelectionOffset(WebCore::TextGr
     if (!hasRunningProcess())
         return callback({ });
     
-    sendWithAsyncReplyToFocusedOrMainFrameProcess(Messages::WebPage::GetRectsForGranularityWithSelectionOffset(granularity, offset), Messages::WebPage::GetRectsForGranularityWithSelectionOffset::Reply { WTF::move(callback) });
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::GetRectsForGranularityWithSelectionOffset(granularity, offset), WTF::move(callback), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::requestRectsAtSelectionOffsetWithText(int32_t offset, const String& text, CompletionHandler<void(const Vector<WebCore::SelectionGeometry>&)>&& callback)
@@ -634,7 +692,7 @@ void WebPageProxy::requestRectsAtSelectionOffsetWithText(int32_t offset, const S
     if (!hasRunningProcess())
         return callback({ });
     
-    sendWithAsyncReplyToFocusedOrMainFrameProcess(Messages::WebPage::GetRectsAtSelectionOffsetWithText(offset, text), Messages::WebPage::GetRectsAtSelectionOffsetWithText::Reply { WTF::move(callback) });
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::GetRectsAtSelectionOffsetWithText(offset, text), WTF::move(callback), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::storeSelectionForAccessibility(bool shouldStore)
@@ -874,7 +932,19 @@ void WebPageProxy::elementDidFocus(IPC::Connection& connection, const FocusedEle
 
     RefPtr userDataObject = process->transformHandlesToObjects(protect(userData.object())).get();
 
-    pageClient->elementDidFocus(information, userIsInteracting, blurPreviousNode, activityStateChanges, userDataObject.get());
+    convertFocusedElementInformationRectsToMainFrameCoordinates(information,
+        [weakThis = WeakPtr { *this }, userIsInteracting, blurPreviousNode, activityStateChanges, userDataObject = WTF::move(userDataObject)] (FocusedElementInformation convertedInfo) {
+            RefPtr protectedThis = weakThis.get();
+            if (!protectedThis)
+                return;
+
+            RefPtr pageClient = protectedThis->pageClient();
+            if (!pageClient)
+                return;
+
+            pageClient->elementDidFocus(convertedInfo, userIsInteracting,
+                blurPreviousNode, activityStateChanges, userDataObject.get());
+        });
 }
 
 void WebPageProxy::elementDidBlur(IPC::Connection& connection)
@@ -890,8 +960,54 @@ void WebPageProxy::elementDidBlur(IPC::Connection& connection)
 
 void WebPageProxy::updateFocusedElementInformation(const FocusedElementInformation& information)
 {
-    if (RefPtr pageClient = this->pageClient())
-        pageClient->updateFocusedElementInformation(information);
+    convertFocusedElementInformationRectsToMainFrameCoordinates(information,
+        [weakThis = WeakPtr { *this }](FocusedElementInformation convertedInfo) {
+            RefPtr protectedThis = weakThis.get();
+            if (!protectedThis)
+                return;
+
+            if (RefPtr pageClient = protectedThis->pageClient())
+                pageClient->updateFocusedElementInformation(convertedInfo);
+        });
+}
+
+void WebPageProxy::convertFocusedElementInformationRectsToMainFrameCoordinates(FocusedElementInformation information, CompletionHandler<void(FocusedElementInformation)>&& completionHandler)
+{
+    if (!information.frame || information.frame->isMainFrame) {
+        completionHandler(WTF::move(information));
+        return;
+    }
+
+    RefPtr frame = WebFrameProxy::webFrame(information.frame->frameID);
+    if (!frame) {
+        completionHandler(WTF::move(information));
+        return;
+    }
+
+    Vector<FloatRect> rects;
+    rects.append(information.interactionRect);
+    // The last interaction location is the tap point as delivered to the frame's own process, so it is in
+    // that frame's root-view coordinates. Convert it too, so that comparing it against interactionRect in
+    // -[WKContentView rectToRevealWhenZoomingToFocusedElement] compares points in the same space.
+    rects.append({ FloatPoint { information.lastInteractionLocation }, FloatSize { } });
+    if (information.hasNextNode)
+        rects.append(information.nextNodeRect);
+    if (information.hasPreviousNode)
+        rects.append(information.previousNodeRect);
+
+    auto expectedRectCount = rects.size();
+    convertRectsToMainFrameCoordinates(WTF::move(rects), frame->rootFrame()->frameID(), [expectedRectCount, information = WTF::move(information), completionHandler = WTF::move(completionHandler)](std::optional<Vector<FloatRect>> convertedRects) mutable {
+        if (convertedRects && convertedRects->size() == expectedRectCount) {
+            size_t index = 0;
+            information.interactionRect = IntRect(convertedRects->at(index++));
+            information.lastInteractionLocation = IntPoint(convertedRects->at(index++).location());
+            if (information.hasNextNode)
+                information.nextNodeRect = IntRect(convertedRects->at(index++));
+            if (information.hasPreviousNode)
+                information.previousNodeRect = IntRect(convertedRects->at(index++));
+        }
+        completionHandler(WTF::move(information));
+    });
 }
 
 void WebPageProxy::focusedElementDidChangeInputMode(WebCore::InputMode mode)
@@ -1030,22 +1146,26 @@ std::optional<IPC::Connection::AsyncReplyID> WebPageProxy::drawToPDFiOS(FrameIde
     }
 
     Ref preferences = this->preferences();
-    if (!(preferences->remoteSnapshottingEnabled() && preferences->useGPUProcessForDOMRenderingEnabled())) {
-        Ref drawing = PendingSnapshotDrawing::create();
-        auto replyID = sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawToPDFiOS(frameID, printInfo, pageCount), drawing->completionHandler(WTF::move(completionHandler)));
-        if (replyID)
-            drawing->setReply<Messages::WebPage::DrawToPDFiOS>(processContainingFrame(frameID), *replyID);
-        return replyID;
-    }
+    if (!(preferences->remoteSnapshottingEnabled() && preferences->useGPUProcessForDOMRenderingEnabled()))
+        return sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawToPDFiOS(frameID, printInfo, pageCount), WTF::move(completionHandler));
 
-    auto snapshotIdentifier = generateRemoteSnapshotIdentifier();
+    auto snapshotIdentifier = RemoteSnapshotIdentifier::generate();
     Ref gpuProcess = GPUProcessProxy::getOrCreate();
-    Ref drawing = PendingSnapshotDrawing::create(snapshotIdentifier);
-    auto sinkReplyID = gpuProcess->sinkCompletedSnapshotToPDF(snapshotIdentifier, frameID, drawing->completionHandler(WTF::move(completionHandler)));
-    auto replyID = sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawPrintingPagesToSnapshotiOS(snapshotIdentifier, frameID, printInfo, pageCount), gpuProcess->releaseSnapshotIfRootFails(snapshotIdentifier));
-    if (replyID)
-        drawing->setReply<Messages::GPUProcess::SinkCompletedSnapshotToPDF>(gpuProcess.get(), sinkReplyID, *replyID);
-    return replyID;
+    CompletionHandler<void(std::optional<FloatSize>&&)> snapshotCallback = [weakGPUProcess = WeakPtr { gpuProcess }, snapshotIdentifier, completionHandler = WTF::move(completionHandler), rootFrameIdentifier = frameID](std::optional<FloatSize> result) mutable {
+        RefPtr gpuProcess = weakGPUProcess.get();
+        if (!gpuProcess || !gpuProcess->hasConnection()) {
+            completionHandler({ });
+            return;
+        }
+        if (!result) {
+            gpuProcess->releaseSnapshot(snapshotIdentifier);
+            completionHandler({ });
+            return;
+        }
+        gpuProcess->sinkCompletedSnapshotToPDF(snapshotIdentifier, *result, rootFrameIdentifier, WTF::move(completionHandler));
+    };
+
+    return sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawPrintingPagesToSnapshotiOS(snapshotIdentifier, frameID, printInfo, pageCount), WTF::move(snapshotCallback));
 }
 
 std::optional<IPC::Connection::AsyncReplyID> WebPageProxy::drawToImage(FrameIdentifier frameID, const PrintInfo& printInfo, CompletionHandler<void(std::optional<WebCore::ShareableBitmap::Handle>&&)>&& completionHandler)
@@ -1056,32 +1176,31 @@ std::optional<IPC::Connection::AsyncReplyID> WebPageProxy::drawToImage(FrameIden
     }
 
     Ref preferences = this->preferences();
-    if (!(preferences->remoteSnapshottingEnabled() && preferences->useGPUProcessForDOMRenderingEnabled())) {
-        Ref drawing = PendingSnapshotDrawing::create();
-        auto replyID = sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawToImage(frameID, printInfo), drawing->completionHandler(WTF::move(completionHandler)));
-        if (replyID)
-            drawing->setReply<Messages::WebPage::DrawToImage>(processContainingFrame(frameID), *replyID);
-        return replyID;
-    }
+    if (!(preferences->remoteSnapshottingEnabled() && preferences->useGPUProcessForDOMRenderingEnabled()))
+        return sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawToImage(frameID, printInfo), WTF::move(completionHandler));
 
-    auto snapshotIdentifier = generateRemoteSnapshotIdentifier();
+    auto snapshotIdentifier = RemoteSnapshotIdentifier::generate();
     Ref gpuProcess = GPUProcessProxy::getOrCreate();
-    Ref drawing = PendingSnapshotDrawing::create(snapshotIdentifier);
-    auto sinkReplyID = gpuProcess->sinkCompletedSnapshotToBitmap(snapshotIdentifier, frameID, drawing->completionHandler(WTF::move(completionHandler)));
-    auto replyID = sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawPrintingToSnapshotiOS(snapshotIdentifier, frameID, printInfo), gpuProcess->releaseSnapshotIfRootFails(snapshotIdentifier));
-    if (replyID)
-        drawing->setReply<Messages::GPUProcess::SinkCompletedSnapshotToBitmap>(gpuProcess.get(), sinkReplyID, *replyID);
-    return replyID;
+    CompletionHandler<void(std::optional<FloatSize>&&)> snapshotCallback = [weakGPUProcess = WeakPtr { gpuProcess }, snapshotIdentifier, completionHandler = WTF::move(completionHandler), rootFrameIdentifier = frameID](std::optional<FloatSize> result) mutable {
+        RefPtr gpuProcess = weakGPUProcess.get();
+        if (!gpuProcess || !gpuProcess->hasConnection()) {
+            completionHandler({ });
+            return;
+        }
+        if (!result) {
+            gpuProcess->releaseSnapshot(snapshotIdentifier);
+            completionHandler({ });
+            return;
+        }
+        gpuProcess->sinkCompletedSnapshotToBitmap(snapshotIdentifier, *result, rootFrameIdentifier, WTF::move(completionHandler));
+    };
+
+    return sendWithAsyncReplyToProcessContainingFrame(frameID, Messages::WebPage::DrawPrintingToSnapshotiOS(snapshotIdentifier, frameID, printInfo), WTF::move(snapshotCallback));
 }
 
 void WebPageProxy::contentSizeCategoryDidChange(const String& contentSizeCategory)
 {
-    m_contentSizeCategory = contentSizeCategory;
-    if (RefPtr provisionalPage = m_provisionalPage)
-        provisionalPage->send(Messages::WebPage::ContentSizeCategoryDidChange(contentSizeCategory));
-    forEachWebContentProcess([&](auto& process, auto pageID) {
-        process.send(Messages::WebPage::ContentSizeCategoryDidChange(contentSizeCategory), pageID);
-    });
+    protect(legacyMainFrameProcess())->send(Messages::WebPage::ContentSizeCategoryDidChange(contentSizeCategory), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::generateSyntheticEditingCommand(WebKit::SyntheticEditingCommandType command)
@@ -1164,9 +1283,7 @@ void WebPageProxy::hardwareKeyboardAvailabilityChanged(HardwareKeyboardState har
         pageClient->hardwareKeyboardAvailabilityChanged();
 
     updateCurrentModifierState();
-    forEachWebContentProcess([&](auto& process, auto pageID) {
-        process.send(Messages::WebPage::HardwareKeyboardAvailabilityChanged(hardwareKeyboardState), pageID);
-    });
+    protect(m_legacyMainFrameProcess)->send(Messages::WebPage::HardwareKeyboardAvailabilityChanged(hardwareKeyboardState), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::requestEvasionRectsAboveSelection(CompletionHandler<void(const Vector<WebCore::FloatRect>&)>&& callback)
@@ -1215,7 +1332,7 @@ void WebPageProxy::requestDocumentEditingContext(WebKit::DocumentEditingContextR
         return;
     }
 
-    sendWithAsyncReplyToFocusedOrMainFrameProcess(Messages::WebPage::RequestDocumentEditingContext(WTF::move(request)), Messages::WebPage::RequestDocumentEditingContext::Reply { WTF::move(completionHandler) });
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::RequestDocumentEditingContext(WTF::move(request)), WTF::move(completionHandler), webPageIDInMainFrameProcess());
 }
 
 #if ENABLE(DRAG_SUPPORT)
@@ -1550,33 +1667,17 @@ void WebPageProxy::textInputContextsInRect(FloatRect rect, CompletionHandler<voi
         return;
     }
 
-    auto contexts = Box<Vector<ElementContext>>::create();
-    Ref aggregator = CallbackAggregator::create([contexts, completionHandler = WTF::move(completionHandler)]() mutable {
-        completionHandler(*contexts);
-    });
-
-    forEachWebContentProcess([&](auto& process, auto pageID) {
-        process.sendWithAsyncReply(Messages::WebPage::TextInputContextsInRect(rect), [contexts, aggregator](auto&& context) {
-            contexts->appendVector(context);
-        }, pageID);
-    });
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::TextInputContextsInRect(rect), WTF::move(completionHandler), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::focusTextInputContextAndPlaceCaret(const ElementContext& context, const IntPoint& point, CompletionHandler<void(bool)>&& completionHandler)
 {
-    RefPtr process = WebProcessProxy::processForIdentifier(context.documentIdentifier->processIdentifier());
-    if (!process) {
+    if (!hasRunningProcess()) {
         completionHandler(false);
         return;
     }
 
-    auto webPageID = webPageIDInProcess(*process);
-    if (!hasWebPageInProcess(*process, webPageID)) {
-        completionHandler(false);
-        return;
-    }
-
-    process->sendWithAsyncReply(Messages::WebPage::FocusTextInputContextAndPlaceCaret(context, point), WTF::move(completionHandler), webPageID);
+    protect(legacyMainFrameProcess())->sendWithAsyncReply(Messages::WebPage::FocusTextInputContextAndPlaceCaret(context, point), WTF::move(completionHandler), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::setShouldRevealCurrentSelectionAfterInsertion(bool shouldRevealCurrentSelectionAfterInsertion)
@@ -1591,12 +1692,8 @@ void WebPageProxy::setShouldRevealCurrentSelectionAfterInsertion(bool shouldReve
 
 void WebPageProxy::setScreenIsBeingCaptured(bool captured)
 {
-    if (!hasRunningProcess())
-        return;
-
-    forEachWebContentProcess([&](auto& process, auto pageID) {
-        process.send(Messages::WebPage::SetScreenIsBeingCaptured(captured), pageID);
-    });
+    if (hasRunningProcess())
+        protect(legacyMainFrameProcess())->send(Messages::WebPage::SetScreenIsBeingCaptured(captured), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::willOpenAppLink()
@@ -1709,6 +1806,48 @@ void WebPageProxy::statusBarWasTapped()
 #endif
 }
 
+double WebPageProxy::displayedContentScale() const
+{
+    if (internals().lastVisibleContentRectUpdate)
+        return internals().lastVisibleContentRectUpdate->scale();
+    return 1;
+}
+
+FloatRect WebPageProxy::exposedContentRect() const
+{
+    if (internals().lastVisibleContentRectUpdate)
+        return internals().lastVisibleContentRectUpdate->exposedContentRect();
+    return { };
+}
+
+FloatRect WebPageProxy::unobscuredContentRect() const
+{
+    if (internals().lastVisibleContentRectUpdate)
+        return internals().lastVisibleContentRectUpdate->unobscuredContentRect();
+    return { };
+}
+
+bool WebPageProxy::inStableState() const
+{
+    if (internals().lastVisibleContentRectUpdate)
+        return internals().lastVisibleContentRectUpdate->inStableState();
+    return false;
+}
+
+FloatRect WebPageProxy::unobscuredContentRectRespectingInputViewBounds() const
+{
+    if (internals().lastVisibleContentRectUpdate)
+        return internals().lastVisibleContentRectUpdate->unobscuredContentRectRespectingInputViewBounds();
+    return { };
+}
+
+FloatRect WebPageProxy::layoutViewportRect() const
+{
+    if (internals().lastVisibleContentRectUpdate)
+        return internals().lastVisibleContentRectUpdate->layoutViewportRect();
+    return { };
+}
+
 FloatBoxExtent WebPageProxy::computedObscuredInset() const
 {
     if (RefPtr pageClient = this->pageClient())
@@ -1775,19 +1914,6 @@ void WebPageProxy::requestPDFDisplayMode(PDFPluginDisplayMode mode)
     protect(legacyMainFrameProcess())->send(Messages::WebPage::RequestPDFDisplayMode(mode), webPageIDInMainFrameProcess());
 }
 
-void WebPageProxy::setInitialPDFDisplayMode(PDFPluginDisplayMode mode)
-{
-    if (internals().initialPDFDisplayMode == mode)
-        return;
-
-    internals().initialPDFDisplayMode = mode;
-
-    if (!hasRunningProcess())
-        return;
-
-    protect(legacyMainFrameProcess())->send(Messages::WebPage::SetInitialPDFDisplayMode(mode), webPageIDInMainFrameProcess());
-}
-
 #endif
 
 #if ENABLE(DRAG_SUPPORT)
@@ -1805,41 +1931,6 @@ RefPtr<PortalPresentationManagerProxy> WebPageProxy::portalPresentationManagerPr
     return internals().portalPresentationManagerProxy;
 }
 #endif
-
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-
-void WebPageProxy::presentVolumetricScene(WebCore::NodeIdentifier nodeID, VolumetricSceneContentContext contentContext, CompletionHandler<void(bool)>&& completion)
-{
-    RefPtr portalPresentationManager = portalPresentationManagerProxy();
-    if (!portalPresentationManager)
-        return completion(false);
-
-    portalPresentationManager->showVolumetricScene(nodeID, contentContext, WTF::move(completion));
-}
-
-void WebPageProxy::reconnectVolumetricSceneToContentContext(WebCore::NodeIdentifier nodeID, VolumetricSceneContentContext contentContext)
-{
-    if (RefPtr portalPresentationManager = portalPresentationManagerProxy())
-        portalPresentationManager->reconnectVolumetricSceneToContentContext(nodeID, contentContext);
-}
-
-void WebPageProxy::dismissVolumetricScene(WebCore::NodeIdentifier nodeID)
-{
-    if (RefPtr portalPresentationManager = portalPresentationManagerProxy())
-        portalPresentationManager->hideVolumetricScene(nodeID);
-}
-
-void WebPageProxy::volumetricSceneDidClose(WebCore::NodeIdentifier nodeID)
-{
-    protect(m_legacyMainFrameProcess)->send(Messages::WebPage::VolumetricSceneDidClose(nodeID), webPageIDInMainFrameProcess());
-}
-
-void WebPageProxy::updateVolumetricSceneSize(WebCore::NodeIdentifier nodeID, WebCore::FloatSize volumeSizeInMeters)
-{
-    protect(m_legacyMainFrameProcess)->send(Messages::WebPage::UpdateVolumetricSceneSize(nodeID, volumeSizeInMeters), webPageIDInMainFrameProcess());
-}
-
-#endif // ENABLE(CONNECTED_VOLUMETRIC_SCENE)
 
 #if USE(UICONTEXTMENU)
 

@@ -56,7 +56,7 @@ private:
 
     std::optional<WebCore::ColorSpace> m_displayColorSpace;
 
-    bool usesDelegatedPageScaling() const override;
+    bool usesDelegatedPageScaling() const override { return false; }
 
     void mainFrameContentSizeChanged(WebCore::FrameIdentifier, const WebCore::IntSize&) final;
 

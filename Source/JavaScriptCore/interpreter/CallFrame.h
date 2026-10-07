@@ -347,7 +347,7 @@ using JSInstruction = BaseInstruction<JSOpcodeTraits>;
         CallFrame();
         ~CallFrame();
 
-        JS_EXPORT_PRIVATE Register* topOfFrameInternal();
+        Register* topOfFrameInternal();
 
         // The following are for internal use in debugging and verification
         // code only and not meant as an API for general usage:

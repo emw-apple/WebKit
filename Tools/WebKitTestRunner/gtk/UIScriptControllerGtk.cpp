@@ -91,8 +91,7 @@ void UIScriptControllerGtk::copyText(JSStringRef text)
 #if USE(GTK4)
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()), string.legacyCStringPointer());
 #else
-    auto characters = byteCast<char>(string.span());
-    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), characters.data(), characters.size());
+    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), string.legacyCStringPointer(), string.length());
 #endif
 }
 

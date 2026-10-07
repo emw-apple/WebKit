@@ -185,7 +185,7 @@ public:
     RefPtr<NativeImage> filteredNativeImage(Filter&, Function<void(GraphicsContext&)> drawCallback);
 
 #if HAVE(IOSURFACE)
-    WEBCORE_EXPORT IOSurface* surface();
+    IOSurface* surface();
 #endif
 
 #if USE(CAIRO)

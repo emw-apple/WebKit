@@ -61,7 +61,6 @@
 #include "JSFileList.h"
 #include "JSFileSystemDirectoryHandle.h"
 #include "JSFileSystemFileHandle.h"
-#include "JSFileSystemHandle.h"
 #include "JSIDBSerializationGlobalObject.h"
 #include "JSImageBitmap.h"
 #include "JSImageData.h"
@@ -70,7 +69,6 @@
 #include "JSMediaStreamTrackHandle.h"
 #include "JSMessagePort.h"
 #include "JSNavigator.h"
-#include "JSQuotaExceededError.h"
 #include "JSRTCCertificate.h"
 #include "JSRTCDataChannel.h"
 #include "JSRTCEncodedAudioFrame.h"
@@ -82,7 +80,6 @@
 #include "JSWebCodecsEncodedVideoChunk.h"
 #include "JSWebCodecsVideoFrame.h"
 #include "JSWritableStream.h"
-#include "QuotaExceededError.h"
 #include "ScriptExecutionContext.h"
 #include "SecurityOrigin.h"
 #include "SerializedScriptValueInternals.h"
@@ -127,7 +124,6 @@
 #include <JavaScriptCore/TopExceptionScope.h>
 #include <JavaScriptCore/VMManager.h>
 #include <JavaScriptCore/YarrFlags.h>
-#include <cmath>
 #include <limits>
 #include <optional>
 #include <wtf/CheckedArithmetic.h>
@@ -165,36 +161,13 @@ using namespace JSC;
 
 DEFINE_ALLOCATOR_WITH_HEAP_IDENTIFIER(SerializedScriptValue);
 
-static bool isAudioWorkletGlobalScope(JSC::JSGlobalObject& globalObject)
+static bool NODELETE isTypeExposedToGlobalObject(JSC::JSGlobalObject& globalObject, SerializationTag tag)
 {
 #if ENABLE(WEB_AUDIO)
-    return is<JSAudioWorkletGlobalScope>(globalObject);
-#else
-    UNUSED_PARAM(globalObject);
-    return false;
-#endif
-}
-
-template<typename JSWrapper>
-static bool isInterfaceExposedInGlobalObject(JSC::JSGlobalObject& globalObject)
-{
-    auto* domGlobalObject = dynamicDowncast<JSDOMGlobalObject>(globalObject);
-    if (!domGlobalObject || !domGlobalObject->scriptExecutionContext())
+    if (!is<JSAudioWorkletGlobalScope>(globalObject))
         return true;
-    return JSWrapper::isExposedInGlobalObject(*domGlobalObject);
-}
 
-template<typename JSWrapper>
-static bool isInterfaceExposed(JSC::JSGlobalObject& globalObject)
-{
-    // FIXME: Replace with isInterfaceExposedInGlobalObject() one serialization tag at a time.
-    if (!isAudioWorkletGlobalScope(globalObject))
-        return true;
-    return JSWrapper::isExposedInGlobalObject(uncheckedDowncast<JSDOMGlobalObject>(globalObject));
-}
-
-static bool isTypeExposedToGlobalObject(JSC::JSGlobalObject& globalObject, SerializationTag tag)
-{
+    // Only built-in JS types are exposed to audio worklets.
     switch (tag) {
     case ArrayTag:
     case ObjectTag:
@@ -235,89 +208,65 @@ static bool isTypeExposedToGlobalObject(JSC::JSGlobalObject& globalObject, Seria
     case ResizableArrayBufferTag:
     case ErrorInstanceTag:
     case ErrorTag:
+    case MessagePortReferenceTag:
         return true;
     case FileTag:
-        return isInterfaceExposed<JSFile>(globalObject);
     case FileListTag:
-        return isInterfaceExposed<JSFileList>(globalObject);
     case ImageDataTag:
-        return isInterfaceExposed<JSImageData>(globalObject);
     case BlobTag:
-        return isInterfaceExposed<JSBlob>(globalObject);
     case CryptoKeyTag:
-        return isInterfaceExposedInGlobalObject<JSCryptoKey>(globalObject);
     case DOMPointReadOnlyTag:
-        return isInterfaceExposed<JSDOMPointReadOnly>(globalObject);
     case DOMPointTag:
-        return isInterfaceExposed<JSDOMPoint>(globalObject);
     case DOMRectReadOnlyTag:
-        return isInterfaceExposed<JSDOMRectReadOnly>(globalObject);
     case DOMRectTag:
-        return isInterfaceExposed<JSDOMRect>(globalObject);
     case DOMMatrixReadOnlyTag:
-        return isInterfaceExposed<JSDOMMatrixReadOnly>(globalObject);
     case DOMMatrixTag:
-        return isInterfaceExposed<JSDOMMatrix>(globalObject);
     case DOMQuadTag:
-        return isInterfaceExposed<JSDOMQuad>(globalObject);
     case ImageBitmapTransferTag:
-    case ImageBitmapTag:
-        return isInterfaceExposed<JSImageBitmap>(globalObject);
 #if ENABLE(WEB_RTC)
     case RTCCertificateTag:
-        return isInterfaceExposed<JSRTCCertificate>(globalObject);
 #endif
+    case ImageBitmapTag:
 #if ENABLE(OFFSCREEN_CANVAS_IN_WORKERS)
     case OffscreenCanvasTransferTag:
     case InMemoryOffscreenCanvasTag:
-        return isInterfaceExposed<JSOffscreenCanvas>(globalObject);
 #endif
-    case MessagePortReferenceTag:
     case InMemoryMessagePortTag:
-        return isInterfaceExposed<JSMessagePort>(globalObject);
 #if ENABLE(WEB_RTC)
     case RTCDataChannelTransferTag:
-        return isInterfaceExposed<JSRTCDataChannel>(globalObject);
 #endif
     case DOMExceptionTag:
-        return isInterfaceExposed<JSDOMException>(globalObject);
-    case QuotaExceededErrorTag:
-        return isInterfaceExposed<JSQuotaExceededError>(globalObject);
 #if ENABLE(WEB_CODECS)
     case WebCodecsEncodedVideoChunkTag:
-        return isInterfaceExposed<JSWebCodecsEncodedVideoChunk>(globalObject);
     case WebCodecsVideoFrameTag:
-        return isInterfaceExposed<JSWebCodecsVideoFrame>(globalObject);
     case WebCodecsEncodedAudioChunkTag:
-        return isInterfaceExposed<JSWebCodecsEncodedAudioChunk>(globalObject);
     case WebCodecsAudioDataTag:
-        return isInterfaceExposed<JSWebCodecsAudioData>(globalObject);
 #endif
 #if ENABLE(MEDIA_STREAM)
     case MediaStreamTrackTag:
-        return isInterfaceExposed<JSMediaStreamTrack>(globalObject);
     case MediaStreamTrackHandleTag:
-        return isInterfaceExposed<JSMediaStreamTrackHandle>(globalObject);
 #endif
 #if ENABLE(MEDIA_SOURCE_IN_WORKERS)
     case MediaSourceHandleTransferTag:
-        return isInterfaceExposed<JSMediaSourceHandle>(globalObject);
 #endif
 #if ENABLE(WEB_RTC)
     case RTCEncodedAudioFrameTag:
-        return isInterfaceExposed<JSRTCEncodedAudioFrame>(globalObject);
+#endif
+#if ENABLE(WEB_RTC)
     case RTCEncodedVideoFrameTag:
-        return isInterfaceExposed<JSRTCEncodedVideoFrame>(globalObject);
 #endif
     case ReadableStreamTag:
     case WritableStreamTag:
     case TransformStreamTag:
-        // FIXME: These are exposed everywhere, but transferring them to an AudioWorklet is untested.
-        return !isAudioWorkletGlobalScope(globalObject);
     case FileSystemHandleTag:
-        return isInterfaceExposed<JSFileSystemHandle>(globalObject);
+        break;
     }
     return false;
+#else
+    UNUSED_PARAM(globalObject);
+    UNUSED_PARAM(tag);
+    return true;
+#endif
 }
 
 enum class PredefinedColorSpaceTag : uint8_t {
@@ -1114,19 +1063,13 @@ private:
             return;
         }
 
-        RefPtr quotaExceededError = dynamicDowncast<QuotaExceededError>(exception);
-        write(quotaExceededError ? QuotaExceededErrorTag : DOMExceptionTag);
+        write(DOMExceptionTag);
         write(exception->message());
         write(exception->name());
         write(errorInformation->line);
         write(errorInformation->column);
         writeNullableString(errorInformation->sourceURL);
         writeNullableString(errorInformation->stack);
-
-        if (quotaExceededError) {
-            write(quotaExceededError->quota().value_or(std::numeric_limits<double>::quiet_NaN()));
-            write(quotaExceededError->requested().value_or(std::numeric_limits<double>::quiet_NaN()));
-        }
     }
 
 public:
@@ -2838,14 +2781,8 @@ private:
             return JSValue();
         }
 
-        if (!m_offscreenCanvases[index]) {
-            if (!m_detachedOffscreenCanvases[index]) {
-                SERIALIZE_TRACE("FAIL deserialize");
-                fail();
-                return JSValue();
-            }
+        if (!m_offscreenCanvases[index])
             m_offscreenCanvases[index] = OffscreenCanvas::create(*protect(executionContext(m_lexicalGlobalObject)), WTF::move(m_detachedOffscreenCanvases.at(index)));
-        }
         return getJSValue(protect(*m_offscreenCanvases[index]));
     }
 
@@ -3195,11 +3132,8 @@ private:
         return getJSValue(WTF::move(bitmap));
     }
 
-    JSValue readDOMException(SerializationTag tag)
+    JSValue readDOMException()
     {
-        ASSERT(tag == DOMExceptionTag || tag == QuotaExceededErrorTag);
-        bool isQuotaExceededError = tag == QuotaExceededErrorTag;
-
         CachedStringRef message;
         if (!readStringData(message))
             return JSValue();
@@ -3217,19 +3151,7 @@ private:
                 return JSValue();
         }
 
-        double quota = std::numeric_limits<double>::quiet_NaN();
-        double requested = std::numeric_limits<double>::quiet_NaN();
-        if (isQuotaExceededError && (!read(quota) || !read(requested)))
-            return JSValue();
-
-        auto toOptional = [](double value) -> std::optional<double> {
-            if (std::isnan(value))
-                return std::nullopt;
-            return value;
-        };
-        Ref<DOMException> exception = isQuotaExceededError
-            ? Ref<DOMException> { QuotaExceededError::create(message->string(), { toOptional(quota), toOptional(requested) }) }
-            : DOMException::create(message->string(), name->string());
+        auto exception = DOMException::create(message->string(), name->string());
         JSValue result = getJSValue(exception);
         // Creating the wrapper captured a stack trace of the frame doing the deserializing; replace
         // it with the serialized one so the clone reports the same stack as the original did.
@@ -3443,6 +3365,13 @@ public:
             return getJSValue(m_inMemoryMessagePorts[index].get());
         }
         case CryptoKeyTag: {
+            if (auto* globalObject = dynamicDowncast<JSDOMGlobalObject>(m_globalObject)) {
+                if (RefPtr context = globalObject->scriptExecutionContext(); context && !context->isSecureContext()) {
+                    SERIALIZE_TRACE("FAIL deserialize");
+                    fail();
+                    return JSValue();
+                }
+            }
             Vector<uint8_t> wrappedKey;
             if (!read(wrappedKey)) {
                 SERIALIZE_TRACE("FAIL deserialize");
@@ -3530,8 +3459,7 @@ public:
             return readMediaSourceHandle();
 #endif
         case DOMExceptionTag:
-        case QuotaExceededErrorTag:
-            return readDOMException(tag);
+            return readDOMException();
 
         case FileSystemHandleTag:
             return readFileSystemHandle();
@@ -3764,11 +3692,6 @@ SerializedScriptValueInternals SerializedScriptValueInternals::clone() const
         .exposedMessagePortCount = exposedMessagePortCount,
         .nonSerializedDataToken = nonSerializedDataToken,
         .detachedImageBitmaps = detachedImageBitmaps,
-#if ENABLE(OFFSCREEN_CANVAS_IN_WORKERS)
-        .detachedOffscreenCanvases = detachedOffscreenCanvases.map([](const auto& canvas) {
-            return canvas->clone();
-        }),
-#endif
         .fileSystemHandleKeepAlives = fileSystemHandleKeepAlives.map([](const auto& alive) { return alive.copy(); }),
 #if ENABLE(WEB_CODECS)
         .serializedVideoFrames = serializedVideoFrames,
@@ -3791,6 +3714,9 @@ SerializedScriptValueInternals SerializedScriptValueInternals::clone() const
 #endif
         .sharedBufferContentsArray = copyArrayBufferContentsArray(sharedBufferContentsArray),
 #if ENABLE(OFFSCREEN_CANVAS_IN_WORKERS)
+        .detachedOffscreenCanvases = detachedOffscreenCanvases.map([](const auto& canvas) {
+            return makeUnique<DetachedOffscreenCanvas>(canvas->size(), canvas->originClean(), RefPtr { canvas->placeholderSource() });
+        }),
         .inMemoryOffscreenCanvases = inMemoryOffscreenCanvases,
 #endif
         .inMemoryMessagePorts = inMemoryMessagePorts,
@@ -4411,9 +4337,6 @@ ExceptionOr<Ref<SerializedScriptValue>> SerializedScriptValue::create(JSGlobalOb
 #endif
         , .exposedMessagePortCount = exposedMessagePortsCount
         , .detachedImageBitmaps = WTF::move(detachedImageBitmaps)
-#if ENABLE(OFFSCREEN_CANVAS_IN_WORKERS)
-        , .detachedOffscreenCanvases = WTF::move(detachedCanvases)
-#endif
         , .fileSystemHandleKeepAlives = WTF::move(fileSystemHandleKeepAlives)
 #if ENABLE(WEB_CODECS)
         , .serializedVideoFrames = WTF::move(serializedVideoFrameData)
@@ -4432,6 +4355,7 @@ ExceptionOr<Ref<SerializedScriptValue>> SerializedScriptValue::create(JSGlobalOb
 #endif
         , .sharedBufferContentsArray = WTF::move(sharedBuffers)
 #if ENABLE(OFFSCREEN_CANVAS_IN_WORKERS)
+        , .detachedOffscreenCanvases = WTF::move(detachedCanvases)
         , .inMemoryOffscreenCanvases = WTF::move(inMemoryOffscreenCanvases)
 #endif
         , .inMemoryMessagePorts = WTF::move(inMemoryMessagePorts)

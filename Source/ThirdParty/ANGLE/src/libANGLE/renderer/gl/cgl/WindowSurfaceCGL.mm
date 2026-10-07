@@ -355,7 +355,8 @@ EGLint WindowSurfaceCGL::getSwapBehavior() const
     return EGL_BUFFER_DESTROYED;
 }
 
-void WindowSurfaceCGL::attachToFramebuffer(const gl::Context *context, gl::Framebuffer *framebuffer)
+egl::Error WindowSurfaceCGL::attachToFramebuffer(const gl::Context *context,
+                                                 gl::Framebuffer *framebuffer)
 {
     FramebufferGL *framebufferGL = GetImplAs<FramebufferGL>(framebuffer);
     ASSERT(framebufferGL->getFramebufferID() == 0);
@@ -372,13 +373,16 @@ void WindowSurfaceCGL::attachToFramebuffer(const gl::Context *context, gl::Frame
         mFramebufferID = framebufferID;
     }
     framebufferGL->setFramebufferID(mFramebufferID);
+    return egl::NoError();
 }
 
-void WindowSurfaceCGL::detachFromFramebuffer(gl::Framebuffer *framebuffer)
+egl::Error WindowSurfaceCGL::detachFromFramebuffer(const gl::Context *context,
+                                                   gl::Framebuffer *framebuffer)
 {
     FramebufferGL *framebufferGL = GetImplAs<FramebufferGL>(framebuffer);
     ASSERT(framebufferGL->getFramebufferID() == mFramebufferID);
     framebufferGL->setFramebufferID(0);
+    return egl::NoError();
 }
 
 }  // namespace rx

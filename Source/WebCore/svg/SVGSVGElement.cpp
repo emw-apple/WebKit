@@ -72,7 +72,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGSVGElement);
 
 inline SVGSVGElement::SVGSVGElement(const QualifiedName& tagName, Document& document)
-    : SVGGraphicsElement(tagName, document, PropertyRegistry::singleton(), TypeFlag::HasDidMoveToNewDocument)
+    : SVGGraphicsElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this), TypeFlag::HasDidMoveToNewDocument)
     , SVGFitToViewBox(this)
     , m_timeContainer(SMILTimeContainer::create(*this))
 {
@@ -650,7 +650,7 @@ void SVGSVGElement::unpauseAnimations()
 bool SVGSVGElement::resumePausedAnimationsIfNeeded(const IntRect& visibleRect)
 {
     bool animationEnabled = document().page() ? document().page()->imageAnimationEnabled() : true;
-    if (!animationEnabled || !renderer() || !protect(renderer())->isVisibleInDocumentRect(visibleRect))
+    if (!animationEnabled || !renderer() || !renderer()->isVisibleInDocumentRect(visibleRect))
         return false;
 
     unpauseAnimations();
@@ -687,7 +687,8 @@ bool SVGSVGElement::hasTransformRelatedAttributes() const
     if (isOutermostSVGSVGElement() ? !!supplementalTransform() : SVGGraphicsElement::hasTransformRelatedAttributes())
         return true;
 
-    return x().valueInSpecifiedUnits() || y().valueInSpecifiedUnits() || !viewBox().isEmpty();
+    // 'x' / 'y' / 'viewBox' lead to a non-identity supplementalLayerTransform in RenderSVGViewportContainer
+    return (hasAttribute(SVGNames::xAttr) || hasAttribute(SVGNames::yAttr)) || (hasAttribute(SVGNames::viewBoxAttr) && !hasEmptyViewBox());
 }
 
 static bool isEmbeddedThroughSVGImage(const SVGSVGElement& element)

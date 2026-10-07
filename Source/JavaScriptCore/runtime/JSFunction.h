@@ -211,7 +211,7 @@ private:
         return function;
     }
 
-    JS_EXPORT_PRIVATE FunctionRareData* allocateRareData(VM&);
+    FunctionRareData* allocateRareData(VM&);
     FunctionRareData* allocateAndInitializeRareData(JSGlobalObject*, size_t inlineCapacity);
     FunctionRareData* initializeRareData(JSGlobalObject*, size_t inlineCapacity);
 
@@ -231,7 +231,7 @@ private:
     PropertyStatus reifyLazyBoundNameIfNeeded(VM&, JSGlobalObject*, PropertyName);
 
 #if ASSERT_ENABLED
-    JS_EXPORT_PRIVATE void assertTypeInfoFlagInvariants();
+    void assertTypeInfoFlagInvariants();
 #else
     void assertTypeInfoFlagInvariants() { }
 #endif

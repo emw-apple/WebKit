@@ -137,7 +137,7 @@ static Image* imageFromImageElementNode(Node& node)
     RefPtr image = renderer->cachedImage();
     if (!image || image->errorOccurred())
         return nullptr;
-    return image->image();
+    return image->imageForRenderer(renderer.get());
 }
 
 bool handleEvent(HTMLElement& element, Event& event)
@@ -170,7 +170,7 @@ bool handleEvent(HTMLElement& element, Event& event)
         if (!view)
             return false;
 
-        auto point = view->contentsToMainFrameView(renderer->absoluteBoundingBoxRect()).minXMaxYCorner();
+        auto point = view->contentsToWindow(renderer->absoluteBoundingBoxRect()).minXMaxYCorner();
 
         if (RefPtr shadowHost = dynamicDowncast<HTMLImageElement>(target->shadowHost())) {
             RefPtr image = imageFromImageElementNode(*shadowHost);

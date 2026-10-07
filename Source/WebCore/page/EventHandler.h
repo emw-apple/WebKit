@@ -190,8 +190,6 @@ public:
     bool mousePressed() const { return m_mousePressed; }
     Node* mousePressNode() const { return m_mousePressNode; }
 
-    WEBCORE_EXPORT bool NODELETE mouseDownMayStartSelect() const;
-
     WEBCORE_EXPORT ScrollableArea* focusedScrollableArea() const;
 
     WEBCORE_EXPORT void setCapturingMouseEventsElement(RefPtr<Element>&&);
@@ -202,7 +200,7 @@ public:
         bool accept { false };
         std::optional<OptionSet<DragOperation>> operationMask;
     };
-    DragTargetResponse updateDragAndDrop(const PlatformMouseEvent&, NOESCAPE const std::function<std::unique_ptr<Pasteboard>()>&, OptionSet<DragOperation>, bool draggingFiles);
+    DragTargetResponse updateDragAndDrop(const PlatformMouseEvent&, const std::function<std::unique_ptr<Pasteboard>()>&, OptionSet<DragOperation>, bool draggingFiles);
     void cancelDragAndDrop(const PlatformMouseEvent&, std::unique_ptr<Pasteboard>&&, OptionSet<DragOperation>, bool draggingFiles);
     DragEventTargetData performDragAndDrop(const PlatformMouseEvent&, std::unique_ptr<Pasteboard>&&, OptionSet<DragOperation>, bool draggingFiles, const HitTestResult&, DragData&&);
     void updateDragStateAfterEditDragIfNeeded(Element& rootEditableElement);
@@ -220,7 +218,7 @@ public:
     void resizeLayerDestroyed();
 
     // FIXME: Each Frame has an EventHandler, and not every event goes to all frames, so this position can be stale. It should probably be stored on Page.
-    WEBCORE_EXPORT DoublePoint NODELETE lastKnownMousePosition() const;
+    DoublePoint NODELETE lastKnownMousePosition() const;
     DoublePoint lastKnownMouseGlobalPosition() const { return m_lastKnownMouseGlobalPosition; }
     Cursor currentMouseCursor() const { return m_currentMouseCursor; }
 
@@ -296,11 +294,6 @@ public:
     WEBCORE_EXPORT void dispatchSyntheticMouseMove(const PlatformMouseEvent&);
 #endif
 
-#if PLATFORM(MAC)
-    WEBCORE_EXPORT HandleUserInputEventResult dispatchTrackedPointerEvent(const PlatformMouseEvent&);
-    WEBCORE_EXPORT HandleUserInputEventResult cancelTrackedPointer(const DoublePoint& positionInRootView, PointerID);
-#endif
-
 #if ENABLE(CONTEXT_MENU_EVENT)
     WEBCORE_EXPORT bool sendContextMenuEvent(const PlatformMouseEvent&);
     WEBCORE_EXPORT bool sendContextMenuEventForKey();
@@ -328,7 +321,6 @@ public:
     WEBCORE_EXPORT void NODELETE didStartDrag();
     WEBCORE_EXPORT void NODELETE dragCancelled();
     WEBCORE_EXPORT std::optional<RemoteUserInputEventData> dragSourceEndedAt(const PlatformMouseEvent&, OptionSet<DragOperation>, MayExtendDragSession = MayExtendDragSession::No);
-    WEBCORE_EXPORT void dragSourceEnded(const PlatformMouseEvent&, OptionSet<DragOperation>, MayExtendDragSession = MayExtendDragSession::No);
 #endif
 
     void focusDocumentView();
@@ -395,7 +387,6 @@ public:
 
 #if ENABLE(MODEL_ELEMENT_STAGE_MODE_INTERACTION)
     WEBCORE_EXPORT std::optional<NodeIdentifier> requestInteractiveModelElementAtPoint(const IntPoint& clientPosition);
-    WEBCORE_EXPORT void stageModeSessionDidBegin(NodeIdentifier, const TransformationMatrix&);
     WEBCORE_EXPORT void stageModeSessionDidUpdate(std::optional<NodeIdentifier>, const TransformationMatrix&);
     WEBCORE_EXPORT void stageModeSessionDidEnd(std::optional<NodeIdentifier>);
 #endif
@@ -676,6 +667,7 @@ private:
     bool NODELETE shouldSendMouseEventsToInactiveWindows() const;
 
     bool canMouseDownStartSelect(const MouseEventWithHitTestResults&);
+    bool NODELETE mouseDownMayStartSelect() const;
 
     std::optional<RemoteFrameGeometryTransformer> geometryTransformerForRemoteFrame(RemoteFrame*);
 
@@ -721,9 +713,6 @@ private:
     WeakPtr<Element, WeakPtrImplWithEventTargetData> m_mouseMoveTargetOverride;
     Vector<WeakPtr<Element, WeakPtrImplWithEventTargetData>, 31> m_ancestorsOfLastElementUnderMouse;
     RefPtr<LocalFrame> m_lastMouseMoveEventSubframe;
-#if PLATFORM(MAC)
-    RefPtr<Frame> m_trackedPointerSubframe;
-#endif
     SingleThreadWeakPtr<Scrollbar> m_lastScrollbarUnderMouse;
     Cursor m_currentMouseCursor;
 

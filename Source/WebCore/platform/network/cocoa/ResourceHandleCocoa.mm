@@ -501,9 +501,9 @@ void ResourceHandle::didReceiveAuthenticationChallenge(const AuthenticationChall
     // return NO to -connectionShouldUseCredentialStorage: for <rdar://problem/7704943>.
     if (!challenge.previousFailureCount() && challenge.protectionSpace().isProxy()) {
         RELEASE_ASSERT(hasProcessPrivilege(ProcessPrivilege::CanAccessCredentials));
-        RetainPtr macChallenge = mac(challenge);
-        if (RetainPtr credential = [[NSURLCredentialStorage sharedCredentialStorage] defaultCredentialForProtectionSpace:[macChallenge protectionSpace]]) {
-            [protect(challenge.sender()) useCredential:credential forAuthenticationChallenge:macChallenge];
+        NSURLAuthenticationChallenge *macChallenge = mac(challenge);
+        if (NSURLCredential *credential = [[NSURLCredentialStorage sharedCredentialStorage] defaultCredentialForProtectionSpace:[macChallenge protectionSpace]]) {
+            [challenge.sender() useCredential:credential forAuthenticationChallenge:macChallenge];
             return;
         }
     }

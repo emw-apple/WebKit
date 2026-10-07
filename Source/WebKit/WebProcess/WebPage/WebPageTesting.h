@@ -65,10 +65,6 @@ private:
     void setTracksRepaints(bool, CompletionHandler<void()>&&);
     void displayAndTrackRepaints(CompletionHandler<void()>&&);
 
-#if PLATFORM(IOS_FAMILY)
-    void screenIsBeingCaptured(CompletionHandler<void(bool)>&&);
-#endif
-
 #if ENABLE(NOTIFICATIONS)
     void clearNotificationPermissionState();
 #endif

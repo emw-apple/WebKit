@@ -214,14 +214,15 @@ public:
     CodeBlock* alternative() const { return static_cast<CodeBlock*>(m_alternative.get()); }
     void setAlternative(VM&, CodeBlock*);
 
-    template <typename Functor> void forEachRelatedCodeBlock(NOESCAPE const Functor& functor)
+    template <typename Functor> void forEachRelatedCodeBlock(Functor&& functor)
     {
+        Functor f(std::forward<Functor>(functor));
         Vector<CodeBlock*, 4> codeBlocks;
         codeBlocks.append(this);
 
         while (!codeBlocks.isEmpty()) {
             CodeBlock* currentCodeBlock = codeBlocks.takeLast();
-            functor(currentCodeBlock);
+            f(currentCodeBlock);
 
             if (CodeBlock* alternative = currentCodeBlock->alternative())
                 codeBlocks.append(alternative);
@@ -434,10 +435,10 @@ public:
     ValueProfile& NODELETE valueProfileForBytecodeIndex(BytecodeIndex);
     SpeculatedType valueProfilePredictionForBytecodeIndex(BytecodeIndex, JSValue* specFailValue = nullptr);
 
-    template<typename Functor> void forEachValueProfile(NOESCAPE const Functor&);
-    template<typename Functor> void forEachArrayAllocationProfile(NOESCAPE const Functor&);
-    template<typename Functor> void forEachObjectAllocationProfile(NOESCAPE const Functor&);
-    template<typename Functor> void forEachLLIntOrBaselineCallLinkInfo(NOESCAPE const Functor&);
+    template<typename Functor> void forEachValueProfile(const Functor&);
+    template<typename Functor> void forEachArrayAllocationProfile(const Functor&);
+    template<typename Functor> void forEachObjectAllocationProfile(const Functor&);
+    template<typename Functor> void forEachLLIntOrBaselineCallLinkInfo(const Functor&);
 
     BinaryArithProfile* NODELETE binaryArithProfileForBytecodeIndex(BytecodeIndex);
     UnaryArithProfile* NODELETE unaryArithProfileForBytecodeIndex(BytecodeIndex);
@@ -804,6 +805,10 @@ public:
     // without holding any locks, because the GC is guaranteed to wait until any
     // concurrent compilation threads finish what they're doing.
     mutable ConcurrentJSLock m_lock;
+
+    bool m_shouldAlwaysBeInlined { true }; // Not a bitfield because the JIT wants to store to it.
+
+    static constexpr ptrdiff_t offsetOfShouldAlwaysBeInlined() { return OBJECT_OFFSETOF(CodeBlock, m_shouldAlwaysBeInlined); }
 
 #if ENABLE(JIT)
     unsigned m_capabilityLevelState : 2; // DFG::CapabilityLevel

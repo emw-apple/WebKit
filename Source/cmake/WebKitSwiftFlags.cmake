@@ -73,7 +73,6 @@ set(WEBKIT_SWIFT_UPCOMING_FEATURE_FLAGS
 
 set(WEBKIT_SWIFT_EXPERIMENTAL_FEATURE_FLAGS
     "-enable-experimental-feature DebugDescriptionMacro"
-    "-enable-experimental-feature ForeignReferenceTypeInheritance"
     "-enable-experimental-feature ImportCxxMembersLazily"
     "-enable-experimental-feature SuppressedAssociatedTypes"
     "-enable-experimental-feature SuppressedAssociatedTypesWithDefaults"
@@ -88,7 +87,6 @@ set(WEBKIT_SWIFT_MEMORY_SAFETY_FLAGS
 
 set(WEBKIT_SWIFT_MEMORY_SAFETY_ERROR_FLAGS
     "-Werror ForeignReferenceType"
-    "-Werror RegionIsolation"
     "-Werror StrictMemorySafety"
 )
 
@@ -135,14 +133,6 @@ webkit_add_swift_options(
     ${WEBKIT_SWIFT_MACRO_FLAGS}
 )
 
-webkit_add_swift_options(
-    "-module-cache-path ${CMAKE_BINARY_DIR}/SwiftModuleCache"
-    # Needed because WebKit's modules are marked [system].
-    -track-system-dependencies
-)
-set_property(DIRECTORY "${CMAKE_BINARY_DIR}" APPEND PROPERTY
-    ADDITIONAL_CLEAN_FILES "${CMAKE_BINARY_DIR}/SwiftModuleCache")
-
 if (APPLE)
     webkit_add_swift_options(
         ${WEBKIT_SWIFT_EXPERIMENTAL_FEATURE_FLAGS}
@@ -151,11 +141,12 @@ if (APPLE)
 
     webkit_add_swift_options(
         -explicit-module-build
-        # Reuse the previous build's dependency scan, revalidated against its
-        # inputs, instead of rescanning from scratch: the WebKit target's scan
-        # reads ~16K files and takes ~14 s, on every rebuild of its Swift module.
-        -incremental-dependency-scan
+        "-module-cache-path ${CMAKE_BINARY_DIR}/SwiftModuleCache"
+        # Needed because WebKit's modules are marked [system].
+        -track-system-dependencies
     )
+    set_property(DIRECTORY "${CMAKE_BINARY_DIR}" APPEND PROPERTY
+        ADDITIONAL_CLEAN_FILES "${CMAKE_BINARY_DIR}/SwiftModuleCache")
 
     webkit_add_swift_options(
         # Needed for compatibility with modules in the (internal) SDK:
@@ -173,9 +164,5 @@ if (APPLE)
     # FIXME: Consider building with -wmo in release / performance builds.
     webkit_add_swift_options(
         -enable-batch-mode
-    )
-else ()
-    webkit_add_swift_options(
-        "-Xcc -fmodules-validate-system-headers"
     )
 endif ()

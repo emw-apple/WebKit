@@ -83,6 +83,14 @@ private:
 class CStringBase {
     WTF_MAKE_TZONE_ALLOCATED_EXPORT(CStringBase, WTF_EXPORT_PRIVATE);
 public:
+    const char* data() const LIFETIME_BOUND; // Any encoding
+
+    // Escape hatch for external C functions and printf-style formatting, matching
+    // CString::legacyCStringPointer() below. Unlike data(), this keeps returning const char*
+    // as producers are migrated to the encoding-aware types. Named for the destination rather than the
+    // contents: const char* is what C string interfaces take, which is why it is char and not char8_t.
+    const char* legacyCStringPointer() const LIFETIME_BOUND { return data(); } // Any encoding
+
     std::string toStdString() const;
 
     std::span<const char> span() const LIFETIME_BOUND; // Any encoding
@@ -99,9 +107,6 @@ public:
     WTF_EXPORT_PRIVATE unsigned NODELETE hash() const;
 
 protected:
-    // Any encoding. CString below exposes it typed; the encoding-erased base offers no pointer.
-    const char* data() const LIFETIME_BOUND;
-
     CStringBase() = default;
     CStringBase(HashTableDeletedValueType) : m_buffer(HashTableDeletedValue) { }
     CStringBase(const CStringBase&) = default;
@@ -130,7 +135,7 @@ private:
     void copyBufferIfNeeded();
     void init(std::span<const char>);
     RefPtr<CStringBuffer> m_buffer;
-} SWIFT_SELF_CONTAINED;
+} SWIFT_ESCAPABLE;
 
 // An ASCII literal is valid in every encoding. Two CStringBases cannot be compared: both would have been
 // sliced from typed strings, and comparing them would ignore their encodings.
@@ -170,7 +175,7 @@ inline std::string CStringBase::toStdString() const
 }
 
 // CStringBase is null terminated
-inline const char* safePrintfType(const CStringBase& cstring) { return cstring.spanIncludingNullTerminator().data(); }
+inline const char* safePrintfType(const CStringBase& cstring) { return cstring.data(); }
 
 // A C string that remembers the encoding of its bytes. Binds to const CStringBase&, which erases the encoding.
 // The character type carries the encoding, following WTF convention: char8_t is UTF-8, Latin1Character is
@@ -220,10 +225,6 @@ public:
         if constexpr (std::same_as<CharacterType, char>)
             ASSERT(charactersAreAllASCII(byteCast<Latin1Character>(CStringBase::span())));
     }
-
-    // For bytes from external C functions, which are known to be UTF-8 but come typed as char.
-    static CString unsafeFromUTF8(const char* string) requires std::same_as<CharacterType, char8_t> { return CString { byteCast<char8_t>(string) }; }
-    static CString fromUTF8(std::span<const char> characters) requires std::same_as<CharacterType, char8_t> { return CString { byteCast<char8_t>(characters) }; }
 
     static CString newUninitialized(size_t length, std::span<CharacterType>& characterBuffer)
     {

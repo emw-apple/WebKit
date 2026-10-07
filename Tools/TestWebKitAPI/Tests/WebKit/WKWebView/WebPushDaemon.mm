@@ -1322,7 +1322,7 @@ public:
     {
         auto identifier = m_notificationProvider.lastNotificationDataStoreIdentifier();
         if (m_dataStoreIdentifier)
-            EXPECT_WK_STREQ(m_dataStoreIdentifier->toString(), identifier);
+            EXPECT_WK_STREQ(m_dataStoreIdentifier->toString().utf8().legacyCStringPointer(), identifier);
         else
             EXPECT_NULL(identifier);
     }

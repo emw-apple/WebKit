@@ -487,6 +487,12 @@ public:
     inline const Color& colorForHighlight() const;
     inline void setColorForHighlight(Color&&);
 
+    inline bool usesCurrentBackgroundColorKeyword() const;
+    inline void setUsesCurrentBackgroundColorKeyword();
+
+    inline const WebCore::Color& currentBackgroundColor() const;
+    inline void setCurrentBackgroundColor(WebCore::Color);
+
     inline bool isLink() const;
     inline void setIsLink(bool);
 
@@ -525,8 +531,6 @@ public:
 
     inline bool insideSubmitButton() const;
     inline void setInsideSubmitButton(bool);
-    inline bool inBaseAppearanceSubtree() const;
-    inline void setInBaseAppearanceSubtree(bool);
 
     inline OptionSet<EventListenerRegionType> eventListenerRegionTypes() const;
     inline void setEventListenerRegionTypes(OptionSet<EventListenerRegionType>);
@@ -610,8 +614,7 @@ public:
     inline bool hasAnyPublicPseudoStyles() const;
     inline bool hasPseudoStyle(PseudoElementType) const;
     inline EnumSet<PseudoElementType> highlightPseudoElementTypes() const;
-    inline void setHasPseudoStyles(EnumSet<PseudoElementType>, PseudoElementBoxGeneration);
-    inline PseudoElementBoxGeneration pseudoElementBoxGeneration() const;
+    inline void setHasPseudoStyles(EnumSet<PseudoElementType>);
 
     Style::ComputedStyle* NODELETE pseudoElementStyle(const PseudoElementIdentifier&) const;
     Style::ComputedStyle* addPseudoElementStyle(std::unique_ptr<Style::ComputedStyle>);
@@ -747,8 +750,6 @@ public:
     inline void setPerspectiveOrigin(PerspectiveOrigin&&);
     inline void setTransformOrigin(TransformOrigin&&);
 
-    inline bool hasLegacyLineClamp() const;
-
     // MARK: - Properties/descriptors that are not yet generated
 
     // `cursor`
@@ -770,7 +771,7 @@ public:
 
         inline bool hasAnyPublicPseudoStyles() const;
         bool hasPseudoStyle(PseudoElementType) const;
-        void setHasPseudoStyles(EnumSet<PseudoElementType>, PseudoElementBoxGeneration);
+        void setHasPseudoStyles(EnumSet<PseudoElementType>);
 
 #if !LOG_DISABLED
         void dumpDifferences(TextStream&, const NonInheritedFlags&) const;
@@ -791,6 +792,7 @@ public:
         PREFERRED_TYPE(bool) unsigned usesViewportUnits : 1;
         PREFERRED_TYPE(bool) unsigned isContainerDependent : 1;
         PREFERRED_TYPE(bool) unsigned useTreeCountingFunctions : 1;
+        PREFERRED_TYPE(bool) unsigned usesCurrentBackgroundColorKeyword : 1;
         PREFERRED_TYPE(bool) unsigned hasExplicitlyInheritedProperties : 1; // Explicitly inherits a non-inherited property.
         PREFERRED_TYPE(bool) unsigned disallowsFastPathInheritance : 1;
 
@@ -800,7 +802,6 @@ public:
         PREFERRED_TYPE(bool) unsigned isLink : 1;
         PREFERRED_TYPE(PseudoElementType) unsigned pseudoElementType : PseudoElementTypeBits;
         unsigned pseudoBits : PublicPseudoIDBits;
-        PREFERRED_TYPE(PseudoElementBoxGeneration) unsigned pseudoElementBoxGeneration : 1;
     };
 
     struct InheritedFlags {

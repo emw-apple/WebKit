@@ -31,7 +31,6 @@
 #import "MediaReorderQueue.h"
 #import <WebCore/CMUtilities.h>
 #import <wtf/ThreadSafeWeakPtr.h>
-#import <wtf/TZoneMallocInlines.h>
 #import <wtf/cf/TypeCastsCF.h>
 
 #import "CoreVideoSoftLink.h"
@@ -39,8 +38,6 @@
 #import <pal/cf/CoreMediaSoftLink.h>
 
 namespace WebCore {
-
-WTF_MAKE_TZONE_ALLOCATED_IMPL(GPUVideoDecoderVTB);
 
 static bool shouldUseFullRange(CMVideoFormatDescriptionRef format)
 {
@@ -86,9 +83,9 @@ static RetainPtr<CFDictionaryRef> createPixelBufferAttributes(CMVideoFormatDescr
 
 class GPUVideoDecoderVTBQueue : public ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<GPUVideoDecoderVTBQueue> {
 public:
-    static Ref<GPUVideoDecoderVTBQueue> create(uint8_t reorderQueueMaxSize) { return adoptRef(*new GPUVideoDecoderVTBQueue(reorderQueueMaxSize)); }
-    void setReorderQueueMaxSize(uint8_t);
-    uint8_t reorderQueueMaxSize() const;
+    static Ref<GPUVideoDecoderVTBQueue> create(uint8_t reorderSize) { return adoptRef(*new GPUVideoDecoderVTBQueue(reorderSize)); }
+    void setReorderSize(uint8_t);
+    uint8_t reorderSize() const;
 
     struct Buffer {
         RetainPtr<CVPixelBufferRef> frame;
@@ -98,8 +95,8 @@ public:
     void flush(GPUVideoDecoderCallback);
 
 private:
-    explicit GPUVideoDecoderVTBQueue(uint8_t reorderQueueMaxSize)
-        : m_queue(reorderQueueMaxSize)
+    explicit GPUVideoDecoderVTBQueue(uint8_t reorderSize)
+        : m_queue(reorderSize)
     {
     }
 
@@ -121,10 +118,10 @@ GPUVideoDecoderVTB::GPUVideoDecoderVTB(GPUVideoDecoderCallback callback, Ref<Wor
 
 GPUVideoDecoderVTB::~GPUVideoDecoderVTB() = default;
 
-static VideoDecoderVTBSession::CallbackMultiImage createMultiImageCallback(GPUVideoDecoderCallback callback, RefPtr<GPUVideoDecoderVTBQueue>&& queue, uint8_t reorderQueueMaxSize)
+static VideoDecoderVTBSession::CallbackMultiImage createMultiImageCallback(GPUVideoDecoderCallback callback, RefPtr<GPUVideoDecoderVTBQueue>&& queue, uint8_t reorderSize)
 {
-    return makeBlockPtr([callback = makeBlockPtr(callback), queue = WTF::move(queue), reorderQueueMaxSize](OSStatus, VTDecodeInfoFlags, CVImageBufferRef pixelBuffer, CMTaggedBufferGroupRef, CMTime presentationTime, CMTime) mutable {
-        UNUSED_PARAM(reorderQueueMaxSize);
+    return makeBlockPtr([callback = makeBlockPtr(callback), queue = WTF::move(queue), reorderSize](OSStatus, VTDecodeInfoFlags, CVImageBufferRef pixelBuffer, CMTaggedBufferGroupRef, CMTime presentationTime, CMTime) mutable {
+        UNUSED_PARAM(reorderSize);
         if (!pixelBuffer) {
             callback(nil, 0, 0, false);
             return;
@@ -135,12 +132,12 @@ static VideoDecoderVTBSession::CallbackMultiImage createMultiImageCallback(GPUVi
             return;
         }
 
-        if (reorderQueueMaxSize != queue->reorderQueueMaxSize()) {
+        if (reorderSize != queue->reorderSize()) {
             queue->flush(callback.get());
-            queue->setReorderQueueMaxSize(reorderQueueMaxSize);
+            queue->setReorderSize(reorderSize);
         }
 
-        if (!reorderQueueMaxSize) {
+        if (!reorderSize) {
             callback((CVPixelBufferRef)pixelBuffer, presentationTime.value, 0, false);
             return;
         }
@@ -169,19 +166,19 @@ int32_t GPUVideoDecoderVTB::decodeFrameInternal(int64_t timeStamp, std::span<con
 
     PAL::CMSampleBufferSetOutputPresentationTimeStamp(sample.get(), PAL::CMTimeMake(timeStamp, 1));
     VTDecodeInfoFlags decodeInfoFlags = kVTDecodeFrame_EnableAsynchronousDecompression;
-    protect(m_decoder)->decodeMultiImageFrame(sample.get(), decodeInfoFlags, createMultiImageCallback(m_callback.get(), m_queue.get(), m_reorderQueueMaxSize));
+    protect(m_decoder)->decodeMultiImageFrame(sample.get(), decodeInfoFlags, createMultiImageCallback(m_callback.get(), m_queue.get(), m_reorderSize));
     return 0;
 }
 
-void GPUVideoDecoderVTB::setVideoInfo(Ref<VideoInfo>&& videoInfo)
+void GPUVideoDecoderVTB::setVideoInfo(Ref<VideoInfo>&& videoInfo, uint8_t reorderSize)
 {
     assertIsCurrent(queue());
 
     updateFormat(videoInfo);
-    m_reorderQueueMaxSize = videoInfo->reorderQueueMaxSize().value_or(0);
     m_videoInfo = WTF::move(videoInfo);
-    if (m_reorderQueueMaxSize && !m_queue)
-        m_queue = GPUVideoDecoderVTBQueue::create(m_reorderQueueMaxSize);
+    m_reorderSize = reorderSize;
+    if (reorderSize && !m_queue)
+        m_queue = GPUVideoDecoderVTBQueue::create(reorderSize);
 }
 
 void GPUVideoDecoderVTB::colorSpaceOverrideChanged()
@@ -218,24 +215,11 @@ void GPUVideoDecoderVTB::flush()
         queue->flush(m_callback.get());
 }
 
-void GPUVideoDecoderVTB::setFormat(std::span<const uint8_t>, uint16_t width, uint16_t height, RefPtr<VideoInfo>&& videoInfo)
+void GPUVideoDecoderVTB::setFormat(std::span<const uint8_t>, uint16_t width, uint16_t height)
 {
     assertIsCurrent(queue());
 
     setFrameSize(width, height);
-
-    if (videoInfo)
-        setVideoInfo(videoInfo.releaseNonNull());
-}
-
-int32_t GPUVideoDecoderVTB::decodeFrame(int64_t timeStamp, std::span<const uint8_t> data, RefPtr<VideoInfo>&& videoInfo)
-{
-    assertIsCurrent(queue());
-
-    if (videoInfo)
-        setVideoInfo(videoInfo.releaseNonNull());
-
-    return decodeFrameInternal(timeStamp, data);
 }
 
 void GPUVideoDecoderVTB::setFrameSize(uint16_t width, uint16_t height)
@@ -246,13 +230,13 @@ void GPUVideoDecoderVTB::setFrameSize(uint16_t width, uint16_t height)
     m_height = height;
 }
 
-uint8_t GPUVideoDecoderVTBQueue::reorderQueueMaxSize() const
+uint8_t GPUVideoDecoderVTBQueue::reorderSize() const
 {
     Locker lock(m_lock);
     return m_queue.reorderSize();
 }
 
-void GPUVideoDecoderVTBQueue::setReorderQueueMaxSize(uint8_t size)
+void GPUVideoDecoderVTBQueue::setReorderSize(uint8_t size)
 {
     Locker lock(m_lock);
     m_queue.setReorderSize(size);

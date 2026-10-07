@@ -31,7 +31,6 @@
 #include <sys/mman.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/TZoneMallocInlines.h>
-#include <wtf/posix/POSIXExtras.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/WTFString.h>
@@ -77,12 +76,12 @@ static UnixFileDescriptor createSharedMemory()
         tempName = name.utf8();
 
         do {
-            fileDescriptor = posixShmOpen(tempName, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+            fileDescriptor = shm_open(tempName.legacyCStringPointer(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
         } while (fileDescriptor == -1 && errno == EINTR);
     }
 
     if (fileDescriptor != -1)
-        posixShmUnlink(tempName);
+        shm_unlink(tempName.legacyCStringPointer());
 #endif
 
     return UnixFileDescriptor { fileDescriptor, UnixFileDescriptor::Adopt };

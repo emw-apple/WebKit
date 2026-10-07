@@ -30,8 +30,8 @@
 #include "GPUBindGroupDescriptor.h"
 #include "GPUComputePassDescriptor.h"
 #include "GPUComputePipelineDescriptor.h"
-#include "GPUDrawElementImageDestination.h"
-#include "GPUDrawElementImageSource.h"
+#include "GPUCopyElementImageDestination.h"
+#include "GPUCopyElementImageSource.h"
 #include "GPUExternalTextureDescriptor.h"
 #include "GPUImageCopyBuffer.h"
 #include "GPUImageCopyExternalImage.h"
@@ -42,7 +42,6 @@
 #include "GPURenderPipelineDescriptor.h"
 #include "GPUShaderModuleDescriptor.h"
 #include "Path2D.h"
-#include "UpdateElementGeometryOptions.h"
 #include "WebGLBuffer.h"
 #include "WebGLFramebuffer.h"
 #include "WebGLProgram.h"
@@ -150,15 +149,17 @@ static Ref<JSON::Object> process(InspectorCanvas& inspectorCanvas, const GPUImag
     return object;
 }
 
-static Ref<JSON::Object> process(InspectorCanvas&, const GPUDrawElementImageDestination& drawElementImageDestination)
+static Ref<JSON::Object> process(InspectorCanvas& inspectorCanvas, const GPUCopyElementImageDestination& descriptor)
 {
-    return drawElementImageDestination.toJSON();
+    Ref object = descriptor.toJSON();
+    object->setObject("destination"_s, process(inspectorCanvas, descriptor.destination));
+    return object;
 }
 
-static Ref<JSON::Object> process(InspectorCanvas& inspectorCanvas, const GPUDrawElementImageSource& drawElementImageSource)
+static Ref<JSON::Object> process(InspectorCanvas& inspectorCanvas, const GPUCopyElementImageSource& descriptor)
 {
-    Ref object = drawElementImageSource.toJSON();
-    WTF::switchOn(drawElementImageSource.source, [&](const auto& source) {
+    Ref object = descriptor.toJSON();
+    WTF::switchOn(descriptor.source, [&](const auto& source) {
         object->setArray("source"_s, process(inspectorCanvas, source));
     });
     return object;
@@ -307,17 +308,7 @@ static std::optional<InspectorCanvasProcessedArgument> processJSON(Ref<JSON::Val
     return { { WTF::move(valueIndex), swizzleType } };
 }
 
-static Ref<JSON::Object> process(InspectorCanvas&, const UpdateElementGeometryOptions& updateElementGeometryOptions)
-{
-    return updateElementGeometryOptions.toJSON();
-}
-
 // MARK: - Dictionaries
-
-auto InspectorCanvasArgumentProcessor<IDLDictionary<CanvasDrawElementImageOptions>>::operator()(InspectorCanvas&, const CanvasDrawElementImageOptions& argument) -> std::optional<InspectorCanvasProcessedArgument>
-{
-    return { { JSON::Value::create(argument.preserveElementGeometry), RecordingSwizzleType::Boolean } };
-}
 
 auto InspectorCanvasArgumentProcessor<IDLDictionary<GPUComputePassDescriptor>>::operator()(InspectorCanvas& context, const GPUComputePassDescriptor& argument) -> std::optional<InspectorCanvasProcessedArgument>
 {
@@ -329,14 +320,14 @@ auto InspectorCanvasArgumentProcessor<IDLDictionary<GPUComputePipelineDescriptor
     return processJSON(context.valueIndexForData(process(context, argument)->toJSONString()), RecordingSwizzleType::GPUComputePipelineDescriptor);
 }
 
-auto InspectorCanvasArgumentProcessor<IDLDictionary<GPUDrawElementImageDestination>>::operator()(InspectorCanvas& context, const GPUDrawElementImageDestination& argument) -> std::optional<InspectorCanvasProcessedArgument>
+auto InspectorCanvasArgumentProcessor<IDLDictionary<GPUCopyElementImageDestination>>::operator()(InspectorCanvas& context, const GPUCopyElementImageDestination& argument) -> std::optional<InspectorCanvasProcessedArgument>
 {
-    return processJSON(context.valueIndexForData(process(context, argument)->toJSONString()), RecordingSwizzleType::GPUDrawElementImageDestination);
+    return processJSON(context.valueIndexForData(process(context, argument)->toJSONString()), RecordingSwizzleType::GPUCopyElementImageDestination);
 }
 
-auto InspectorCanvasArgumentProcessor<IDLDictionary<GPUDrawElementImageSource>>::operator()(InspectorCanvas& context, const GPUDrawElementImageSource& argument) -> std::optional<InspectorCanvasProcessedArgument>
+auto InspectorCanvasArgumentProcessor<IDLDictionary<GPUCopyElementImageSource>>::operator()(InspectorCanvas& context, const GPUCopyElementImageSource& argument) -> std::optional<InspectorCanvasProcessedArgument>
 {
-    return processJSON(context.valueIndexForData(process(context, argument)->toJSONString()), RecordingSwizzleType::GPUDrawElementImageSource);
+    return processJSON(context.valueIndexForData(process(context, argument)->toJSONString()), RecordingSwizzleType::GPUCopyElementImageSource);
 }
 
 auto InspectorCanvasArgumentProcessor<IDLDictionary<GPUExternalTextureDescriptor>>::operator()(InspectorCanvas& context, const GPUExternalTextureDescriptor& argument) -> std::optional<InspectorCanvasProcessedArgument>
@@ -399,11 +390,6 @@ auto InspectorCanvasArgumentProcessor<IDLDictionary<DOMMatrix2DInit>>::operator(
     array->addItem(argument.e.value_or(0));
     array->addItem(argument.f.value_or(0));
     return {{ WTF::move(array), RecordingSwizzleType::DOMMatrix }};
-}
-
-auto InspectorCanvasArgumentProcessor<IDLDictionary<UpdateElementGeometryOptions>>::operator()(InspectorCanvas& context, const UpdateElementGeometryOptions& argument) -> std::optional<InspectorCanvasProcessedArgument>
-{
-    return processJSON(context.valueIndexForData(process(context, argument)->toJSONString()), RecordingSwizzleType::UpdateElementGeometryOptions);
 }
 
 // MARK: - Strings

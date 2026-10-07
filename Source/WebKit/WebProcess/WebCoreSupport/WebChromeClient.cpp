@@ -35,7 +35,6 @@
 #include "APIObject.h"
 #include "APISecurityOrigin.h"
 #include "APIString.h"
-#include "DisplayOnlyImageProxy.h"
 #include "DrawingArea.h"
 #include "FindController.h"
 #include "FrameInfoData.h"
@@ -53,7 +52,6 @@
 #include "RemoteFaceDetectorProxy.h"
 #include "RemoteGPUProxy.h"
 #include "RemoteImageBufferProxy.h"
-#include "RemotePlaceholderRenderingContextSource.h"
 #include "RemoteRenderingBackendProxy.h"
 #include "RemoteTextDetectorProxy.h"
 #include "SharedBufferReference.h"
@@ -138,7 +136,6 @@
 #include <WebCore/ViewportConfiguration.h>
 #include <WebCore/WindowFeatures.h>
 #include <wtf/JSONValues.h>
-#include <wtf/NativePromise.h>
 #include <wtf/TZoneMallocInlines.h>
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
@@ -890,28 +887,6 @@ void WebChromeClient::setHasModelElement(bool hasModelElement)
 }
 #endif
 
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-void WebChromeClient::enterVolumetricSceneForElement(WebCore::Element& element, CompletionHandler<void(bool)>&& completion)
-{
-    RefPtr page = m_page.get();
-    if (!page)
-        return completion(false);
-    page->enterVolumetricSceneForElement(element, WTF::move(completion));
-}
-
-void WebChromeClient::exitVolumetricSceneForElement(WebCore::Element& element)
-{
-    if (RefPtr page = m_page.get())
-        page->exitVolumetricSceneForElement(element);
-}
-
-void WebChromeClient::reconnectVolumetricSceneForElement(WebCore::Element& element)
-{
-    if (RefPtr page = m_page.get())
-        page->reconnectVolumetricSceneForElement(element);
-}
-#endif
-
 PlatformPageClient WebChromeClient::platformPageClient() const
 {
     notImplemented();
@@ -1234,30 +1209,6 @@ RefPtr<WebCore::ImageBuffer> WebChromeClient::createImageBufferFromTransferHandl
         return nullptr;
     return protect(page->ensureRemoteRenderingBackendProxy())->takeTransferredBuffer(handle);
 }
-
-#if ENABLE(OFFSCREEN_CANVAS)
-RefPtr<WebCore::PlaceholderRenderingContextSource> WebChromeClient::createPlaceholderRenderingContextSource(const WebCore::RemotePlaceholderRenderingContextIdentifier& identifier)
-{
-    return RemotePlaceholderRenderingContextSource::create(identifier);
-}
-
-void WebChromeClient::offscreenCanvasPlaceholderLayerChanged(WebCore::PlaceholderRenderingContextIdentifier identifier, std::optional<WebCore::PlatformLayerIdentifier> layerID)
-{
-    if (RefPtr page = m_page.get())
-        page->send(Messages::WebPageProxy::SetOffscreenCanvasPlaceholderLayer(identifier, layerID));
-}
-#endif
-
-#if HAVE(IOSURFACE)
-RefPtr<NativePromise<Ref<WebCore::NativeImage>, void>> WebChromeClient::createDisplayOnlyImage(WebCore::FrameIdentifier rootFrameIdentifier, const WebCore::FloatSize& size, float scale, const WebCore::ColorSpace& colorSpace, NOESCAPE const Function<void(WebCore::GraphicsContext&)>& paint)
-{
-    RefPtr page = m_page.get();
-    // Only layers composited in the UI process can display the result.
-    if (!page || !page->corePage()->settings().remoteSnapshottingEnabled() || !isUsingUISideCompositing())
-        return nullptr;
-    return DisplayOnlyImageProxy::create(*page, rootFrameIdentifier, size, scale, colorSpace, paint);
-}
-#endif
 #endif
 
 std::unique_ptr<WebCore::WorkerClient> WebChromeClient::createWorkerClient(SerialFunctionDispatcher& dispatcher)
@@ -2202,13 +2153,13 @@ void WebChromeClient::removePlaybackTargetPickerClient(PlaybackTargetClientConte
         page->send(Messages::WebPageProxy::RemovePlaybackTargetPickerClient(contextId));
 }
 
-void WebChromeClient::showPlaybackTargetPicker(PlaybackTargetClientContextIdentifier contextId, const IntPoint& positionInMainFrameView, bool isVideo)
+void WebChromeClient::showPlaybackTargetPicker(PlaybackTargetClientContextIdentifier contextId, FrameIdentifier frameID, const IntPoint& position, bool isVideo)
 {
     RefPtr page = m_page.get();
     if (!page)
         return;
 
-    page->send(Messages::WebPageProxy::ShowPlaybackTargetPicker(contextId, FloatRect(positionInMainFrameView, FloatSize()), isVideo));
+    page->send(Messages::WebPageProxy::ShowPlaybackTargetPicker(contextId, frameID, FloatRect(position, FloatSize()), isVideo));
 }
 
 void WebChromeClient::playbackTargetPickerClientStateDidChange(PlaybackTargetClientContextIdentifier contextId, MediaProducerMediaStateFlags state)
@@ -2318,12 +2269,6 @@ IntDegrees WebChromeClient::deviceOrientation() const
     return 0;
 }
 #endif
-
-WebCore::DevicePostureType WebChromeClient::devicePostureType() const
-{
-    RefPtr page = m_page.get();
-    return page ? page->devicePostureType() : WebCore::DevicePostureType::Continuous;
-}
 
 void WebChromeClient::configureLoggingChannel(const String& channelName, WTFLogChannelState state, WTFLogLevel level)
 {

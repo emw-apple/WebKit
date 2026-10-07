@@ -16,7 +16,6 @@
 
 #include <memory>
 #include <optional>
-#include <span>
 #include <vector>
 
 #include "api/field_trials_view.h"
@@ -78,7 +77,7 @@ class TaskQueuePacedSender : public RtpPacketPacer, public RtpPacketSender {
   // Methods implementing RtpPacketPacer.
 
   void CreateProbeClusters(
-      std::span<const ProbeClusterConfig> probe_cluster_configs) override;
+      std::vector<ProbeClusterConfig> probe_cluster_configs) override;
 
   // Temporarily pause all sending.
   void Pause() override;

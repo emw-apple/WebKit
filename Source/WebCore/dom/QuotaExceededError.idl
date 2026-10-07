@@ -24,10 +24,8 @@
  */
 
 // https://webidl.spec.whatwg.org/#idl-QuotaExceededError
-// FIXME: This should be Exposed=*.
 [
-    Exposed=(Window,Worker),
-    Serializable
+    Exposed=(Window,Worker)
 ] interface QuotaExceededError : DOMException {
     constructor(optional DOMString message = "", optional QuotaExceededErrorOptions options = {});
 

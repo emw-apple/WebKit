@@ -128,8 +128,8 @@ bool LegacyRenderSVGShape::strokeContains(const FloatPoint& point, bool requires
     if (!strokeWidth())
         return false;
 
-    auto hitTestStrokeBoundingBox = this->hitTestStrokeBoundingBox();
-    if (hitTestStrokeBoundingBox.isEmpty() || !hitTestStrokeBoundingBox.contains(point))
+    auto approximateStrokeBoundingBox = this->approximateStrokeBoundingBox();
+    if (approximateStrokeBoundingBox.isEmpty() || !approximateStrokeBoundingBox.contains(point))
         return false;
 
     Color fallbackColor;
@@ -481,18 +481,6 @@ FloatRect LegacyRenderSVGShape::calculateApproximateStrokeBoundingBox() const
         return *m_strokeBoundingBox;
 
     return SVGRenderSupport::calculateApproximateStrokeBoundingBox(*this);
-}
-
-FloatRect LegacyRenderSVGShape::hitTestStrokeBoundingBox() const
-{
-    if (!style().stroke().isNone())
-        return approximateStrokeBoundingBox();
-    if (m_shapeType == ShapeType::Empty)
-        return { };
-    // When stroke is none, approximateStrokeBoundingBox() leaves out the stroke area, which pointer-events can still hit.
-    if (!m_hitTestStrokeBoundingBox)
-        m_hitTestStrokeBoundingBox = SVGRenderSupport::calculateApproximateStrokeBoundingBox(*this, StrokeBoundingBoxPurpose::HitTesting);
-    return *m_hitTestStrokeBoundingBox;
 }
 
 void LegacyRenderSVGShape::updateRepaintBoundingBox()

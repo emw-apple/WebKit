@@ -1090,7 +1090,6 @@ export class ArgumentParser {
                 case 'std::vector':
                 case 'ArrayReference':
                 case 'Span':
-                case 'FixedVector':
                 case 'Vector': {
                     const [newPosition, values] = ArgumentParser.parseVector(buffer, position, innerType, false);
                     return [newPosition, {parsedType: argumentDefinition.type, parsedValue: values}];
@@ -1227,8 +1226,6 @@ export class ArgumentParser {
                 return [position, {parsedValue: null, parsedType: 'std::nullptr_t'}];
             case 'std::monostate':
                 return [position, {parsedValue: null, parsedType: 'std::monostate'}];
-            case 'MachSendRight':
-                return [position, {parsedValue: null, parsedType: 'MachSendRight'}];
         }
         return undefined;
     }

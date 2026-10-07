@@ -221,15 +221,6 @@ AffineTransform ImageBufferBackend::baseTransform() const
     return baseTransformForBackingStore(m_backendSize, m_resolutionScale);
 }
 
-TextStream& operator<<(TextStream& ts, SetNonVolatileResult state)
-{
-    switch (state) {
-    case SetNonVolatileResult::Valid: ts << "valid"_s; break;
-    case SetNonVolatileResult::Empty: ts << "empty"_s; break;
-    }
-    return ts;
-}
-
 TextStream& operator<<(TextStream& ts, VolatilityState state)
 {
     switch (state) {

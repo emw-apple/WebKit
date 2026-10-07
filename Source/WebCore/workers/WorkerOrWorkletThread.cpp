@@ -141,6 +141,7 @@ void WorkerOrWorkletThread::workerOrWorkletThread()
     g_main_context_push_thread_default(mainContext.get());
 #endif
 
+    WorkerOrWorkletScriptController* scriptController;
     {
         // Mutex protection is necessary to ensure that we don't change m_globalScope
         // while WorkerThread::stop() is accessing it. Note that WorkerThread::stop() can
@@ -154,7 +155,7 @@ void WorkerOrWorkletThread::workerOrWorkletThread()
             return;
         }
 
-        CheckedPtr scriptController = m_globalScope->script();
+        scriptController = m_globalScope->script();
 
         if (m_runLoop->terminated()) {
             // The worker was terminated before the thread had a chance to run. Since the context didn't exist yet,
@@ -169,7 +170,7 @@ void WorkerOrWorkletThread::workerOrWorkletThread()
 
         // If the worker was somehow terminated while processing debugger commands.
         if (m_runLoop->terminated())
-            protect(m_globalScope->script())->forbidExecution();
+            scriptController->forbidExecution();
     }
 
     String exceptionMessage;

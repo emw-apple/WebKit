@@ -113,7 +113,6 @@
 #include <wtf/URL.h>
 #include <wtf/WTFProcess.h>
 #include <wtf/WallTime.h>
-#include <wtf/posix/POSIXExtras.h>
 #include <wtf/text/Base64.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuilder.h>
@@ -234,7 +233,7 @@ class GlobalObject;
 class Workers;
 
 template<typename Func>
-int runJSC(const CommandLine&, bool isWorker, NOESCAPE const Func&);
+int runJSC(const CommandLine&, bool isWorker, const Func&);
 static void checkException(GlobalObject*, bool isLastFile, bool hasException, JSValue, const CommandLine&, bool& success);
 
 class Message : public ThreadSafeRefCounted<Message> {
@@ -302,7 +301,7 @@ public:
     ~Workers();
     
     template<typename Func>
-    void broadcast(NOESCAPE const Func&);
+    void broadcast(const Func&);
     
     void report(const String&);
     String tryGetReport();
@@ -1328,7 +1327,7 @@ static RefPtr<Uint8Array> fillBufferWithContentsOfFile(FILE* file)
 
 static RefPtr<Uint8Array> fillBufferWithContentsOfFile(const String& fileName)
 {
-    FILE* f = posixFopen(fileName.utf8(), "rb"_s);
+    FILE* f = fopen(fileName.utf8().legacyCStringPointer(), "rb");
     if (!f) {
         SAFE_FPRINTF(stderr, "Could not open file: %s\n", fileName.utf8());
         return nullptr;
@@ -1367,7 +1366,7 @@ static bool fillBufferWithContentsOfFile(const String& fileName, Vector<char>& b
     struct stat statBuf;
     auto fileNameUTF = fileName.tryGetUTF8();
     if (!fileNameUTF.has_value()) {
-        SAFE_FPRINTF(stderr, "Error when parsing file name: %s\n", fileName.utf8());
+        fprintf(stderr, "Error when parsing file name: %s\n", fileName.ascii().data());
         return false;
     }
     if (FileSystem::statFile(fileNameUTF->spanIncludingNullTerminator(), statBuf) == -1) {
@@ -1379,7 +1378,7 @@ static bool fillBufferWithContentsOfFile(const String& fileName, Vector<char>& b
         SAFE_FPRINTF(stderr, "Trying to open a non-file: %s\n", *fileNameUTF);
         return false;
     }
-    auto* f = posixFopen(*fileNameUTF, "rb"_s);
+    auto* f = fopen(fileNameUTF->legacyCStringPointer(), "rb");
     if (!f) {
         SAFE_FPRINTF(stderr, "Could not open file: %s\n", *fileNameUTF);
         return false;
@@ -1559,7 +1558,7 @@ static bool fetchModuleFromLocalFileSystem(const URL& fileURL, Vector& buffer)
     if ((status.st_mode & S_IFMT) != S_IFREG)
         return false;
 
-    FILE* f = posixFopen(pathName, "r"_s);
+    FILE* f = fopen(pathName.legacyCStringPointer(), "r");
 #endif
     if (!f) {
         SAFE_FPRINTF(stderr, "Could not open file: %s\n", fileName.utf8());
@@ -1614,10 +1613,6 @@ JSPromise* GlobalObject::moduleLoaderFetch(JSGlobalObject* globalObject, JSModul
             promise->resolve(globalObject, vm, sourceCode);
             return promise;
         }
-        case ScriptFetchParameters::Type::CSS:
-            // Previous steps in the module loading process would've prevented
-            // this environment from loading CSS module scripts.
-            RELEASE_ASSERT_NOT_REACHED();
         default:
             break;
         }
@@ -2606,7 +2601,7 @@ Workers::~Workers()
 }
 
 template<typename Func>
-void Workers::broadcast(NOESCAPE const Func& func)
+void Workers::broadcast(const Func& func)
 {
     Locker locker { m_lock };
     for (Worker& worker : m_workers) {
@@ -4576,7 +4571,7 @@ CommandLine::CommandLine(CommandLineForWorkersTag)
 }
 
 template<typename Func>
-int runJSC(const CommandLine& options, bool isWorker, NOESCAPE const Func& func)
+int runJSC(const CommandLine& options, bool isWorker, const Func& func)
 {
     Worker worker(Workers::singleton(), !isWorker);
     
@@ -4678,7 +4673,7 @@ int runJSC(const CommandLine& options, bool isWorker, NOESCAPE const Func& func)
             std::sort(compileTimeKeys.begin(), compileTimeKeys.end());
             for (const ASCIICString& key : compileTimeKeys) {
                 if (key.data())
-                    SAFE_PRINTF("%40s: %.3lf ms\n", key, compileTimeStats.get(key).milliseconds());
+                    printf("%40s: %.3lf ms\n", key.data(), compileTimeStats.get(key).milliseconds());
             }
 
             if (Options::reportTotalPhaseTimes())

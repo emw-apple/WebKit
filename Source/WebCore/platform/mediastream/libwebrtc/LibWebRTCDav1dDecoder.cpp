@@ -28,7 +28,6 @@
 
 #if USE(LIBWEBRTC) && ENABLE(AV1)
 
-#include "Dav1dSPI.h"
 #include "LibWebRTCMacros.h"
 #include "Logging.h"
 #include <algorithm>
@@ -38,6 +37,7 @@
 
 WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_BEGIN
 
+#include <dav1d/dav1d.h>
 #include <webrtc/api/scoped_refptr.h>
 #include <webrtc/api/video/encoded_image.h>
 #include <webrtc/api/video/i420_buffer.h>

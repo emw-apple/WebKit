@@ -22,7 +22,6 @@
 #include <tuple>
 #include <type_traits>
 
-#include "absl/base/config.h"
 #include "absl/meta/type_traits.h"
 #include "absl/types/optional.h"
 
@@ -195,6 +194,8 @@ class node_handle<Policy, PolicyTraits, Alloc,
 
   constexpr node_handle() {}
 
+  // When C++17 is available, we can use std::launder to provide mutable
+  // access to the key. Otherwise, we provide const access.
   auto key() const
       -> decltype(PolicyTraits::mutable_key(std::declval<slot_type*>())) {
     return PolicyTraits::mutable_key(this->slot());

@@ -287,8 +287,7 @@ void WebPrintOperationGtk::endPrint()
     if (m_printContext) {
         if (auto* document = m_printContext->frame()->document()) {
             auto title = document->title().utf8();
-            auto titleCharacters = byteCast<char>(title.span());
-            metadata.fTitle = SkString(titleCharacters.data(), titleCharacters.size());
+            metadata.fTitle = SkString(title.legacyCStringPointer(), title.length());
         }
     }
 

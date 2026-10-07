@@ -174,8 +174,14 @@ WI.ConsoleManager = class ConsoleManager extends WI.Object
         if (Array.isArray(stackTrace))
             stackTrace = {callFrames: stackTrace};
 
-        if (stackTrace)
-            stackTrace = WI.StackTrace.fromPayload(target, stackTrace, {deliveredOnTarget: true});
+        if (stackTrace) {
+            let supportedTarget = target;
+            if (!target.hasDomain("Debugger")) {
+                // FIXME: <https://webkit.org/b/298909> Add Debugger support for FrameTarget.
+                supportedTarget = WI.assumingMainTarget();
+            }
+            stackTrace = WI.StackTrace.fromPayload(supportedTarget, stackTrace);
+        }
 
         const request = null;
         let message = new WI.ConsoleMessage(target, source, level, text, type, url, line, column, repeatCount, parameters, stackTrace, request, timestamp);

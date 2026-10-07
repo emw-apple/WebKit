@@ -89,19 +89,21 @@ void WebGeolocationClient::startUpdating(const String& authorizationToken, bool 
     UNUSED_PARAM(enableHighAccuracy);
 #endif
 
-    [protect(m_webView) _registerWithGeolocationProvider];
+    RetainPtr webView = m_webView;
+    [[webView _geolocationProvider] registerWebView:webView];
 }
 
 void WebGeolocationClient::stopUpdating()
 {
-    [protect(m_webView) _unregisterFromGeolocationProvider];
+    RetainPtr webView = m_webView;
+    [[webView _geolocationProvider] unregisterWebView:webView];
 }
 
 #if PLATFORM(IOS_FAMILY)
 void WebGeolocationClient::setEnableHighAccuracy(bool wantsHighAccuracy)
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    [[protect(m_webView) _geolocationProvider] setEnableHighAccuracy:wantsHighAccuracy];
+    [[m_webView _geolocationProvider] setEnableHighAccuracy:wantsHighAccuracy];
     END_BLOCK_OBJC_EXCEPTIONS
 }
 #endif
@@ -131,7 +133,7 @@ void WebGeolocationClient::requestPermission(WebCore::Geolocation& geolocation)
     CallUIDelegate(webView, selector, webOrigin.get(), protect(kit(frame.get())), listener.get());
 #else
     RetainPtr<WebGeolocationProviderInitializationListener> listener = adoptNS([[WebGeolocationProviderInitializationListener alloc] initWithGeolocation:geolocation]);
-    [[webView _geolocationProvider] initializeGeolocationForWebView:webView listener:listener.get()];
+    [[m_webView _geolocationProvider] initializeGeolocationForWebView:m_webView listener:listener.get()];
 #endif
     END_BLOCK_OBJC_EXCEPTIONS
 }
@@ -222,13 +224,13 @@ std::optional<WebCore::GeolocationPositionData> WebGeolocationClient::lastPositi
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
-    RefPtr frame = m_geolocation->frame();
+    auto* frame = m_geolocation->frame();
     if (!frame)
         return;
     RetainPtr webOrigin = adoptNS([[WebSecurityOrigin alloc] _initWithWebCoreSecurityOrigin:protect(protect(frame->document())->securityOrigin()).ptr()]);
     auto listener = adoptNS([[WebGeolocationPolicyListener alloc] initWithGeolocation:m_geolocation.get() forWebView:webView]);
     SEL selector = @selector(webView:decidePolicyForGeolocationRequestFromOrigin:frame:listener:);
-    CallUIDelegate(webView, selector, webOrigin.get(), protect(kit(frame)), listener.get());
+    CallUIDelegate(webView, selector, webOrigin.get(), kit(frame), listener.get());
 
     END_BLOCK_OBJC_EXCEPTIONS
 }

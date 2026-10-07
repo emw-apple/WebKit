@@ -40,10 +40,7 @@ public:
 
     enum class MIMETypeCheckHint { Strict, Lax };
     enum class Error : bool { UnsuccessfulRequest, InvalidMIMEType };
-    // Per spec, CSS stylesheets loaded as JavaScript modules are treated as
-    // UTF-8 encoded, regardless of any encoding hints.
-    enum class ForceUTF8Encoding : bool { No, Yes };
-    std::expected<String, Error> sheetText(MIMETypeCheckHint = MIMETypeCheckHint::Strict, ForceUTF8Encoding = ForceUTF8Encoding::No) const;
+    std::expected<String, Error> sheetText(MIMETypeCheckHint = MIMETypeCheckHint::Strict) const;
 
     RefPtr<StyleSheetContents> restoreParsedStyleSheet(const CSSParserContext&, CachePolicy, FrameLoader&);
     void saveParsedStyleSheet(Ref<StyleSheetContents>&&);

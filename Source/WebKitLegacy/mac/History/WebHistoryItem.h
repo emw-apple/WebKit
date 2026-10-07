@@ -33,6 +33,7 @@
 #import <AppKit/AppKit.h>
 #endif
 
+@class WebHistoryItemPrivate;
 @class NSURL;
 
 /*
@@ -41,7 +42,7 @@
     either the item's title, alternate title, url strings, or last visited interval
     changes.  The userInfo will be nil.
 */
-extern NSString * const WebHistoryItemChangedNotification WEBKIT_DEPRECATED_MAC(10_3, 10_14);
+extern NSString *WebHistoryItemChangedNotification WEBKIT_DEPRECATED_MAC(10_3, 10_14);
 
 /*!
     @class WebHistoryItem
@@ -52,6 +53,10 @@ extern NSString * const WebHistoryItemChangedNotification WEBKIT_DEPRECATED_MAC(
 */
 WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14)
 @interface WebHistoryItem : NSObject <NSCopying>
+{
+@package
+    WebHistoryItemPrivate *_private;
+}
 
 /*!
     @method initWithURLString:title:lastVisitedTimeInterval:

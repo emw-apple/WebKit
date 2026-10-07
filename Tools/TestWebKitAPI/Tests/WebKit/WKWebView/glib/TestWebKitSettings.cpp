@@ -34,7 +34,6 @@
 #include "WebKitTestServer.h"
 #include "WebViewTest.h"
 #include <wtf/HashSet.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/UTF8CStringView.h>
@@ -523,22 +522,22 @@ void testWebKitSettingsApplyFromConfigFile(Test* test, gconstpointer)
 {
     GRefPtr<WebKitSettings> settings = adoptGRef(webkit_settings_new());
     GUniquePtr<GKeyFile> key_file(g_key_file_new());
-    auto key_file_contents = "[websettings]\n" \
+    const char* key_file_contents = "[websettings]\n" \
         "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36\n" \
         "enable-webaudio = 0\n" \
-        "enable-webrtc = true\n"_s;
+        "enable-webrtc = true\n";
 
-    auto invalidGroup = "[foo]\nbar = 42\n"_s;
-    auto unknownSetting = "[websettings]\n" \
+    const char* invalidGroup = "[foo]\nbar = 42\n";
+    const char* unknownSetting = "[websettings]\n" \
         "iamnotasetting = yes\n" \
-        "enable-webaudio = 0\n"_s;
-    auto invalidSettingType = "[websettings]\n" \
-        "enable-webaudio = ishouldnotbeastring\n"_s;
+        "enable-webaudio = 0\n";
+    const char* invalidSettingType = "[websettings]\n" \
+        "enable-webaudio = ishouldnotbeastring\n";
     auto bigIntNotSupported = makeString("[websettings]\nminimum-font-size = "_s, std::numeric_limits<uint64_t>::max(), '\n');
     GUniqueOutPtr<GError> error;
 
     // Loading settings from a file not containing a websettings group should raise an error.
-    gKeyFileLoadFromData(key_file.get(), invalidGroup, G_KEY_FILE_NONE, &error.outPtr());
+    g_key_file_load_from_data(key_file.get(), invalidGroup, strlen(invalidGroup), G_KEY_FILE_NONE, &error.outPtr());
     g_assert_no_error(error.get());
     g_assert_false(webkit_settings_apply_from_key_file(settings.get(), key_file.get(), "websettings", &error.outPtr()));
     g_assert_error(error.get(), G_KEY_FILE_ERROR, G_KEY_FILE_ERROR_INVALID_VALUE);
@@ -547,27 +546,27 @@ void testWebKitSettingsApplyFromConfigFile(Test* test, gconstpointer)
     // Check default values of settings, before applying key_file settings.
     g_assert_true(webkit_settings_get_enable_webaudio(settings.get()));
     g_assert_true(webkit_settings_get_enable_webrtc(settings.get()));
-    auto defaultUserAgent = UTF8CString::unsafeFromUTF8(webkit_settings_get_user_agent(settings.get()));
+    UTF8CString defaultUserAgent { byteCast<char8_t>(webkit_settings_get_user_agent(settings.get())) };
 
     // Loading settings from a file that contains an unknown setting should raise an error.
-    gKeyFileLoadFromData(key_file.get(), unknownSetting, G_KEY_FILE_NONE, &error.outPtr());
+    g_key_file_load_from_data(key_file.get(), unknownSetting, strlen(unknownSetting), G_KEY_FILE_NONE, &error.outPtr());
     g_assert_no_error(error.get());
     g_assert_false(webkit_settings_apply_from_key_file(settings.get(), key_file.get(), "websettings", &error.outPtr()));
     g_assert_error(error.get(), G_KEY_FILE_ERROR, G_KEY_FILE_ERROR_INVALID_VALUE);
 
     // Mismatching a setting value type should raise an error.
-    gKeyFileLoadFromData(key_file.get(), invalidSettingType, G_KEY_FILE_NONE, &error.outPtr());
+    g_key_file_load_from_data(key_file.get(), invalidSettingType, strlen(invalidSettingType), G_KEY_FILE_NONE, &error.outPtr());
     g_assert_no_error(error.get());
     g_assert_false(webkit_settings_apply_from_key_file(settings.get(), key_file.get(), "websettings", &error.outPtr()));
     g_assert_error(error.get(), G_KEY_FILE_ERROR, G_KEY_FILE_ERROR_INVALID_VALUE);
 
     // Overflowing uint settings should raise an error.
-    gKeyFileLoadFromData(key_file.get(), bigIntNotSupported.utf8(), G_KEY_FILE_NONE, &error.outPtr());
+    g_key_file_load_from_data(key_file.get(), bigIntNotSupported.utf8().legacyCStringPointer(), bigIntNotSupported.length(), G_KEY_FILE_NONE, &error.outPtr());
     g_assert_no_error(error.get());
     g_assert_false(webkit_settings_apply_from_key_file(settings.get(), key_file.get(), "websettings", &error.outPtr()));
     g_assert_error(error.get(), G_KEY_FILE_ERROR, G_KEY_FILE_ERROR_INVALID_VALUE);
 
-    g_assert_true(gKeyFileLoadFromData(key_file.get(), key_file_contents, G_KEY_FILE_NONE, &error.outPtr()));
+    g_assert_true(g_key_file_load_from_data(key_file.get(), key_file_contents, strlen(key_file_contents), G_KEY_FILE_NONE, &error.outPtr()));
     g_assert_no_error(error.get());
 
     g_assert_true(webkit_settings_apply_from_key_file(settings.get(), key_file.get(), "websettings", &error.outPtr()));
@@ -577,8 +576,8 @@ void testWebKitSettingsApplyFromConfigFile(Test* test, gconstpointer)
     g_assert_false(webkit_settings_get_enable_webaudio(settings.get()));
     g_assert_true(webkit_settings_get_enable_webrtc(settings.get()));
 
-    auto newUserAgent = UTF8CString::unsafeFromUTF8(webkit_settings_get_user_agent(settings.get()));
-    ASSERT_CMP_CSTRING(newUserAgent, !=, defaultUserAgent);
+    UTF8CString newUserAgent { byteCast<char8_t>(webkit_settings_get_user_agent(settings.get())) };
+    g_assert_cmpstr(newUserAgent.legacyCStringPointer(), !=, defaultUserAgent.legacyCStringPointer());
 }
 
 #if PLATFORM(GTK)
@@ -586,12 +585,12 @@ static UTF8CString convertWebViewMainResourceDataToUTF8CString(WebViewTest* test
 {
     size_t mainResourceDataSize = 0;
     const char* mainResourceData = test->mainResourceData(mainResourceDataSize);
-    return UTF8CString::fromUTF8(std::span { mainResourceData, mainResourceDataSize });
+    return UTF8CString { byteCast<char8_t>(std::span { mainResourceData, mainResourceDataSize }) };
 }
 
 static void assertThatUserAgentIsSentInHeaders(WebViewTest* test, UTF8CStringView userAgent)
 {
-    test->loadURI(gServer->getURIForPath("/"));
+    test->loadURI(gServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     ASSERT_CMP_CSTRING(convertWebViewMainResourceDataToUTF8CString(test), ==, userAgent.utf8());
 }
@@ -599,18 +598,18 @@ static void assertThatUserAgentIsSentInHeaders(WebViewTest* test, UTF8CStringVie
 static void testWebKitSettingsUserAgent(WebViewTest* test, gconstpointer)
 {
     GRefPtr<WebKitSettings> settings = adoptGRef(webkit_settings_new());
-    auto defaultUserAgent = UTF8CString::unsafeFromUTF8(webkit_settings_get_user_agent(settings.get()));
+    UTF8CString defaultUserAgent { byteCast<char8_t>(webkit_settings_get_user_agent(settings.get())) };
     webkit_web_view_set_settings(test->webView(), settings.get());
 
     g_assert_nonnull(g_strstr_len(defaultUserAgent.legacyCStringPointer(), -1, "AppleWebKit"));
     g_assert_nonnull(g_strstr_len(defaultUserAgent.legacyCStringPointer(), -1, "Safari"));
 
     webkit_settings_set_user_agent(settings.get(), 0);
-    ASSERT_CMP_CSTRING(defaultUserAgent, ==, webkit_settings_get_user_agent(settings.get()));
+    g_assert_cmpstr(defaultUserAgent.legacyCStringPointer(), ==, webkit_settings_get_user_agent(settings.get()));
     assertThatUserAgentIsSentInHeaders(test, defaultUserAgent);
 
     webkit_settings_set_user_agent(settings.get(), "");
-    ASSERT_CMP_CSTRING(defaultUserAgent, ==, webkit_settings_get_user_agent(settings.get()));
+    g_assert_cmpstr(defaultUserAgent.legacyCStringPointer(), ==, webkit_settings_get_user_agent(settings.get()));
 
     const char* funkyUserAgent = "Funky!";
     webkit_settings_set_user_agent(settings.get(), funkyUserAgent);
@@ -632,7 +631,7 @@ static void testWebKitSettingsUserAgent(WebViewTest* test, gconstpointer)
     g_assert_nonnull(g_strstr_len(newUserAgent, -1, "3.4.5"));
     g_assert_nonnull(g_strstr_len(newUserAgent, -1, "WebCatGTK+"));
 
-    GUniquePtr<char> applicationUserAgent(SAFE_G_STRDUP_PRINTF("%s %s", defaultUserAgent, "WebCatGTK+/3.4.5"));
+    GUniquePtr<char> applicationUserAgent(g_strdup_printf("%s %s", defaultUserAgent.legacyCStringPointer(), "WebCatGTK+/3.4.5"));
     g_assert_cmpstr(applicationUserAgent.get(), ==, webkit_settings_get_user_agent(settings.get()));
 
     // Test setting user agent built via WebKitUserAgent
@@ -645,7 +644,7 @@ static void testWebKitSettingsUserAgent(WebViewTest* test, gconstpointer)
 
     // Setting user agent to nullptr reverts to default user agent.
     webkit_settings_set_user_agent(settings.get(), nullptr);
-    ASSERT_CMP_CSTRING(webkit_settings_get_user_agent(settings.get()), ==, defaultUserAgent);
+    g_assert_cmpstr(webkit_settings_get_user_agent(settings.get()), ==, defaultUserAgent.legacyCStringPointer());
 }
 #endif // PLATFORM(GTK)
 

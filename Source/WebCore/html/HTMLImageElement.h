@@ -232,7 +232,7 @@ private:
 
     NeedsPostConnectionSteps insertionSteps(InsertionType, ContainerNode&) override;
     void removingSteps(RemovalType, ContainerNode&) override;
-    void movingSteps(MovingType, ContainerNode&) override;
+    void movingSteps(IsSubtreeRoot, ContainerNode&) override;
 
     bool NODELETE isFormListedElement() const final { return false; }
     FormAssociatedElement* NODELETE asFormAssociatedElement() final { return this; }
@@ -256,8 +256,7 @@ private:
 
     std::optional<float> autoSizesLayoutWidth() const;
 
-    // https://html.spec.whatwg.org/multipage/images.html#density-corrected-intrinsic-width-and-height
-    LayoutSize densityCorrectedNaturalSize() const;
+    LayoutSize naturalSize() const;
 
     void copyNonAttributePropertiesFromElement(const Element&) final;
 

@@ -296,7 +296,6 @@ WI.ResourceDetailsSidebarPanel = class ResourceDetailsSidebarPanel extends WI.De
             const options = {
                 dontFloat: true,
                 ignoreSearchTab: true,
-                stackTrace: this._resource.initiatorStackTrace,
             };
             this._initiatorRow.value = WI.createSourceCodeLocationLink(initiatorLocation, options);
         } else

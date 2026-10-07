@@ -25,7 +25,6 @@
 #include "LegacyRenderSVGHiddenContainer.h"
 #include "NodeDocument.h"
 #include "RenderSVGHiddenContainer.h"
-#include "SVGElementTypeHelpers.h"
 #include "SVGNames.h"
 #include "SVGPropertyOwnerRegistry.h"
 #include "Settings.h"
@@ -36,7 +35,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGDefsElement);
 
 inline SVGDefsElement::SVGDefsElement(const QualifiedName& tagName, Document& document)
-    : SVGGraphicsElement(tagName, document, PropertyRegistry::singleton())
+    : SVGGraphicsElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::defsTag));
 }

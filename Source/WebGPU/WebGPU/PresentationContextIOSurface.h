@@ -44,7 +44,7 @@ public:
 
     virtual ~PresentationContextIOSurface();
 
-    void configure(const WebGPU::CanvasConfiguration&) override;
+    void configure(Device&, const WGPUSwapChainDescriptor&) override;
     void unconfigure() override;
 
     void present(uint32_t) override;
@@ -52,7 +52,6 @@ public:
     TextureView* getCurrentTextureView() override;
 
     Seconds lastFrameGPUCost() const override { return m_lastDrainedFrameGPUCost; }
-    Seconds lastFramePresentStall() const override { return m_lastFramePresentStall; }
 
     bool isPresentationContextIOSurface() const override { return true; }
 
@@ -83,7 +82,6 @@ private:
     Deque<Ref<Texture>> m_inFlightFrames;
     size_t m_maximumInFlightFrames { 0 };
     Seconds m_lastDrainedFrameGPUCost { 0_s };
-    Seconds m_lastFramePresentStall { 0_s };
 #if HAVE(IOSURFACE_SET_OWNERSHIP_IDENTITY) && HAVE(TASK_IDENTITY_TOKEN)
     std::optional<const MachSendRight> m_webProcessID;
 #endif

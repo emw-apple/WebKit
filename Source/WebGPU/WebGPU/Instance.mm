@@ -170,31 +170,45 @@ static NSArray<id<MTLDevice>> *sortedDevices(NSArray<id<MTLDevice>> *devices, WG
     }
 }
 
-void Instance::requestAdapter(const WebGPU::RequestAdapterOptions& options, CompletionHandler<void(RefPtr<Adapter>&&)>&& callback)
+void Instance::requestAdapter(const WGPURequestAdapterOptions& options, CompletionHandler<void(WGPURequestAdapterStatus, Ref<Adapter>&&, String&&)>&& callback)
 {
     auto devices = getDevices();
 
     // FIXME: Deal with options.compatibleSurface.
 
-    auto sortedDevices = WebGPU::Metal::sortedDevices(devices, options.powerPreference ? toAPI(*options.powerPreference) : WGPUPowerPreference_Undefined);
+    auto sortedDevices = WebGPU::Metal::sortedDevices(devices, options.powerPreference);
 
-    // There is no fallback adapter.
-    if (options.forceFallbackAdapter || !sortedDevices || !sortedDevices.count || !sortedDevices[0]) {
-        callback(nullptr);
+    if (options.forceFallbackAdapter) {
+        callback(WGPURequestAdapterStatus_Unavailable, Adapter::createInvalid(*this), "No adapters present"_s);
+        return;
+    }
+
+    if (!sortedDevices) {
+        callback(WGPURequestAdapterStatus_Error, Adapter::createInvalid(*this), "Unknown power preference"_s);
+        return;
+    }
+
+    if (!sortedDevices.count) {
+        callback(WGPURequestAdapterStatus_Unavailable, Adapter::createInvalid(*this), "No adapters present"_s);
+        return;
+    }
+
+    if (!sortedDevices[0]) {
+        callback(WGPURequestAdapterStatus_Error, Adapter::createInvalid(*this), "Adapter is internally null"_s);
         return;
     }
 
     auto device = sortedDevices[0];
 
-    // The device does not support WebGPU.
     auto deviceCapabilities = hardwareCapabilities(device);
+
     if (!deviceCapabilities) {
-        callback(nullptr);
+        callback(WGPURequestAdapterStatus_Error, Adapter::createInvalid(*this), "Device does not support WebGPU"_s);
         return;
     }
 
     // FIXME: this should be asynchronous
-    callback(Adapter::create(sortedDevices[0], *this, options.xrCompatible, WTF::move(*deviceCapabilities)));
+    callback(WGPURequestAdapterStatus_Success, Adapter::create(sortedDevices[0], *this, options.xrCompatible, WTF::move(*deviceCapabilities)), { });
 }
 
 void Instance::retainDevice(Device& device, id<MTLCommandBuffer> commandBuffer)
@@ -263,31 +277,27 @@ void wgpuInstanceProcessEvents(WGPUInstance instance)
     protect(WebGPU::Metal::fromAPI(instance))->processEvents();
 }
 
-// The C API reports an adapter that is not available with WGPURequestAdapterStatus_Unavailable and no adapter.
-static void requestAdapter(WGPUInstance instance, const WGPURequestAdapterOptions& options, Function<void(WGPURequestAdapterStatus, WGPUAdapter, const char*)>&& callback)
-{
-    Ref protectedInstance = WebGPU::Metal::fromAPI(instance);
-    auto apiOptions = WebGPU::Metal::fromAPI(options);
-    if (!apiOptions)
-        return callback(WGPURequestAdapterStatus_Error, nullptr, "Unknown power preference");
-    protectedInstance->requestAdapter(*apiOptions, [callback = WTF::move(callback)](RefPtr<WebGPU::Metal::Adapter>&& adapter) {
-        if (!adapter)
-            return callback(WGPURequestAdapterStatus_Unavailable, nullptr, "No adapters present");
-        callback(WGPURequestAdapterStatus_Success, WebGPU::Metal::releaseToAPI(adapter.releaseNonNull()), "");
-    });
-}
-
 void wgpuInstanceRequestAdapter(WGPUInstance instance, const WGPURequestAdapterOptions* options, WGPURequestAdapterCallback callback, void* userdata)
 {
-    requestAdapter(instance, *options, [callback, userdata](WGPURequestAdapterStatus status, WGPUAdapter adapter, const char* message) {
-        callback(status, adapter, message, userdata);
+    protect(WebGPU::Metal::fromAPI(instance))->requestAdapter(*options, [callback, userdata](WGPURequestAdapterStatus status, Ref<WebGPU::Metal::Adapter>&& adapter, String&& message) {
+        if (status != WGPURequestAdapterStatus_Success) {
+            callback(status, nullptr, message.utf8().legacyCStringPointer(), userdata);
+            return;
+        }
+
+        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(adapter)), message.utf8().legacyCStringPointer(), userdata);
     });
 }
 
 void wgpuInstanceRequestAdapterWithBlock(WGPUInstance instance, WGPURequestAdapterOptions const * options, WGPURequestAdapterBlockCallback callback)
 {
-    requestAdapter(instance, *options, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPURequestAdapterStatus status, WGPUAdapter adapter, const char* message) {
-        callback(status, adapter, message);
+    protect(WebGPU::Metal::fromAPI(instance))->requestAdapter(*options, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPURequestAdapterStatus status, Ref<WebGPU::Metal::Adapter>&& adapter, String&& message) {
+        if (status != WGPURequestAdapterStatus_Success) {
+            callback(status, nullptr, message.utf8().legacyCStringPointer());
+            return;
+        }
+
+        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(adapter)), message.utf8().legacyCStringPointer());
     });
 }
 

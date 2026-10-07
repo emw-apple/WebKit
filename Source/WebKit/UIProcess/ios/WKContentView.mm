@@ -38,7 +38,6 @@
 #import "ModelProcessProxy.h"
 #import "PDFDisplayMode.h"
 #import "PageClientImplIOS.h"
-#import "PendingSnapshotDrawing.h"
 #import "PickerDismissalReason.h"
 #import "PrintInfo.h"
 #import "RemoteLayerTreeCommitBundle.h"
@@ -681,7 +680,10 @@ typedef NS_ENUM(NSInteger, _WKPrintRenderingCallbackType) {
 
     bool wasStableState = page->inStableState();
 
-    auto layoutViewport = page->updateVisibleContentRectsAndAdjustLayers(visibleContentRectUpdateInfo, sendEvenIfUnchanged);
+    page->updateVisibleContentRects(visibleContentRectUpdateInfo, sendEvenIfUnchanged);
+
+    auto layoutViewport = page->unconstrainedLayoutViewportRect();
+    page->adjustLayersForLayoutViewport(page->unobscuredContentRect().location(), layoutViewport, page->displayedContentScale());
 
     _sizeChangedSinceLastVisibleContentRectUpdate = NO;
     self.webView->_needsScrollend = NO;
@@ -1369,7 +1371,7 @@ static void storeAccessibilityRemoteConnectionInformation(id element, pid_t pid,
         if (!callbackID)
             return;
 
-        WebKit::PendingSnapshotDrawing::wait(*callbackID);
+        protect(protect(_page)->legacyMainFrameProcess().connection())->waitForAsyncReplyAndDispatchImmediately<Messages::WebPage::DrawToPDFiOS>(*callbackID, Seconds::infinity());
         return;
     }
 
@@ -1413,7 +1415,7 @@ static void storeAccessibilityRemoteConnectionInformation(id element, pid_t pid,
         if (!callbackID)
             return;
 
-        WebKit::PendingSnapshotDrawing::wait(*callbackID);
+        protect(protect(_page)->legacyMainFrameProcess().connection())->waitForAsyncReplyAndDispatchImmediately<Messages::WebPage::DrawRectToImage>(*callbackID, Seconds::infinity());
         return;
     }
 

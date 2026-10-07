@@ -27,7 +27,6 @@
 #include "KeyedEncoderGlib.h"
 
 #include "SharedBuffer.h"
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GSpanExtras.h>
 #include <wtf/text/CString.h>
 
@@ -54,33 +53,33 @@ KeyedEncoderGlib::~KeyedEncoderGlib()
 
 void KeyedEncoderGlib::encodeBytes(const String& key, std::span<const uint8_t> bytes)
 {
-    GRefPtr gBytes = gBytesNewStatic(bytes);
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", key.utf8(), g_variant_new_from_bytes(G_VARIANT_TYPE("ay"), gBytes.get(), TRUE));
+    GRefPtr<GBytes> gBytes = adoptGRef(g_bytes_new_static(bytes.data(), bytes.size()));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", key.utf8().legacyCStringPointer(), g_variant_new_from_bytes(G_VARIANT_TYPE("ay"), gBytes.get(), TRUE));
 }
 
 void KeyedEncoderGlib::encodeBool(const String& key, bool value)
 {
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", key.utf8(), g_variant_new_boolean(value));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", key.utf8().legacyCStringPointer(), g_variant_new_boolean(value));
 }
 
 void KeyedEncoderGlib::encodeUInt32(const String& key, uint32_t value)
 {
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", key.utf8(), g_variant_new_uint32(value));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", key.utf8().legacyCStringPointer(), g_variant_new_uint32(value));
 }
     
 void KeyedEncoderGlib::encodeUInt64(const String& key, uint64_t value)
 {
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", key.utf8(), g_variant_new_uint64(value));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", key.utf8().legacyCStringPointer(), g_variant_new_uint64(value));
 }
 
 void KeyedEncoderGlib::encodeInt32(const String& key, int32_t value)
 {
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", key.utf8(), g_variant_new_int32(value));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", key.utf8().legacyCStringPointer(), g_variant_new_int32(value));
 }
 
 void KeyedEncoderGlib::encodeInt64(const String& key, int64_t value)
 {
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", key.utf8(), g_variant_new_int64(value));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", key.utf8().legacyCStringPointer(), g_variant_new_int64(value));
 }
 
 void KeyedEncoderGlib::encodeFloat(const String& key, float value)
@@ -90,12 +89,12 @@ void KeyedEncoderGlib::encodeFloat(const String& key, float value)
 
 void KeyedEncoderGlib::encodeDouble(const String& key, double value)
 {
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", key.utf8(), g_variant_new_double(value));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", key.utf8().legacyCStringPointer(), g_variant_new_double(value));
 }
 
 void KeyedEncoderGlib::encodeString(const String& key, const String& value)
 {
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", key.utf8(), gVariantNewString(value.utf8()));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", key.utf8().legacyCStringPointer(), g_variant_new_string(value.utf8().legacyCStringPointer()));
 }
 
 void KeyedEncoderGlib::beginObject(const String& key)
@@ -108,7 +107,7 @@ void KeyedEncoderGlib::beginObject(const String& key)
 void KeyedEncoderGlib::endObject()
 {
     GVariantBuilder* builder = m_variantBuilderStack.takeLast();
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", m_objectStack.last().first.utf8(), g_variant_builder_end(builder));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", m_objectStack.last().first.utf8().legacyCStringPointer(), g_variant_builder_end(builder));
     m_objectStack.removeLast();
 }
 
@@ -130,7 +129,7 @@ void KeyedEncoderGlib::endArrayElement()
 
 void KeyedEncoderGlib::endArray()
 {
-    gVariantBuilderAdd(m_variantBuilderStack.last(), "{sv}", m_arrayStack.last().first.utf8(), g_variant_builder_end(m_arrayStack.last().second.get()));
+    g_variant_builder_add(m_variantBuilderStack.last(), "{sv}", m_arrayStack.last().first.utf8().legacyCStringPointer(), g_variant_builder_end(m_arrayStack.last().second.get()));
     m_arrayStack.removeLast();
 }
 

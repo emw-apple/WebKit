@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
-#include <tuple>
 #include <utility>
 
 #include "api/scoped_refptr.h"
@@ -31,6 +30,7 @@ namespace {
 using Packet = ForwardErrorCorrection::Packet;
 using ReceivedFecPacket = ForwardErrorCorrection::ReceivedFecPacket;
 using ::testing::ElementsAreArray;
+using ::testing::make_tuple;
 using ::testing::SizeIs;
 
 // General. Assume single-stream protection.
@@ -119,8 +119,8 @@ void VerifyReadHeaders(size_t expected_fec_header_size,
             read_packet.protection_length);
   // Ensure that the K-bits are removed and the packet mask has been packed.
   EXPECT_THAT(
-      std::make_tuple(read_packet.pkt->data.cdata() + packet_mask_offset,
-                      read_packet.protected_streams[0].packet_mask_size),
+      make_tuple(read_packet.pkt->data.cdata() + packet_mask_offset,
+                 read_packet.protected_streams[0].packet_mask_size),
       ElementsAreArray(expected_packet_mask, expected_packet_mask_size));
 }
 
@@ -135,8 +135,7 @@ void VerifyFinalizedHeaders(const uint8_t* expected_packet_mask,
   EXPECT_EQ(kMediaStartSeqNum,
             ByteReader<uint16_t>::ReadBigEndian(packet + 16));
   EXPECT_THAT(
-      std::make_tuple(packet + kFlexfecPacketMaskOffset,
-                      expected_packet_mask_size),
+      make_tuple(packet + kFlexfecPacketMaskOffset, expected_packet_mask_size),
       ElementsAreArray(expected_packet_mask, expected_packet_mask_size));
 }
 
@@ -158,14 +157,13 @@ void VerifyWrittenAndReadHeaders(size_t expected_fec_header_size,
             read_packet.protection_length);
   // Verify that the call to ReadFecHeader did normalize the packet masks.
   EXPECT_THAT(
-      std::make_tuple(read_packet.pkt->data.cdata() + kFlexfecPacketMaskOffset,
-                      read_packet.protected_streams[0].packet_mask_size),
+      make_tuple(read_packet.pkt->data.cdata() + kFlexfecPacketMaskOffset,
+                 read_packet.protected_streams[0].packet_mask_size),
       ElementsAreArray(expected_packet_mask, expected_packet_mask_size));
   // Verify that the call to ReadFecHeader did not tamper with the payload.
   EXPECT_THAT(
-      std::make_tuple(
-          read_packet.pkt->data.cdata() + read_packet.fec_header_size,
-          read_packet.pkt->data.size() - read_packet.fec_header_size),
+      make_tuple(read_packet.pkt->data.cdata() + read_packet.fec_header_size,
+                 read_packet.pkt->data.size() - read_packet.fec_header_size),
       ElementsAreArray(written_packet.data.cdata() + expected_fec_header_size,
                        written_packet.data.size() - expected_fec_header_size));
 }

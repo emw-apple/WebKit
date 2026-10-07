@@ -29,7 +29,6 @@
 
 #include "RealtimeMediaSource.h"
 #include <wtf/Lock.h>
-#include <wtf/MediaTime.h>
 #include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>
 
@@ -73,7 +72,6 @@ private:
 #if USE(GSTREAMER)
     GstAudioInfo m_info;
     GRefPtr<GstCaps> m_caps;
-    MediaTime m_baseTime { MediaTime::invalidTime() };
 #endif
 };
 

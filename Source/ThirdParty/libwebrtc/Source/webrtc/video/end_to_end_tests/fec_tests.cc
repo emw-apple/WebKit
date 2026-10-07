@@ -372,14 +372,11 @@ TEST_F(FecEndToEndTest, RecoversWithFlexfecAndSendsCorrespondingRtcp) {
 }
 
 TEST_F(FecEndToEndTest, ReceivedUlpfecPacketsNotNacked) {
-  static constexpr int kWarmupPackets = 30;
-
   class UlpfecNackObserver : public test::EndToEndTest {
    public:
     UlpfecNackObserver()
         : EndToEndTest(test::VideoTestConstants::kDefaultTimeout),
-          state_(kWarmup),
-          num_packets_sent_(0),
+          state_(kFirstPacket),
           ulpfec_sequence_number_(0),
           has_last_sequence_number_(false),
           last_sequence_number_(0),
@@ -419,14 +416,8 @@ TEST_F(FecEndToEndTest, ReceivedUlpfecPacketsNotNacked) {
       bool ulpfec_packet = encapsulated_payload_type ==
                            test::VideoTestConstants::kUlpfecPayloadType;
       switch (state_) {
-        case kWarmup:
-          // Allow an initial burst of packets through without loss so that
-          // RTCP SR/RR can complete at least one round-trip and establish
-          // measured RTT > kLowRttNackMs (20 ms), and so that transport
-          // thread bridges and encoder state stabilize before simulating loss.
-          if (++num_packets_sent_ >= kWarmupPackets) {
-            state_ = kDropEveryOtherPacketUntilUlpfec;
-          }
+        case kFirstPacket:
+          state_ = kDropEveryOtherPacketUntilUlpfec;
           break;
         case kDropEveryOtherPacketUntilUlpfec:
           if (ulpfec_packet) {
@@ -488,16 +479,11 @@ TEST_F(FecEndToEndTest, ReceivedUlpfecPacketsNotNacked) {
       return config;
     }
 
-    // In hybrid NACK/FEC mode, VCMNackFecMethod::BitRateTooLowForFec() disables
-    // FEC when estimated bytes per frame falls below kMaxBytesPerFrameForFecLow
-    // (400 bytes for resolution <= 352x288, or 96 kbps at 30 fps) when RTT is
-    // below 200 ms. When packet loss occurs, BWE drops towards min_bitrate_bps.
-    // If min_bitrate_bps is below 96 kbps, FEC will be permanently shut off,
-    // causing the test to wait forever for FEC packets. Ensure min_bitrate_bps
-    // is above this threshold.
+    // TODO(holmer): Investigate why we don't send FEC packets when the bitrate
+    // is 10 kbps.
     void ModifySenderBitrateConfig(
         BitrateConstraints* bitrate_config) override {
-      const int kMinBitrateBps = 100000;
+      const int kMinBitrateBps = 30000;
       bitrate_config->min_bitrate_bps = kMinBitrateBps;
     }
 
@@ -539,20 +525,19 @@ TEST_F(FecEndToEndTest, ReceivedUlpfecPacketsNotNacked) {
           << "Timed out while waiting for FEC packets to be received.";
     }
 
-    Mutex mutex_;
     enum {
-      kWarmup,
+      kFirstPacket,
       kDropEveryOtherPacketUntilUlpfec,
       kDropAllMediaPacketsUntilUlpfec,
       kDropOneMediaPacket,
       kPassOneMediaPacket,
       kVerifyUlpfecPacketNotInNackList,
-    } state_ RTC_GUARDED_BY(mutex_);
+    } state_;
 
-    int num_packets_sent_ RTC_GUARDED_BY(mutex_);
-    uint16_t ulpfec_sequence_number_ RTC_GUARDED_BY(mutex_);
-    bool has_last_sequence_number_ RTC_GUARDED_BY(mutex_);
-    uint16_t last_sequence_number_ RTC_GUARDED_BY(mutex_);
+    Mutex mutex_;
+    uint16_t ulpfec_sequence_number_ RTC_GUARDED_BY(&mutex_);
+    bool has_last_sequence_number_;
+    uint16_t last_sequence_number_;
     test::FunctionVideoEncoderFactory encoder_factory_;
     InternalDecoderFactory decoder_factory_;
   } test;

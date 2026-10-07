@@ -94,7 +94,7 @@ public:
     SVGAnimatedEnumeration& lengthAdjustAnimated() { return m_lengthAdjust; }
 
 protected:
-    SVGTextContentElement(const QualifiedName&, Document&, const SVGPropertyRegistry&);
+    SVGTextContentElement(const QualifiedName&, Document&, UniqueRef<SVGPropertyRegistry>&&);
 
     bool isValid() const override { return SVGTests::isValid(); }
 

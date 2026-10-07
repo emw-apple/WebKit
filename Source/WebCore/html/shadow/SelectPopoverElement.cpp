@@ -28,10 +28,9 @@
 
 #include "Document.h"
 #include "HTMLSelectElement.h"
-#include "PopoverData.h"
-#include "PseudoClassChangeInvalidation.h"
 #include "ShadowRoot.h"
 #include "StyleAppearance.h"
+#include "StyleComputedStyle+GettersInlines.h"
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {
@@ -56,31 +55,25 @@ HTMLSelectElement* SelectPopoverElement::selectElement() const
     return dynamicDowncast<HTMLSelectElement>(shadowRoot->host());
 }
 
-bool SelectPopoverElement::supportsBaseAppearance(StyleAppearance appearance) const
-{
-    return appearance == StyleAppearance::Base || appearance == StyleAppearance::BaseSelect;
-}
-
 void SelectPopoverElement::didAttachRenderers()
 {
     HTMLDivElement::didAttachRenderers();
 
-    if (RefPtr select = selectElement())
-        select->closePickerIfNoLongerBaseAppearance();
-}
+    CheckedPtr style = computedStyle();
+    bool newIsAppearanceBase = style && style->usedAppearance() == StyleAppearance::Base;
 
-void SelectPopoverElement::setPopoverVisibilityState(PopoverVisibilityState visibilityState)
-{
-    std::optional<Style::PseudoClassChangeInvalidation> styleInvalidation;
-    if (RefPtr select = selectElement())
-        styleInvalidation.emplace(*select, CSSSelector::PseudoClass::Open, visibilityState == PopoverVisibilityState::Showing);
-    HTMLDivElement::setPopoverVisibilityState(visibilityState);
+    if (m_wasBaseAppearancePicker && !newIsAppearanceBase) {
+        if (RefPtr select = selectElement(); select && select->popupIsVisible())
+            select->queuePickerClose(HTMLSelectElement::PickerCloseReason::Appearance);
+    }
+
+    m_wasBaseAppearancePicker = newIsAppearanceBase;
 }
 
 void SelectPopoverElement::popoverWasHidden()
 {
     if (RefPtr select = selectElement()) {
-        select->clearPickerOpeningMouseLocation();
+        select->setPopupIsVisible(false);
         select->focus();
     }
 }

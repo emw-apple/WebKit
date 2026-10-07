@@ -110,7 +110,6 @@ public:
 
     virtual bool isBeforeTextInsertedEvent() const { return false; }
     virtual bool isMouseEvent() const { return false; }
-    virtual bool isProgressEvent() const { return false; }
     virtual bool isUIEvent() const { return false; }
     virtual bool isUIEventWithKeyState() const { return false; }
 

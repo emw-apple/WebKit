@@ -5600,17 +5600,6 @@ private:
             vmCall(Void, operationDefineDataPropertySymbol, weakPointer(globalObject), base, property, value, attributes);
             break;
         }
-        case Int32Use: {
-            LValue property = boxInt32(lowInt32(propertyEdge));
-            vmCall(Void, operationDefineDataProperty, weakPointer(globalObject), base, property, value, attributes);
-            break;
-        }
-        case NumberUse: {
-            LValue property = lowJSValue(propertyEdge, ManualOperandSpeculation);
-            FTL_TYPE_CHECK(jsValueValue(property), propertyEdge, SpecBytecodeNumber, isNotNumber(property, provenType(propertyEdge)));
-            vmCall(Void, operationDefineDataProperty, weakPointer(globalObject), base, property, value, attributes);
-            break;
-        }
         case UntypedUse: {
             LValue property = lowJSValue(propertyEdge);
             vmCall(Void, operationDefineDataProperty, weakPointer(globalObject), base, property, value, attributes);
@@ -5621,33 +5610,11 @@ private:
         }
     }
 
-    LValue lowEncodedPropertyKey(Edge edge)
-    {
-        switch (edge.useKind()) {
-        case StringUse:
-            return lowString(edge);
-        case SymbolUse:
-            return lowSymbol(edge);
-        case Int32Use:
-            return boxInt32(lowInt32(edge));
-        case NumberUse: {
-            LValue key = lowJSValue(edge, ManualOperandSpeculation);
-            FTL_TYPE_CHECK(jsValueValue(key), edge, SpecBytecodeNumber, isNotNumber(key, provenType(edge)));
-            return key;
-        }
-        case UntypedUse:
-            return lowJSValue(edge);
-        default:
-            RELEASE_ASSERT_NOT_REACHED();
-            return nullptr;
-        }
-    }
-
     void compileObjectDefineProperty()
     {
         JSGlobalObject* globalObject = m_graph.globalObjectFor(m_origin.semantic);
         LValue target = lowObject(m_node->child1());
-        LValue key = lowEncodedPropertyKey(m_node->child2());
+        LValue key = lowJSValue(m_node->child2());
         LValue descriptor = lowObject(m_node->child3());
         vmCall(Void, operationObjectDefineProperty, weakPointer(globalObject), target, key, descriptor);
     }
@@ -5658,7 +5625,7 @@ private:
         ASSERT(m_node->op() == ObjectDefinePropertyFromFields);
         ASSERT(m_graph.varArgNumChildren(m_node) == 8);
         LValue target = lowObject(m_graph.varArgChild(m_node, 0));
-        LValue key = lowEncodedPropertyKey(m_graph.varArgChild(m_node, 1));
+        LValue key = lowJSValue(m_graph.varArgChild(m_node, 1));
 
         constexpr size_t scratchSize = sizeof(EncodedJSValue) * Node::numberOfDescriptorSlots;
         ScratchBuffer* scratchBuffer = vm().scratchBufferForSize(scratchSize);
@@ -5691,17 +5658,6 @@ private:
         case SymbolUse: {
             LValue property = lowSymbol(propertyEdge);
             vmCall(Void, operationDefineAccessorPropertySymbol, weakPointer(globalObject), base, property, getter, setter, attributes);
-            break;
-        }
-        case Int32Use: {
-            LValue property = boxInt32(lowInt32(propertyEdge));
-            vmCall(Void, operationDefineAccessorProperty, weakPointer(globalObject), base, property, getter, setter, attributes);
-            break;
-        }
-        case NumberUse: {
-            LValue property = lowJSValue(propertyEdge, ManualOperandSpeculation);
-            FTL_TYPE_CHECK(jsValueValue(property), propertyEdge, SpecBytecodeNumber, isNotNumber(property, provenType(propertyEdge)));
-            vmCall(Void, operationDefineAccessorProperty, weakPointer(globalObject), base, property, getter, setter, attributes);
             break;
         }
         case UntypedUse: {
@@ -20468,7 +20424,7 @@ IGNORE_CLANG_WARNINGS_END
     template<typename Functor>
     void checkStructure(
         LValue structureDiscriminant, const FormattedValue& formattedValue, ExitKind exitKind,
-        const RegisteredStructureSet& set, NOESCAPE const Functor& weakStructureDiscriminant)
+        const RegisteredStructureSet& set, const Functor& weakStructureDiscriminant)
     {
         if (set.isEmpty()) {
             terminate(exitKind);
@@ -20484,10 +20440,8 @@ IGNORE_CLANG_WARNINGS_END
 
         LBasicBlock continuation = m_out.newBlock();
 
-        // Structure sets usually list structures in the order they were observed. Objects tend to
-        // transition away from older structures, so test the most recently observed ones first.
         LBasicBlock lastNext = m_out.insertNewBlocksBefore(continuation);
-        for (unsigned i = set.size(); --i;) {
+        for (unsigned i = 0; i < set.size() - 1; ++i) {
             LBasicBlock nextStructure = m_out.newBlock();
             m_out.branch(
                 m_out.equal(structureDiscriminant, weakStructureDiscriminant(set[i])),
@@ -20497,7 +20451,7 @@ IGNORE_CLANG_WARNINGS_END
 
         speculate(
             exitKind, formattedValue, nullptr,
-            m_out.notEqual(structureDiscriminant, weakStructureDiscriminant(set[0])));
+            m_out.notEqual(structureDiscriminant, weakStructureDiscriminant(set.last())));
 
         m_out.jump(continuation);
         m_out.appendTo(continuation, lastNext);
@@ -20969,7 +20923,7 @@ IGNORE_CLANG_WARNINGS_END
 
     template<typename IntFunctor, typename DoubleFunctor>
     void compare(
-        NOESCAPE const IntFunctor& intFunctor, NOESCAPE const DoubleFunctor& doubleFunctor,
+        const IntFunctor& intFunctor, const DoubleFunctor& doubleFunctor,
         C_JITOperation_TT stringIdentFunction,
         C_JITOperation_B_GJssJss stringFunction,
         S_JITOperation_GJJ fallbackFunction)
@@ -21910,7 +21864,7 @@ IGNORE_CLANG_WARNINGS_END
     }
 
     template <typename F1, typename F2>
-    LValue emitCodeBasedOnEndiannessBranch(LValue isLittleEndian, NOESCAPE const F1& emitLittleEndianCode, NOESCAPE const F2& emitBigEndianCode)
+    LValue emitCodeBasedOnEndiannessBranch(LValue isLittleEndian, const F1& emitLittleEndianCode, const F2& emitBigEndianCode)
     {
         LType type;
 
@@ -22721,7 +22675,7 @@ IGNORE_CLANG_WARNINGS_END
     }
 
     template<typename IntFunctor>
-    void genericJSValueCompare(NOESCAPE const IntFunctor& intFunctor, S_JITOperation_GJJ helperFunction)
+    void genericJSValueCompare(const IntFunctor& intFunctor, S_JITOperation_GJJ helperFunction)
     {
         JSGlobalObject* globalObject = m_graph.globalObjectFor(m_origin.semantic);
         LValue left = lowJSValue(m_node->child1(), ManualOperandSpeculation);
@@ -22777,20 +22731,19 @@ IGNORE_CLANG_WARNINGS_END
         LBasicBlock wordTailCompare = m_out.newBlock();
         LBasicBlock trueCase = m_out.newBlock();
         LBasicBlock falseCase = m_out.newBlock();
-        LBasicBlock ropeCase = m_out.newBlock();
         LBasicBlock slowCase = m_out.newBlock();
         LBasicBlock continuation = m_out.newBlock();
 
         if (leftAtom)
             m_out.jump(leftReadyCase);
         else
-            m_out.branch(isRopeString(leftJSString, leftJSStringEdge), rarely(ropeCase), usually(leftReadyCase));
+            m_out.branch(isRopeString(leftJSString, leftJSStringEdge), rarely(slowCase), usually(leftReadyCase));
 
         LBasicBlock lastNext = m_out.appendTo(leftReadyCase, rightReadyCase);
         if (rightAtom)
             m_out.jump(rightReadyCase);
         else
-            m_out.branch(isRopeString(rightJSString, rightJSStringEdge), rarely(ropeCase), usually(rightReadyCase));
+            m_out.branch(isRopeString(rightJSString, rightJSStringEdge), rarely(slowCase), usually(rightReadyCase));
 
         m_out.appendTo(rightReadyCase, notTriviallyUnequalCase);
         LValue left = leftAtom ? nullptr : m_out.loadPtr(leftJSString, m_heaps.JSString_value);
@@ -22901,35 +22854,10 @@ IGNORE_CLANG_WARNINGS_END
         ValueFromBlock trueResult = m_out.anchor(m_out.booleanTrue);
         m_out.jump(continuation);
 
-        m_out.appendTo(falseCase, ropeCase);
+        m_out.appendTo(falseCase, slowCase);
 
         ValueFromBlock falseResult = m_out.anchor(m_out.booleanFalse);
         m_out.jump(continuation);
-
-        m_out.appendTo(ropeCase, slowCase);
-
-        auto loadLength = [&](LValue jsString, Edge edge) {
-            LBasicBlock ropePath = m_out.newBlock();
-            LBasicBlock nonRopePath = m_out.newBlock();
-            LBasicBlock lengthLoaded = m_out.newBlock();
-
-            m_out.branch(isRopeString(jsString, edge), unsure(ropePath), unsure(nonRopePath));
-
-            m_out.appendTo(ropePath, nonRopePath);
-            ValueFromBlock ropeLength = m_out.anchor(m_out.load32NonNegative(jsString, m_heaps.JSRopeString_length));
-            m_out.jump(lengthLoaded);
-
-            m_out.appendTo(nonRopePath, lengthLoaded);
-            ValueFromBlock nonRopeLength = m_out.anchor(m_out.load32NonNegative(m_out.loadPtr(jsString, m_heaps.JSString_value), m_heaps.StringImpl_length));
-            m_out.jump(lengthLoaded);
-
-            m_out.appendTo(lengthLoaded, slowCase);
-            return m_out.phi(Int32, ropeLength, nonRopeLength);
-        };
-
-        LValue leftRopeCaseLength = loadLength(leftJSString, leftJSStringEdge);
-        LValue rightRopeCaseLength = loadLength(rightJSString, rightJSStringEdge);
-        m_out.branch(m_out.notEqual(leftRopeCaseLength, rightRopeCaseLength), usually(falseCase), rarely(slowCase));
 
         m_out.appendTo(slowCase, continuation);
 
@@ -24473,7 +24401,7 @@ IGNORE_CLANG_WARNINGS_END
     //     });
     // m_out.appendTo(continuation, lastNext);
     template<typename Functor>
-    void buildTypeOf(Edge child, LValue value, NOESCAPE const Functor& functor)
+    void buildTypeOf(Edge child, LValue value, const Functor& functor)
     {
         JSGlobalObject* globalObject = m_graph.globalObjectFor(m_origin.semantic);
 
@@ -25818,8 +25746,8 @@ IGNORE_CLANG_WARNINGS_END
 
     LValue isStrictInt52(LValue int64Value)
     {
-        LValue shiftAmount = m_out.constInt32(64 - JSValue::numberOfInt52Bits);
-        return m_out.equal(m_out.aShr(m_out.shl(int64Value, shiftAmount), shiftAmount), int64Value);
+        LValue added = m_out.add(m_out.constInt64(0x0008000000000000ULL), int64Value);
+        return m_out.testIsZero64(added, m_out.constInt64(0xFFF0000000000000ULL));
     }
 
     LValue isNotStrictInt52(LValue int64Value)

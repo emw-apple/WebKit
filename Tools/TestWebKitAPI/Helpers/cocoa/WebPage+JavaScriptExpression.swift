@@ -79,18 +79,15 @@ extension WebPage {
 extension WebPage {
     /// Evaluates the provided JavaScript expression.
     ///
-    /// - Parameters:
-    ///   - expression: The expression to evaluate.
-    ///   - frame: The frame in which to evaluate the expression.
+    /// - Parameter expression: The expression to evaluate.
     /// - Throws: An error if the JavaScript evaluation or decoding fails.
     public func callJavaScript<Expression>(
-        _ expression: Expression,
-        in frame: WebPage.FrameInfo? = nil
+        _ expression: Expression
     ) async throws(JavaScriptEvaluationError) where Expression: JavaScriptExpression, Expression.Output == Void {
         let arguments = expression.encoded() as [String: Any]
         let result: Any?
         do {
-            result = try await self.callJavaScript(Expression.expression, arguments: arguments, in: frame)
+            result = try await self.callJavaScript(Expression.expression, arguments: arguments)
         } catch {
             throw .scriptError(underlyingError: error)
         }
@@ -102,20 +99,17 @@ extension WebPage {
 
     /// Evaluates the provided JavaScript expression.
     ///
-    /// - Parameters:
-    ///   - expression: The expression to evaluate.
-    ///   - frame: The frame in which to evaluate the expression.
+    /// - Parameter expression: The expression to evaluate.
     /// - Returns: The result of evaluating the expression.
     /// - Throws: An error if the JavaScript evaluation or decoding fails.
     public func callJavaScript<Expression>(
-        _ expression: Expression,
-        in frame: WebPage.FrameInfo? = nil
+        _ expression: Expression
     ) async throws(JavaScriptEvaluationError) -> Expression.Output
     where Expression: JavaScriptExpression, Expression.Output: JavaScriptDecodable {
         let arguments = expression.encoded() as [String: Any]
         let result: Any?
         do {
-            result = try await self.callJavaScript(Expression.expression, arguments: arguments, in: frame)
+            result = try await self.callJavaScript(Expression.expression, arguments: arguments)
         } catch {
             throw .scriptError(underlyingError: error)
         }
@@ -137,20 +131,17 @@ extension WebPage {
 
     /// Evaluates the provided JavaScript expression whose result is an array of decodable values.
     ///
-    /// - Parameters:
-    ///   - expression: The expression to evaluate.
-    ///   - frame: The frame in which to evaluate the expression.
+    /// - Parameter expression: The expression to evaluate.
     /// - Returns: The result of evaluating the expression.
     /// - Throws: An error if the JavaScript evaluation or decoding fails.
     public func callJavaScript<Expression, Element>(
-        _ expression: Expression,
-        in frame: WebPage.FrameInfo? = nil
+        _ expression: Expression
     ) async throws(JavaScriptEvaluationError) -> [Element]
     where Expression: JavaScriptExpression, Expression.Output == [Element], Element: JavaScriptDecodable {
         let arguments = expression.encoded() as [String: Any]
         let result: Any?
         do {
-            result = try await self.callJavaScript(Expression.expression, arguments: arguments, in: frame)
+            result = try await self.callJavaScript(Expression.expression, arguments: arguments)
         } catch {
             throw .scriptError(underlyingError: error)
         }

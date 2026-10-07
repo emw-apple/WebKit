@@ -140,7 +140,6 @@ func NewPerlasmTask(dst, src string, perlasmArgs []string) *Task {
 		defer os.Remove(out.Name())
 
 		args := make([]string, 0, 2+len(perlasmArgs))
-		args = append(args, "-Icrypto/perlasm")
 		args = append(args, filepath.FromSlash(src))
 		args = append(args, perlasmArgs...)
 		args = append(args, out.Name())

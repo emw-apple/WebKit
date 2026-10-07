@@ -96,7 +96,7 @@ class RtcEventLogParseStatus {
     return ok();
   }
 
-  const std::string& message() const { return error_; }
+  std::string message() const { return error_; }
 
  private:
   RtcEventLogParseStatus() : error_() {}
@@ -119,7 +119,7 @@ class RtcEventLogParseStatusOr {
 
   bool ok() const { return status_.ok(); }
 
-  const std::string& message() const { return status_.message(); }
+  std::string message() const { return status_.message(); }
 
   RtcEventLogParseStatus status() const { return status_; }
 

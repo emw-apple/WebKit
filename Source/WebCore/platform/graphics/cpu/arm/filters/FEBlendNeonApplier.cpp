@@ -38,7 +38,7 @@
 
 namespace WebCore {
 
-WTF_MAKE_TZONE_ALLOCATED_IMPL(FEBlendNeonApplier);
+WTF_MAKE_TZONE_ALLOCATED_IMPL(FELightingNeonParallelApplier);
 
 class FEBlendUtilitiesNEON {
 public:

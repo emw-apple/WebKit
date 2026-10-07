@@ -61,22 +61,14 @@ bool WebNotificationClient::show(WebCore::ScriptExecutionContext&, WebCore::Noti
     auto scope = makeScopeExit([&callback] { callback(); });
 
     RetainPtr webView = m_webView;
-    if (!webView)
+    if (![webView _notificationProvider])
         return false;
-
-    RetainPtr<id<WebNotificationProvider>> notificationProvider = m_notificationProvider;
-    if (!notificationProvider) {
-        notificationProvider = [webView _notificationProvider];
-        if (!notificationProvider)
-            return false;
-        m_notificationProvider = notificationProvider.get();
-    }
 
     auto notificationID = notification.notificationID;
     RetainPtr<WebNotification> webNotification = adoptNS([[WebNotification alloc] initWithCoreNotification:WTF::move(notification)]);
     m_notificationMap.set(notificationID, webNotification);
 
-    [notificationProvider showNotification:webNotification.get() fromWebView:webView];
+    [[webView _notificationProvider] showNotification:webNotification.get() fromWebView:webView];
     return true;
 }
 
@@ -86,7 +78,7 @@ void WebNotificationClient::cancel(WebCore::NotificationData&& notification)
     if (!webNotification)
         return;
 
-    [protect(m_notificationProvider) cancelNotification:webNotification.get()];
+    [[protect(m_webView) _notificationProvider] cancelNotification:webNotification.get()];
 }
 
 void WebNotificationClient::notificationObjectDestroyed(WebCore::NotificationData&& notification)
@@ -95,7 +87,7 @@ void WebNotificationClient::notificationObjectDestroyed(WebCore::NotificationDat
     if (!webNotification)
         return;
 
-    [protect(m_notificationProvider) notificationDestroyed:webNotification.get()];
+    [[protect(m_webView) _notificationProvider] notificationDestroyed:webNotification.get()];
 }
 
 void WebNotificationClient::notificationControllerDestroyed()

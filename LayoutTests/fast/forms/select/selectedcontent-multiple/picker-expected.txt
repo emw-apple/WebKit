@@ -1,3 +1,0 @@
-
-PASS Toggling options in the picker updates which clones match :checked
-

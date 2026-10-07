@@ -78,7 +78,7 @@ public:
     // Image Metadata
     String uti() const final { return m_source->uti(); }
     FloatSize size(ImageOrientation orientation = ImageOrientation::Orientation::FromImage) const final { return m_source->size(orientation); }
-    bool hasSomethingToDraw() const final { return !size().isEmpty(); }
+    FloatSize sourceSize(ImageOrientation orientation = ImageOrientation::Orientation::FromImage) const { return m_source->sourceSize(orientation); }
     FloatSize density() const { return m_source->density(); }
     ColorSpace colorSpace() final { return m_source->colorSpace(); }
     bool hasHDRContent() const final { return m_source->hasHDRContent(); }
@@ -104,7 +104,6 @@ public:
     void setMinimumDecodingDurationForTesting(Seconds duration) { m_source->setMinimumDecodingDurationForTesting(duration); }
     void setClearDecoderAfterAsyncFrameRequestForTesting(bool enabled) { m_source->setClearDecoderAfterAsyncFrameRequestForTesting(enabled); }
     void setHasHDRContentForTesting() { m_source->setHasHDRContentForTesting(); }
-    WEBCORE_EXPORT void simulateDataReplacedForTesting();
     unsigned decodeCountForTesting() const { return m_source->decodeCountForTesting(); }
     unsigned blankDrawCountForTesting() const { return m_source->blankDrawCountForTesting(); }
 

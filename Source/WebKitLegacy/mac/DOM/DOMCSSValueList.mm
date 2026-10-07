@@ -34,7 +34,7 @@
 #import <WebCore/WebScriptObjectPrivate.h>
 #import <wtf/GetPtr.h>
 
-#define IMPL downcast<WebCore::DeprecatedCSSOMValueList>(reinterpret_cast<WebCore::DeprecatedCSSOMValue*>(_internal))
+#define IMPL static_cast<WebCore::DeprecatedCSSOMValueList*>(reinterpret_cast<WebCore::DeprecatedCSSOMValue*>(_internal))
 
 @implementation DOMCSSValueList
 

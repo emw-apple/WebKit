@@ -24,7 +24,6 @@
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/Vector.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GUniquePtr.h>
 #include <wtf/text/CString.h>
@@ -83,8 +82,7 @@
     }
 
 inline const char* assertCmpCStringPointer(const char* string) { return string; }
-inline const char* assertCmpCStringPointer(const UTF8CString& string) { return string.legacyCStringPointer(); }
-inline const char* assertCmpCStringPointer(const ASCIICString& string) { return string.data(); }
+inline const char* assertCmpCStringPointer(const CStringBase& string) { return string.legacyCStringPointer(); }
 inline const char* assertCmpCStringPointer(const UTF8CStringView& string) { return string.utf8(); }
 
 #define ASSERT_CMP_CSTRING(s1, cmp, s2) \
@@ -371,10 +369,14 @@ public:
     static UTF8CString getResourcesDir(ResourcesDir resourcesDir = WebKitGLibResources)
     {
         switch (resourcesDir) {
-        case WebKitGLibResources:
-            return UTF8CString { gBuildFilename(WEBKIT_SRC_DIR, "Tools", "TestWebKitAPI", "Resources", "glib").span() };
-        case WebKit2Resources:
-            return UTF8CString { gBuildFilename(WEBKIT_SRC_DIR, "Tools", "TestWebKitAPI", "Resources").span() };
+        case WebKitGLibResources: {
+            GUniquePtr<char> resourcesDir(g_build_filename(WEBKIT_SRC_DIR, "Tools", "TestWebKitAPI", "Resources", "glib", nullptr));
+            return UTF8CString { byteCast<char8_t>(resourcesDir.get()) };
+        }
+        case WebKit2Resources: {
+            GUniquePtr<char> resourcesDir(g_build_filename(WEBKIT_SRC_DIR, "Tools", "TestWebKitAPI", "Resources", nullptr));
+            return UTF8CString { byteCast<char8_t>(resourcesDir.get()) };
+        }
         }
         RELEASE_ASSERT_NOT_REACHED();
     }

@@ -33,7 +33,6 @@
 #include "EventInit.h"
 #include "JSValueInWrappedObject.h"
 #include "LocalDOMWindowProperty.h"
-#include "NavigateEventIdentifier.h"
 #include "NavigationDestination.h"
 #include "NavigationInterceptHandler.h"
 #include "NavigationNavigationType.h"
@@ -95,7 +94,6 @@ public:
     static Ref<NavigateEvent> create(JSC::JSGlobalObject&, const AtomString& type, Init&&);
     static Ref<NavigateEvent> create(RefPtr<DOMWrapperWorld>&&, const AtomString& type, Init&&, AbortController*);
 
-    NavigateEventIdentifier identifier() const { return m_identifier; }
     NavigationNavigationType navigationType() const { return m_navigationType; }
     void setNavigationType(NavigationNavigationType navigationType) { m_navigationType = navigationType; }
     bool canIntercept() const { return m_canIntercept; }
@@ -131,7 +129,6 @@ private:
     void potentiallyProcessScrollBehavior(Document&);
     void processScrollBehavior(Document&);
 
-    const NavigateEventIdentifier m_identifier { NavigateEventIdentifier::generate() };
     NavigationNavigationType m_navigationType;
     const Ref<NavigationDestination> m_destination;
     const Ref<AbortSignal> m_signal;

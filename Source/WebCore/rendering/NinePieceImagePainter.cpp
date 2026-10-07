@@ -36,10 +36,6 @@
 #include "StyleImage.h"
 #include "StylePrimitiveNumericTypes+Evaluation.h"
 
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-#include <WebKitAdditions/AXCustomColorModeController.h>
-#endif
-
 namespace WebCore {
 
 template<typename WidthValue>
@@ -198,11 +194,11 @@ static NinePieceScales computeTileScales(const NinePieceRects& destinationRects,
 }
 
 template<typename T>
-static void paintNinePieceImage(const T& ninePieceImage, GraphicsContext& graphicsContext, const RenderElement& renderer, const Style::ComputedStyle& style, const LayoutRect& destination, const LayoutSize& source, float deviceScaleFactor, ImagePaintingOptions options)
+static void paintNinePieceImage(const T& ninePieceImage, GraphicsContext& graphicsContext, const RenderElement* renderer, const Style::ComputedStyle& style, const LayoutRect& destination, const LayoutSize& source, float deviceScaleFactor, ImagePaintingOptions options)
 {
     auto styleImage = ninePieceImage.source().tryStyleImage();
     ASSERT(styleImage);
-    ASSERT(styleImage->isLoaded(&renderer));
+    ASSERT(styleImage->isLoaded(renderer));
 
     auto zoom = style.usedZoomForLength();
 
@@ -225,26 +221,41 @@ static void paintNinePieceImage(const T& ninePieceImage, GraphicsContext& graphi
         .fill = ninePieceImage.slice().fill.has_value(),
     };
 
-    if (!styleImage->canDrawAtSize(renderer, source))
+    RefPtr image = styleImage->image(renderer, source, graphicsContext);
+    if (!image)
         return;
 
     InterpolationQualityMaintainer interpolationMaintainer(graphicsContext, ImageQualityController::interpolationQualityFromStyle(style));
 
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-    options = { options, styleImage->drawsSVGImage() && AXCustomColorModeController::shouldInvertSVGImage(renderer) ? InvertContent::Yes : InvertContent::No };
-#endif
+    for (auto piece : allImagePieces) {
+        if (geometry.shouldSkipPiece(piece))
+            continue;
 
-    styleImage->drawNinePiece(graphicsContext, renderer, ConcreteObjectSize::fixed(FloatSize(source)), geometry, options);
+        if (isCornerPiece(piece)) {
+            graphicsContext.drawImage(*image, ConcreteObjectSize::fixed(image->size()), geometry.destinationRects[piece], geometry.sourceRects[piece], options);
+            continue;
+        }
+
+        auto hRule = isHorizontalPiece(piece)
+            ? static_cast<Image::TileRule>(geometry.horizontalRule)
+            : Image::StretchTile;
+
+        auto vRule = isVerticalPiece(piece)
+            ? static_cast<Image::TileRule>(geometry.verticalRule)
+            : Image::StretchTile;
+
+        graphicsContext.drawTiledImage(*image, geometry.destinationRects[piece], geometry.sourceRects[piece], geometry.tileScales[piece], hRule, vRule, options);
+    }
 }
 
 // MARK: - Painter entry point
 
-void NinePieceImagePainter::paint(const Style::BorderImage& ninePieceImage, GraphicsContext& graphicsContext, const RenderElement& renderer, const Style::ComputedStyle& style, const LayoutRect& destination, const LayoutSize& source, float deviceScaleFactor, ImagePaintingOptions options)
+void NinePieceImagePainter::paint(const Style::BorderImage& ninePieceImage, GraphicsContext& graphicsContext, const RenderElement* renderer, const Style::ComputedStyle& style, const LayoutRect& destination, const LayoutSize& source, float deviceScaleFactor, ImagePaintingOptions options)
 {
     return paintNinePieceImage(ninePieceImage, graphicsContext, renderer, style, destination, source, deviceScaleFactor, options);
 }
 
-void NinePieceImagePainter::paint(const Style::MaskBorder& ninePieceImage, GraphicsContext& graphicsContext, const RenderElement& renderer, const Style::ComputedStyle& style, const LayoutRect& destination, const LayoutSize& source, float deviceScaleFactor, ImagePaintingOptions options)
+void NinePieceImagePainter::paint(const Style::MaskBorder& ninePieceImage, GraphicsContext& graphicsContext, const RenderElement* renderer, const Style::ComputedStyle& style, const LayoutRect& destination, const LayoutSize& source, float deviceScaleFactor, ImagePaintingOptions options)
 {
     return paintNinePieceImage(ninePieceImage, graphicsContext, renderer, style, destination, source, deviceScaleFactor, options);
 }

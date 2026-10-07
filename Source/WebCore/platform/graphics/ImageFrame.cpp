@@ -35,7 +35,6 @@ ImageFrame::ImageFrame() = default;
 ImageFrame::ImageFrame(Ref<NativeImage>&& nativeImage)
 {
     m_size = nativeImage->size();
-    m_naturalSize = m_size;
     m_hasAlpha = nativeImage->hasAlpha();
 
     m_destinations[DecodingDestination::Base].headroom = nativeImage->headroom();

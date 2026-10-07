@@ -65,11 +65,11 @@
 #include "SVGNames.h"
 #include "SVGSVGElement.h"
 #include "SVGURIReference.h"
-#include "SelectPopoverElement.h"
 #include "Settings.h"
 #include "ShadowRoot.h"
 #include "StyleableInlines.h"
 #include "StyleContainmentCheckerInlines.h"
+#include "StyleColorResolver.h"
 #include "StyleComputedStyle+GettersInlines.h"
 #include "StyleComputedStyle+InitialInlines.h"
 #include "StyleComputedStyle+SettersInlines.h"
@@ -96,15 +96,8 @@
 #include "DocumentFullscreen.h"
 #endif
 
-#if USE(APPLE_INTERNAL_SDK)
+#if ENABLE(AX_CUSTOM_COLOR_MODE)
 #include <WebKitAdditions/StyleAdjusterAdditions.cpp>
-#else
-namespace WebCore {
-namespace Style {
-static inline void adjustForManipulationSurfaceQuirk(ComputedStyle&) { }
-static inline void adjustForBoxAnnotationQuirk(ComputedStyle&) { }
-} // namespace Style
-} // namespace WebCore
 #endif
 
 namespace WebCore {
@@ -491,7 +484,7 @@ void Adjuster::adjust(Style::ComputedStyle& style) const
             style.setDisplayMaintainingOriginalDisplay(DisplayType::InlineFlowRoot);
 
         // FIXME: according to the specification this should apply as well to -webkit-line-clamp.
-        if (!style.hasLegacyLineClamp() && style.overflowContinue() != OverflowContinue::Auto && style.boxOrient() == BoxOrient::Vertical) {
+        if (style.lineClamp().isNone() && style.overflowContinue() != OverflowContinue::Auto && style.boxOrient() == BoxOrient::Vertical) {
             if (style.display() == DisplayType::BlockDeprecatedFlex)
                 style.setDisplayMaintainingOriginalDisplay(DisplayType::BlockFlowRoot);
             else if (style.display() == DisplayType::InlineDeprecatedFlex)
@@ -569,7 +562,7 @@ void Adjuster::adjust(Style::ComputedStyle& style) const
         // must be positioned for z-index to apply to them.
         if (element && element->document().settings().layerBasedSVGEngineEnabled()) {
             if (auto* svgElement = dynamicDowncast<SVGElement>(*element); svgElement && svgElement->isOutermostSVGSVGElement())
-                return style.position() == PositionType::Static;
+                return element->renderer() && element->renderer()->style().position() == PositionType::Static;
 
             return false;
         }
@@ -726,13 +719,6 @@ void Adjuster::adjust(Style::ComputedStyle& style) const
     if (style.appearance() != StyleAppearance::None && style.appearance() != StyleAppearance::Base)
         adjustThemeStyle(style, m_parentStyle);
 
-    bool hasBaseAppearance = style.usedAppearance() == StyleAppearance::Base;
-    if ((hasBaseAppearance || style.inBaseAppearanceSubtree()) && !style.pseudoElementType() && m_element && m_element->supportsBaseAppearance(StyleAppearance::Base)) {
-        if (is<SelectPopoverElement>(m_element))
-            hasBaseAppearance = hasBaseAppearance && m_parentStyle.inBaseAppearanceSubtree();
-        style.setInBaseAppearanceSubtree(hasBaseAppearance);
-    }
-
     // This should be kept in sync with requiresRenderingConsolidationForViewTransition
     if (style.usedTransformStyle3D() == TransformStyle3D::Preserve3D) {
         bool forceToFlat = style.overflowX() != Overflow::Visible
@@ -754,6 +740,13 @@ void Adjuster::adjust(Style::ComputedStyle& style) const
             forceToFlat |= styleable.capturedInViewTransition();
         }
         style.setTransformStyleForcedToFlat(forceToFlat);
+    }
+
+    auto backgroundColor = style.backgroundColor();
+    if (style.backgroundColor() != ComputedStyle::initialBackgroundColor()
+        && style.display() != DisplayType::Contents) {
+        style.setCurrentBackgroundColor(Style::ColorResolver { style }.colorResolvingCurrentColor(backgroundColor));
+        style.setDisallowsFastPathInheritance();
     }
 
     style.setIsEffectivelyTransparent(style.opacity().isTransparent() || m_parentStyle.isEffectivelyTransparent());
@@ -1135,14 +1128,6 @@ void Adjuster::adjustForSiteSpecificQuirks(Style::ComputedStyle& style) const
         }
     }
 
-    // google.com/maps/embed rdar://184166392
-    if (documentQuirks.needsGoogleMapsEmbedManipulationSurfaceQuirk())
-        adjustForManipulationSurfaceQuirk(style);
-
-    // box.com rdar://187475153
-    if (documentQuirks.needsBoxAnnotationQuirk(protect(*m_element)))
-        adjustForBoxAnnotationQuirk(style);
-
 #if PLATFORM(IOS_FAMILY)
     if (documentQuirks.needsGoogleMapsScrollingQuirk()) {
         static MainThreadNeverDestroyed<const AtomString> className("PUtLdf"_s);
@@ -1185,10 +1170,6 @@ void Adjuster::adjustForSiteSpecificQuirks(Style::ComputedStyle& style) const
             style.setFlexShrink({ 2 });
         }
     }
-
-    // tiktok.com rdar://problem/183445905
-    if (documentQuirks.needsTikTokCaptchaSliderTouchActionQuirk(protect(*m_element)))
-        style.setUsedTouchAction(CSS::Keyword::None { });
 
 #if ENABLE(VIDEO)
     if (documentQuirks.needsFullscreenDisplayNoneQuirk()) {

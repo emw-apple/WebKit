@@ -57,20 +57,20 @@ class NodeFilter;
 
 void initializeDOMWrapperHooks();
 
-NSObject* getDOMWrapper(void*);
-void addDOMWrapper(NSObject* wrapper, void*);
-void removeDOMWrapper(void*);
+NSObject* getDOMWrapper(DOMObjectInternal*);
+void addDOMWrapper(NSObject* wrapper, DOMObjectInternal*);
+void removeDOMWrapper(DOMObjectInternal*);
 
 template <class Source>
 inline id getDOMWrapper(Source impl)
 {
-    return getDOMWrapper(static_cast<void*>(impl));
+    return getDOMWrapper(reinterpret_cast<DOMObjectInternal*>(impl));
 }
 
 template <class Source>
 inline void addDOMWrapper(NSObject* wrapper, Source impl)
 {
-    addDOMWrapper(wrapper, static_cast<void*>(impl));
+    addDOMWrapper(wrapper, reinterpret_cast<DOMObjectInternal*>(impl));
 }
 
 DOMNodeFilter * NODELETE kit(WebCore::NodeFilter*);

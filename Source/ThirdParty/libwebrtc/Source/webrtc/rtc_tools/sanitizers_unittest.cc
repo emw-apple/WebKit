@@ -36,9 +36,7 @@ TEST(SanitizersDeathTest, MemorySanitizer) {
 }
 #endif
 
-// TODO(bugs.webrtc.org/544671141): Reenable this test on windows when it won't
-// timeout. It began to timeout after win SDK update https://crrev.com/c/8088195
-#if defined(ADDRESS_SANITIZER) and !defined(WEBRTC_WIN)
+#if defined(ADDRESS_SANITIZER)
 void HeapUseAfterFree() {
   char* buf = new char[2];
   delete[] buf;

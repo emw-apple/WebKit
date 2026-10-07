@@ -42,7 +42,6 @@
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/UUID.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GMallocString.h>
 #include <wtf/glib/GThreadSafeWeakPtr.h>
 #include <wtf/glib/WTFGType.h>
@@ -672,6 +671,7 @@ private:
     Condition m_eosCondition;
     Lock m_eosLock;
     bool m_eosPending WTF_GUARDED_BY_LOCK(m_eosLock) { false };
+    std::optional<int> m_webrtcSourceClientId;
     bool m_consumerIsVideoPlayer { false };
     bool m_isIncomingVideoSource { false };
     GRefPtr<GstStream> m_stream;
@@ -876,13 +876,13 @@ static const char* const* webkitMediaStreamSrcUriGetProtocols(GType)
 static char* webkitMediaStreamSrcUriGetUri(GstURIHandler* handler)
 {
     WebKitMediaStreamSrc* self = WEBKIT_MEDIA_STREAM_SRC_CAST(handler);
-    return gStrdup(self->priv->uri);
+    return g_strdup(self->priv->uri.legacyCStringPointer());
 }
 
 static gboolean webkitMediaStreamSrcUriSetUri(GstURIHandler* handler, const char* uri, GError**)
 {
     WebKitMediaStreamSrc* self = WEBKIT_MEDIA_STREAM_SRC_CAST(handler);
-    self->priv->uri = UTF8CString::unsafeFromUTF8(uri);
+    self->priv->uri = UTF8CString { byteCast<char8_t>(uri) };
     return TRUE;
 }
 
@@ -946,10 +946,6 @@ static void webkitMediaStreamSrcDispose(GObject* object)
     auto self = WEBKIT_MEDIA_STREAM_SRC_CAST(object);
 
     GST_DEBUG_OBJECT(self, "Disposing");
-
-    // This can be called from a thread with malloc restrictions and callOnMainThread implies a
-    // malloc when creating the Function parameter.
-    DisableMallocRestrictionsForCurrentThreadScope disableMallocRestrictions;
     callOnMainThreadAndWait([self] {
         auto priv = self->priv;
 

@@ -433,7 +433,7 @@ void WKViewRemoveFromSuperview(WKViewRef view)
     if (!view->superview)
         return;
     
-    RetainPtr svs = view->superview->subviews;
+    CFMutableArrayRef svs = view->superview->subviews;
     if (!svs) {
         WTFLogAlways("WKViewRemoveFromSuperview: superview has no subviews");
         return;
@@ -459,7 +459,7 @@ WKViewRef WKViewFirstChild(WKViewRef view)
         return 0;
     }
 
-    RetainPtr<CFArrayRef> sv = view->subviews;
+    CFArrayRef sv = view->subviews;
     
     if (!sv)
         return 0;
@@ -481,7 +481,7 @@ WKViewRef WKViewNextSibling(WKViewRef view)
     if (!view->superview)
         return 0;
         
-    RetainPtr<CFArrayRef> svs = view->superview->subviews;
+    CFArrayRef svs = view->superview->subviews;
     if (!svs)
         return 0;
         
@@ -515,7 +515,7 @@ WKViewRef WKViewTraverseNext(WKViewRef view)
         return nextSibling;
 
     while (view && !WKViewNextSibling(view)) {
-        RetainPtr wakView = WAKViewForWKViewRef(view);
+        WAKView *wakView = WAKViewForWKViewRef(view);
         WAKView *superView = [wakView superview];
         view = [superView _viewRef];
     }

@@ -477,9 +477,9 @@ vk::ImageAccess GetImageWriteAccessAndSubresource(const gl::ImageUnit &imageUnit
 
     *layerStartOut = gl::OwnerLayer(0);
     *layerCountOut = image.getLayerCount();
-    if (!imageUnit.layered)
+    if (imageUnit.layered)
     {
-        *layerStartOut = *layerStartOut + imageUnit.layer;
+        *layerStartOut = *layerStartOut + imageUnit.layered;
         *layerCountOut = 1;
     }
 
@@ -7198,8 +7198,7 @@ angle::Result ContextVk::initImageAllocation(vk::ImageHelper *imageHelper,
 
         if (vma::FindMemoryTypeIndexForImageInfo(
                 mRenderer->getAllocator().getHandle(), &imageHelper->getVkImageCreateInfo(), flags,
-                flags, memoryRequirements.memoryTypeBits, allocateDedicatedMemory,
-                &pendingMemoryTypeIndex) == VK_SUCCESS)
+                flags, allocateDedicatedMemory, &pendingMemoryTypeIndex) == VK_SUCCESS)
         {
             mRenderer->getMemoryAllocationTracker()->setPendingMemoryAlloc(
                 allocationType, memoryRequirements.size, pendingMemoryTypeIndex);
@@ -8677,8 +8676,8 @@ angle::Result ContextVk::onResourceAccess(const vk::CommandResources &resources)
                                   writeImage.layerStart, writeImage.layerCount,
                                   mOutsideRenderPassCommands);
         mOutsideRenderPassCommands->retainImage(mRenderer, image);
-        image->onWrite(image->toVkLevel(writeImage.levelStart), writeImage.levelCount,
-                       writeImage.layerStart, writeImage.layerCount, writeImage.image.aspectFlags);
+        image->onWrite(writeImage.levelStart, writeImage.levelCount, writeImage.layerStart,
+                       writeImage.layerCount, writeImage.image.aspectFlags);
     }
 
     for (const vk::CommandResourceBuffer &readBuffer : resources.getReadBuffers())
@@ -9228,9 +9227,10 @@ angle::Result ContextVk::finalizeImageWithTileMemory()
         params.level                           = vk::LevelIndex(0);
         params.layer                           = vk::LayerIndex(0);
         params.clearValue                      = {};
-        params.clearArea = gl::Rectangle(0, 0, mImageWithTileMemory->getExtents().width,
-                                         mImageWithTileMemory->getExtents().height);
+        params.clearArea                       = gl::Box(0, 0, 0, 0, 0, 1);
         params.aspectFlags                     = mImageWithTileMemory->getAspectFlags();
+        params.clearArea.width                 = mImageWithTileMemory->getExtents().width;
+        params.clearArea.height                = mImageWithTileMemory->getExtents().height;
         ANGLE_TRY(mUtils.clearTextureNoFlush(this, mImageWithTileMemory, params));
 
         // Since this may called from submitCommands, use no submit version to avoid

@@ -162,7 +162,6 @@ JSValue asyncFromSyncIteratorNext(JSGlobalObject* globalObject, JSAsyncFromSyncI
     if (scope.exception()) [[unlikely]]
         RELEASE_AND_RETURN(scope, promise->rejectWithCaughtException(vm, scope));
 
-    scope.release();
     awaitAndContinue(globalObject, vm, iterator, promise, /* closeSyncIteratorOnRejection */ true, value, done);
     return promise;
 }
@@ -202,7 +201,6 @@ JSC_DEFINE_HOST_FUNCTION(asyncFromSyncIteratorPrototypeFuncReturn, (JSGlobalObje
     if (scope.exception()) [[unlikely]]
         RELEASE_AND_RETURN(scope, JSValue::encode(promise->rejectWithCaughtException(vm, scope)));
 
-    scope.release();
     awaitAndContinue(globalObject, vm, iterator, promise, /* closeSyncIteratorOnRejection */ false, value, done);
     return JSValue::encode(promise);
 }
@@ -253,7 +251,6 @@ JSC_DEFINE_HOST_FUNCTION(asyncFromSyncIteratorPrototypeFuncThrow, (JSGlobalObjec
     if (scope.exception()) [[unlikely]]
         RELEASE_AND_RETURN(scope, JSValue::encode(promise->rejectWithCaughtException(vm, scope)));
 
-    scope.release();
     awaitAndContinue(globalObject, vm, iterator, promise, /* closeSyncIteratorOnRejection */ true, value, done);
     return JSValue::encode(promise);
 }

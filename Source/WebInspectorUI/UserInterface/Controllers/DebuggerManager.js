@@ -103,7 +103,7 @@ WI.DebuggerManager = class DebuggerManager extends WI.Object
 
         this._activeCallFrame = null;
 
-        this._internalWebKitScripts = new Multimap;
+        this._internalWebKitScripts = [];
         this._targetDebuggerDataMap = new Map;
 
         // Used to detect deleted probe actions.
@@ -515,37 +515,6 @@ WI.DebuggerManager = class DebuggerManager extends WI.Object
 
         console.assert(target instanceof WI.Target);
         return this.dataForTarget(target).scriptForIdentifier(id);
-    }
-
-    // Resolves a script identifier from a stack trace payload, which may name a script that `target`
-    // does not own. Pass `deliveredOnTarget` only when the payload arrived over `target`'s own
-    // connection. Prefer `scriptForIdentifier` wherever the caller knows the target owns the identifier.
-    scriptForStackTraceIdentifier(id, target, {deliveredOnTarget} = {})
-    {
-        let script = this.scriptForIdentifier(id, target);
-        if (script)
-            return script;
-
-        // FIXME: <https://webkit.org/b/325881> Remove once no domain delivers stack traces on the page target.
-        // Under Site Isolation the page target owns no scripts, but its connection only reaches the main
-        // frame's process, so an identifier delivered on it names a script in that process. A payload that is
-        // only resolved against the page target, such as a Network initiator, may come from any process, and
-        // script identifiers collide across processes.
-        if (!deliveredOnTarget || !(target instanceof WI.PageTarget))
-            return null;
-
-        let mainFrame = WI.networkManager.mainFrame;
-        if (!mainFrame)
-            return null;
-
-        // Iterate the map rather than `WI.targets` so that no `WI.DebuggerData` is created as a side
-        // effect for a target that has never reported a script.
-        for (let [otherTarget, targetData] of this._targetDebuggerDataMap) {
-            if (otherTarget instanceof WI.FrameTarget && !otherTarget.isProvisional && otherTarget.executionContext?.frame === mainFrame)
-                return targetData.scriptForIdentifier(id);
-        }
-
-        return null;
     }
 
     scriptsForURL(url, target)
@@ -1014,19 +983,19 @@ WI.DebuggerManager = class DebuggerManager extends WI.Object
 
         // Only clear state belonging to the target that was cleared. The Debugger domain's
         // targetTypes includes "frame", so a subframe appearing emits this for its own target.
-        this._internalWebKitScripts.delete(target);
+        this._internalWebKitScripts = this._internalWebKitScripts.filter((script) => script.target !== target);
         this._targetDebuggerDataMap.delete(target);
 
         this._ignoreBreakpointDisplayLocationDidChangeEvent = true;
 
         // Mark this target's breakpoints as unresolved. They will be reported as resolved when
-        // breakpointResolved is called as the page loads. A breakpoint can be resolved in more
-        // than one target, so only drop the locations belonging to the cleared target.
+        // breakpointResolved is called as the page loads.
         for (let breakpoint of this._breakpoints) {
-            breakpoint.clearResolvedLocationsForTarget(target);
+            if (breakpoint.sourceCodeLocation.sourceCode?.target !== target)
+                continue;
 
-            if (breakpoint.sourceCodeLocation.sourceCode?.target === target)
-                breakpoint.sourceCodeLocation.sourceCode = null;
+            breakpoint.clearResolvedLocations();
+            breakpoint.sourceCodeLocation.sourceCode = null;
         }
 
         this._ignoreBreakpointDisplayLocationDidChangeEvent = false;
@@ -1175,7 +1144,7 @@ WI.DebuggerManager = class DebuggerManager extends WI.Object
         }
 
         if (isWebKitInternalScript(script.sourceURL)) {
-            this._internalWebKitScripts.add(script.target, script);
+            this._internalWebKitScripts.push(script);
             if (!WI.settings.engineeringShowInternalScripts.value)
                 return;
         }
@@ -1751,10 +1720,6 @@ WI.DebuggerManager = class DebuggerManager extends WI.Object
         let wasPaused = this.paused;
         let {target} = event.data;
 
-        let activeCallFrameDidChange = this._activeCallFrame?.target === target;
-        if (activeCallFrameDidChange)
-            this._activeCallFrame = null;
-
         target.extraScriptCollection.clear();
         for (let frame of WI.networkManager.frames) {
             for (let script of Array.from(frame.extraScriptCollection)) {
@@ -1767,9 +1732,6 @@ WI.DebuggerManager = class DebuggerManager extends WI.Object
 
         if (!this.paused && wasPaused)
             this.dispatchEventToListeners(WI.DebuggerManager.Event.Resumed);
-
-        if (activeCallFrameDidChange)
-            this.dispatchEventToListeners(WI.DebuggerManager.Event.ActiveCallFrameDidChange);
     }
 
     _handleFrameWasAdded(event)
@@ -1791,7 +1753,7 @@ WI.DebuggerManager = class DebuggerManager extends WI.Object
     _handleEngineeringShowInternalScriptsSettingChanged(event)
     {
         let eventType = WI.settings.engineeringShowInternalScripts.value ? WI.DebuggerManager.Event.ScriptAdded : WI.DebuggerManager.Event.ScriptRemoved;
-        for (let script of this._internalWebKitScripts.values())
+        for (let script of this._internalWebKitScripts)
             this.dispatchEventToListeners(eventType, {script});
     }
 
@@ -1846,16 +1808,6 @@ WI.DebuggerManager = class DebuggerManager extends WI.Object
         this._blackboxedCallFrameGroupsToAutoExpand = [];
 
         this.dataForTarget(target).updateForResume();
-
-        if (activeCallFrameDidChange) {
-            for (let targetData of this._targetDebuggerDataMap.values()) {
-                let callFrame = targetData.paused && targetData.stackTrace.callFrames[0];
-                if (callFrame) {
-                    this._activeCallFrame = callFrame;
-                    break;
-                }
-            }
-        }
 
         if (!this.paused)
             this.dispatchEventToListeners(WI.DebuggerManager.Event.Resumed);

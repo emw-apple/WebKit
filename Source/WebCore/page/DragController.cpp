@@ -108,7 +108,6 @@
 #include "WebContentReader.h"
 #include "markup.h"
 #include <JavaScriptCore/ConsoleTypes.h>
-#include <wtf/Scope.h>
 #include <wtf/SetForScope.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/text/MakeString.h>
@@ -783,7 +782,7 @@ static bool imageElementIsDraggable(const HTMLImageElement& image, const LocalFr
         return false;
 
     RefPtr cachedImage = renderImage->cachedImage();
-    return cachedImage && !cachedImage->errorOccurred() && cachedImage->image();
+    return cachedImage && !cachedImage->errorOccurred() && cachedImage->imageForRenderer(renderImage.get());
 }
 
 #if ENABLE(MODEL_ELEMENT)
@@ -890,6 +889,9 @@ static CachedImage* getCachedImage(Element& element)
 static Image* getImage(Element& element)
 {
     RefPtr cachedImage = getCachedImage(element);
+    // Don't use cachedImage->imageForRenderer() here as that may return BitmapImages for cached SVG Images.
+    // Users of getImage() want access to the SVGImage, in order to figure out the filename extensions,
+    // which would be empty when asking the cached BitmapImages.
     return (cachedImage && !cachedImage->errorOccurred()) ?
         cachedImage->image() : nullptr;
 }
@@ -963,7 +965,7 @@ void DragController::prepareForDragStart(LocalFrame& source, OptionSet<DragSourc
 
     RefPtr image = getImage(element);
     auto imageURL = hitTestResult->absoluteImageURL();
-    if (actionMask.contains(DragSourceAction::Image) && !imageURL.isEmpty() && image && image->hasSomethingToDraw()) {
+    if (actionMask.contains(DragSourceAction::Image) && !imageURL.isEmpty() && image && !image->isNull()) {
         editor->writeImageToPasteboard(pasteboard, element, imageURL, { });
         return;
     }
@@ -1133,7 +1135,7 @@ bool DragController::startDrag(LocalFrame& src, const DragState& state, OptionSe
         return false;
     }
 
-    if (!imageURL.isEmpty() && image && image->hasSomethingToDraw() && m_dragSourceAction.contains(DragSourceAction::Image)) {
+    if (!imageURL.isEmpty() && image && !image->isNull() && m_dragSourceAction.contains(DragSourceAction::Image)) {
         // We shouldn't be starting a drag for an image that can't provide an extension.
         // This is an early detection for problems encountered later upon drop.
         ASSERT(!image->filenameExtension().isEmpty());
@@ -1237,30 +1239,6 @@ bool DragController::startDrag(LocalFrame& src, const DragState& state, OptionSe
         auto previousSelection = src.selection().selection();
         selectElement(element);
 
-        auto restoreSelectionChanges = WTF::makeScopeExit([editor = protect(src.editor()), selection = protect(src.selection()), element, &previousSelection] {
-            if (!element->isContentRichlyEditable())
-                selection->setSelection(previousSelection);
-            editor->setIgnoreSelectionChanges(false);
-        });
-
-        // We create the drag image first, because clients can run script that mutates the DOM (and changes the selection).
-        if (!dragImage) {
-            CheckedPtr attachmentRenderer = dynamicDowncast<RenderAttachment>(attachment->renderer());
-            if (attachmentRenderer)
-                attachmentRenderer->setShouldDrawBorder(false);
-            auto [dragImageRef, textIndicator] = createDragImageForSelection(src);
-            dragImage = DragImage { dissolveDragImageToFraction(dragImageRef, DragImageAlpha) };
-            if (attachmentRenderer)
-                attachmentRenderer->setShouldDrawBorder(true);
-            if (textIndicator && textIndicator->contentImage())
-                dragImage.setTextIndicator(textIndicator);
-            dragLoc = dragLocForSelectionDrag(src);
-            m_dragOffset = IntPoint { dragOrigin - dragLoc };
-        }
-
-        if (!dragImage)
-            return false;
-
         PromisedAttachmentInfo promisedAttachment;
         if (hasData == HasNonDefaultPasteboardData::No) {
             Ref editor = src.editor();
@@ -1277,7 +1255,23 @@ bool DragController::startDrag(LocalFrame& src, const DragState& state, OptionSe
         
         client().willPerformDragSourceAction(DragSourceAction::Attachment, dragOrigin, dataTransfer);
         
+        if (!dragImage) {
+            CheckedPtr attachmentRenderer = dynamicDowncast<RenderAttachment>(attachment->renderer());
+            if (attachmentRenderer)
+                attachmentRenderer->setShouldDrawBorder(false);
+            auto [dragImageRef, textIndicator] = createDragImageForSelection(src);
+            dragImage = DragImage { dissolveDragImageToFraction(dragImageRef, DragImageAlpha) };
+            if (attachmentRenderer)
+                attachmentRenderer->setShouldDrawBorder(true);
+            if (textIndicator && textIndicator->contentImage())
+                dragImage.setTextIndicator(textIndicator);
+            dragLoc = dragLocForSelectionDrag(src);
+            m_dragOffset = IntPoint(dragOrigin.x() - dragLoc.x(), dragOrigin.y() - dragLoc.y());
+        }
         doSystemDrag(WTF::move(dragImage), dragLoc, dragOrigin, src, state, WTF::move(promisedAttachment), rootFrameID);
+        if (!element->isContentRichlyEditable())
+            protect(src.selection())->setSelection(previousSelection);
+        protect(src.editor())->setIgnoreSelectionChanges(false);
         return true;
     }
 #endif

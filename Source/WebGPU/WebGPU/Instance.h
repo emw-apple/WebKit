@@ -70,8 +70,7 @@ public:
 
     Ref<PresentationContext> createSurface(const WGPUSurfaceDescriptor&);
     void processEvents();
-    // Completes with nullptr when no adapter is available.
-    void requestAdapter(const WebGPU::RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&);
+    void requestAdapter(const WGPURequestAdapterOptions&, CompletionHandler<void(WGPURequestAdapterStatus, Ref<Adapter>&&, String&&)>&& callback);
 
     void setLabel(String&&) final { }
     bool isValid() const final { return m_isValid; }

@@ -44,14 +44,8 @@ namespace WebCore {
 class AXObjectCache;
 class AccessibilityObject;
 class Element;
-
-bool shouldLogFormActivity();
-void logFormActivity(const String&);
-
-#define AXFORMLOG(...) do { \
-    if (shouldLogFormActivity()) [[unlikely]] \
-        logFormActivity(makeString(__VA_ARGS__)); \
-} while (0)
+class HTMLFormControlElement;
+class HTMLFormElement;
 
 // Watches for text that appears after a form is submitted, and potentially applies repairs if the
 // markup is insufficient. Specifically, this is synthesizing an aria-errormessage relationship based
@@ -67,14 +61,9 @@ public:
     // ----
     // Inputs. Hooks that tell this class something happened.
 
-    // Submitting a form, pressing its submit button, or pressing Enter in one of its fields is unmistakably an attempt
-    // to submit. Anything else, like a click on a button that belongs to no form, only may have been one.
-    enum class Attempt : bool { Submission, PossibleSubmission };
-
-    // The user tried to submit the fields in the container, and nothing is going to navigate as a result (e.g. because
-    // validation failed). This container is either a <form>, or an element that encapsulates form components (fields
-    // and a submit button of some kind).
-    void didAttemptSubmissionWithoutNavigation(Element& container, Element* submitter, Attempt = Attempt::Submission);
+    // The user activated a submit control and nothing is going to navigate as a result (e.g. because validation failed).
+    // FIXME: This misses form-like pages that never use a form element.
+    void didAttemptSubmissionWithoutNavigation(HTMLFormElement&, HTMLFormControlElement* submitter);
 
     // A navigation started after all, or the document went away.
     void didStartLoading(LocalFrame*);
@@ -93,7 +82,7 @@ public:
     // ----
     // Outputs. What the cache and the platform layer can ask about the state of this watch.
 
-    bool isWatching() const { return !!m_container; }
+    bool isWatching() const { return !!m_form; }
 
     // Reporting builds accessibility objects, which the cache will only do with layout clean, so the settle
     // timer asks for it rather than doing it. AXObjectCache::performDeferredCacheUpdate() is where layout is
@@ -114,23 +103,18 @@ private:
     Seconds settleDelay() const;
     Seconds checkInterval() const;
     Seconds quietPeriod() const;
-    void startWatchWindow();
-    void captureRenderedFields(Element& container);
     void requestReport();
     void settleTimerFired();
     void collectErrorMessagesFrom(AccessibilityObject&, unsigned depth);
 
     CheckedRef<AXObjectCache> m_cache;
-    WeakPtr<Element, WeakPtrImplWithEventTargetData> m_container;
-    WeakPtr<Element, WeakPtrImplWithEventTargetData> m_submitter;
+    WeakPtr<HTMLFormElement, WeakPtrImplWithEventTargetData> m_form;
+    WeakPtr<HTMLFormControlElement, WeakPtrImplWithEventTargetData> m_submitter;
     WeakListHashSet<Element, WeakPtrImplWithEventTargetData> m_changedElements;
     Vector<CandidateErrorMessage> m_candidateErrorMessages;
     HashSet<String> m_announcedText;
-    // The fields rendered when the user acted, so a field the page reveals afterwards is not taken for one they left wrong.
-    WeakHashSet<Element, WeakPtrImplWithEventTargetData> m_fieldsRenderedAtAttempt;
     unsigned m_changedElementCount { 0 };
     unsigned m_objectsVisited { 0 };
-    Attempt m_attempt { Attempt::Submission };
     bool m_reportIsPending { false };
     MonotonicTime m_watchStartTime;
     MonotonicTime m_lastChangeTime;

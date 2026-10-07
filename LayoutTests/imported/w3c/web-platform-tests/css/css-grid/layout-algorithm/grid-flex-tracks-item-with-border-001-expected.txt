@@ -1,6 +1,0 @@
-X
-
-PASS .grid 1
-PASS .grid 2
-PASS .grid 3
-

@@ -15,12 +15,6 @@
 #ifndef ABSL_RANDOM_INTERNAL_PCG_ENGINE_H_
 #define ABSL_RANDOM_INTERNAL_PCG_ENGINE_H_
 
-#include <cstddef>
-#include <cstdint>
-#include <ios>
-#include <istream>
-#include <limits>
-#include <ostream>
 #include <type_traits>
 
 #include "absl/base/config.h"
@@ -182,12 +176,12 @@ class pcg_engine {
   state_type state_;
 
   // Returns the linear-congruential generator next state.
-  static constexpr state_type lcg(state_type s) {
+  static inline constexpr state_type lcg(state_type s) {
     return s * Params::multiplier() + Params::increment();
   }
 
   // Returns the linear-congruential arbitrary seek state.
-  state_type advance(state_type s, uint64_t n) const {
+  inline state_type advance(state_type s, uint64_t n) const {
     state_type mult = Params::multiplier();
     state_type inc = Params::increment();
     state_type m = 1;
@@ -227,10 +221,10 @@ template <uint64_t kMultA, uint64_t kMultB, uint64_t kIncA, uint64_t kIncB>
 class pcg128_params {
  public:
   using state_type = absl::uint128;
-  static constexpr state_type multiplier() {
+  static inline constexpr state_type multiplier() {
     return absl::MakeUint128(kMultA, kMultB);
   }
-  static constexpr state_type increment() {
+  static inline constexpr state_type increment() {
     return absl::MakeUint128(kIncA, kIncB);
   }
 };
@@ -241,7 +235,7 @@ struct pcg_xsl_rr_128_64 {
   using state_type = absl::uint128;
   using result_type = uint64_t;
 
-  uint64_t operator()(state_type state) {
+  inline uint64_t operator()(state_type state) {
     // This is equivalent to the xsl_rr_128_64 mixing function.
     uint64_t rotate = static_cast<uint64_t>(state >> 122u);
     state ^= state >> 64;
@@ -256,8 +250,8 @@ template <uint64_t kMult, uint64_t kInc>
 class pcg64_params {
  public:
   using state_type = uint64_t;
-  static constexpr state_type multiplier() { return kMult; }
-  static constexpr state_type increment() { return kInc; }
+  static inline constexpr state_type multiplier() { return kMult; }
+  static inline constexpr state_type increment() { return kInc; }
 };
 
 // Implementation of the PCG xsh_rr_64_32 64-bit mixing function, which accepts
@@ -265,7 +259,7 @@ class pcg64_params {
 struct pcg_xsh_rr_64_32 {
   using state_type = uint64_t;
   using result_type = uint32_t;
-  uint32_t operator()(uint64_t state) {
+  inline uint32_t operator()(uint64_t state) {
     return rotr(static_cast<uint32_t>(((state >> 18) ^ state) >> 27),
                 state >> 59);
   }

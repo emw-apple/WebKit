@@ -492,7 +492,8 @@ void JIT::emit_op_iterator_next(const JSInstruction* instruction)
     nextIsNotCell.link(this);
     move(nextGPR, indexGPR);
     emitGetVirtualRegister(bytecode.m_iterator, scratch1GPR);
-    Jump iteratorIsNotFastArraySentinel = branchPtr(NotEqual, scratch1GPR, TrustedImmPtr(vm().fastArraySentinel()));
+    genericCases.append(branchIfNotCell(scratch1GPR));
+    genericCases.append(branchIfNotType(scratch1GPR, SentinelType));
 
     JumpList slowCases;
     slowCases.append(branchIfNotInt32(indexGPR));
@@ -533,47 +534,6 @@ void JIT::emit_op_iterator_next(const JSInstruction* instruction)
         addPtr(TrustedImm32(bytecode.m_next.offset() * static_cast<int>(sizeof(Register))), callFrameRegister, indexInFrameGPR);
         materializePointerIntoMetadata(bytecode, 0, metadataGPR);
         callOperation(operationIteratorNextFastArray, globalObjectGPR, iterableGPR, indexInFrameGPR, metadataGPR);
-    }
-    jump().linkTo(storeResult, this);
-
-    iteratorIsNotFastArraySentinel.link(this);
-    genericCases.append(branchPtr(NotEqual, scratch1GPR, TrustedImmPtr(vm().fastStringSentinel())));
-
-    JumpList stringSlowCases;
-    emitGetVirtualRegister(bytecode.m_iterable, scratch1GPR);
-    loadPtr(Address(scratch1GPR, JSString::offsetOfValue()), scratch1GPR);
-    stringSlowCases.append(branchIfRopeStringImpl(scratch1GPR));
-    stringSlowCases.append(branchTest32(Zero, Address(scratch1GPR, StringImpl::flagsOffset()), TrustedImm32(StringImpl::flagIs8Bit())));
-    stringSlowCases.append(branch32(AboveOrEqual, indexGPR, Address(scratch1GPR, StringImpl::lengthMemoryOffset())));
-    loadPtr(Address(scratch1GPR, StringImpl::dataOffset()), scratch1GPR);
-    zeroExtend32ToWord(indexGPR, indexGPR);
-    load8(BaseIndex(scratch1GPR, indexGPR, TimesOne), valueGPR);
-    move(TrustedImmPtr(vm().smallStrings.singleCharacterStrings()), scratch1GPR);
-    loadPtr(BaseIndex(scratch1GPR, valueGPR, ScalePtr), valueGPR);
-
-    load16FromMetadata(bytecode, OpIteratorNext::Metadata::offsetOfIterationMetadata() + IterationModeMetadata::offsetOfSeenModes(), scratch1GPR);
-    or32(TrustedImm32(static_cast<uint16_t>(IterationMode::FastString)), scratch1GPR);
-    store16ToMetadata(scratch1GPR, bytecode, OpIteratorNext::Metadata::offsetOfIterationMetadata() + IterationModeMetadata::offsetOfSeenModes());
-    emitPutVirtualRegister(bytecode.m_value, valueGPR);
-    emitValueProfilingSite(bytecode, m_bytecodeIndex.withCheckpoint(OpIteratorNext::getValue), valueGPR);
-    storeTrustedValue(jsBoolean(false), addressFor(bytecode.m_done));
-    add32(TrustedImm32(1), indexGPR);
-    boxInt32(indexGPR, indexGPR);
-    emitPutVirtualRegister(bytecode.m_next, indexGPR);
-    doneCases.append(jump());
-
-    stringSlowCases.link(this);
-    {
-        using BaselineJITRegisters::IteratorNext::FastString::globalObjectGPR;
-        using BaselineJITRegisters::IteratorNext::FastString::iterableGPR;
-        using BaselineJITRegisters::IteratorNext::FastString::indexInFrameGPR;
-        using BaselineJITRegisters::IteratorNext::FastString::metadataGPR;
-
-        loadGlobalObject(globalObjectGPR);
-        emitGetVirtualRegister(bytecode.m_iterable, iterableGPR);
-        addPtr(TrustedImm32(bytecode.m_next.offset() * static_cast<int>(sizeof(Register))), callFrameRegister, indexInFrameGPR);
-        materializePointerIntoMetadata(bytecode, 0, metadataGPR);
-        callOperation(operationIteratorNextFastString, globalObjectGPR, iterableGPR, indexInFrameGPR, metadataGPR);
     }
     jump().linkTo(storeResult, this);
 
@@ -640,25 +600,15 @@ void JIT::emit_op_iterator_close_check(const JSInstruction* instruction)
     auto bytecode = instruction->as<OpIteratorCloseCheck>();
     unsigned target = jumpTarget(instruction, bytecode.m_targetLabel);
     emitGetVirtualRegister(bytecode.m_iterator, regT0);
-    Jump iteratorIsNotFastArraySentinel = branchPtr(NotEqual, regT0, TrustedImmPtr(vm().fastArraySentinel()));
-    load8FromMetadata(bytecode, OpIteratorCloseCheck::Metadata::offsetOfSeenModes(), regT1);
-    or32(TrustedImm32(static_cast<uint8_t>(IterationMode::FastArray)), regT1);
-    store8ToMetadata(regT1, bytecode, OpIteratorCloseCheck::Metadata::offsetOfSeenModes());
+    JumpList fallThrough;
+    fallThrough.append(branchIfNotCell(regT0));
+    fallThrough.append(branchIfNotType(regT0, SentinelType));
+
+    store8ToMetadata(TrustedImm32(1), bytecode, OpIteratorCloseCheck::Metadata::offsetOfHasSeenFastArray());
     loadGlobalObject(regT1);
     addPtr(TrustedImm32(JSGlobalObject::offsetOfArrayIteratorProtocolWatchpointSet()), regT1);
     addJump(branchIfInlineWatchpointSetIsStillValid(regT1), target);
-    Jump needsIterator = jump();
 
-    iteratorIsNotFastArraySentinel.link(this);
-    Jump fallThrough = branchPtr(NotEqual, regT0, TrustedImmPtr(vm().fastStringSentinel()));
-    load8FromMetadata(bytecode, OpIteratorCloseCheck::Metadata::offsetOfSeenModes(), regT1);
-    or32(TrustedImm32(static_cast<uint8_t>(IterationMode::FastString)), regT1);
-    store8ToMetadata(regT1, bytecode, OpIteratorCloseCheck::Metadata::offsetOfSeenModes());
-    loadGlobalObject(regT1);
-    addPtr(TrustedImm32(JSGlobalObject::offsetOfStringIteratorProtocolWatchpointSet()), regT1);
-    addJump(branchIfInlineWatchpointSetIsStillValid(regT1), target);
-
-    needsIterator.link(this);
     JITSlowPathCall(this, slow_path_iterator_close_check).call();
 
     fallThrough.link(this);

@@ -30,8 +30,10 @@
 #ifndef ABSL_FUNCTIONAL_BIND_BACK_H_
 #define ABSL_FUNCTIONAL_BIND_BACK_H_
 
+#ifdef __has_include
 #if __has_include(<version>)
 #include <version>
+#endif
 #endif
 
 #if defined(__cpp_lib_bind_back) && __cpp_lib_bind_back >= 202202L

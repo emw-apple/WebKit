@@ -17,8 +17,6 @@
 use alloc::vec::Vec;
 use core::ptr::NonNull;
 
-use bssl_crypto::FromFfiSlice;
-
 use crate::{
     call_slice_getter,
     config::ProtocolVersion,
@@ -26,6 +24,7 @@ use crate::{
     errors::Error,
     ffi::{
         Alloc,
+        sanitize_slice,
         slice_into_ffi_raw_parts, //
     }, //
 };
@@ -77,7 +76,7 @@ impl TlsSession {
         let out_data = Alloc(out_data);
         let slice = unsafe {
             // Safety: out_data.0 and out_len are returned by BoringSSL and are valid.
-            u8::from_ffi_ptr(out_data.0, out_len)
+            sanitize_slice(out_data.0, out_len).unwrap()
         };
         Ok(slice.to_vec())
     }
@@ -96,7 +95,7 @@ impl TlsSession {
         let out_data = Alloc(out_data);
         let slice = unsafe {
             // Safety: out_data.0 and out_len are returned by BoringSSL and are valid.
-            u8::from_ffi_ptr(out_data.0, out_len)
+            sanitize_slice(out_data.0, out_len).unwrap()
         };
         Ok(slice.to_vec())
     }
@@ -166,9 +165,11 @@ impl TlsSession {
                     bssl_sys::CRYPTO_BUFFER_len(buf),
                 )
             };
-            let slice = unsafe {
+            let Some(slice) = (unsafe {
                 // Safety: data and len are valid.
-                u8::from_ffi_ptr(data, len)
+                sanitize_slice(data, len)
+            }) else {
+                continue;
             };
             res.push(slice.to_vec());
         }
@@ -177,19 +178,17 @@ impl TlsSession {
 
     /// Get the signed certificate timestamp list, if any.
     pub fn get_signed_cert_timestamp_list(&self) -> Option<&[u8]> {
-        let sct = call_slice_getter!(
+        call_slice_getter!(
             bssl_sys::SSL_SESSION_get0_signed_cert_timestamp_list,
             self.ptr()
-        );
-        (!sct.is_empty()).then_some(sct)
+        )
     }
 
     /// Get the OCSP response, if any.
     ///
     /// See [RFC 8446 §4.4.2.1](https://datatracker.ietf.org/doc/html/rfc8446#section-4.4.2.1).
     pub fn get_ocsp_response(&self) -> Option<&[u8]> {
-        let ocsp = call_slice_getter!(bssl_sys::SSL_SESSION_get0_ocsp_response, self.ptr());
-        (!ocsp.is_empty()).then_some(ocsp)
+        call_slice_getter!(bssl_sys::SSL_SESSION_get0_ocsp_response, self.ptr())
     }
 
     /// Check if the session should be single use.
@@ -218,8 +217,7 @@ impl TlsSession {
 
     /// Get the ticket, if any.
     pub fn get_ticket(&self) -> Option<&[u8]> {
-        let ticket = call_slice_getter!(bssl_sys::SSL_SESSION_get0_ticket, self.ptr());
-        (!ticket.is_empty()).then_some(ticket)
+        call_slice_getter!(bssl_sys::SSL_SESSION_get0_ticket, self.ptr())
     }
 
     /// Check if the session has a peer SHA256.
@@ -232,8 +230,7 @@ impl TlsSession {
 
     /// Get the peer SHA256, if any.
     pub fn get_peer_sha256(&self) -> Option<&[u8]> {
-        let sha256 = call_slice_getter!(bssl_sys::SSL_SESSION_get0_peer_sha256, self.ptr());
-        (!sha256.is_empty()).then_some(sha256)
+        call_slice_getter!(bssl_sys::SSL_SESSION_get0_peer_sha256, self.ptr())
     }
 
     /// Check if the session is resumable across names.

@@ -17,7 +17,6 @@
 #include <functional>
 #include <new>
 #include <stdexcept>
-#include <string>
 
 #include "gtest/gtest.h"
 #include "absl/base/config.h"

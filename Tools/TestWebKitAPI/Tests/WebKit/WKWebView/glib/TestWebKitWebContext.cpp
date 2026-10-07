@@ -26,7 +26,6 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <wtf/HashMap.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GUniquePtr.h>
 #include <wtf/text/StringBuilder.h>
@@ -100,9 +99,9 @@ public:
         }
 
         URISchemeHandler(const char* reply, int replyLength, const char* mimeType, int statusCode = 200)
-            : reply(UTF8CString::unsafeFromUTF8(reply))
+            : reply(UTF8CString { byteCast<char8_t>(reply) })
             , replyLength(replyLength)
-            , mimeType(UTF8CString::unsafeFromUTF8(mimeType))
+            , mimeType(UTF8CString { byteCast<char8_t>(mimeType) })
             , statusCode(statusCode)
         {
         }
@@ -162,7 +161,7 @@ public:
                 webkit_uri_scheme_request_finish(request, G_INPUT_STREAM(inputStream.get()), handler.replyLength, handler.mimeType.legacyCStringPointer());
                 webkit_uri_scheme_request_finish_error(request, error.get());
             } else if (!g_strcmp0(requestPath, "after-first-chunk")) {
-                gMemoryInputStreamAddStaticData(G_MEMORY_INPUT_STREAM(inputStream.get()), handler.reply.span());
+                g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(inputStream.get()), handler.reply.legacyCStringPointer(), handler.reply.length(), 0);
                 webkit_uri_scheme_request_finish(request, inputStream.get(), handler.replyLength, handler.mimeType.legacyCStringPointer());
                 // We need to wait until we reach the load-committed state before calling webkit_uri_scheme_request_finish_error(),
                 // so we rely on the test using finishOnCommittedAndWaitUntilLoadFinished() to actually call it from loadCommitted().
@@ -174,12 +173,12 @@ public:
         }
 
         if (!g_strcmp0(scheme, "echo")) {
-            auto replyHTML = GMallocString::unsafeAdoptFromUTF8(g_strdup_printf(handler.reply.legacyCStringPointer(), requestPath));
-            gMemoryInputStreamAddData(G_MEMORY_INPUT_STREAM(inputStream.get()), WTF::move(replyHTML));
+            char* replyHTML = g_strdup_printf(handler.reply.legacyCStringPointer(), requestPath);
+            g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(inputStream.get()), replyHTML, strlen(replyHTML), g_free);
         } else if (!g_strcmp0(scheme, "closed"))
             g_input_stream_close(inputStream.get(), 0, 0);
         else if (!handler.reply.isNull())
-            gMemoryInputStreamAddStaticData(G_MEMORY_INPUT_STREAM(inputStream.get()), handler.reply.span());
+            g_memory_input_stream_add_data(G_MEMORY_INPUT_STREAM(inputStream.get()), handler.reply.legacyCStringPointer(), handler.reply.length(), 0);
 
         auto response = adoptGRef(webkit_uri_scheme_response_new(inputStream.get(), handler.replyLength));
         webkit_uri_scheme_response_set_status(response.get(), handler.statusCode, nullptr);
@@ -455,7 +454,7 @@ static void testWebContextSpellChecker(Test* test, gconstpointer)
 static void testWebContextLanguages(WebViewTest* test, gconstpointer)
 {
     static const char* expectedDefaultLanguage = "en-US";
-    test->loadURI(kServer->getURIForPath("/"));
+    test->loadURI(kServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     size_t mainResourceDataSize = 0;
     const char* mainResourceData = test->mainResourceData(mainResourceDataSize);
@@ -470,7 +469,7 @@ static void testWebContextLanguages(WebViewTest* test, gconstpointer)
     webkit_web_context_set_preferred_languages(test->m_webContext.get(), reinterpret_cast<const char* const*>(languages->pdata));
 
     static const char* expectedLanguages = "en,ES-es;q=0.90,dE;q=0.80";
-    test->loadURI(kServer->getURIForPath("/"));
+    test->loadURI(kServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     mainResourceDataSize = 0;
     mainResourceData = test->mainResourceData(mainResourceDataSize);
@@ -630,11 +629,11 @@ static void xhrMessageReceivedCallback(WebKitUserContentManager*, WebKitJavascri
 
 static void testWebContextSecurityFileXHR(WebViewTest* test, gconstpointer)
 {
-    GUniquePtr<char> fileURL(SAFE_G_STRDUP_PRINTF("file://%s/simple.html", Test::getResourcesDir(Test::WebKit2Resources)));
+    GUniquePtr<char> fileURL(g_strdup_printf("file://%s/simple.html", Test::getResourcesDir(Test::WebKit2Resources).legacyCStringPointer()));
     test->loadURI(fileURL.get());
     test->waitUntilLoadFinished();
 
-    GUniquePtr<char> jsonURL(SAFE_G_STRDUP_PRINTF("file://%s/simple.json", Test::getResourcesDir()));
+    GUniquePtr<char> jsonURL(g_strdup_printf("file://%s/simple.json", Test::getResourcesDir().legacyCStringPointer()));
     GUniquePtr<char> xhr(g_strdup_printf("var xhr = new XMLHttpRequest; xhr.open(\"GET\", \"%s\"); xhr.onreadystatechange = ()=> { if (xhr.readyState == 4) { setTimeout(() => { window.webkit.messageHandlers.xhr.postMessage('DONE'); }, 0)} }; xhr.onerror = () => { window.webkit.messageHandlers.xhr.postMessage('ERROR'); }; xhr.send();", jsonURL.get()));
 
     JSCValue* xhrMessage = nullptr;
@@ -680,7 +679,7 @@ static void testWebContextSecurityFileXHR(WebViewTest* test, gconstpointer)
     g_assert_true(waitUntilXHRDone());
 
     // It isn't still possible to load file from an HTTP URL.
-    test->loadURI(kServer->getURIForPath("/"));
+    test->loadURI(kServer->getURIForPath("/").legacyCStringPointer());
     test->waitUntilLoadFinished();
     value = test->runJavaScriptAndWaitUntilFinished(xhr.get(), &error.outPtr());
     g_assert_nonnull(value);
@@ -731,10 +730,8 @@ public:
         waitUntilLoadFinished();
         size_t dataSize = 0;
         const char* data = mainResourceData(dataSize);
-        return UTF8CString::fromUTF8(std::span { data, dataSize });
+        return UTF8CString { byteCast<char8_t>(std::span { data, dataSize }) };
     }
-
-    UTF8CString loadURIAndGetMainResourceData(const UTF8CString& uri) { return loadURIAndGetMainResourceData(uri.legacyCStringPointer()); }
 
     GUniquePtr<char> proxyServerPortAsString()
     {
@@ -751,7 +748,7 @@ public:
     WebSocketServerType createWebSocketAndWaitUntilConnected()
     {
         m_webSocketRequestReceived = WebSocketServerType::Unknown;
-        GUniquePtr<char> createWebSocket(SAFE_G_STRDUP_PRINTF("var ws = new WebSocket('%s');", kServer->getWebSocketURIForPath("/foo")));
+        GUniquePtr<char> createWebSocket(g_strdup_printf("var ws = new WebSocket('%s');", kServer->getWebSocketURIForPath("/foo").legacyCStringPointer()));
         runJavaScriptAndWait(createWebSocket.get());
         return m_webSocketRequestReceived;
     }
@@ -778,7 +775,7 @@ static void testWebContextProxySettings(ProxyTest* test, gconstpointer)
 {
     // Proxy URI is unset by default. Requests to kServer should be received by kServer.
     GUniquePtr<char> serverPortAsString(g_strdup_printf("%u", kServer->port()));
-    auto mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort"));
+    auto mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort").legacyCStringPointer());
     ASSERT_CMP_CSTRING(mainResourceData, ==, serverPortAsString.get());
 
     // WebSocket requests should also be received by kServer.
@@ -791,7 +788,7 @@ static void testWebContextProxySettings(ProxyTest* test, gconstpointer)
     auto* dataManager = webkit_web_context_get_website_data_manager(test->m_webContext.get());
     webkit_website_data_manager_set_network_proxy_settings(dataManager, WEBKIT_NETWORK_PROXY_MODE_CUSTOM, settings);
     GUniquePtr<char> proxyServerPortAsString = test->proxyServerPortAsString();
-    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort"));
+    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort").legacyCStringPointer());
     ASSERT_CMP_CSTRING(mainResourceData, ==, proxyServerPortAsString.get());
     webkit_network_proxy_settings_free(settings);
 
@@ -815,21 +812,21 @@ static void testWebContextProxySettings(ProxyTest* test, gconstpointer)
         g_assert_nonnull(data);
         auto* test = static_cast<ProxyTest*>(userData);
         GUniquePtr<char> proxyServerPortAsString = test->proxyServerPortAsString();
-        ASSERT_CMP_CSTRING(UTF8CString::fromUTF8(std::span { data.get(), dataSize }), ==, proxyServerPortAsString.get());
+        ASSERT_CMP_CSTRING(UTF8CString { byteCast<char8_t>(std::span { data.get(), dataSize }) }, ==, proxyServerPortAsString.get());
         test->quitMainLoop();
         }, test);
     g_main_loop_run(test->m_mainLoop);
 
     // Remove the proxy. Requests to kServer should be received by kServer again.
     webkit_website_data_manager_set_network_proxy_settings(dataManager, WEBKIT_NETWORK_PROXY_MODE_NO_PROXY, nullptr);
-    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort"));
+    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort").legacyCStringPointer());
     ASSERT_CMP_CSTRING(mainResourceData, ==, serverPortAsString.get());
 
     // Use a default proxy uri, but ignoring requests to localhost.
     static const char* ignoreHosts[] = { "localhost", nullptr };
     settings = webkit_network_proxy_settings_new(test->m_proxyServer.baseURL().string().utf8().legacyCStringPointer(), ignoreHosts);
     webkit_website_data_manager_set_network_proxy_settings(dataManager, WEBKIT_NETWORK_PROXY_MODE_CUSTOM, settings);
-    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort"));
+    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort").legacyCStringPointer());
     ASSERT_CMP_CSTRING(mainResourceData, ==, proxyServerPortAsString.get());
     GUniquePtr<char> localhostEchoPortURI(g_strdup_printf("http://localhost:%s/echoPort", serverPortAsString.get()));
     mainResourceData = test->loadURIAndGetMainResourceData(localhostEchoPortURI.get());
@@ -838,20 +835,20 @@ static void testWebContextProxySettings(ProxyTest* test, gconstpointer)
 
     // Remove the proxy again to ensure next test is not using any previous values.
     webkit_website_data_manager_set_network_proxy_settings(dataManager, WEBKIT_NETWORK_PROXY_MODE_NO_PROXY, nullptr);
-    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort"));
+    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort").legacyCStringPointer());
     ASSERT_CMP_CSTRING(mainResourceData, ==, serverPortAsString.get());
 
     // Use scheme specific proxy instead of the default.
     settings = webkit_network_proxy_settings_new(nullptr, nullptr);
     webkit_network_proxy_settings_add_proxy_for_scheme(settings, "http", test->m_proxyServer.baseURL().string().utf8().legacyCStringPointer());
     webkit_website_data_manager_set_network_proxy_settings(dataManager, WEBKIT_NETWORK_PROXY_MODE_CUSTOM, settings);
-    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort"));
+    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort").legacyCStringPointer());
     ASSERT_CMP_CSTRING(mainResourceData, ==, proxyServerPortAsString.get());
     webkit_network_proxy_settings_free(settings);
 
     // Reset to use the default resolver.
     webkit_website_data_manager_set_network_proxy_settings(dataManager, WEBKIT_NETWORK_PROXY_MODE_DEFAULT, nullptr);
-    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort"));
+    mainResourceData = test->loadURIAndGetMainResourceData(kServer->getURIForPath("/echoPort").legacyCStringPointer());
     ASSERT_CMP_CSTRING(mainResourceData, ==, serverPortAsString.get());
 
     kServer->removeWebSocketHandler();

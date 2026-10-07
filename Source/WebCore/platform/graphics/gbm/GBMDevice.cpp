@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <wtf/SafeStrerror.h>
 #include <wtf/StdLibExtras.h>
-#include <wtf/posix/POSIXExtras.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {
@@ -40,7 +39,7 @@ namespace WebCore {
 RefPtr<GBMDevice> GBMDevice::create(const UTF8CString& filename)
 {
     RELEASE_ASSERT(isMainThread());
-    auto fd = UnixFileDescriptor { posixOpen(filename, O_RDWR | O_CLOEXEC), UnixFileDescriptor::Adopt };
+    auto fd = UnixFileDescriptor { open(filename.legacyCStringPointer(), O_RDWR | O_CLOEXEC), UnixFileDescriptor::Adopt };
     if (!fd) {
         SAFE_WTFLOGALWAYS("Failed to open DRM node %s: %s", filename, safeStrerror(errno));
         return nullptr;

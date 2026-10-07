@@ -26,6 +26,17 @@
 #include "../test/test_util.h"
 
 
+static bool GetUint64(FileTest *t, uint64_t *out, const char *name) {
+  std::string str;
+  if (!t->GetAttribute(&str, name)) {
+    return false;
+  }
+
+  char *endptr;
+  *out = strtoull(str.data(), &endptr, 10);
+  return !str.empty() && *endptr == '\0';
+}
+
 TEST(ScryptTest, TestVectors) {
   FileTestGTest("crypto/evp/test/scrypt_tests.txt", [](FileTest *t) {
     std::vector<uint8_t> password, salt, key;
@@ -33,11 +44,11 @@ TEST(ScryptTest, TestVectors) {
     ASSERT_TRUE(t->GetBytes(&password, "Password"));
     ASSERT_TRUE(t->GetBytes(&salt, "Salt"));
     ASSERT_TRUE(t->GetBytes(&key, "Key"));
-    ASSERT_TRUE(t->GetUint64(&N, "N"));
-    ASSERT_TRUE(t->GetUint64(&r, "r"));
-    ASSERT_TRUE(t->GetUint64(&p, "p"));
+    ASSERT_TRUE(GetUint64(t, &N, "N"));
+    ASSERT_TRUE(GetUint64(t, &r, "r"));
+    ASSERT_TRUE(GetUint64(t, &p, "p"));
     if (t->HasAttribute("MaxMemory")) {
-      ASSERT_TRUE(t->GetUint64(&max_mem, "MaxMemory"));
+      ASSERT_TRUE(GetUint64(t, &max_mem, "MaxMemory"));
     }
 
     std::vector<uint8_t> result(key.size());

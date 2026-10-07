@@ -29,7 +29,6 @@
 #include "absl/base/config.h"
 #include "absl/base/nullability.h"
 #include "absl/container/inlined_vector.h"
-#include "absl/functional/function_ref.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
@@ -74,7 +73,6 @@ class StatusPrivateAccessor;
 class StatusPrivateAccessorForStatusBuilder;
 #endif  // !SWIG
 
-#ifndef SWIG
 // Container for status payloads.
 struct Payload {
   std::string type_url;
@@ -82,9 +80,6 @@ struct Payload {
 };
 
 using Payloads = absl::InlinedVector<Payload, 1>;
-
-template <typename T>
-using EnableIfString = std::enable_if_t<std::is_same_v<T, std::string>>;
 
 // Reference-counted representation of Status data.
 class StatusRep {
@@ -96,7 +91,8 @@ class StatusRep {
         message_(message_arg),
         payloads_(std::move(payloads_arg)) {}
 
-  template <typename String, typename = EnableIfString<String>>
+  template <typename String,
+            typename = std::enable_if_t<std::is_same_v<String, std::string>>>
   StatusRep(absl::StatusCode code_arg, String&& message_arg,
             std::unique_ptr<status_internal::Payloads> payloads_arg)
       : ref_(int32_t{1}),
@@ -148,8 +144,6 @@ class StatusRep {
   StatusRep* absl_nonnull CloneAndUnref() const;
 
  private:
-  friend class absl::Status;
-
   mutable std::atomic<int32_t> ref_;
   absl::StatusCode code_;
 
@@ -178,7 +172,6 @@ const char* absl_nonnull MakeCheckFailString(
     const absl::Status* absl_nonnull status, const char* absl_nonnull prefix);
 
 }  // namespace status_internal
-#endif  // SWIG
 
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -30,6 +30,7 @@
 #import <WebKitLegacy/WebKitAvailability.h>
 
 @class WebHistoryItem;
+@class WebBackForwardListPrivate;
 
 /*!
     @class WebBackForwardList
@@ -41,7 +42,10 @@
     structure.
 */
 WEBKIT_CLASS_DEPRECATED_MAC(10_4, 10_14)
-@interface WebBackForwardList : NSObject
+@interface WebBackForwardList : NSObject {
+@package
+    WebBackForwardListPrivate *_private;
+}
 
 /*!
     @method addItem:

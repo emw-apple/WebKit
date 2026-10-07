@@ -204,12 +204,15 @@ static enum ssl_hs_wait_t do_read_hello_retry_request(SSL_HANDSHAKE *hs) {
     return ssl_hs_error;
   }
 
-  // The cipher suite must be one we offered, and supported for the version.
+  // The cipher suite must be one we offered. We currently offer all supported
+  // TLS 1.3 ciphers unless policy controls limited it. So we check the version
+  // and that it's ok per policy.
   const SSL_CIPHER *cipher = SSL_get_cipher_by_value(server_hello.cipher_suite);
   if (cipher == nullptr ||
       SSL_CIPHER_get_min_version(cipher) > ssl_protocol_version(ssl) ||
       SSL_CIPHER_get_max_version(cipher) < ssl_protocol_version(ssl) ||
-      !ssl->config->tls13_cipher_list.Contains(server_hello.cipher_suite)) {
+      !ssl_tls13_cipher_meets_policy(SSL_CIPHER_get_protocol_id(cipher),
+                                     ssl->config->compliance_policy)) {
     OPENSSL_PUT_ERROR(SSL, SSL_R_WRONG_CIPHER_RETURNED);
     ssl_send_alert(ssl, SSL3_AL_FATAL, SSL_AD_ILLEGAL_PARAMETER);
     return ssl_hs_error;
@@ -993,13 +996,11 @@ static enum ssl_hs_wait_t do_send_client_certificate(SSL_HANDSHAKE *hs) {
     // Do not send client certificates on ECH reject. We have not authenticated
     // the server for the name that can learn the certificate.
     SSL_certs_clear(ssl);
-  } else if (hs->config->cert->cert_cb) {
-    uint8_t alert = SSL_AD_INTERNAL_ERROR;
+  } else if (hs->config->cert->cert_cb != nullptr) {
     // Call cert_cb to update the certificate.
-    int rv =
-        hs->config->cert->cert_cb(ssl, hs->config->cert->cert_cb_arg, &alert);
+    int rv = hs->config->cert->cert_cb(ssl, hs->config->cert->cert_cb_arg);
     if (rv == 0) {
-      ssl_send_alert(ssl, SSL3_AL_FATAL, alert);
+      ssl_send_alert(ssl, SSL3_AL_FATAL, SSL_AD_INTERNAL_ERROR);
       OPENSSL_PUT_ERROR(SSL, SSL_R_CERT_CB_ERROR);
       return ssl_hs_error;
     }

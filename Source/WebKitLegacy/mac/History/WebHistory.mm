@@ -46,13 +46,13 @@
 typedef int64_t WebHistoryDateKey;
 typedef HashMap<WebHistoryDateKey, RetainPtr<NSMutableArray>> DateToEntriesMap;
 
-NSString * const WebHistoryItemsAddedNotification = @"WebHistoryItemsAddedNotification";
-NSString * const WebHistoryItemsRemovedNotification = @"WebHistoryItemsRemovedNotification";
-NSString * const WebHistoryAllItemsRemovedNotification = @"WebHistoryAllItemsRemovedNotification";
-NSString * const WebHistoryLoadedNotification = @"WebHistoryLoadedNotification";
-NSString * const WebHistoryItemsDiscardedWhileLoadingNotification = @"WebHistoryItemsDiscardedWhileLoadingNotification";
-NSString * const WebHistorySavedNotification = @"WebHistorySavedNotification";
-NSString * const WebHistoryItemsKey = @"WebHistoryItems";
+NSString *WebHistoryItemsAddedNotification = @"WebHistoryItemsAddedNotification";
+NSString *WebHistoryItemsRemovedNotification = @"WebHistoryItemsRemovedNotification";
+NSString *WebHistoryAllItemsRemovedNotification = @"WebHistoryAllItemsRemovedNotification";
+NSString *WebHistoryLoadedNotification = @"WebHistoryLoadedNotification";
+NSString *WebHistoryItemsDiscardedWhileLoadingNotification = @"WebHistoryItemsDiscardedWhileLoadingNotification";
+NSString *WebHistorySavedNotification = @"WebHistorySavedNotification";
+NSString *WebHistoryItemsKey = @"WebHistoryItems";
 
 static RetainPtr<WebHistory>& NODELETE sharedHistory()
 {
@@ -60,8 +60,8 @@ static RetainPtr<WebHistory>& NODELETE sharedHistory()
     return _sharedHistory;
 }
 
-NSString * const FileVersionKey = @"WebHistoryFileVersion";
-NSString * const DatesArrayKey = @"WebHistoryDates";
+NSString *FileVersionKey = @"WebHistoryFileVersion";
+NSString *DatesArrayKey = @"WebHistoryDates";
 
 #define currentFileVersion 1
 
@@ -615,8 +615,8 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 - (NSData *)data
 {
     if (_entriesByDate->isEmpty()) {
-        static NeverDestroyed<RetainPtr<NSData>> emptyHistoryData = adoptNS([[NSData alloc] init]);
-        return emptyHistoryData.get();
+        static NSData *emptyHistoryData = [[NSData alloc] init];
+        return emptyHistoryData;
     }
 
     // Ignores the date and item count limits; these are respected when loading instead of when saving, so
@@ -650,9 +650,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 @end
 
-@implementation WebHistory {
-    RetainPtr<WebHistoryPrivate> _historyPrivate;
-}
+@implementation WebHistory
 
 + (WebHistory *)optionalSharedHistory
 {
@@ -681,7 +679,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     self = [super init];
     if (!self)
         return nil;
-    _historyPrivate = adoptNS([[WebHistoryPrivate alloc] init]);
+    _historyPrivate = [[WebHistoryPrivate alloc] init];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(timeZoneChanged:)
                                                  name:NSSystemTimeZoneDidChangeNotification
@@ -694,6 +692,8 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:NSSystemTimeZoneDidChangeNotification
                                                   object:nil];
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_historyPrivate release];
     [super dealloc];
 }
 

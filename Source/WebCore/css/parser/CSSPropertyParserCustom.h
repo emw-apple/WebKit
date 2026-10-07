@@ -157,7 +157,6 @@ public:
     static bool consumeCornerQuadShorthand(CSSParserTokenRange&, PropertyParserState&, const StylePropertyShorthand&, PropertyParserResult&);
     static bool consumeBorderRadiusShorthand(CSSParserTokenRange&, PropertyParserState&, const StylePropertyShorthand&, PropertyParserResult&);
     static bool consumeWebkitBorderRadiusShorthand(CSSParserTokenRange&, PropertyParserState&, const StylePropertyShorthand&, PropertyParserResult&);
-    static bool consumeBorderRadiusSideShorthand(CSSParserTokenRange&, PropertyParserState&, const StylePropertyShorthand&, PropertyParserResult&);
     static bool consumeBorderImageShorthand(CSSParserTokenRange&, PropertyParserState&, const StylePropertyShorthand&, PropertyParserResult&);
     static bool consumeWebkitBorderImageShorthand(CSSParserTokenRange&, PropertyParserState&, const StylePropertyShorthand&, PropertyParserResult&);
     static bool consumeMaskBorderShorthand(CSSParserTokenRange&, PropertyParserState&, const StylePropertyShorthand&, PropertyParserResult&);
@@ -869,19 +868,6 @@ inline bool PropertyParserCustom::consumeCornerQuadShorthand(CSSParserTokenRange
         result.addPropertyForCurrentShorthand(state, longhands[i * 2], radii[i].releaseNonNull());
         result.addPropertyForCurrentShorthand(state, longhands[i * 2 + 1], shapes[i].releaseNonNull());
     }
-    return true;
-}
-
-inline bool PropertyParserCustom::consumeBorderRadiusSideShorthand(CSSParserTokenRange& range, PropertyParserState& state, const StylePropertyShorthand& shorthand, PropertyParserResult& result)
-{
-    ASSERT(shorthand.length() == 2);
-    auto side = consumeUnresolvedBorderRadiusSide(range, state);
-    if (!side)
-        return false;
-
-    auto longhands = shorthand.properties();
-    result.addPropertyForCurrentShorthand(state, longhands[0], WebCore::CSS::createCSSValue(state.pool, side->first()));
-    result.addPropertyForCurrentShorthand(state, longhands[1], WebCore::CSS::createCSSValue(state.pool, side->second()));
     return true;
 }
 
@@ -2066,10 +2052,9 @@ inline bool PropertyParserCustom::consumeListStyleShorthand(CSSParserTokenRange&
     return range.atEnd();
 }
 
-bool PropertyParserCustom::consumeLineClampShorthand(CSSParserTokenRange& range, PropertyParserState& state, const StylePropertyShorthand& shorthand, PropertyParserResult& result)
+inline bool PropertyParserCustom::consumeLineClampShorthand(CSSParserTokenRange& range, PropertyParserState& state, const StylePropertyShorthand&, PropertyParserResult& result)
 {
-    bool isLegacyLineClamp = shorthand.id() == CSSPropertyWebkitLineClamp;
-    ASSERT(state.context.propertySettings.cssLineClampEnabled || isLegacyLineClamp);
+    ASSERT(state.context.propertySettings.cssLineClampEnabled);
 
     if (range.peek().id() == CSSValueNone) {
         // Sets max-lines to none, continue to auto, and block-ellipsis to none.
@@ -2103,8 +2088,6 @@ bool PropertyParserCustom::consumeLineClampShorthand(CSSParserTokenRange& range,
         break;
     } while (!range.atEnd());
 
-    if (isLegacyLineClamp && (autoKeyword || blockEllipsis || webkitLegacy))
-        return false;
     if (!numLines && !autoKeyword && !blockEllipsis)
         return false;
 
@@ -2126,7 +2109,7 @@ bool PropertyParserCustom::consumeLineClampShorthand(CSSParserTokenRange& range,
 
     result.addPropertyForCurrentShorthand(state, CSSPropertyMaxLines, WTF::move(maxLines));
     result.addPropertyForCurrentShorthand(state, CSSPropertyBlockEllipsis, WTF::move(blockEllipsis));
-    result.addPropertyForCurrentShorthand(state, CSSPropertyContinue, CSSKeywordValue::create(isLegacyLineClamp || webkitLegacy ? CSSValueWebkitLegacy : CSSValueDiscard));
+    result.addPropertyForCurrentShorthand(state, CSSPropertyContinue, CSSKeywordValue::create(webkitLegacy ? CSSValueWebkitLegacy : CSSValueDiscard));
     return range.atEnd();
 }
 

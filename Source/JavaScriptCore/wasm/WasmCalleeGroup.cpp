@@ -211,8 +211,6 @@ void CalleeGroup::releaseBBQCallee(const AbstractLocker& locker, FunctionCodeInd
     // Reported outside m_bbqCalleeLock: this takes the heap's own lock, and nothing in the heap
     // reaches back into CalleeGroup.
     bbqCallee->reportToVMsForDestruction();
-    if (OMGOSREntryCallee* osrEntryCallee = bbqCallee->osrEntryCallee())
-        osrEntryCallee->reportToVMsForDestruction();
 }
 #endif
 

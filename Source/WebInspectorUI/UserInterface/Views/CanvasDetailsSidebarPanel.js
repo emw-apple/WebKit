@@ -71,7 +71,6 @@ WI.CanvasDetailsSidebarPanel = class CanvasDetailsSidebarPanel extends WI.Detail
         this._nodesRequestPromise = null;
 
         if (this._canvas) {
-            this._canvas.removeEventListener(WI.Canvas.Event.NameChanged, this._handleDisplayNameChanged, this);
             this._canvas.removeEventListener(WI.Canvas.Event.MemoryChanged, this._canvasMemoryChanged, this);
             this._canvas.removeEventListener(WI.Canvas.Event.ExtensionEnabled, this._refreshExtensionsSection, this);
             this._canvas.removeEventListener(WI.Canvas.Event.SizeChanged, this._refreshSourceSection, this);
@@ -83,7 +82,6 @@ WI.CanvasDetailsSidebarPanel = class CanvasDetailsSidebarPanel extends WI.Detail
         this._canvas = canvas || null;
 
         if (this._canvas) {
-            this._canvas.addEventListener(WI.Canvas.Event.NameChanged, this._handleDisplayNameChanged, this);
             this._canvas.addEventListener(WI.Canvas.Event.MemoryChanged, this._canvasMemoryChanged, this);
             this._canvas.addEventListener(WI.Canvas.Event.ExtensionEnabled, this._refreshExtensionsSection, this);
             this._canvas.addEventListener(WI.Canvas.Event.SizeChanged, this._refreshSourceSection, this);
@@ -330,12 +328,6 @@ WI.CanvasDetailsSidebarPanel = class CanvasDetailsSidebarPanel extends WI.Detail
         }
 
         this._memoryRow.value = Number.bytesToString(this._canvas.memoryCost);
-    }
-
-    _handleDisplayNameChanged()
-    {
-        if (this.didInitialLayout)
-            this._refreshIdentitySection();
     }
 
     _canvasMemoryChanged(event)

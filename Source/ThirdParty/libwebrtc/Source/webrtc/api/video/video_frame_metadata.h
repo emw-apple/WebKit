@@ -96,7 +96,7 @@ class RTC_EXPORT VideoFrameMetadata {
 
   uint32_t GetSsrc() const;
   void SetSsrc(uint32_t ssrc);
-  const std::vector<uint32_t>& GetCsrcs() const;
+  std::vector<uint32_t> GetCsrcs() const;
   void SetCsrcs(std::vector<uint32_t> csrcs);
 
   friend bool operator==(const VideoFrameMetadata& lhs,

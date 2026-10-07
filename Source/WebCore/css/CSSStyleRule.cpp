@@ -34,7 +34,6 @@
 #include "MutableStyleProperties.h"
 #include "RuleSet.h"
 #include "StyleProperties.h"
-#include "StylePropertiesInlines.h"
 #include "StyleRule.h"
 #include "StyleSheetContents.h"
 #include <wtf/NeverDestroyed.h>
@@ -150,7 +149,7 @@ Vector<Ref<StyleRuleBase>> CSSStyleRule::nestedRules() const
 // https://w3c.github.io/csswg-drafts/cssom-1/#serialize-a-css-rule
 String CSSStyleRule::cssText() const
 {
-    auto declarationsString = protect(protect(m_styleRule)->properties())->asText(CSS::defaultSerializationContext());
+    auto declarationsString = protect(m_styleRule)->properties().asText(CSS::defaultSerializationContext());
     StringBuilder declarations;
     StringBuilder rules;
     declarations.append(declarationsString);
@@ -173,7 +172,7 @@ String CSSStyleRule::cssText(const CSS::SerializationContext& context) const
     StringBuilder declarations;
     StringBuilder rules;
 
-    auto declarationsString = protect(protect(m_styleRule)->properties())->asText(context);
+    auto declarationsString = protect(m_styleRule)->properties().asText(context);
     declarations.append(declarationsString);
 
     cssTextForRulesWithReplacementURLs(rules, context);

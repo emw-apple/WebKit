@@ -309,19 +309,23 @@ void GraphicsLayerTextureMapper::setContentsToSolidColor(const Color& color)
     notifyChange(SolidColorChange);
 }
 
-void GraphicsLayerTextureMapper::setContentsToNativeImage(NativeImage* image)
+void GraphicsLayerTextureMapper::setContentsToImage(Image* image)
 {
     if (image) {
         // Make the decision about whether the image has changed.
         // This code makes the assumption that pointer equality on a PlatformImagePtr is a valid way to tell if the image is changed.
         // This assumption is true for the GTK+ port.
-        if (image == m_compositedNativeImage)
+        auto newNativeImage = image->currentNativeImage(ConcreteObjectSize::fixed(image->size()));
+        if (!newNativeImage)
             return;
 
-        m_compositedNativeImage = image;
+        if (newNativeImage == m_compositedNativeImage)
+            return;
+
+        m_compositedNativeImage = newNativeImage;
         if (!m_compositedImage)
             m_compositedImage = TextureMapperTiledBackingStore::create();
-        m_compositedImage->setContentsToNativeImage(image);
+        m_compositedImage->setContentsToImage(image);
         m_compositedImage->updateContentsScale(pageScaleFactor() * deviceScaleFactor());
     } else {
         m_compositedNativeImage = nullptr;
@@ -330,6 +334,7 @@ void GraphicsLayerTextureMapper::setContentsToNativeImage(NativeImage* image)
 
     setContentsToPlatformLayer(m_compositedImage.get(), ContentsLayerPurpose::Image);
     notifyChange(ContentChange);
+    GraphicsLayer::setContentsToImage(image);
 }
 
 void GraphicsLayerTextureMapper::setContentsToPlatformLayer(TextureMapperPlatformLayer* platformLayer, ContentsLayerPurpose purpose)

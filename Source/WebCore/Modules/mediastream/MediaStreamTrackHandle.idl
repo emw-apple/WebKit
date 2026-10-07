@@ -27,8 +27,7 @@
     PrivateIdentifier,
     PublicIdentifier,
     EnabledBySetting=MediaStreamTrackHandleEnabled,
-    Exposed=(Window,DedicatedWorker),
-    Transferable
+    Exposed=(Window,DedicatedWorker)
 ] interface MediaStreamTrackHandle {
     constructor(MediaStreamTrack track);
 };

@@ -118,7 +118,7 @@ static BOOL typeConformsToTypes(NSString *type, NSArray *conformsToTypes)
             continue;
         }
 
-        if (typeConformsToTypes(identifier, protect(Pasteboard::supportedFileUploadPasteboardTypes())))
+        if (typeConformsToTypes(identifier, Pasteboard::supportedFileUploadPasteboardTypes()))
             [types addObject:identifier];
     }
 
@@ -268,8 +268,6 @@ static BOOL typeConformsToTypes(NSString *type, NSArray *conformsToTypes)
 @interface WebItemProviderRegistrationInfoList ()
 {
     RetainPtr<NSMutableArray> _representations;
-    RetainPtr<NSString> _suggestedName;
-    RetainPtr<NSData> _teamData;
 }
 @end
 
@@ -286,24 +284,11 @@ static BOOL typeConformsToTypes(NSString *type, NSArray *conformsToTypes)
     return self;
 }
 
-- (NSString *)suggestedName
+- (void)dealloc
 {
-    return _suggestedName;
-}
-
-- (void)setSuggestedName:(NSString *)suggestedName
-{
-    _suggestedName = adoptNS([suggestedName copy]);
-}
-
-- (NSData *)teamData
-{
-    return _teamData;
-}
-
-- (void)setTeamData:(NSData *)teamData
-{
-    _teamData = adoptNS([teamData copy]);
+    [_suggestedName release];
+    [_teamData release];
+    [super dealloc];
 }
 
 - (void)addData:(NSData *)data forType:(NSString *)typeIdentifier
@@ -566,17 +551,17 @@ static UIPreferredPresentationStyle uiPreferredPresentationStyle(WebPreferredPre
 
 - (void)setItemProviders:(NSArray<__kindof NSItemProvider *> *)itemProviders dropSession:(id<UIDropSession>)dropSession
 {
-    RetainPtr providers = itemProviders ?: @[ ];
-    if (_itemProviders == providers || [_itemProviders isEqualToArray:providers])
+    itemProviders = itemProviders ?: @[ ];
+    if (_itemProviders == itemProviders || [_itemProviders isEqualToArray:itemProviders])
         return;
 
     if (dropSession != _dropSession || !dropSession)
         _changeCount++;
 
     _dropSession = dropSession;
-    _itemProviders = adoptNS([providers copy]);
+    _itemProviders = adoptNS(itemProviders.copy);
 
-    if (![providers count])
+    if (!itemProviders.count)
         _loadResults = { };
 }
 
@@ -597,8 +582,8 @@ static UIPreferredPresentationStyle uiPreferredPresentationStyle(WebPreferredPre
         return nil;
     }
 
-    RetainPtr loadResult = _loadResults[index];
-    for (NSString *loadedType in [loadResult loadedTypeIdentifiers]) {
+    WebItemProviderLoadResult *loadResult = _loadResults[index].get();
+    for (NSString *loadedType in loadResult.loadedTypeIdentifiers) {
         if (!typeConformsToType(loadedType, typeIdentifier))
             continue;
 
@@ -621,7 +606,7 @@ static UIPreferredPresentationStyle uiPreferredPresentationStyle(WebPreferredPre
 
     auto values = adoptNS([[NSMutableArray alloc] init]);
     RetainPtr<WebItemProviderPasteboard> retainedSelf = self;
-    [itemSet enumerateIndexesUsingBlock:[retainedSelf, pasteboardType = protect(pasteboardType), values] (NSUInteger index, BOOL *) {
+    [itemSet enumerateIndexesUsingBlock:[retainedSelf, pasteboardType, values] (NSUInteger index, BOOL *) {
         NSItemProvider *provider = [retainedSelf itemProviderAtIndex:index];
         if (!provider)
             return;
@@ -665,13 +650,13 @@ static Class classForTypeIdentifier(NSString *typeIdentifier, NSString *&outType
 
     auto values = adoptNS([[NSMutableArray alloc] init]);
     RetainPtr<WebItemProviderPasteboard> retainedSelf = self;
-    [itemSet enumerateIndexesUsingBlock:[retainedSelf, pasteboardType = protect(pasteboardType), values] (NSUInteger index, BOOL *) {
+    [itemSet enumerateIndexesUsingBlock:[retainedSelf, pasteboardType, values] (NSUInteger index, BOOL *) {
         NSItemProvider *provider = [retainedSelf itemProviderAtIndex:index];
         if (!provider)
             return;
 
         NSString *typeIdentifierToLoad;
-        RetainPtr readableClass = classForTypeIdentifier(pasteboardType, typeIdentifierToLoad);
+        Class readableClass = classForTypeIdentifier(pasteboardType, typeIdentifierToLoad);
         if (!readableClass)
             return;
 
@@ -749,13 +734,13 @@ static NSURL *linkTemporaryItemProviderFilesToDropStagingDirectory(NSURL *url, N
 {
     using WebCore::LogDragAndDrop;
 
-    static NSString * const defaultDropFolderName = @"folder";
-    static NSString * const defaultDropFileName = @"file";
-    static NSString * const droppedDataDirectoryPrefix = @"dropped-data";
+    static NSString *defaultDropFolderName = @"folder";
+    static NSString *defaultDropFileName = @"file";
+    static NSString *droppedDataDirectoryPrefix = @"dropped-data";
     if (!url)
         return nil;
 
-    RetainPtr temporaryDropDataDirectory = FileSystem::createTemporaryDirectory(droppedDataDirectoryPrefix);
+    NSString *temporaryDropDataDirectory = FileSystem::createTemporaryDirectory(droppedDataDirectoryPrefix);
     if (!temporaryDropDataDirectory)
         return nil;
 
@@ -767,8 +752,9 @@ static NSURL *linkTemporaryItemProviderFilesToDropStagingDirectory(NSURL *url, N
     if (!suggestedName.length)
         suggestedName = url.lastPathComponent;
 
+    auto fallbackName = isFolder ? defaultDropFolderName : defaultDropFileName;
     if (!suggestedName.length)
-        suggestedName = isFolder ? defaultDropFolderName : defaultDropFileName;
+        suggestedName = fallbackName;
 
     auto urlExtension = url.pathExtension;
     if (!urlExtension.length)
@@ -779,7 +765,7 @@ static NSURL *linkTemporaryItemProviderFilesToDropStagingDirectory(NSURL *url, N
 
     if (!suggestedName.length) {
         RELEASE_LOG_FAULT(DragAndDrop, "Unable to append appropriate file extension to suggested name");
-        suggestedName = isFolder ? defaultDropFolderName : defaultDropFileName;
+        suggestedName = fallbackName;
     }
 
     destination = [NSURL fileURLWithPath:[temporaryDropDataDirectory stringByAppendingPathComponent:suggestedName]];
@@ -789,8 +775,8 @@ static NSURL *linkTemporaryItemProviderFilesToDropStagingDirectory(NSURL *url, N
 - (NSArray<NSString *> *)typeIdentifiersToLoad:(NSItemProvider *)itemProvider
 {
     auto typesToLoad = adoptNS([[NSMutableOrderedSet alloc] init]);
-    RetainPtr<NSString> highestFidelitySupportedType;
-    RetainPtr<NSString> highestFidelityContentType;
+    NSString *highestFidelitySupportedType = nil;
+    NSString *highestFidelityContentType = nil;
 
     NSArray<NSString *> *registeredTypeIdentifiers = itemProvider.registeredTypeIdentifiers;
     BOOL containsFile = itemProvider.web_containsFileURLAndFileUploadContent;
@@ -820,7 +806,7 @@ static NSURL *linkTemporaryItemProviderFilesToDropStagingDirectory(NSURL *url, N
 
     // For compatibility with DataTransfer APIs, additionally load web-exposed types. Since this is the only chance to
     // fault in any data at all, we need to load up front any information that the page may ask for later down the line.
-    RetainPtr customPasteboardDataUTI = @(PasteboardCustomData::cocoaType().characters());
+    NSString *customPasteboardDataUTI = @(PasteboardCustomData::cocoaType().characters());
     for (NSString *registeredTypeIdentifier in registeredTypeIdentifiers) {
         RetainPtr utType = [UTType typeWithIdentifier:registeredTypeIdentifier];
         if ([registeredTypeIdentifier isEqualToString:highestFidelityContentType]
@@ -872,7 +858,7 @@ static NSURL *linkTemporaryItemProviderFilesToDropStagingDirectory(NSURL *url, N
                 // After executing this completion block, UIKit removes the file at the given URL. However, we need this data to persist longer for the web content process.
                 // To address this, we hard link the given URL to a new temporary file in the temporary directory. This follows the same flow as regular file upload, in
                 // WKFileUploadPanel.mm. The temporary files are cleaned up by the system at a later time.
-                if (RetainPtr destination = linkTemporaryItemProviderFilesToDropStagingDirectory(url, [protectedLoadResult itemProvider].suggestedName, protectedTypeToLoad.get())) {
+                if (NSURL *destination = linkTemporaryItemProviderFilesToDropStagingDirectory(url, [protectedLoadResult itemProvider].suggestedName, protectedTypeToLoad.get())) {
                     [setFileURLsLock lock];
                     [protectedLoadResult setFileURL:destination forType:protectedTypeToLoad.get()];
                     [setFileURLsLock unlock];

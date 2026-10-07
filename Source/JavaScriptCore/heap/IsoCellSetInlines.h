@@ -76,7 +76,7 @@ inline bool IsoCellSet::contains(HeapCell* cell) const
 }
 
 template<typename Func>
-void IsoCellSet::forEachMarkedCell(NOESCAPE const Func& func)
+void IsoCellSet::forEachMarkedCell(const Func& func)
 {
     BlockDirectory& directory = m_subspace.m_directory;
     directory.assertIsMutatorOrMutatorIsStopped();
@@ -148,7 +148,7 @@ Ref<SharedTask<void(Visitor&)>> IsoCellSet::forEachMarkedCellInParallel(const Fu
 }
 
 template<typename Func>
-void IsoCellSet::forEachLiveCell(NOESCAPE const Func& func)
+void IsoCellSet::forEachLiveCell(const Func& func)
 {
     BlockDirectory& directory = m_subspace.m_directory;
     m_blocksWithBits.forEachSetBit(
@@ -170,6 +170,11 @@ void IsoCellSet::forEachLiveCell(NOESCAPE const Func& func)
             if (m_lowerTierPreciseBits.get(allocation->lowerTierPreciseIndex()) && allocation->isLive())
                 func(allocation->cell(), attributes.cellKind);
         });
+}
+
+inline void IsoCellSet::clearLowerTierPreciseCell(unsigned index)
+{
+    m_lowerTierPreciseBits.concurrentTestAndClear(index);
 }
 
 } // namespace JSC

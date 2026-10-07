@@ -72,12 +72,12 @@ FlexLayoutConstraints FlexLayout::flexLayoutConstraints() const
     FlexFormattingUtils utils { flexBox() };
     return {
         .style = flexBox().style(),
-        .minimumLineCount = FlexFormattingUtils::minimumLineCount(flexBox()),
         .isHorizontalFlow = FlexFormattingUtils::isHorizontalFlow(flexBox()),
         .isColumnFlow = FlexFormattingUtils::isColumnFlow(flexBox()),
         .isMultiline = FlexFormattingUtils::isMultiline(flexBox()),
         .isWrapReverse = FlexFormattingUtils::isWrapReverse(flexBox()),
         .isBalance = FlexFormattingUtils::isBalance(flexBox()),
+        .minimumLineCount = FlexFormattingUtils::minimumLineCount(flexBox()),
         .isColumnOrRowReverse = utils.isColumnOrRowReverse(),
         .isLeftToRightFlow = utils.isLeftToRightFlow(),
         .crossAxisDirection = utils.crossAxisDirection(),
@@ -274,7 +274,7 @@ std::optional<LayoutUnit> FlexLayout::firstLineBaseline() const
     else {
         // FIXME: We should pass |direction| into firstLineBoxBaseline and stop bailing out if we're a writing mode root.
         // This would also fix some cases where the flexbox is orthogonal to its container.
-        auto direction = flexBox().isHorizontalWritingMode() ? BoxAxis::Horizontal : BoxAxis::Vertical;
+        auto direction = flexBox().isHorizontalWritingMode() ? LineDirection::Horizontal : LineDirection::Vertical;
         auto flexboxWritingMode = flexBox().style().writingMode();
         auto dominantBaseline = BaselineAlignment::dominantBaseline(flexboxWritingMode);
         baseline = BaselineAlignment::synthesizedBaseline(*baselineFlexItem, dominantBaseline, flexboxWritingMode, direction, BaselineSynthesisEdge::BorderBox);
@@ -306,7 +306,7 @@ std::optional<LayoutUnit> FlexLayout::lastLineBaseline() const
     else {
         // FIXME: We should pass |direction| into firstLineBoxBaseline and stop bailing out if we're a writing mode root.
         // This would also fix some cases where the flexbox is orthogonal to its container.
-        auto direction = flexBox().isHorizontalWritingMode() ? BoxAxis::Horizontal : BoxAxis::Vertical;
+        auto direction = flexBox().isHorizontalWritingMode() ? LineDirection::Horizontal : LineDirection::Vertical;
         auto flexboxWritingMode = flexBox().style().writingMode();
         auto dominantBaseline = BaselineAlignment::dominantBaseline(flexboxWritingMode);
         baseline = BaselineAlignment::synthesizedBaseline(*baselineFlexItem, dominantBaseline, flexboxWritingMode, direction, BaselineSynthesisEdge::BorderBox);

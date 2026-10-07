@@ -57,7 +57,7 @@ private:
 
 void attachContextMenuClientToView(WebKitWebView* webView)
 {
-    protect(webkitWebViewGetPage(webView))->setContextMenuClient(makeUnique<ContextMenuClient>(webView));
+    webkitWebViewGetPage(webView).setContextMenuClient(makeUnique<ContextMenuClient>(webView));
 }
 
 #endif // ENABLE(CONTEXT_MENUS)

@@ -605,7 +605,7 @@ void WebLocalFrameLoaderClient::dispatchDidStartProvisionalLoad()
     webPage->injectedBundleLoaderClient().didStartProvisionalLoadForFrame(*webPage, m_frame, userData);
     RefPtr provisionalLoader = m_localFrame->loader().provisionalDocumentLoader();
 
-    if (!provisionalLoader || provisionalLoader->isContinuingLoadAfterProvisionalLoadStarted() || provisionalLoader->isCacheOnlyLoadRetry())
+    if (!provisionalLoader || provisionalLoader->isContinuingLoadAfterProvisionalLoadStarted())
         return;
     
     auto& url = provisionalLoader->url();
@@ -748,8 +748,7 @@ void WebLocalFrameLoaderClient::dispatchDidFailProvisionalLoad(const ResourceErr
     // the entire LocalFrameLoaderClient function was complete.
     std::optional<WebCore::NavigationIdentifier> navigationID;
     ResourceRequest request;
-    Ref frameLoader = m_localFrame->loader();
-    if (RefPtr documentLoader = frameLoader->provisionalDocumentLoader() ?: frameLoader->policyDocumentLoader()) {
+    if (RefPtr documentLoader = m_localFrame->loader().provisionalDocumentLoader()) {
         navigationID = documentLoader->navigationID();
         request = documentLoader->request();
     }
@@ -1179,19 +1178,14 @@ void WebLocalFrameLoaderClient::broadcastFrameTreeSyncDataToOtherProcesses(Frame
     WebFrameLoaderClient::broadcastFrameTreeSyncDataToOtherProcesses(WTF::move(data));
 }
 
-void WebLocalFrameLoaderClient::didNotifyUserActivation(MonotonicTime activationTime, std::optional<WebCore::UserGestureTokenIdentifier> forcedActivationToken)
+void WebLocalFrameLoaderClient::didNotifyUserActivation(MonotonicTime activationTime)
 {
-    WebFrameLoaderClient::didNotifyUserActivation(activationTime, forcedActivationToken);
+    WebFrameLoaderClient::didNotifyUserActivation(activationTime);
 }
 
 void WebLocalFrameLoaderClient::didConsumeUserActivation()
 {
     WebFrameLoaderClient::didConsumeUserActivation();
-}
-
-void WebLocalFrameLoaderClient::didRevokeForcedUserActivation(WebCore::UserGestureTokenIdentifier forcedActivationToken)
-{
-    WebFrameLoaderClient::didRevokeForcedUserActivation(forcedActivationToken);
 }
 
 void WebLocalFrameLoaderClient::didHandleFirstUserGesture(MonotonicTime gestureTime)
@@ -1814,15 +1808,7 @@ void WebLocalFrameLoaderClient::transitionToCommittedForNewPage(InitializingIfra
     if (isMainFrame)
         view->setDelegatedScrollingMode(drawingArea->delegatedScrollingMode());
 
-    RefPtr corePage = webPage->corePage();
-    corePage->setDelegatesScaling(drawingArea->usesDelegatedPageScaling());
-
-#if PLATFORM(MAC)
-    // Give the tiled backing a zoomed-out grid to fall back on. With a zero zoomedOutPageScaleFactor it drops the
-    // old grid as soon as the scale changes, and a frame can present with no tiles.
-    if (isMainFrame && drawingArea->usesDelegatedPageScaling())
-        corePage->setZoomedOutPageScaleFactor(webPage->minimumPageScaleFactorForUIProcessScale());
-#endif
+    webPage->corePage()->setDelegatesScaling(drawingArea->usesDelegatedPageScaling());
 #endif
 
     if (webPage->scrollPinningBehavior() != ScrollPinningBehavior::DoNotPin)

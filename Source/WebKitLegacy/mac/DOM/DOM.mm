@@ -262,7 +262,7 @@ IGNORE_WARNINGS_END
     RefPtr frame = protect(core(self))->document().frame();
     if (!frame)
         return nullptr;
-    return protect(frame->script())->bindingRootObject();
+    return frame->script().bindingRootObject();
 }
 
 @end
@@ -313,7 +313,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 {
     Ref node = *core(self);
     protect(node->document())->updateLayout(WebCore::LayoutOptions::IgnorePendingStylesheets);
-    CheckedPtr renderer = node->renderer();
+    auto* renderer = node->renderer();
     if (!renderer)
 #if PLATFORM(IOS_FAMILY)
         return CGRectZero;
@@ -340,7 +340,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 {
     Ref node = *core(self);
     protect(node->document())->updateLayout(WebCore::LayoutOptions::IgnorePendingStylesheets);
-    CheckedPtr renderer = node->renderer();
+    auto* renderer = node->renderer();
     if (!renderer) {
         if (insideFixed)
             *insideFixed = false;
@@ -365,7 +365,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 {
     Ref node = *core(self);
     protect(node->document())->updateLayout(WebCore::LayoutOptions::IgnorePendingStylesheets);
-    CheckedPtr renderer = node->renderer();
+    auto* renderer = node->renderer();
     if (!renderer)
         return CGRectZero;
     return renderer->absoluteBoundingBoxRect(true);
@@ -376,7 +376,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 {
     Ref node = *core(self);
     protect(node->document())->updateLayout(WebCore::LayoutOptions::IgnorePendingStylesheets);
-    CheckedPtr renderer = node->renderer();
+    WebCore::RenderObject *renderer = node->renderer();
     if (!renderer)
         return nil;
     Vector<WebCore::FloatQuad> quads;
@@ -386,7 +386,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (WebCore::Element*)_linkElement
 {
-    for (RefPtr node = core(self); node; node = node->parentNode()) {
+    for (auto* node = core(self); node; node = node->parentNode()) {
         if (auto* element = dynamicDowncast<WebCore::Element>(*node); element && element->isLink())
             return element;
     }
@@ -395,7 +395,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (NSURL *)hrefURL
 {
-    RefPtr link = [self _linkElement];
+    auto* link = [self _linkElement];
     if (!link)
         return nil;
     return protect(link->document())->encodingParseURL(link->getAttribute(WebCore::HTMLNames::hrefAttr)).createNSURL().autorelease();
@@ -403,7 +403,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (NSString *)hrefTarget
 {
-    RefPtr link = [self _linkElement];
+    auto* link = [self _linkElement];
     if (!link)
         return nil;
     return link->getAttribute(WebCore::HTMLNames::targetAttr).createNSString().autorelease();
@@ -411,10 +411,10 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (CGRect)hrefFrame
 {
-    RefPtr link = [self _linkElement];
+    auto* link = [self _linkElement];
     if (!link)
         return CGRectZero;
-    CheckedPtr renderer = link->renderer();
+    auto* renderer = link->renderer();
     if (!renderer)
         return CGRectZero;
     return renderer->absoluteBoundingBoxRect();
@@ -422,7 +422,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (NSString *)hrefLabel
 {
-    RefPtr link = [self _linkElement];
+    auto* link = [self _linkElement];
     if (!link)
         return nil;
     return link->textContent().createNSString().autorelease();
@@ -430,7 +430,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (NSString *)hrefTitle
 {
-    RefPtr link = [self _linkElement];
+    auto* link = [self _linkElement];
     if (!is<WebCore::HTMLElement>(link))
         return nil;
     return protect(link->document())->displayStringModifiedByEncoding(downcast<WebCore::HTMLElement>(*link).title()).createNSString().autorelease();
@@ -445,7 +445,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 {
     Ref node = *core(self);
     protect(node->document())->updateLayout(WebCore::LayoutOptions::IgnorePendingStylesheets);
-    CheckedPtr renderer = node->renderer();
+    auto* renderer = node->renderer();
     if (!renderer)
         return zeroQuad();
 
@@ -470,7 +470,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (float)computedFontSize
 {
-    CheckedPtr style = protect(core(self))->renderStyle();
+    auto* style = protect(core(self))->renderStyle();
     if (!style)
         return 0.0f;
     return style->fontDescription().usedSize();
@@ -479,7 +479,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 - (DOMNode *)nextFocusNode
 {
     Ref node = *core(self);
-    RefPtr page = node->document().page();
+    WebCore::Page* page = node->document().page();
     if (!page)
         return nil;
     return kit(page->focusController().nextFocusableElement(node).element.get());
@@ -488,7 +488,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 - (DOMNode *)previousFocusNode
 {
     Ref node = *core(self);
-    RefPtr page = node->document().page();
+    WebCore::Page* page = node->document().page();
     if (!page)
         return nil;
     return kit(page->focusController().previousFocusableElement(node).element.get());
@@ -562,7 +562,7 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
     }
 
     if (!*cgImage) {
-        if (CheckedPtr renderer = node->renderer()) {
+        if (auto* renderer = node->renderer()) {
             WebCore::FloatRect boundingBox;
             if (renderer->isRenderImage())
                 boundingBox = downcast<WebCore::RenderImage>(*renderer).absoluteContentQuad().enclosingBoundingBox();
@@ -644,13 +644,13 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (NSImage *)image
 {
-    CheckedPtr renderer = protect(core(self))->renderer();
+    auto* renderer = protect(core(self))->renderer();
     if (!is<WebCore::RenderImage>(renderer))
         return nil;
     RefPtr cachedImage = downcast<WebCore::RenderImage>(*renderer).cachedImage();
     if (!cachedImage || cachedImage->errorOccurred())
         return nil;
-    return protect(cachedImage->image())->adapter().nsImage();
+    return cachedImage->imageForRenderer(renderer)->adapter().nsImage();
 }
 
 #endif
@@ -661,10 +661,10 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (CTFontRef)_font
 {
-    CheckedPtr renderer = protect(core(self))->renderer();
+    auto* renderer = protect(core(self))->renderer();
     if (!renderer)
         return nil;
-    return protect(renderer->style())->primaryFont().ctFont();
+    return renderer->style().primaryFont().ctFont();
 }
 
 #if PLATFORM(MAC)
@@ -672,13 +672,13 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 - (NSData *)_imageTIFFRepresentation
 {
     // FIXME: Could we move this function to WebCore::Element and autogenerate?
-    CheckedPtr renderer = protect(core(self))->renderer();
+    auto* renderer = protect(core(self))->renderer();
     if (!is<WebCore::RenderImage>(renderer))
         return nil;
     RefPtr cachedImage = downcast<WebCore::RenderImage>(*renderer).cachedImage();
     if (!cachedImage || cachedImage->errorOccurred())
         return nil;
-    return (__bridge NSData *)protect(cachedImage->image())->adapter().tiffRepresentation();
+    return (__bridge NSData *)cachedImage->imageForRenderer(renderer)->adapter().tiffRepresentation();
 }
 
 #endif
@@ -703,8 +703,8 @@ id<DOMEventTarget> kit(WebCore::EventTarget* target)
 
 - (BOOL)_mediaQueryMatchesForOrientation:(int)orientation
 {
-    Ref document = core(self)->document();
-    RefPtr frameView = document->frame() ? document->frame()->view() : nullptr;
+    auto& document = static_cast<WebCore::HTMLLinkElement*>(core(self))->document();
+    auto* frameView = document.frame() ? document.frame()->view() : 0;
     if (!frameView)
         return false;
     int layoutWidth = frameView->layoutWidth();

@@ -53,9 +53,7 @@ PAS_DEFINE_COMPACT_ATOMIC_PTR(pas_segregated_size_directory_data,
 
 #define PAS_SEGREGATED_SIZE_DIRECTORY_ALIGNMENT_SHIFT_BITS 5
 
-/* Also aligned for pas_compact_segregated_size_directory_ptr, which needs more alignment than
-   pas_versioned_field when pointers are 32-bit. */
-struct PAS_ALIGNED(sizeof(pas_versioned_field)) PAS_ALIGNED(PAS_OVERALIGNED_COMPACT_PTR_ALIGN) pas_segregated_size_directory {
+struct PAS_ALIGNED(sizeof(pas_versioned_field)) pas_segregated_size_directory {
     pas_segregated_directory base;
     
     pas_segregated_heap* heap;
@@ -94,12 +92,6 @@ struct PAS_ALIGNED(sizeof(pas_versioned_field)) PAS_ALIGNED(PAS_OVERALIGNED_COMP
     /* The owning segregated heap holds these in a singly linked list. */
     pas_compact_atomic_segregated_size_directory_ptr next_for_heap;
 };
-
-/* Size directories are pointed at by pas_compact_segregated_size_directory_ptr. */
-#if PAS_COMPILER(CLANG)
-_Static_assert(PAS_ALIGNOF(pas_segregated_size_directory) >= PAS_OVERALIGNED_COMPACT_PTR_ALIGN,
-               "pas_segregated_size_directory must be aligned enough for overaligned compact pointers");
-#endif
 
 struct pas_segregated_size_directory_data {
     unsigned offset_from_page_boundary_to_first_object; /* Cached to make refill fast. */

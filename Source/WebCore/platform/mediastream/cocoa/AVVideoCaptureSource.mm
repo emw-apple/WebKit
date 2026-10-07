@@ -253,17 +253,10 @@ static WorkQueue& photoQueueSingleton()
     return queue.get();
 }
 
-#if PLATFORM(IOS_FAMILY)
 static bool s_useAVCaptureDeviceRotationCoordinatorAPI = false;
-#endif
-
 void AVVideoCaptureSource::setUseAVCaptureDeviceRotationCoordinatorAPI(bool value)
 {
-#if PLATFORM(IOS_FAMILY)
     s_useAVCaptureDeviceRotationCoordinatorAPI = value;
-#else
-    UNUSED_PARAM(value);
-#endif
 }
 
 CaptureSourceOrError AVVideoCaptureSource::create(const CaptureDevice& device, MediaDeviceHashSalts&& hashSalts, const MediaConstraints* constraints, std::optional<PageIdentifier> pageIdentifier)
@@ -1050,7 +1043,7 @@ void AVVideoCaptureSource::setSessionSizeFrameRateAndZoom()
 
     ALWAYS_LOG_IF_POSSIBLE(LOGIDENTIFIER, SizeFrameRateAndZoom { m_currentPreset->size().width(), m_currentPreset->size().height(), m_currentFrameRate, m_currentZoom }
 #if PLATFORM(IOS_FAMILY)
-        , " binned: ", !![protect(m_currentPreset->format()) isVideoBinned]
+        , " binned: ", !!m_currentPreset->format().isVideoBinned
 #endif
     );
 

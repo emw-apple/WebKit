@@ -31,9 +31,7 @@ namespace WebCore {
 
 enum class AvcBitstreamFormat {
     Annexb,
-    Avc,
-    AnnexB = Annexb,
-    AVC = Avc,
+    Avc
 };
 
 struct AvcEncoderConfig {

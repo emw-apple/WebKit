@@ -1,4 +1,0 @@
-
-
-PASS Moving a cross-site iframe within its parent doesn't cause rendering updates in the iframe's process
-

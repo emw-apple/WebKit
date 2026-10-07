@@ -17,7 +17,6 @@
 #include <optional>
 #include <string>
 
-#include "absl/base/config.h"
 #include "absl/base/nullability.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/string_view.h"

@@ -117,7 +117,7 @@ CSS::CalcSizeFunction toCSSCalcSizeFunction(const CalcSizeValue& value)
     return CSS::CalcSizeFunction { CSS::CalcSizeParameters { WTF::move(basis), Calculation::toCSS(value.calculation(), options) } };
 }
 
-static double evaluateCalcSizeWithBasisSize(const CalcSizeValue& value, double percentResolutionLength, ZoomFactor usedZoom, double keywordBasisSize)
+double evaluateCalcSize(const CalcSizeValue& value, double percentResolutionLength, ZoomFactor usedZoom)
 {
     auto basis = WTF::switchOn(value.basis(),
         [&](const Calculation::Tree& tree) -> double {
@@ -127,14 +127,15 @@ static double evaluateCalcSizeWithBasisSize(const CalcSizeValue& value, double p
             });
         },
         [&](const Ref<CalcSizeValue>& nested) -> double {
-            return evaluateCalcSizeWithBasisSize(nested.get(), percentResolutionLength, usedZoom, keywordBasisSize);
+            return evaluateCalcSize(nested.get(), percentResolutionLength, usedZoom);
         },
         [&](const CSS::Keyword::Any&) -> double {
             // `size` is invalid with an `any` basis, so this is never read.
             return 0;
         },
         [&](const auto&) -> double {
-            return keywordBasisSize;
+            ASSERT_NOT_REACHED("A keyword basis is resolved by layout, not here");
+            return 0;
         }
     );
 
@@ -145,18 +146,12 @@ static double evaluateCalcSizeWithBasisSize(const CalcSizeValue& value, double p
     });
 }
 
-double evaluateCalcSize(const CalcSizeValue& value, CSS::Range range, double percentResolutionLength, ZoomFactor usedZoom, double keywordBasisSize)
+double evaluateCalcSize(const CalcSizeValue& value, CSS::Range range, double percentResolutionLength, ZoomFactor usedZoom)
 {
-    auto result = evaluateCalcSizeWithBasisSize(value, percentResolutionLength, usedZoom, keywordBasisSize);
+    auto result = evaluateCalcSize(value, percentResolutionLength, usedZoom);
     if (std::isnan(result))
         return 0;
     return CSS::clampToRange<double>(result, range);
-}
-
-double evaluateCalcSize(const CalcSizeValue& value, CSS::Range range, double percentResolutionLength, ZoomFactor usedZoom)
-{
-    ASSERT_WITH_MESSAGE(value.basisKeyword() == CSSValueInvalid, "A keyword basis is resolved by layout, not here");
-    return evaluateCalcSize(value, range, percentResolutionLength, usedZoom, 0);
 }
 
 TextStream& operator<<(TextStream& ts, const CalcSizeValue& value)

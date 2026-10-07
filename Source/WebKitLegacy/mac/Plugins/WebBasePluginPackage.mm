@@ -188,7 +188,9 @@ static constexpr auto QuickTimeCocoaPluginIdentifier = "com.apple.quicktime.webp
 - (void)dealloc
 {
     ASSERT(!pluginDatabases || [pluginDatabases count] == 0);
-
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [pluginDatabases release];
+    
     [super dealloc];
 }
 
@@ -344,7 +346,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 - (void)wasAddedToPluginDatabase:(WebPluginDatabase *)database
 {    
     if (!pluginDatabases)
-        pluginDatabases = adoptNS([[NSMutableSet alloc] init]);
+        pluginDatabases = [[NSMutableSet alloc] init];
         
     ASSERT(![pluginDatabases containsObject:database]);
     [protect(pluginDatabases) addObject:database];

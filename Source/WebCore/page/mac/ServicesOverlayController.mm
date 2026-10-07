@@ -241,7 +241,6 @@ void ServicesOverlayController::selectionRectsDidChange(const Vector<LayoutRect>
 void ServicesOverlayController::selectedTelephoneNumberRangesChanged()
 {
     LOG(Services, "ServicesOverlayController - Telephone number ranges changed\n");
-    ++m_telephoneNumberRangesChangedCountForTesting;
     invalidateHighlightsOfType(DataDetectorHighlight::Type::TelephoneNumber);
 }
 
@@ -662,7 +661,7 @@ void ServicesOverlayController::handleClick(const IntPoint& clickPoint, DataDete
     if (!frameView)
         return;
 
-    IntPoint windowPoint = frameView->contentsToMainFrameView(clickPoint);
+    IntPoint windowPoint = frameView->contentsToWindow(clickPoint);
 
     RefPtr focusedOrMainFrame = page->focusController().focusedOrMainFrame();
     if (!focusedOrMainFrame)

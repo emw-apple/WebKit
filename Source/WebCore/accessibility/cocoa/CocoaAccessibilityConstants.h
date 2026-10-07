@@ -183,7 +183,6 @@
 // AXPossibleFormValidationError notification userInfo attributes.
 #define NSAccessibilityFormValidationUnannouncedTextKey @"AXFormValidationUnannouncedText"
 #define NSAccessibilityFormValidationErrorFieldCountKey @"AXFormValidationErrorFieldCount"
-#define NSAccessibilityFormValidationTargetIsSubmitterKey @"AXFormValidationTargetIsSubmitter"
 #define NSAccessibilityErrorMessageForAttribute @"AXErrorMessageFor"
 #define NSAccessibilityExpandedTextValueAttribute @"AXExpandedTextValue"
 #define NSAccessibilityFlowFromAttribute @"AXFlowFrom"

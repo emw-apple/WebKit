@@ -395,10 +395,6 @@ section .text
 %endmacro
 %elifidn __OUTPUT_FORMAT__,aout
 %define SECTION_RODATA section .data
-%elifidn __OUTPUT_FORMAT__,win32
-%define SECTION_RODATA section .rdata
-%elif LIBVPX_YASM_WIN64
-%define SECTION_RODATA section .rdata
 %else
 %define SECTION_RODATA section .rodata
 %endif

@@ -27,6 +27,8 @@
 
 #include <JavaScriptCore/CollectionScope.h>
 #include <wtf/PrintStream.h>
+#include <wtf/RefPtr.h>
+#include <wtf/SharedTask.h>
 
 namespace JSC {
 
@@ -52,6 +54,7 @@ struct GCRequest {
     void dump(PrintStream&) const;
     
     std::optional<CollectionScope> scope;
+    RefPtr<SharedTask<void()>> didFinishEndPhase;
 };
 
 } // namespace JSC

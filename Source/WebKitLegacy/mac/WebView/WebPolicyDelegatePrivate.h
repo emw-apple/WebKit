@@ -29,14 +29,19 @@
 #import <WebKitLegacy/WebPolicyDelegate.h>
 
 @class WebHistoryItem;
+@class WebPolicyDecisionListenerPrivate;
 
-extern NSString * const WebActionFormKey; // HTMLFormElement
+extern NSString *WebActionFormKey; // HTMLFormElement
 
 typedef enum {
     WebNavigationTypePlugInRequest = WebNavigationTypeOther + 1
 } WebExtraNavigationType;
 
 @interface WebPolicyDecisionListener : NSObject <WebPolicyDecisionListener>
+{
+@private
+    WebPolicyDecisionListenerPrivate *_private;
+}
 - (id)_initWithTarget:(id)target action:(SEL)action;
 - (void)_invalidate;
 @end

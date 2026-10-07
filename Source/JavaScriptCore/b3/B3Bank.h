@@ -42,7 +42,7 @@ enum Bank : int8_t {
 static constexpr unsigned numBanks = 2;
 
 template<typename Func>
-void forEachBank(NOESCAPE const Func& func)
+void forEachBank(const Func& func)
 {
     func(GP);
     func(FP);

@@ -27,7 +27,6 @@
 
 #import "WebDeviceOrientationInternal.h"
 #import <WebCore/SecurityOriginData.h>
-#import <wtf/NeverDestroyed.h>
 #import <wtf/RetainPtr.h>
 
 
@@ -38,7 +37,7 @@
     self = [super init];
     if (!self)
         return nil;
-    lazyInitialize(m_core, makeUnique<WebCore::DeviceOrientationClientMock>());
+    m_core = makeUnique<WebCore::DeviceOrientationClientMock>();
     return self;
 }
 
@@ -69,14 +68,12 @@
 
 @end
 
-@implementation WebDeviceOrientationProviderMock {
-    RetainPtr<WebDeviceOrientationProviderMockInternal> m_internal;
-}
+@implementation WebDeviceOrientationProviderMock
 
 + (WebDeviceOrientationProviderMock *)shared
 {
-    static NeverDestroyed<RetainPtr<WebDeviceOrientationProviderMock>> provider = adoptNS([[WebDeviceOrientationProviderMock alloc] init]);
-    return provider.get();
+    static WebDeviceOrientationProviderMock *provider = [[WebDeviceOrientationProviderMock alloc] init];
+    return provider;
 }
 
 - (id)init
@@ -84,8 +81,15 @@
     self = [super init];
     if (!self)
         return nil;
-    m_internal = adoptNS([[WebDeviceOrientationProviderMockInternal alloc] init]);
+    m_internal = [[WebDeviceOrientationProviderMockInternal alloc] init];
     return self;
+}
+
+- (void)dealloc
+{
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [m_internal release];
+    [super dealloc];
 }
 
 - (void)setOrientation:(WebDeviceOrientation*)orientation

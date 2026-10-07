@@ -15,7 +15,6 @@
 #include <optional>
 #include <string>
 
-#include "absl/strings/string_view.h"
 #include "api/priority.h"
 #include "rtc_base/byte_buffer.h"
 #include "rtc_base/copy_on_write_buffer.h"
@@ -153,7 +152,7 @@ bool ParseDataChannelOpenAckMessage(const CopyOnWriteBuffer& payload) {
   return true;
 }
 
-bool WriteDataChannelOpenMessage(absl::string_view label,
+bool WriteDataChannelOpenMessage(const std::string& label,
                                  const DataChannelInit& config,
                                  CopyOnWriteBuffer* payload) {
   return WriteDataChannelOpenMessage(label, config.protocol, config.priority,
@@ -161,8 +160,8 @@ bool WriteDataChannelOpenMessage(absl::string_view label,
                                      config.maxRetransmitTime, payload);
 }
 
-bool WriteDataChannelOpenMessage(absl::string_view label,
-                                 absl::string_view protocol,
+bool WriteDataChannelOpenMessage(const std::string& label,
+                                 const std::string& protocol,
                                  std::optional<PriorityValue> opt_priority,
                                  bool ordered,
                                  std::optional<int> max_retransmits,

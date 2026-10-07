@@ -292,7 +292,9 @@ void BoxTreeUpdater::buildTreeForGridContent()
             insertChild(existingChildBox->removeFromParent(), gridItemRenderer.get(), gridItemRenderer->previousSibling());
             continue;
         }
-        insertChild(createLayoutBox(gridItemRenderer.get()), gridItemRenderer.get(), gridItemRenderer->previousSibling());
+        auto style = Style::ComputedStyle::clone(gridItemRenderer->style());
+        auto gridItemBox = makeUniqueRef<Layout::ElementBox>(elementAttributes(gridItemRenderer.get()), WTF::move(style));
+        insertChild(WTF::move(gridItemBox), gridItemRenderer.get(), gridItemRenderer->previousSibling());
     }
 }
 

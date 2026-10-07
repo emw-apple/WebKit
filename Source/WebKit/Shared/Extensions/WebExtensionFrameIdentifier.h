@@ -34,6 +34,7 @@ namespace WebKit {
 
 class WebFrame;
 class WebPage;
+struct FrameInfoData;
 
 struct WebExtensionFrameIdentifierType;
 using WebExtensionFrameIdentifier = ObjectIdentifier<WebExtensionFrameIdentifierType>;
@@ -79,6 +80,7 @@ bool matchesFrame(const WebExtensionFrameIdentifier&, const WebFrame&);
 
 WebExtensionFrameIdentifier NODELETE toWebExtensionFrameIdentifier(std::optional<WebCore::FrameIdentifier>);
 WebExtensionFrameIdentifier toWebExtensionFrameIdentifier(const WebFrame&);
+WebExtensionFrameIdentifier NODELETE toWebExtensionFrameIdentifier(const FrameInfoData&);
 
 #ifdef __OBJC__
 WebExtensionFrameIdentifier toWebExtensionFrameIdentifier(WKFrameInfo *);

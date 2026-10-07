@@ -35,7 +35,7 @@ namespace WebCore {
 namespace Style {
 
 template <typename TraverseFunction>
-inline void traverseRuleFeaturesInShadowTree(Element& element, NOESCAPE const TraverseFunction& function)
+inline void traverseRuleFeaturesInShadowTree(Element& element, TraverseFunction&& function)
 {
     if (!element.shadowRoot())
         return;
@@ -51,7 +51,7 @@ inline void traverseRuleFeaturesInShadowTree(Element& element, NOESCAPE const Tr
 }
 
 template <typename TraverseFunction>
-inline void traverseRuleFeaturesForSlotted(Element& element, NOESCAPE const TraverseFunction& function)
+inline void traverseRuleFeaturesForSlotted(Element& element, TraverseFunction&& function)
 {
     auto assignedShadowRoots = assignedShadowRootsIfSlotted(element);
     for (auto& assignedShadowRoot : assignedShadowRoots) {
@@ -64,7 +64,7 @@ inline void traverseRuleFeaturesForSlotted(Element& element, NOESCAPE const Trav
 }
 
 template <typename TraverseFunction>
-inline void traverseRuleFeatures(Element& element, NOESCAPE const TraverseFunction& function)
+inline void traverseRuleFeatures(Element& element, TraverseFunction&& function)
 {
     auto& ruleSets = element.styleResolver().ruleSets();
 

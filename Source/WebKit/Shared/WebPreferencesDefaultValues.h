@@ -182,8 +182,6 @@ bool NODELETE defaultDeviceOrientationPermissionAPIEnabled();
 bool defaultRequiresPageVisibilityForVideoToBeNowPlaying();
 #endif
 
-bool NODELETE defaultRequiresUserGestureToStartAudiblePlaybackWhenHidden();
-
 bool NODELETE defaultCookieStoreAPIEnabled();
 
 bool defaultContentInsetBackgroundFillEnabled();

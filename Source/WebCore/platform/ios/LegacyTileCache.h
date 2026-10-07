@@ -35,7 +35,6 @@
 #include <wtf/Noncopyable.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/Vector.h>
-#include <wtf/WeakObjCPtr.h>
 #include <wtf/WeakPtr.h>
 
 OBJC_CLASS CALayer;
@@ -54,8 +53,8 @@ public:
     LegacyTileCache(WAKWindow *);
     ~LegacyTileCache();
 
-    WEBCORE_EXPORT void ref() const;
-    WEBCORE_EXPORT void deref() const;
+    void ref() const;
+    void deref() const;
 
     CGFloat screenScale() const;
 
@@ -170,7 +169,7 @@ private:
     void drawReplacementImage(LegacyTileLayer *, CGContextRef, CGImageRef);
     void drawWindowContent(LegacyTileLayer *, CGContextRef, CGRect dirtyRect, DrawingFlags);
 
-    WeakObjCPtr<WAKWindow> m_window;
+    WAKWindow *m_window { nullptr };
 
     RetainPtr<CGImageRef> m_contentReplacementImage;
 

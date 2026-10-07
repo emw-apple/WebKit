@@ -554,14 +554,6 @@ public:
     void setViewportArguments(const ViewportArguments& viewportArguments) { m_viewportArguments = viewportArguments; }
     WEBCORE_EXPORT ViewportArguments viewportArguments() const;
 
-    // Whether this document asked to lay out underneath the safe area insets, via "viewport-fit=cover"
-    // in its <meta name="viewport"> tag. Tracked while the document is parsing and frozen afterwards:
-    // rewriting the meta tag from script once loaded does not make the platform start honoring the
-    // safe area insets, so it must not change the answer here either.
-    // This is per-document, not per-page, so embedded content can opt in independently of its embedder.
-    enum class SafeAreaInsetOptIn : uint8_t { Undetermined, OptedIn, NotOptedIn };
-    SafeAreaInsetOptIn safeAreaInsetOptIn() const { return m_safeAreaInsetOptIn; }
-
     OptionSet<DisabledAdaptations> disabledAdaptations() const { return m_disabledAdaptations; }
 
     WEBCORE_EXPORT DocumentType* NODELETE doctype() const;
@@ -643,11 +635,6 @@ public:
 
     bool shouldPreventEnteringBackForwardCacheForTesting() const { return m_shouldPreventEnteringBackForwardCacheForTesting; }
     void preventEnteringBackForwardCacheForTesting() { m_shouldPreventEnteringBackForwardCacheForTesting = true; }
-
-    void markAsInsecureContextForTesting() { m_isSecureContext = false; }
-
-    SecurityOrigin* loadSourceOriginOverrideForTesting() const { return m_loadSourceOriginOverrideForTesting.get(); }
-    WEBCORE_EXPORT void setLoadSourceOriginOverrideForTesting(RefPtr<SecurityOrigin>&&);
 
     void setXMLEncoding(const String& encoding) { m_xmlEncoding = encoding; } // read-only property, only to be set from XMLDocumentParser
     WEBCORE_EXPORT ExceptionOr<void> setXMLVersion(const String&);
@@ -764,10 +751,8 @@ public:
 
     inline Quirks& quirks(); // Defined in DocumentQuirks.h
     inline const Quirks& quirks() const; // Defined in DocumentQuirks.h
-    void urlsAffectingQuirksDidChange();
 
     WEBCORE_EXPORT float NODELETE deviceScaleFactor() const;
-    float NODELETE pixelSnappingScaleFactor() const;
 
     WEBCORE_EXPORT bool NODELETE useElevatedUserInterfaceLevel() const;
     WEBCORE_EXPORT bool useDarkAppearance(const Style::ComputedStyle*) const;
@@ -839,7 +824,7 @@ public:
     bool isEventLoopGroupStoppedPermanently() const final;
     GraphicsClient* graphicsClient() final;
 
-    inline const SettingsValues& NODELETE settingsValues() const final; // Defined in DocumentSettingsValues.h.
+    inline const SettingsValues& settingsValues() const final; // Defined in DocumentSettingsValues.h.
 
     const NetworkLoadPolicy& networkLoadPolicy() const final;
 
@@ -1456,7 +1441,7 @@ public:
     void inheritPolicyContainerFrom(const PolicyContainer&) final;
     void enforceSandboxFlags(SandboxFlags, SandboxFlagsSource = SandboxFlagsSource::Other) final;
 
-    WEBCORE_EXPORT void updateURLForPushOrReplaceState(const URL&);
+    void updateURLForPushOrReplaceState(const URL&);
     void statePopped(Ref<SerializedScriptValue>&&);
 
     bool processingLoadEvent() const { return m_processingLoadEvent; }
@@ -1464,8 +1449,7 @@ public:
 
     bool isContextThread() const final;
     WEBCORE_EXPORT bool isSecureContext() const final;
-    bool crossOriginIsolated() const final;
-    bool NODELETE isInCrossOriginIsolatedAgentCluster() const;
+    bool NODELETE crossOriginIsolated() const final;
     bool NODELETE originAgentCluster() const;
     String agentClusterID() const final;
     bool isJSExecutionForbidden() const final { return false; }
@@ -1473,9 +1457,7 @@ public:
     void queueTaskToDispatchEventOnWindow(LocalDOMWindow&, TaskSource, Ref<Event>&&);
     void dispatchPageshowEvent(PageshowEventPersistence);
     void dispatchPagehideEvent(PageshowEventPersistence);
-    // With proceedWithNavigation, a view transition is captured in a later rendering update, and the
-    // navigation proceeds once it has been. Without it, the capture is made before returning.
-    WEBCORE_EXPORT void dispatchPageswapEvent(CanTriggerCrossDocumentViewTransition, RefPtr<NavigationActivation>&&, CompletionHandler<void()>&& proceedWithNavigation = { });
+    WEBCORE_EXPORT void dispatchPageswapEvent(CanTriggerCrossDocumentViewTransition, RefPtr<NavigationActivation>&&);
     void transferViewTransitionParams(Document&);
     WEBCORE_EXPORT void enqueueSecurityPolicyViolationEvent(SecurityPolicyViolationEventInit&&);
     void enqueueHashchangeEvent(const String& oldURL, const String& newURL);
@@ -1556,11 +1538,11 @@ public:
     void didPaintImage(Element&, CachedImage*, FloatRect localRect) const;
     void didPaintText(const RenderBlockFlow&, FloatRect localRect, bool isOnlyTextBoxForElement) const;
 
-    unsigned requestAnimationFrame(Ref<RequestAnimationFrameCallback>&&);
-    void cancelAnimationFrame(unsigned id);
+    int requestAnimationFrame(Ref<RequestAnimationFrameCallback>&&);
+    void cancelAnimationFrame(int id);
 
-    unsigned requestIdleCallback(Ref<IdleRequestCallback>&&, Seconds timeout);
-    void cancelIdleCallback(unsigned id);
+    int requestIdleCallback(Ref<IdleRequestCallback>&&, Seconds timeout);
+    void cancelIdleCallback(int id);
     bool NODELETE hasPendingIdleCallback() const;
     IdleCallbackController* idleCallbackController() const { return m_idleCallbackController.get(); }
 
@@ -1583,8 +1565,6 @@ public:
 
     bool hasRecentUserInteractionForNavigationFromJS() const;
     void userActivatedMediaFinishedPlaying() { m_userActivatedMediaFinishedPlayingTimestamp = MonotonicTime::now(); }
-    void updateMostRecentAudiblePlaybackEndedTime() { m_mostRecentAudiblePlaybackEndedTime = MonotonicTime::now(); }
-    Markable<MonotonicTime> mostRecentAudiblePlaybackEndedTime() const { return m_mostRecentAudiblePlaybackEndedTime; }
 
     // Used for testing. Count handlers in the main document, and one per frame which contains handlers.
     WEBCORE_EXPORT unsigned NODELETE wheelEventHandlerCount() const;
@@ -1711,8 +1691,6 @@ public:
 
     SecurityOrigin& securityOrigin() const { return *SecurityContext::securityOrigin(); }
     WEBCORE_EXPORT SecurityOrigin& topOrigin() const final;
-    bool hasUnpartitionedStorageAccess() const { return m_hasUnpartitionedStorageAccess; }
-    void updateHasUnpartitionedStorageAccess(const DocumentLoader*);
     URL topURL() const;
     inline ClientOrigin clientOrigin() const;
 
@@ -1884,7 +1862,7 @@ public:
     void attachToCachedFrame(CachedFrameBase&);
     void detachFromCachedFrame(CachedFrameBase&);
 
-    WEBCORE_EXPORT void orientationChanged(IntDegrees orientation);
+    void orientationChanged(IntDegrees orientation);
     OrientationNotifier& orientationNotifier();
 
     WEBCORE_EXPORT const AtomString& NODELETE bgColor() const;
@@ -2216,11 +2194,6 @@ private:
     void createRenderTree();
     void detachParser();
 
-    // Recomputes the safe area opt-in from the current viewport arguments and, if it changed, pushes
-    // the new answer through the quirks and into the already-created bindings.
-    void updateSafeAreaInsetOptIn();
-
-
     DocumentEventTiming* documentEventTimingFromNavigationTiming();
 
     // ScriptExecutionContext
@@ -2309,8 +2282,6 @@ private:
 
     bool shouldEnforceHTTP09Sandbox() const;
 
-    bool computeIsSecureContext() const;
-
     void NODELETE platformSuspendOrStopActiveDOMObjects();
 
     void collectHighlightRangesFromRegister(Vector<WeakPtr<HighlightRange>>&, const HighlightRegistry&);
@@ -2339,7 +2310,6 @@ private:
     MediaProducerMediaStateFlags computeCaptureState() const;
 #endif
     void securityOriginDidChange() final;
-    bool computeHasUnpartitionedStorageAccess(const DocumentLoader*) const;
 
     inline Ref<DocumentSyncData> syncData();
     void NODELETE populateDocumentSyncDataForNewlyConstructedDocument(DocumentSyncDataType);
@@ -2555,7 +2525,6 @@ private:
     WeakHashMap<Node, std::unique_ptr<QuerySelectorAllResults>, WeakPtrImplWithEventTargetData> m_querySelectorAllResults;
 
     ViewportArguments m_viewportArguments;
-    SafeAreaInsetOptIn m_safeAreaInsetOptIn { SafeAreaInsetOptIn::Undetermined };
 
     DocumentEventTiming m_eventTiming;
     mutable std::unique_ptr<LargestContentfulPaintData> m_largestContentfulPaintData;
@@ -2570,7 +2539,6 @@ private:
 
     MonotonicTime m_lastHandledUserGestureTimestamp;
     MonotonicTime m_userActivatedMediaFinishedPlayingTimestamp;
-    Markable<MonotonicTime> m_mostRecentAudiblePlaybackEndedTime;
 
     void clearScriptedAnimationController();
     RefPtr<ScriptedAnimationController> m_scriptedAnimationController;
@@ -2743,7 +2711,6 @@ private:
     unsigned m_referencingNodeCount { 0 };
     int m_loadEventDelayCount { 0 };
     unsigned m_lastStyleUpdateSizeForTesting { 0 };
-    RefPtr<SecurityOrigin> m_loadSourceOriginOverrideForTesting;
     size_t m_styleInvalidationTraversalCountForTesting { 0 };
 
     // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#throw-on-dynamic-markup-insertion-counter
@@ -2839,8 +2806,6 @@ private:
     bool m_isNonRenderedPlaceholder : 1 { false };
     bool m_sawElementsInKnownNamespaces : 1 { false };
     bool m_isSrcdocDocument : 1 { false };
-    bool m_isSecureContext : 1 { true };
-    bool m_hasUnpartitionedStorageAccess : 1 { false };
     bool m_hasPreparedForDestruction : 1 { false };
     bool m_hasStyleWithViewportUnits : 1 { false };
     bool m_needsDOMWindowResizeEvent : 1 { false };

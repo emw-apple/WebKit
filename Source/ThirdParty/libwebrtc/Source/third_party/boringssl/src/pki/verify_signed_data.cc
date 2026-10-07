@@ -238,7 +238,7 @@ bool VerifySignedData(SignatureAlgorithm algorithm, der::Input signed_data,
       is_rsa_pss = true;
       break;
 
-    case SignatureAlgorithm::kMtcProofDraftPlants04:
+    case SignatureAlgorithm::kMtcProofDraftDavidben08:
       // This function can't verify MTC proofs.
       return false;
 

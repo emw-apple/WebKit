@@ -894,7 +894,7 @@ void RenderMultiColumnSet::collectLayerFragments(LayerFragments& fragments, cons
         LayoutUnit blockOffset = initialBlockOffset + logicalTop() - fragmentedFlow()->logicalTop() + (isHorizontalWritingMode() ? -fragmentedFlowPortion.y() : -fragmentedFlowPortion.x());
         if (!progressionIsInline) {
             if (!progressionReversed)
-                blockOffset += i * (computedColumnHeight() + colGap);
+                blockOffset = i * colGap;
             else
                 blockOffset -= i * (computedColumnHeight() + colGap);
         }

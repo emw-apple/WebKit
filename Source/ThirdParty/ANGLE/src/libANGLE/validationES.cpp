@@ -1284,20 +1284,6 @@ bool ValidImageDataSize(const Context *context,
     return true;
 }
 
-Extents RoundImageAllocationExtentIfNeeded(const Context *context,
-                                           GLsizei width,
-                                           GLsizei height,
-                                           GLsizei depth)
-{
-    if (context->getLimitations().roundUp3DTextureSizeToPOTForLimit && depth > 1)
-    {
-        return Extents(gl::clampCast<GLsizei>(gl::ceilPow2(width)),
-                       gl::clampCast<GLsizei>(gl::ceilPow2(height)),
-                       gl::clampCast<GLsizei>(gl::ceilPow2(depth)));
-    }
-    return Extents(width, height, depth);
-}
-
 bool ValidImageAllocationSize(const Context *context,
                               angle::EntryPoint entryPoint,
                               GLsizei width,
@@ -1308,8 +1294,7 @@ bool ValidImageAllocationSize(const Context *context,
 {
     const InternalFormat &formatInfo = GetSizedInternalFormatInfo(sizedInternalFormat);
     GLuint allocationSize            = 0;
-    Extents extents = RoundImageAllocationExtentIfNeeded(context, width, height, depth);
-    if (!formatInfo.computeImageSize(extents, samples, &allocationSize) ||
+    if (!formatInfo.computeImageSize(Extents(width, height, depth), samples, &allocationSize) ||
         allocationSize > context->getLimitations().maxTextureBytes)
     {
         ANGLE_VALIDATION_ERROR(GL_INVALID_OPERATION, kTextureSizeLimitation);
@@ -3833,49 +3818,8 @@ bool ValidateCopyTexImageParametersBase(const Context *context,
             ANGLE_VALIDATION_ERROR(GL_INVALID_OPERATION, kFeedbackLoop);
             return false;
         }
-
-        if (!isSubImage && !ValidateHardenedContextTextureLevelRedefine(
-                               context, entryPoint, texture, level, width, height, 1, formatInfo))
-        {
-            // Error already generated
-            return false;
-        }
     }
 
-    return true;
-}
-
-bool ValidateHardenedContextTextureLevelRedefine(const Context *context,
-                                                 angle::EntryPoint entryPoint,
-                                                 const Texture *texture,
-                                                 GLint level,
-                                                 GLsizei width,
-                                                 GLsizei height,
-                                                 GLsizei depth,
-                                                 const InternalFormat &format)
-{
-    ASSERT(context->isHardenedContext());
-
-    // Disallow incompatible redefinition of levels when base level is not zero on hardened contexts
-    // due to widespread bugs.
-    if (texture->getState().getEffectiveBaseLevel() != 0 &&
-        !texture->getState().isCompatibleWithLevelZero(level, width, height, depth, format))
-    {
-        // Warn the application about the problematic usage.
-        context->getState().getDebug().insertMessage(
-            GL_DEBUG_SOURCE_OTHER, GL_DEBUG_TYPE_PORTABILITY, 0xBADDEF, GL_DEBUG_SEVERITY_HIGH,
-            std::string(GetEntryPointName(entryPoint)) +
-                ": Attempting to incompatibly redefine a mutable texture while base level is not "
-                "zero",
-            gl::LOG_WARN);
-        if (context->getFrontendFeatures()
-                .disallowNonZeroBaseLevelAndIncompatibleLevelsOnHardenedContexts.enabled)
-        {
-            ANGLE_VALIDATION_ERROR(GL_INVALID_OPERATION,
-                                   kIncompatibleLevelWithNonZeroBaseLevelForbidden);
-            return false;
-        }
-    }
     return true;
 }
 
@@ -4844,12 +4788,6 @@ bool ValidateEGLImageTargetTexture2DOES(const Context *context,
             ANGLE_VALIDATION_ERROR(GL_INVALID_OPERATION, kTextureIsImmutable);
             return false;
         }
-
-        if (ANGLE_UNLIKELY(!ValidateNotAttachmentWithActivePLS(context, entryPoint, texture->id())))
-        {
-            // Error already generated.
-            return false;
-        }
     }
 
     return ValidateEGLImageObject(context, entryPoint, targetPacked, imagePacked);
@@ -4870,16 +4808,10 @@ bool ValidateEGLImageTargetRenderbufferStorageOES(const Context *context,
 
     // Renderbuffer is bound and can be redefined.
     {
-        const RenderbufferID id = context->getState().getRenderbufferId();
-        if (ANGLE_UNLIKELY(id.value == 0))
+        Renderbuffer *renderbuffer = state.getCurrentRenderbuffer();
+        if (ANGLE_UNLIKELY(renderbuffer == nullptr))
         {
             ANGLE_VALIDATION_ERROR(GL_INVALID_OPERATION, kRenderbufferNotBound);
-            return false;
-        }
-
-        if (ANGLE_UNLIKELY(!ValidateNotAttachmentWithActivePLS(context, entryPoint, id)))
-        {
-            // Error already generated.
             return false;
         }
     }
@@ -7385,34 +7317,6 @@ bool ValidateTexParameterBase(const Context *context,
                 ANGLE_VALIDATION_ERROR(GL_INVALID_OPERATION, kBaseLevelNonZero);
                 return false;
             }
-            // Disallow base level changes if the texture has incompatible levels on hardened
-            // contexts due to widespread bugs.
-            if (context->isHardenedContext() && static_cast<GLuint>(params[0]) != 0)
-            {
-                bool anyIncompatibleLevel = false;
-                const GLuint maxLevel =
-                    texture->getState().getMaxPossibleMipmapLevelsFromLevelZero();
-                const uint32_t compatibleLevels =
-                    texture->getState().getCompatibleLevelCount(0, maxLevel, &anyIncompatibleLevel);
-                if (anyIncompatibleLevel || static_cast<GLuint>(params[0]) >= compatibleLevels ||
-                    texture->getState().anyLevelsDefinedAtOrAbove(compatibleLevels, maxLevel))
-                {
-                    context->getState().getDebug().insertMessage(
-                        GL_DEBUG_SOURCE_OTHER, GL_DEBUG_TYPE_PORTABILITY, 0xBADBA5E,
-                        GL_DEBUG_SEVERITY_HIGH,
-                        std::string(GetEntryPointName(entryPoint)) +
-                            ": Attempting to change base level while the mutable texture is "
-                            "inconsistently defined",
-                        gl::LOG_WARN);
-                    if (context->getFrontendFeatures()
-                            .disallowNonZeroBaseLevelAndIncompatibleLevelsOnHardenedContexts
-                            .enabled)
-                    {
-                        ANGLE_VALIDATION_ERROR(GL_INVALID_OPERATION, kBaseLevelNonZeroForbidden);
-                        return false;
-                    }
-                }
-            }
             break;
 
         case GL_TEXTURE_MAX_LEVEL:
@@ -8319,9 +8223,8 @@ bool ValidateTexStorage(const Context *context,
     // Make sure computeImageSize sets expectedImageSize.
     GLuint expectedImageSize = std::numeric_limits<GLuint>::max();
     {
-        Extents extents = RoundImageAllocationExtentIfNeeded(context, width, height, depth);
-        const bool isSizeValid =
-            internalFormatInfo.computeImageSize(extents, 0, &expectedImageSize);
+        const bool isSizeValid = internalFormatInfo.computeImageSize(Extents(width, height, depth),
+                                                                     0, &expectedImageSize);
         if (ANGLE_UNLIKELY(!isSizeValid ||
                            expectedImageSize > context->getLimitations().maxTextureBytes))
         {

@@ -63,6 +63,7 @@
 #include "runtime_object.h"
 #include <mutex>
 #include <wtf/MainThread.h>
+#include <wtf/NeverDestroyed.h>
 
 #if PLATFORM(COCOA)
 #include "objc_runtime.h"
@@ -139,6 +140,15 @@ void JSHeapData::reconcileWeakReferencesAtGCEnd(VM& vm, CollectionScope collecti
     }
 }
 
+JSHeapData* JSHeapData::ensureHeapData(Heap& heap)
+{
+    if (!Options::useGlobalGC())
+        return new JSHeapData(heap);
+
+    static NeverDestroyed<UniqueRef<JSHeapData>> singleton = makeUniqueRef<JSHeapData>(heap);
+    return singleton.get().ptr();
+}
+
 #define CLIENT_ISO_SUBSPACE_INIT(subspace) subspace(m_heapData->subspace)
 
 DEFINE_ALLOCATOR_WITH_HEAP_IDENTIFIER(JSVMClientData);
@@ -146,7 +156,7 @@ DEFINE_ALLOCATOR_WITH_HEAP_IDENTIFIER(JSVMClientData);
 JSVMClientData::JSVMClientData(VM& vm)
     : m_builtinFunctions(vm)
     , m_builtinNames(vm)
-    , m_heapData(makeUniqueRef<JSHeapData>(vm.heap))
+    , m_heapData(JSHeapData::ensureHeapData(vm.heap))
     , CLIENT_ISO_SUBSPACE_INIT(m_domBuiltinConstructorSpace)
     , CLIENT_ISO_SUBSPACE_INIT(m_domConstructorSpace)
     , CLIENT_ISO_SUBSPACE_INIT(m_domNamespaceObjectSpace)

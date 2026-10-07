@@ -43,7 +43,7 @@ public:
     WEBCORE_EXPORT HTMLVideoElement& NODELETE videoElement() const;
 
     IntRect videoBox() const;
-    WEBCORE_EXPORT IntRect videoBoxInMainFrameView() const;
+    WEBCORE_EXPORT IntRect videoBoxInRootView() const;
     LayoutRect croppedVideoBoxForCompositing() const;
     LayoutRect inlineVideoBox() const;
 
@@ -65,9 +65,6 @@ public:
     bool failedToLoadPosterImage() const;
 
     void updateFromElement() final;
-
-    WEBCORE_EXPORT RefPtr<ShareableBitmap> createShareableBitmap(const CreateShareableBitmapFromImageOptions& = { }) const final;
-
     bool hasVideoMetadata() const;
     bool hasPosterFrameSize() const;
     bool hasDefaultObjectSize() const;

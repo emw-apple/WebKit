@@ -136,8 +136,7 @@ static bool refill(void)
         if (PAS_UNLIKELY(should_fail_for_testing))
             return false;
 
-        block = bmalloc_try_allocate_auxiliary_with_alignment_inline(
-            &bmalloc_compact_primitive_heap_ref, supply_block_size, supply_block_size);
+        block = bmalloc_try_allocate_with_alignment_inline(supply_block_size, supply_block_size, pas_always_compact_allocation_mode);
         if (!block)
             return false;
 
@@ -342,8 +341,7 @@ void* bmalloc_prefault_supply_try_allocate(void)
     if (result)
         return result;
 
-    return bmalloc_try_allocate_auxiliary_with_alignment_inline(
-        &bmalloc_compact_primitive_heap_ref, supply_block_size, supply_block_size);
+    return bmalloc_try_allocate_with_alignment_inline(supply_block_size, supply_block_size, pas_always_compact_allocation_mode);
 }
 
 PAS_END_EXTERN_C;

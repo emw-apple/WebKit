@@ -79,7 +79,7 @@ public:
     void setKeyboardLockMode(FullscreenOptions::KeyboardLock mode) { m_keyboardLockMode = mode; }
     bool isBrowserKeyboardLockEnabled() const { return m_keyboardLockMode == FullscreenOptions::KeyboardLock::Browser; }
 
-    enum class FullscreenCheckType : bool {
+    enum FullscreenCheckType {
         EnforceIFrameAllowFullscreenRequirement,
         ExemptIFrameAllowFullscreenRequirement,
     };

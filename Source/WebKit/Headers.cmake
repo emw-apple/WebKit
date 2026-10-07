@@ -56,7 +56,7 @@ set(_webkit_c_api_headers
     UIProcess/API/C/WKGeolocationPermissionRequest.h
     UIProcess/API/C/WKGeolocationPosition.h
     UIProcess/API/C/WKHTTPCookieStoreRef.h
-    UIProcess/API/C/WKHitTestResultRef.h
+    UIProcess/API/C/WKHitTestResult.h
     UIProcess/API/C/WKIconDatabase.h
     UIProcess/API/C/WKInspector.h
     UIProcess/API/C/WKJSHandleRef.h
@@ -509,6 +509,7 @@ list(APPEND WebKit_PRIVATE_FRAMEWORK_HEADERS
 
     WebProcess/InjectedBundle/API/Cocoa/WKWebProcessPlugInCSSStyleDeclarationHandle.h
     WebProcess/InjectedBundle/API/Cocoa/WKWebProcessPlugInEditingDelegate.h
+    WebProcess/InjectedBundle/API/Cocoa/WKWebProcessPlugInFormDelegatePrivate.h
     WebProcess/InjectedBundle/API/Cocoa/WKWebProcessPlugInFrame.h
     WebProcess/InjectedBundle/API/Cocoa/WKWebProcessPlugInFramePrivate.h
     WebProcess/InjectedBundle/API/Cocoa/WKWebProcessPlugInHitTestResult.h
@@ -544,8 +545,6 @@ set(WebKit_PROJECT_HEADERS
     GPUProcess/graphics/Model/Float3.h
     GPUProcess/graphics/Model/Float4x4.h
     GPUProcess/graphics/Model/ModelTypes.h
-
-    Platform/Logging.h
 
     Shared/mac/SecItemRequestData.h
 

@@ -25,7 +25,6 @@
 
 #include "FEBlend.h"
 #include "NodeName.h"
-#include "SVGElementTypeHelpers.h"
 #include "SVGNames.h"
 #include "SVGPropertyOwnerRegistry.h"
 #include <wtf/TZoneMallocInlines.h>
@@ -35,7 +34,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGFEBlendElement);
 
 inline SVGFEBlendElement::SVGFEBlendElement(const QualifiedName& tagName, Document& document)
-    : SVGFilterPrimitiveStandardAttributes(tagName, document, PropertyRegistry::singleton())
+    : SVGFilterPrimitiveStandardAttributes(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::feBlendTag));
     

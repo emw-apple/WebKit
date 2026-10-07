@@ -325,9 +325,7 @@ static vpx_codec_err_t set_vp8e_config(VP8_CONFIG *oxcf,
   oxcf->Height = cfg.g_h;
   oxcf->timebase = cfg.g_timebase;
 
-  oxcf->error_resilient_mode =
-      cfg.g_error_resilient &
-      (VPX_ERROR_RESILIENT_DEFAULT | VPX_ERROR_RESILIENT_PARTITIONS);
+  oxcf->error_resilient_mode = cfg.g_error_resilient;
 
   switch (cfg.g_pass) {
     case VPX_RC_ONE_PASS: oxcf->Mode = MODE_BESTQUALITY; break;

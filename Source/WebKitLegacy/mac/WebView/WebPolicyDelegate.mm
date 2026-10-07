@@ -32,12 +32,12 @@
 #import <wtf/ObjCRuntimeExtras.h>
 
 
-NSString * const WebActionButtonKey = @"WebActionButtonKey";
-NSString * const WebActionElementKey = @"WebActionElementKey";
-NSString * const WebActionFormKey = @"WebActionFormKey";
-NSString * const WebActionModifierFlagsKey = @"WebActionModifierFlagsKey";
-NSString * const WebActionNavigationTypeKey = @"WebActionNavigationTypeKey";
-NSString * const WebActionOriginalURLKey = @"WebActionOriginalURLKey";
+NSString *WebActionButtonKey = @"WebActionButtonKey"; 
+NSString *WebActionElementKey = @"WebActionElementKey";
+NSString *WebActionFormKey = @"WebActionFormKey";
+NSString *WebActionModifierFlagsKey = @"WebActionModifierFlagsKey";
+NSString *WebActionNavigationTypeKey = @"WebActionNavigationTypeKey";
+NSString *WebActionOriginalURLKey = @"WebActionOriginalURLKey";
 
 @interface WebPolicyDecisionListenerPrivate : NSObject
 {
@@ -64,17 +64,22 @@ NSString * const WebActionOriginalURLKey = @"WebActionOriginalURLKey";
 
 @end
 
-@implementation WebPolicyDecisionListener {
-    RetainPtr<WebPolicyDecisionListenerPrivate> _private;
-}
+@implementation WebPolicyDecisionListener
 
 - (id)_initWithTarget:(id)target action:(SEL)action
 {
     self = [super init];
     if (!self)
         return nil;
-    _private = adoptNS([[WebPolicyDecisionListenerPrivate alloc] initWithTarget:target action:action]);
+    _private = [[WebPolicyDecisionListenerPrivate alloc] initWithTarget:target action:action];
     return self;
+}
+
+-(void)dealloc
+{
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_private release];
+    [super dealloc];
 }
 
 - (void)_usePolicy:(WebCore::PolicyAction)policy

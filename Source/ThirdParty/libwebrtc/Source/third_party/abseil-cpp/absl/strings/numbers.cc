@@ -1124,15 +1124,15 @@ size_t numbers_internal::SixDigitsToBuffer(double d,
     case -4:
       out[2] = '0';
       ++out;
-      [[fallthrough]];
+      ABSL_FALLTHROUGH_INTENDED;
     case -3:
       out[2] = '0';
       ++out;
-      [[fallthrough]];
+      ABSL_FALLTHROUGH_INTENDED;
     case -2:
       out[2] = '0';
       ++out;
-      [[fallthrough]];
+      ABSL_FALLTHROUGH_INTENDED;
     case -1:
       out += 2;
       memcpy(out, &digits[0], 6);

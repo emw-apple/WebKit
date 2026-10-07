@@ -811,7 +811,7 @@ void Pasteboard::writeImage(Element& element, const URL&, const String&)
     CachedImage* cachedImage = renderer.cachedImage();
     if (!cachedImage || cachedImage->errorOccurred())
         return;
-    Image* image = cachedImage->image();
+    Image* image = cachedImage->imageForRenderer(&renderer);
     ASSERT(image);
 
     clear();
@@ -1090,10 +1090,10 @@ void Pasteboard::writeImageToDataObject(Element& element, const URL& url)
 {
     // Shove image data into a DataObject for use as a file
     CachedImage* cachedImage = getCachedImage(element);
-    if (!cachedImage || !cachedImage->image() || !cachedImage->isLoaded())
+    if (!cachedImage || !cachedImage->imageForRenderer(element.renderer()) || !cachedImage->isLoaded())
         return;
 
-    FragmentedSharedBuffer* imageBuffer = cachedImage->image()->data();
+    FragmentedSharedBuffer* imageBuffer = cachedImage->imageForRenderer(element.renderer())->data();
     if (!imageBuffer || !imageBuffer->size())
         return;
 

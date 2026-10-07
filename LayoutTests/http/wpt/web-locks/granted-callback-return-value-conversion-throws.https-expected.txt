@@ -1,3 +1,0 @@
-
-PASS navigator.locks.request() rejects with the exception thrown by the returned promise's constructor getter
-

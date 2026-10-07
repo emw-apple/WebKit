@@ -44,7 +44,7 @@ struct DictionaryPopupInfo;
 
 @interface WebImmediateActionController : NSObject <NSImmediateActionGestureRecognizerDelegate> {
 @private
-    __weak WebView *_webView;
+    WebView *_webView;
     WebImmediateActionType _type;
     WebCore::HitTestResult _hitTestResult;
     RetainPtr<NSImmediateActionGestureRecognizer> _immediateActionRecognizer;

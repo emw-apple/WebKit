@@ -48,7 +48,6 @@ WI.JavaScriptLogViewController = class JavaScriptLogViewController extends WI.Ob
         this._lastConsoleMessageViewForTarget = new WeakMap;
         this._lastCommitted = {text: "", special: false};
         this._repeatCountWasInterrupted = false;
-        this._evaluationPreviewRequestIdentifier = 0;
 
         this._sessions = [];
         this._currentSessionOrGroup = null;
@@ -243,29 +242,7 @@ WI.JavaScriptLogViewController = class JavaScriptLogViewController extends WI.Ob
             handler(result !== InspectorBackend.Enum.Runtime.SyntaxErrorType.Recoverable);
         }
 
-        let activeCallFrame = WI.runtimeManager.useActiveCallFrame ? WI.debuggerManager.activeCallFrame : null;
-        let target = activeCallFrame?.target || WI.runtimeManager.activeExecutionContext.target;
-        target.RuntimeAgent.parse(text, parseFinished.bind(this));
-    }
-
-    consolePromptGetEvaluationPreviewObject(prompt, text, callback)
-    {
-        let activeCallFrame = WI.runtimeManager.useActiveCallFrame ? WI.debuggerManager.activeCallFrame : null;
-        let target = activeCallFrame?.target || WI.runtimeManager.activeExecutionContext.target;
-        let options = {
-            objectGroup: `console-evaluation-preview-${++this._evaluationPreviewRequestIdentifier}`,
-            includeCommandLineAPI: true,
-            doNotPauseOnExceptionsAndMuteConsole: true,
-            returnByValue: false,
-            generatePreview: true,
-            saveResult: false,
-            emulateUserGesture: WI.settings.emulateInUserGesture.value,
-            sourceURLAppender: appendWebInspectorConsoleEvaluationSourceURL,
-        };
-        WI.runtimeManager.evaluateInInspectedWindow(text, options, function(result, wasThrown) {
-            target.RuntimeAgent.releaseObjectGroup(options.objectGroup);
-            callback(result, wasThrown);
-        });
+        WI.runtimeManager.activeExecutionContext.target.RuntimeAgent.parse(text, parseFinished.bind(this));
     }
 
     consolePromptTextCommitted(prompt, text)

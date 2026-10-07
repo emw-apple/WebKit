@@ -8,9 +8,8 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include <stdint.h>
-
 #include "../unit_test/unit_test.h"
+#include "libyuv/basic_types.h"
 
 namespace libyuv {
 

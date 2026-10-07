@@ -55,21 +55,21 @@
 #import <wtf/StdLibExtras.h>
 
 
-NSString * const WebURLPboardType = @"public.url";
-NSString * const WebURLNamePboardType = @"public.url-name";
+NSString *WebURLPboardType = @"public.url";
+NSString *WebURLNamePboardType = @"public.url-name";
 
 @implementation NSPasteboard (WebExtras)
 
 + (NSArray *)_web_writableTypesForURL
 {
-    static NeverDestroyed<RetainPtr<NSArray>> types = adoptNS([[NSArray alloc] initWithObjects:
+    static NSArray *types = [[NSArray alloc] initWithObjects:
         WebURLsWithTitlesPboardType,
         WebCore::legacyURLPasteboardTypeSingleton(),
         WebURLPboardType,
         WebURLNamePboardType,
         WebCore::legacyStringPasteboardTypeSingleton(),
-        nil]);
-    return types.get();
+        nil];
+    return types;
 }
 
 static NSArray *writableTypesForImageWithoutArchive()
@@ -87,7 +87,7 @@ static NSArray *writableTypesForImageWithArchive()
     static NeverDestroyed types = [] {
         auto types = adoptNS([writableTypesForImageWithoutArchive() mutableCopy]);
         [types addObject:WebCore::legacyRTFDPasteboardTypeSingleton()];
-        [types addObject:protect(WebArchivePboardType)];
+        [types addObject:WebArchivePboardType];
         return types;
     }();
     return types.get().get();
@@ -218,7 +218,7 @@ static RefPtr<WebCore::CachedImage> imageFromElement(DOMElement *domElement)
     RefPtr element = core(domElement);
     if (!element)
         return nullptr;
-    CheckedPtr renderer = element->renderer();
+    auto* renderer = element->renderer();
     if (!is<WebCore::RenderImage>(renderer))
         return nullptr;
     RefPtr image = downcast<WebCore::RenderImage>(*renderer).cachedImage();
@@ -250,9 +250,8 @@ static RefPtr<WebCore::CachedImage> imageFromElement(DOMElement *domElement)
     }
     
     if (archive) {
-        RetainPtr webArchivePboardType = WebArchivePboardType;
-        if ([types containsObject:webArchivePboardType])
-            [self setData:[archive data] forType:webArchivePboardType];
+        if ([types containsObject:WebArchivePboardType])
+            [self setData:[archive data] forType:WebArchivePboardType];
         return;
     }
 
@@ -271,8 +270,7 @@ static RefPtr<WebCore::CachedImage> imageFromElement(DOMElement *domElement)
 
     RetainPtr<NSString> extension = @"";
     RetainPtr<NSMutableArray> types = adoptNS([[NSMutableArray alloc] initWithObjects:WebCore::legacyFilesPromisePasteboardTypeSingleton(), nil]);
-    RefPtr coreElement = core(element);
-    RetainPtr originIdentifier = protect(coreElement->document())->originIdentifierForPasteboard().createNSString();
+    RetainPtr originIdentifier = core(element)->document().originIdentifierForPasteboard().createNSString();
     RetainPtr<NSData> customDataBuffer;
     if (originIdentifier.get().length) {
         [types addObject:@(WebCore::PasteboardCustomData::cocoaType().characters())];
@@ -281,11 +279,11 @@ static RefPtr<WebCore::CachedImage> imageFromElement(DOMElement *domElement)
         customDataBuffer = customData.createSharedBuffer()->createNSData();
     }
 
-    if (CheckedPtr renderer = coreElement->renderer()) {
+    if (auto* renderer = core(element)->renderer()) {
         if (is<WebCore::RenderImage>(*renderer)) {
             if (RefPtr image = downcast<WebCore::RenderImage>(*renderer).cachedImage()) {
                 // FIXME: This doesn't check errorOccured the way imageFromElement does.
-                extension = protect(image->image())->filenameExtension().createNSString();
+                extension = image->image()->filenameExtension().createNSString();
                 if (![extension length])
                     return nullptr;
                 [types addObjectsFromArray:[NSPasteboard _web_writableTypesForImageIncludingArchive:(archive != nil)]];

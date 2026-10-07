@@ -32,7 +32,6 @@
 #include "BuiltinNames.h"
 #include "BytecodeGenerator.h"
 #include "BytecodeGeneratorBaseInlines.h"
-#include "IndexingTypeInlines.h"
 #include "JSArrayIterator.h"
 #include "JSAsyncDisposableStack.h"
 #include "JSAsyncFromSyncIterator.h"
@@ -367,12 +366,7 @@ RegisterID* TaggedTemplateNode::emitBytecode(BytecodeGenerator& generator, Regis
     ExpectedFunction expectedFunction = NoExpectedFunction;
     RefPtr<RegisterID> tag = nullptr;
     RefPtr<RegisterID> base = nullptr;
-    OptionalChainNode* optionalChain = m_tag->isOptionalChain() ? static_cast<OptionalChainNode*>(m_tag) : nullptr;
-    if (optionalChain && optionalChain->expr()->isLocation()) {
-        tag = generator.newTemporary();
-        base = generator.newTemporary();
-        optionalChain->emitCallee(generator, tag.get(), base.get());
-    } else if (!m_tag->isLocation()) {
+    if (!m_tag->isLocation()) {
         tag = generator.newTemporary();
         tag = generator.emitNode(tag.get(), m_tag);
     } else if (m_tag->isResolveNode()) {
@@ -402,7 +396,6 @@ RegisterID* TaggedTemplateNode::emitBytecode(BytecodeGenerator& generator, Regis
         if (bracket->base()->isSuperNode()) {
             RefPtr<RegisterID> thisValue = generator.ensureThis();
             tag = generator.emitGetByVal(generator.newTemporary(), base.get(), thisValue.get(), property.get());
-            base = WTF::move(thisValue);
         } else
             tag = generator.emitGetByVal(generator.newTemporary(), base.get(), property.get());
     } else {
@@ -411,10 +404,7 @@ RegisterID* TaggedTemplateNode::emitBytecode(BytecodeGenerator& generator, Regis
         tag = generator.newTemporary();
         base = generator.newTemporary();
         base = generator.emitNode(base.get(), dot->base());
-        RefPtr<RegisterID> thisValue;
-        tag = dot->emitGetPropertyValue(generator, tag.get(), base.get(), thisValue);
-        if (thisValue)
-            base = WTF::move(thisValue);
+        tag = dot->emitGetPropertyValue(generator, tag.get(), base.get());
     }
 
     RefPtr<RegisterID> templateObject = generator.emitGetTemplateObject(nullptr, this);
@@ -446,14 +436,14 @@ RegisterID* ArrayNode::emitBytecode(BytecodeGenerator& generator, RegisterID* ds
     unsigned length = 0;
 
     IndexingType recommendedIndexingType = ArrayWithUndecided;
-    MarkedArgumentBufferWithSize<16> constants;
     ElementNode* firstPutElement;
     for (firstPutElement = m_element; firstPutElement; firstPutElement = firstPutElement->next()) {
-        if (firstPutElement->elision())
+        if (firstPutElement->elision() || firstPutElement->value()->isSpreadExpression())
             break;
-        ExpressionNode* value = firstPutElement->value();
-        if (value->isConstant()) {
-            JSValue constant = static_cast<ConstantNode*>(value)->jsValue(generator);
+        if (!firstPutElement->value()->isConstant())
+            hadVariableExpression = true;
+        else {
+            JSValue constant = static_cast<ConstantNode*>(firstPutElement->value())->jsValue(generator);
             if (!constant) [[unlikely]]
                 hadVariableExpression = true;
             else {
@@ -462,19 +452,11 @@ RegisterID* ArrayNode::emitBytecode(BytecodeGenerator& generator, RegisterID* ds
                     allDenseStrings = false;
                 else if (auto* impl = asString(constant)->tryGetValueImpl(); !impl || !impl->isAtom())
                     allDenseStrings = false;
-                if (!hadVariableExpression)
-                    constants.append(constant);
             }
-        } else {
-            if (value->isSpreadExpression())
-                break;
-            hadVariableExpression = true;
         }
 
         ++length;
     }
-    if (constants.hasOverflowed()) [[unlikely]]
-        hadVariableExpression = true;
     if (hadVariableExpression)
         allDenseStrings = false;
 
@@ -488,26 +470,17 @@ RegisterID* ArrayNode::emitBytecode(BytecodeGenerator& generator, RegisterID* ds
             auto* array = JSCellButterfly::tryCreate(generator.vm(), cellButterflyStructure, length);
             RELEASE_ASSERT(array);
 
-            ASSERT(elements == m_element);
-            ASSERT(constants.size() == length);
-            if (allDenseStrings) {
-                for (auto& slot : constants.mutableSpan()) {
-                    JSString* string = asString(slot);
+            unsigned index = 0;
+            for (ElementNode* element = elements; index < length; element = element->next()) {
+                ASSERT(element->value()->isConstant());
+                JSValue constant = static_cast<ConstantNode*>(element->value())->jsValue(generator);
+                ASSERT(constant);
+                if (allDenseStrings) {
+                    JSString* string = asString(constant);
                     StringImpl* stringImpl = const_cast<StringImpl*>(string->getValueImpl());
-                    slot = vm.atomStringToJSStringMap.ensureValue(stringImpl, [&] { return string; });
+                    constant = vm.atomStringToJSStringMap.ensureValue(stringImpl, [&] { return string; });
                 }
-            }
-
-            if (hasInt32(array->indexingType())) {
-WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
-                memcpy(std::bit_cast<EncodedJSValue*>(array->toButterfly()->contiguous().data()), constants.data(), length * sizeof(EncodedJSValue));
-WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
-            } else if (hasContiguous(array->indexingType())) {
-                gcSafeMemcpy(std::bit_cast<EncodedJSValue*>(array->toButterfly()->contiguous().data()), constants.data(), length * sizeof(EncodedJSValue));
-                vm.writeBarrier(array);
-            } else {
-                for (unsigned index = 0; index < length; ++index)
-                    array->setIndex(vm, index, constants.at(index));
+                array->setIndex(generator.vm(), index++, constant);
             }
             return generator.emitNewArrayBuffer(dst, array, recommendedIndexingType);
         }
@@ -2578,27 +2551,15 @@ RegisterID* ReflectConstructFunctionCallDotNode::emitBytecode(BytecodeGenerator&
     if (isOptionalCall())
         generator.emitOptionalCheck(function.get());
 
+    unsigned argumentIndex = 0;
+    for (ArgumentListNode* argument = m_args->m_listNode; argument; argument = argument->m_next)
+        generator.emitNode(callArguments.argumentRegister(argumentIndex++), argument->m_expr);
+
     RegisterID* target = callArguments.argumentRegister(0);
     RegisterID* argumentsList = callArguments.argumentRegister(1);
     RegisterID* newTarget = newTargetNode ? callArguments.argumentRegister(2) : target;
 
-    generator.emitNode(target, m_args->m_listNode->m_expr);
-    std::optional<CallArguments> constructArguments;
-    if (argumentsListNode->m_expr->isSimpleArray()) {
-        ElementNode* elements = static_cast<ArrayNode*>(argumentsListNode->m_expr)->elements();
-        unsigned elementCount = 0;
-        for (ElementNode* element = elements; element; element = element->next())
-            ++elementCount;
-        constructArguments.emplace(generator, nullptr, elementCount);
-        unsigned elementIndex = 0;
-        for (ElementNode* element = elements; element; element = element->next())
-            generator.emitNode(constructArguments->argumentRegister(elementIndex++), element->value());
-    } else
-        generator.emitNode(argumentsList, argumentsListNode->m_expr);
-    unsigned argumentIndex = 2;
-    for (ArgumentListNode* argument = newTargetNode; argument; argument = argument->m_next)
-        generator.emitNode(callArguments.argumentRegister(argumentIndex++), argument->m_expr);
-
+    // FIXME: A simple array literal as the arguments list could become the arguments of an op_construct, which saves the array.
     Ref<Label> realCall = generator.newLabel();
     Ref<Label> end = generator.newLabel();
     generator.emitDebugHook(WillExecuteExpression, divotStart());
@@ -2606,18 +2567,12 @@ RegisterID* ReflectConstructFunctionCallDotNode::emitBytecode(BytecodeGenerator&
     generator.emitJumpIfFalse(generator.emitIsConstructor(generator.newTemporary(), target), realCall.get());
     if (newTargetNode)
         generator.emitJumpIfFalse(generator.emitIsConstructor(generator.newTemporary(), newTarget), realCall.get());
-    if (constructArguments)
-        generator.emitConstruct(returnValue.get(), target, newTarget, NoExpectedFunction, *constructArguments, divot(), divotStart(), divotEnd());
-    else {
-        if (!argumentsListNode->m_expr->isArrayLiteral())
-            generator.emitJumpIfFalse(generator.emitIsObject(generator.newTemporary(), argumentsList), realCall.get());
-        generator.emitConstructVarargs(returnValue.get(), target, newTarget, argumentsList, generator.newTemporary(), 0, divot(), divotStart(), divotEnd(), DebuggableCall::No);
-    }
+    if (!argumentsListNode->m_expr->isArrayLiteral())
+        generator.emitJumpIfFalse(generator.emitIsObject(generator.newTemporary(), argumentsList), realCall.get());
+    generator.emitConstructVarargs(returnValue.get(), target, newTarget, argumentsList, generator.newTemporary(), 0, divot(), divotStart(), divotEnd(), DebuggableCall::No);
     generator.emitJump(end.get());
 
     generator.emitLabel(realCall.get());
-    if (constructArguments)
-        generator.emitNewArrayByReversingArguments(argumentsList, *constructArguments);
     RegisterID* ret = generator.emitCallInTailPosition(returnValue.get(), function.get(), NoExpectedFunction, callArguments, divot(), divotStart(), divotEnd(), DebuggableCall::Yes);
     generator.emitLabel(end.get());
     generator.emitProfileType(returnValue.get(), divotStart(), divotEnd());

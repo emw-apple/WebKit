@@ -65,7 +65,13 @@
         {
             "name": "cocoa-embedded",
             "hidden": true,
-            "inherits": ["cocoa"]
+            "inherits": ["cocoa"],
+            "cacheVariables": {
+                "ENABLE_TOOLS": {
+                    "type": "BOOL",
+                    "value": "OFF"
+                }
+            }
         },
         {
             "name": "gtk",

@@ -52,9 +52,7 @@
 
 @end
 
-@implementation WebGeolocationPosition {
-    RetainPtr<WebGeolocationPositionInternal> _internal;
-}
+@implementation WebGeolocationPosition
 
 std::optional<WebCore::GeolocationPositionData> core(WebGeolocationPosition *position)
 {
@@ -68,7 +66,7 @@ std::optional<WebCore::GeolocationPositionData> core(WebGeolocationPosition *pos
     self = [super init];
     if (!self)
         return nil;
-    _internal = adoptNS([[WebGeolocationPositionInternal alloc] initWithCoreGeolocationPosition:WebCore::GeolocationPositionData { timestamp, latitude, longitude, accuracy }]);
+    _internal = [[WebGeolocationPositionInternal alloc] initWithCoreGeolocationPosition:WebCore::GeolocationPositionData { timestamp, latitude, longitude, accuracy }];
     return self;
 }
 
@@ -77,8 +75,15 @@ std::optional<WebCore::GeolocationPositionData> core(WebGeolocationPosition *pos
     self = [super init];
     if (!self)
         return nil;
-    _internal = adoptNS([[WebGeolocationPositionInternal alloc] initWithCoreGeolocationPosition:WTF::move(coreGeolocationPosition)]);
+    _internal = [[WebGeolocationPositionInternal alloc] initWithCoreGeolocationPosition:WTF::move(coreGeolocationPosition)];
     return self;
+}
+
+- (void)dealloc
+{
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_internal release];
+    [super dealloc];
 }
 
 @end

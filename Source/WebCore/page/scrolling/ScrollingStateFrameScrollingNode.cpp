@@ -92,8 +92,7 @@ ScrollingStateFrameScrollingNode::ScrollingStateFrameScrollingNode(
     FloatPoint minLayoutViewportOrigin,
     FloatPoint maxLayoutViewportOrigin,
     std::optional<FloatSize> overrideVisualViewportSize,
-    bool overlayScrollbarsEnabled,
-    int insetForLeftScrollbarSpace
+    bool overlayScrollbarsEnabled
 ) : ScrollingStateScrollingNode(
     isMainFrame ? ScrollingNodeType::MainFrame : ScrollingNodeType::Subframe,
     scrollingNodeID,
@@ -144,7 +143,6 @@ ScrollingStateFrameScrollingNode::ScrollingStateFrameScrollingNode(
 #endif
     , m_headerHeight(headerHeight)
     , m_footerHeight(footerHeight)
-    , m_insetForLeftScrollbarSpace(insetForLeftScrollbarSpace)
     , m_behaviorForFixed(WTF::move(scrollBehaviorForFixedElements))
 
     , m_visualViewportIsSmallerThanLayoutViewport(visualViewportIsSmallerThanLayoutViewport)
@@ -177,7 +175,6 @@ ScrollingStateFrameScrollingNode::ScrollingStateFrameScrollingNode(const Scrolli
 #endif
     , m_headerHeight(stateNode.headerHeight())
     , m_footerHeight(stateNode.footerHeight())
-    , m_insetForLeftScrollbarSpace(stateNode.insetForLeftScrollbarSpace())
     , m_behaviorForFixed(stateNode.scrollBehaviorForFixedElements())
     , m_visualViewportIsSmallerThanLayoutViewport(stateNode.visualViewportIsSmallerThanLayoutViewport())
     , m_asyncFrameOrOverflowScrollingEnabled(stateNode.asyncFrameOrOverflowScrollingEnabled())
@@ -239,7 +236,6 @@ OptionSet<ScrollingStateNode::Property> ScrollingStateFrameScrollingNode::applic
         Property::MaxLayoutViewportOrigin,
         Property::OverrideVisualViewportSize,
         Property::OverlayScrollbarsEnabled,
-        Property::InsetForLeftScrollbarSpace,
     };
 
     auto properties = ScrollingStateScrollingNode::applicableProperties();
@@ -345,15 +341,6 @@ void ScrollingStateFrameScrollingNode::setObscuredContentInsets(const FloatBoxEx
 
     m_obscuredContentInsets = obscuredContentInsets;
     setPropertyChanged(Property::ObscuredContentInsets);
-}
-
-void ScrollingStateFrameScrollingNode::setInsetForLeftScrollbarSpace(int insetForLeftScrollbarSpace)
-{
-    if (m_insetForLeftScrollbarSpace == insetForLeftScrollbarSpace)
-        return;
-
-    m_insetForLeftScrollbarSpace = insetForLeftScrollbarSpace;
-    setPropertyChanged(Property::InsetForLeftScrollbarSpace);
 }
 
 #if HAVE(NSREFRESHCONTROLLER)

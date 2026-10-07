@@ -99,7 +99,7 @@ NSAdaptiveImageGlyph *ImageAdapter::multiRepresentationHEIC()
     if (m_multiRepHEIC)
         return m_multiRepHEIC.get();
 
-    RefPtr buffer = image().data();
+    auto buffer = image().data();
     if (!buffer)
         return nullptr;
 
@@ -142,18 +142,17 @@ NSImage* ImageAdapter::nsImage()
     if (m_nsImage)
         return m_nsImage.get();
 
-    RetainPtr data = tiffRepresentation();
+    CFDataRef data = tiffRepresentation();
     if (!data)
         return nullptr;
 
-    m_nsImage = adoptNS([[NSImage alloc] initWithData:(__bridge NSData *)data.get()]);
+    m_nsImage = adoptNS([[NSImage alloc] initWithData:(__bridge NSData *)data]);
     return m_nsImage.get();
 }
 
 RetainPtr<NSImage> ImageAdapter::snapshotNSImage()
 {
-    Ref image = this->image();
-    RefPtr nativeImage =  image->currentNativeImage(ConcreteObjectSize::fixed(image->size()));
+    RefPtr nativeImage =  image().currentNativeImage(ConcreteObjectSize::fixed(image().size()));
     if (!nativeImage)
         return nullptr;
 

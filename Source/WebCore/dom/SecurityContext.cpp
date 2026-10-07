@@ -206,7 +206,6 @@ PolicyContainer SecurityContext::policyContainer() const
         CheckedRef { *m_contentSecurityPolicy }->responseHeaders(),
         crossOriginEmbedderPolicy(),
         crossOriginOpenerPolicy(),
-        documentIsolationPolicy(),
         referrerPolicy(),
         ipAddressSpace()
     };
@@ -220,7 +219,6 @@ void SecurityContext::inheritPolicyContainerFrom(const PolicyContainer& policyCo
     protect(contentSecurityPolicy())->inheritHeadersFrom(policyContainer.contentSecurityPolicyResponseHeaders);
     setCrossOriginOpenerPolicy(policyContainer.crossOriginOpenerPolicy);
     setCrossOriginEmbedderPolicy(policyContainer.crossOriginEmbedderPolicy);
-    setDocumentIsolationPolicy(policyContainer.documentIsolationPolicy);
     setReferrerPolicy(policyContainer.referrerPolicy);
     setIPAddressSpace(policyContainer.ipAddressSpace);
 }

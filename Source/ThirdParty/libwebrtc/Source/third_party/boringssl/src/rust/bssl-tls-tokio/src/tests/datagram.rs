@@ -14,11 +14,7 @@
 
 #![cfg(unix)]
 
-use std::mem::MaybeUninit;
-use std::time::Duration;
-
 use bssl_tls::{
-    ReceiveBuffer,
     connection::{
         Client,
         Server,
@@ -28,136 +24,148 @@ use bssl_tls::{
         DtlsMode,
         TlsContextBuilder, //
     },
-    errors::Error,
-    io::IoStatus, //
+    credentials::{
+        Certificate,
+        TlsCredentialBuilder, //
+    },
+    errors::Error, //
 };
-use tokio::{
-    select,
-    time::sleep, //
+use bssl_x509::{
+    certificates::X509Certificate,
+    keys::PrivateKey,
+    params::Trust,
+    store::X509StoreBuilder, //
 };
 
+use super::{
+    CA,
+    RSA_SERVER_CERT,
+    RSA_SERVER_KEY, //
+};
 use crate::{
     TokioDatagramIo,
     new_std_datagram_with_tokio, //
 };
 
-fn dumb_dtls_server_client() -> (
-    TlsConnection<Server, DtlsMode>,
-    TlsConnection<Client, DtlsMode>,
-) {
+fn dumb_dtls_server_client() -> Result<
+    (
+        TlsConnection<Server, DtlsMode>,
+        TlsConnection<Client, DtlsMode>,
+    ),
+    Error,
+> {
+    let ca = Certificate::parse_one_from_pem(CA, None)?;
+    let server_cert = Certificate::parse_one_from_pem(RSA_SERVER_CERT, None)?;
+    let server_key = PrivateKey::from_pem(RSA_SERVER_KEY, || unreachable!())?;
+
     let mut server_ctx_builder = TlsContextBuilder::new_dtls();
-    server_ctx_builder
-        .with_credential(super::server_credential())
-        .unwrap();
-    let mut server_conn = server_ctx_builder.build().new_server_connection();
-    server_conn.with_mtu(500).unwrap();
-    let server_conn = server_conn.build();
+    let server_cred = {
+        let mut builder = TlsCredentialBuilder::new();
+        builder
+            .with_certificate_chain(&[server_cert, ca])?
+            .with_private_key(server_key)?;
+        builder.build()
+    };
+    server_ctx_builder.with_credential(server_cred.unwrap())?;
+    let server_ctx = server_ctx_builder.build();
+    let server_conn = server_ctx.new_server_connection().build();
 
     let mut client_ctx_builder = TlsContextBuilder::new_dtls();
-    client_ctx_builder.with_certificate_store(&super::client_cert_store());
-    let mut client_conn = client_ctx_builder.build().new_client_connection();
-    client_conn.with_mtu(500).unwrap();
-    let client_conn = client_conn.build();
+    let ca = X509Certificate::parse_one_from_pem(CA)?;
+    let mut cert_store = X509StoreBuilder::new();
+    cert_store.set_trust(Trust::SslServer)?.add_cert(ca)?;
+    let cert_store = cert_store.build();
+    client_ctx_builder.with_certificate_store(&cert_store);
+    let client_ctx = client_ctx_builder.build();
+    let client_conn = client_ctx.new_client_connection().build();
 
-    (server_conn, client_conn)
+    Ok((server_conn, client_conn))
 }
 
-async fn drive_async_dtls_handshake<R: Send + 'static>(
-    conn: &mut TlsConnection<R, DtlsMode>,
-) -> Result<(), Error> {
-    loop {
-        let timeout = conn.dtlsv1_get_timeout().unwrap_or(Duration::from_secs(5));
-        select! {
-            biased;
-            res = conn.async_handshake() => match res? {
-                None => break Ok(()),
-                Some(reason) => panic!("unexpected retry reason {reason:?}"),
-            },
-            _ = sleep(timeout) => {
-                conn.dtlsv1_handle_timeout()?;
-            }
-        }
-    }
-}
-
-async fn async_dtls_recv<R: Send + 'static>(
-    conn: &mut TlsConnection<R, DtlsMode>,
-    buf: &mut ReceiveBuffer<'_>,
-) -> Result<IoStatus, Error> {
-    conn.as_pin_mut().async_recv(buf).await
-}
-
-async fn async_dtls_send<R: Send + 'static>(
-    conn: &mut TlsConnection<R, DtlsMode>,
-    data: &[u8],
-) -> Result<IoStatus, Error> {
-    conn.as_pin_mut().async_send(data).await
-}
-
-async fn async_dtls_ping_pong(
+async fn async_ping_pong(
     mut server_conn: TlsConnection<Server, DtlsMode>,
     mut client_conn: TlsConnection<Client, DtlsMode>,
 ) -> Result<(), Error> {
-    let task = tokio::spawn(async move {
-        drive_async_dtls_handshake(&mut server_conn).await?;
+    use bssl_tls::io::IoStatus;
+    use std::time::Duration;
 
-        let mut buf = [MaybeUninit::uninit(); 21];
-        let mut message = ReceiveBuffer::new_uninit(&mut buf);
+    let task = tokio::spawn(async move {
+        server_conn.async_handshake().await?;
+
+        let mut message = [0; 21];
         let mut read_bytes = 0;
         while read_bytes < 21 {
-            match async_dtls_recv(&mut server_conn, &mut message).await? {
+            match server_conn
+                .as_pin_mut()
+                .async_read(&mut message[read_bytes..])
+                .await?
+            {
                 IoStatus::Ok(n) => read_bytes += n,
                 IoStatus::EndOfStream => break,
                 _ => {}
             }
         }
-        assert_eq!(message.filled(), b"BoringSSL is awesome!");
-        async_dtls_send(&mut server_conn, b"Oh yeah definitely!").await?;
+        assert_eq!(&message, b"BoringSSL is awesome!");
+        tokio::time::sleep(Duration::from_secs(2)).await;
+        server_conn
+            .as_pin_mut()
+            .async_write(b"Oh yeah definitely!")
+            .await?;
+        server_conn.as_pin_mut().async_shutdown().await?;
         Ok::<_, Error>(())
     });
 
-    drive_async_dtls_handshake(&mut client_conn).await?;
-    async_dtls_send(&mut client_conn, b"BoringSSL is awesome!").await?;
-    let mut buf = [MaybeUninit::uninit(); 19];
-    let mut message = ReceiveBuffer::new_uninit(&mut buf);
-    while message.remaining() > 0 {
-        match async_dtls_recv(&mut client_conn, &mut message).await? {
-            IoStatus::Ok(_) => {}
+    client_conn.async_handshake().await?;
+    client_conn
+        .as_pin_mut()
+        .async_write(b"BoringSSL is awesome!")
+        .await?;
+    let mut message = [0; 19];
+    let mut read_bytes = 0;
+    while read_bytes < 19 {
+        match client_conn
+            .as_pin_mut()
+            .async_read(&mut message[read_bytes..])
+            .await?
+        {
+            IoStatus::Ok(n) => read_bytes += n,
             IoStatus::EndOfStream => break,
             _ => {}
         }
     }
-    assert_eq!(message.filled(), b"Oh yeah definitely!");
+    assert_eq!(&message, b"Oh yeah definitely!");
+    assert!(matches!(
+        client_conn.as_pin_mut().async_shutdown().await,
+        Ok(_) | Err(Error::Io(bssl_tls::errors::IoError::EndOfStream))
+    ));
     task.await.unwrap()?;
     Ok(())
 }
 
 #[cfg(unix)]
 #[tokio::test]
+#[ignore = "https://crbug.com/532601068"]
 async fn async_dtls() -> Result<(), Error> {
-    let (mut server_conn, mut client_conn) = dumb_dtls_server_client();
+    let (mut server_conn, mut client_conn) = dumb_dtls_server_client().unwrap();
     let (server_sock, client_sock) = tokio::net::UnixDatagram::pair().unwrap();
-    server_conn
-        .set_datagram_socket(TokioDatagramIo(server_sock))
-        .unwrap();
-    client_conn
-        .set_datagram_socket(TokioDatagramIo(client_sock))
-        .unwrap();
+    server_conn.set_io(TokioDatagramIo(server_sock)).unwrap();
+    client_conn.set_io(TokioDatagramIo(client_sock)).unwrap();
 
-    async_dtls_ping_pong(server_conn, client_conn).await
+    async_ping_pong(server_conn, client_conn).await
 }
 
 #[cfg(unix)]
 #[tokio::test]
+#[ignore = "https://crbug.com/532601068"]
 async fn async_dtls_over_fd() -> Result<(), Error> {
-    let (mut server_conn, mut client_conn) = dumb_dtls_server_client();
+    let (mut server_conn, mut client_conn) = dumb_dtls_server_client().unwrap();
     let (server_sock, client_sock) = std::os::unix::net::UnixDatagram::pair().unwrap();
     server_sock.set_nonblocking(true).unwrap();
     client_sock.set_nonblocking(true).unwrap();
     let server_sock = new_std_datagram_with_tokio(server_sock).unwrap();
     let client_sock = new_std_datagram_with_tokio(client_sock).unwrap();
-    server_conn.set_datagram_socket(server_sock).unwrap();
-    client_conn.set_datagram_socket(client_sock).unwrap();
+    server_conn.set_io(server_sock).unwrap();
+    client_conn.set_io(client_sock).unwrap();
 
-    async_dtls_ping_pong(server_conn, client_conn).await
+    async_ping_pong(server_conn, client_conn).await
 }

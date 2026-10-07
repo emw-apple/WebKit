@@ -190,7 +190,7 @@ auto DocumentScope::collectResolverScopes() -> ResolverScopes
 }
 
 template <typename TestFunction>
-void DocumentScope::evaluateMediaQueries(NOESCAPE const TestFunction& testFunction)
+void DocumentScope::evaluateMediaQueries(TestFunction&& testFunction)
 {
     bool hadChanges = false;
 

@@ -19,9 +19,7 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
-#include "absl/base/config.h"
 #include "absl/base/nullability.h"
-#include "absl/base/optimization.h"
 #include "absl/meta/type_traits.h"
 #include "absl/status/status.h"
 #include "absl/strings/string_view.h"
@@ -623,7 +621,7 @@ class StringifyRandom {
   }
 
  public:
-  static absl::string_view OpenBrackets() {
+  static inline absl::string_view OpenBrackets() {
     switch (RandomBraces()) {
       case kBareParens:
         return "(";
@@ -637,7 +635,7 @@ class StringifyRandom {
     return "(";
   }
 
-  static absl::string_view CloseBrackets() {
+  static inline absl::string_view CloseBrackets() {
     switch (RandomBraces()) {
       case kBareParens:
         return ")";

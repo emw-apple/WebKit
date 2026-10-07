@@ -12,7 +12,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <tuple>
 
 #include "modules/rtp_rtcp/source/rtcp_packet/dlrr.h"
 #include "modules/rtp_rtcp/source/rtcp_packet/rrtr.h"
@@ -25,6 +24,7 @@
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::make_tuple;
 using ::testing::SizeIs;
 using webrtc::rtcp::ExtendedReports;
 using webrtc::rtcp::ReceiveTimeInfo;
@@ -79,7 +79,7 @@ TEST_F(RtcpPacketExtendedReportsTest, CreateWithoutReportBlocks) {
 
   Buffer packet = xr.Build();
 
-  EXPECT_THAT(std::make_tuple(packet.data(), packet.size()),
+  EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kEmptyPacket));
 }
 

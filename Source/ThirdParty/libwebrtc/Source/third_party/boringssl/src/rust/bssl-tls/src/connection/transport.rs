@@ -15,31 +15,23 @@
 //! TLS Connection transport settings
 //!
 
-use core::{
-    mem::{
-        MaybeUninit,
-        transmute, //
-    },
-    time::Duration, //
+use core::mem::{
+    MaybeUninit,
+    transmute, //
 };
 
 use crate::{
     check_lib_error,
+    check_tls_error,
     config::ConfigurationError,
     connection::{
         TlsConnection,
         TlsConnectionBuilder,
         methods::HasTlsConnectionMethod, //
     },
-    context::{
-        DtlsMode,
-        HasDatagramIo,
-        HasStreamIo, //
-    },
-    errors::{
-        Error,
-        IoError, //
-    },
+    context::DtlsMode,
+    context::HasBasicIo,
+    errors::Error,
     io::{
         AbstractReader,
         AbstractSocket,
@@ -53,10 +45,10 @@ use crate::{
 /// These are the methods to configure the underlying IO drivers and transport configurations.
 impl<R, M> TlsConnection<R, M>
 where
-    M: HasTlsConnectionMethod,
+    M: HasBasicIo + HasTlsConnectionMethod,
 {
     /// Set up underlying transport driver.
-    fn set_io_inner<S: 'static + AbstractSocket>(&mut self, socket: S) -> Result<&mut Self, Error> {
+    pub fn set_io<S: 'static + AbstractSocket>(&mut self, socket: S) -> Result<&mut Self, Error> {
         let bio = RustBio::new_duplex(socket)?;
         unsafe {
             // Safety: the additional ref-count is to compensate for `SSL` taking ownership.
@@ -66,35 +58,6 @@ where
         }
         self.get_connection_methods().bio = Some(bio);
         Ok(self)
-    }
-}
-
-/// # Transport configurations
-///
-/// These are the methods to configure the underlying IO drivers and transport configurations.
-impl<R, M> TlsConnection<R, M>
-where
-    M: HasDatagramIo + HasTlsConnectionMethod,
-{
-    /// Set up datagram socket driver.
-    pub fn set_datagram_socket<S: 'static + AbstractSocket>(
-        &mut self,
-        socket: S,
-    ) -> Result<&mut Self, Error> {
-        self.set_io_inner(socket)
-    }
-}
-
-/// # Transport configurations
-///
-/// These are the methods to configure the underlying IO drivers and transport configurations.
-impl<R, M> TlsConnection<R, M>
-where
-    M: HasStreamIo + HasTlsConnectionMethod,
-{
-    /// Set up underlying transport driver.
-    pub fn set_io<S: 'static + AbstractSocket>(&mut self, socket: S) -> Result<&mut Self, Error> {
-        self.set_io_inner(socket)
     }
 
     /// Set up underlying transport driver, with a pair of read and write ends.
@@ -119,33 +82,27 @@ where
     }
 
     /// Check if the underlying **transport** has closed its write end.
-    ///
-    /// If the transport is still **unset**, the result is [`None`].
-    pub fn is_write_closed(&self) -> Option<bool> {
+    pub fn is_write_closed(&self) -> bool {
         self.get_connection_methods_ref()
             .bio
             .as_ref()
-            .map(|bio| bio.as_ref().write_eos)
+            .map_or(true, |bio| bio.as_ref().write_eos)
     }
 
     /// Check if the underlying **transport** has closed its read end.
-    ///
-    /// If the transport is still **unset**, the result is [`None`].
-    pub fn is_read_closed(&self) -> Option<bool> {
+    pub fn is_read_closed(&self) -> bool {
         self.get_connection_methods_ref()
             .bio
             .as_ref()
-            .map(|bio| bio.as_ref().read_eos)
+            .map_or(true, |bio| bio.as_ref().read_eos)
     }
 
     /// Check if the underlying **transport** has closed either its read end or its write end.
-    ///
-    /// If the transport is still **unset**, the result is [`None`].
-    pub fn is_one_side_closed(&self) -> Option<bool> {
+    pub fn is_one_side_closed(&self) -> bool {
         self.get_connection_methods_ref()
             .bio
             .as_ref()
-            .map(|bio| bio.as_ref().read_eos || bio.as_ref().write_eos)
+            .map_or(true, |bio| bio.as_ref().read_eos || bio.as_ref().write_eos)
     }
 }
 
@@ -194,23 +151,15 @@ impl<R> TlsConnection<R, DtlsMode> {
         if rc == 0 {
             return Ok(false);
         }
-        // Clear error queue first.
-        let lib_err = Error::extract_lib_err();
-        if let Some(err) = self.take_io_err() {
-            return Err(Error::Io(IoError::Transport(err)));
-        }
-        if rc < 0 {
-            return Err(lib_err);
-        }
+        let _ = check_tls_error!(conn, rc);
         Ok(true)
     }
 
-    /// Get connection's remaining DTLS timer timeout.
+    /// Get connection's remaining timeout.
     ///
-    /// If a timeout is in effect, this method returns the remaining [`Duration`].
-    ///
-    /// This function returns [`None`] when TLS does not have any pending flights.
-    pub fn dtlsv1_get_timeout(&self) -> Option<Duration> {
+    /// If a timeout is in effect, this method call returns the remaining seconds,
+    /// followed by the remaining microseconds.
+    pub fn dtlsv1_get_timeout(&self) -> Option<(i64, i64)> {
         #[cfg(windows)]
         #[repr(C)]
         struct timeval {
@@ -234,9 +183,7 @@ impl<R> TlsConnection<R, DtlsMode> {
                     // Safety: timeval is now valid as per BoringSSL specification.
                     timeval.assume_init()
                 };
-                let secs = u64::try_from(timeval.tv_sec).unwrap_or(0);
-                let usecs = u64::try_from(timeval.tv_usec).unwrap_or(0);
-                Some(Duration::from_secs(secs) + Duration::from_micros(usecs))
+                Some((timeval.tv_sec as i64, timeval.tv_usec as i64))
             }
             0 => None,
             rc => {

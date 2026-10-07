@@ -191,12 +191,12 @@ egl::ConfigSet DisplayWgpu::generateConfigs()
     return configSet;
 }
 
-bool ThreadSafeDisplayWgpu::testDeviceLost()
+bool DisplayWgpu::testDeviceLost()
 {
     return false;
 }
 
-egl::Error ThreadSafeDisplayWgpu::restoreLostDevice(const egl::ThreadSafeDisplay *display)
+egl::Error DisplayWgpu::restoreLostDevice(const egl::Display *display)
 {
     return egl::NoError();
 }

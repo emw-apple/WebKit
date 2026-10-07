@@ -77,17 +77,6 @@ INSTANTIATE_TEST_SUITE_P(
             {'\xD0', '\x02', '\x17'},
         },
         {
-            "VarintBool",
-            {
-                42,
-                StructuredProtoField::Value{
-                    std::in_place_type<StructuredProtoField::Varint>,
-                    true,
-                },
-            },
-            {'\xD0', '\x02', '\x01'},
-        },
-        {
             "I64",
             {
                 42,

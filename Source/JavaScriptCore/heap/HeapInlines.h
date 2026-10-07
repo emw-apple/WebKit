@@ -61,8 +61,6 @@ ALWAYS_INLINE bool Heap::isMarked(const void* rawCell)
 {
     ASSERT(!m_isMarkingForGCVerifier);
     HeapCell* cell = std::bit_cast<HeapCell*>(rawCell);
-    // The marking version must come from the cell's own heap's object space.
-    ASSERT(cell->heap() == this);
     if (cell->isPreciseAllocation())
         return cell->preciseAllocation().isMarked();
     MarkedBlock& block = cell->markedBlock();
@@ -143,7 +141,7 @@ template<typename Functor> inline void Heap::forEachCodeBlockIgnoringJITPlans(co
     forEachCodeBlockIgnoringJITPlansImpl(codeBlockSetLocker, func);
 }
 
-template<typename Functor> inline void Heap::forEachProtectedCell(NOESCAPE const Functor& functor)
+template<typename Functor> inline void Heap::forEachProtectedCell(const Functor& functor)
 {
     for (auto& pair : m_protectedValues)
         functor(pair.key);

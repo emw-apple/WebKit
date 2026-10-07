@@ -41,10 +41,21 @@ class RenderObject;
 class RenderReplaced;
 class SVGSVGElement;
 class SVGImageChromeClient;
+class SVGImageForContainer;
 class Settings;
 
 class SVGImage final : public Image {
 public:
+    struct ContainerContext {
+        FloatSize containerSize { };
+        float containerZoom { 1 };
+        URL initialFragmentURL { };
+        Style::LinkParameters linkParameters { CSS::Keyword::None { } };
+#if ENABLE(AX_CUSTOM_COLOR_MODE)
+        std::optional<bool> invertContent { };
+#endif
+    };
+
     static Ref<SVGImage> create(ImageObserver* observer) { return adoptRef(*new SVGImage(observer)); }
     WEBCORE_EXPORT static void tryCreateFromData(std::span<const uint8_t>, CompletionHandler<void(RefPtr<SVGImage>&&)>&&);
     WEBCORE_EXPORT static bool isDataDecodable(const Settings&, std::span<const uint8_t>);
@@ -58,30 +69,43 @@ public:
 
     FloatSize size(ImageOrientation = ImageOrientation::Orientation::FromImage) const final { return m_intrinsicSize; }
 
-    bool hasSomethingToDraw() const final { return !m_intrinsicSize.isEmpty(); }
-
     bool renderingTaintsOrigin() const final;
 
+    bool hasIntrinsicWidth() const final;
+    bool hasIntrinsicHeight() const final;
+    bool hasRelativeWidth() const final;
+    bool hasRelativeHeight() const final;
+
+    // Start the animation from the beginning.
     void startAnimation() final;
+    // Resume the animation from where it was last stopped.
+    void resumeAnimation();
     void stopAnimation() final;
     void resetAnimation() final;
     bool isAnimating() const final;
 
+    void scheduleStartAnimation();
+
     Page* internalPage() { return m_page.get(); }
     WEBCORE_EXPORT RefPtr<SVGSVGElement> rootElement() const;
 
-    RefPtr<NativeImage> nativeImage(const FloatSize&, const ColorSpace& = ColorSpace::SRGB(), const ImageDrawingExtras* = nullptr, ImagePaintingOptions = { });
+    FloatSize resolvedIntrinsicSize(float density = 1.0f) const;
+
+    RefPtr<NativeImage> nativeImage(const FloatSize&, const ColorSpace& = ColorSpace::SRGB());
 
 private:
     friend class SVGImageChromeClient;
+    friend class SVGImageForContainer;
 
     virtual ~SVGImage();
 
     String filenameExtension() const final;
 
-    void setContainerSize(const FloatSize&);
+    void setContainerSize(const FloatSize&) final;
     IntSize containerSize() const;
-
+    bool usesContainerSize() const final { return true; }
+    void computeIntrinsicDimensions(float& intrinsicWidth, float& intrinsicHeight, FloatSize& intrinsicRatio) final;
+    bool hasNaturalAspectRatio() const final;
     NaturalDimensions unorientedNaturalDimensions() const final;
 
     void reportApproximateMemoryCost() const;
@@ -103,12 +127,12 @@ private:
 
     WEBCORE_EXPORT explicit SVGImage(ImageObserver*);
     ImageDrawResult draw(GraphicsContext&, ConcreteObjectSize, const FloatRect& destination, const FloatRect& source, ImagePaintingOptions = { }, const ImageDrawingExtras* = nullptr) final;
-    void drawPattern(GraphicsContext&, ConcreteObjectSize, const FloatRect& destRect, const FloatRect& srcRect, const AffineTransform&, const FloatPoint& phase, const FloatSize& spacing, ImagePaintingOptions = { }, const ImageDrawingExtras* = nullptr) final;
+    ImageDrawResult drawForContainer(GraphicsContext&, const ContainerContext&, const FloatRect& dstRect, const FloatRect& srcRect, ImagePaintingOptions = { });
+    void drawPatternForContainer(GraphicsContext&, const ContainerContext&, const FloatRect& srcRect, const AffineTransform&, const FloatPoint& phase, const FloatSize& spacing, const FloatRect& dstRect, ImagePaintingOptions = { });
 
-    void applyFragmentURL(const URL&);
     void applyLinkParameters(const Style::LinkParameters&);
 #if ENABLE(AX_CUSTOM_COLOR_MODE)
-    void applyInvertContent(InvertContent);
+    void applyInvertContent(std::optional<bool>);
 #endif
 
     RefPtr<Page> m_page;

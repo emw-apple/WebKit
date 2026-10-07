@@ -25,14 +25,13 @@
 
 #pragma once
 
-#include "Untrusted.h"
-
 #if ENABLE(WEBXR)
 
 #include "MessageReceiver.h"
 #include "PlatformXRCoordinator.h"
 #include "ProcessActivityGroup.h"
 #include "ProcessThrottler.h"
+#include "Untrusted.h"
 #include <WebCore/ExceptionData.h>
 #include <WebCore/PlatformXR.h>
 #include <WebCore/SecurityOriginData.h>

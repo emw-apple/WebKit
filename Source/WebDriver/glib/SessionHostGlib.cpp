@@ -32,7 +32,6 @@
 #include <wtf/NeverDestroyed.h>
 #include <wtf/RunLoop.h>
 #include <wtf/UUID.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GUniquePtr.h>
 #include <wtf/text/MakeString.h>
 
@@ -78,7 +77,7 @@ const SocketConnection::MessageHandlers& SessionHost::messageHandlers()
             gboolean isPaired;
             while (g_variant_iter_loop(iter.get(), "(t&s&s&sb)", &targetID, &type, &name, &dummy, &isPaired)) {
                 if (!g_strcmp0(type, "Automation"))
-                    targetList.append({ targetID, UTF8CString::unsafeFromUTF8(name), static_cast<bool>(isPaired) });
+                    targetList.append({ targetID, UTF8CString { byteCast<char8_t>(name) }, static_cast<bool>(isPaired) });
             }
             sessionHost.setTargetList(connectionID, WTF::move(targetList));
         }}
@@ -166,9 +165,9 @@ void SessionHost::launchBrowser(Function<void (std::optional<String> error)>&& c
 
     size_t browserArgumentsSize = m_capabilities.browserArguments ? m_capabilities.browserArguments->size() : 0;
     GUniquePtr<char*> args(g_new0(char*, browserArgumentsSize + 2));
-    args.get()[0] = gStrdup(m_capabilities.browserBinary.value().utf8());
+    args.get()[0] = g_strdup(m_capabilities.browserBinary.value().utf8().legacyCStringPointer());
     for (unsigned i = 0; i < browserArgumentsSize; ++i)
-        args.get()[i + 1] = gStrdup(m_capabilities.browserArguments.value()[i].utf8());
+        args.get()[i + 1] = g_strdup(m_capabilities.browserArguments.value()[i].utf8().legacyCStringPointer());
 
     RELEASE_LOG_INFO(SessionHost, "Spawning local browser: %s with %zu argument(s)", args.get()[0], browserArgumentsSize);
 
@@ -314,8 +313,8 @@ bool SessionHost::buildSessionCapabilities(GVariantBuilder* builder) const
         GVariantBuilder arrayBuilder;
         g_variant_builder_init(&arrayBuilder, G_VARIANT_TYPE("a(ss)"));
         for (auto& certificate : *m_capabilities.certificates) {
-            g_variant_builder_add_value(&arrayBuilder, gVariantNew("(ss)",
-                certificate.first.utf8(), certificate.second.utf8()));
+            g_variant_builder_add_value(&arrayBuilder, g_variant_new("(ss)",
+                certificate.first.utf8().legacyCStringPointer(), certificate.second.utf8().legacyCStringPointer()));
         }
         g_variant_builder_add(builder, "{sv}", "certificates", g_variant_builder_end(&arrayBuilder));
     }
@@ -323,15 +322,15 @@ bool SessionHost::buildSessionCapabilities(GVariantBuilder* builder) const
     if (m_capabilities.proxy) {
         GVariantBuilder dictBuilder;
         g_variant_builder_init(&dictBuilder, G_VARIANT_TYPE("a{sv}"));
-        g_variant_builder_add(&dictBuilder, "{sv}", "type", gVariantNewString(m_capabilities.proxy->type.utf8()));
+        g_variant_builder_add(&dictBuilder, "{sv}", "type", g_variant_new_string(m_capabilities.proxy->type.utf8().legacyCStringPointer()));
         if (m_capabilities.proxy->autoconfigURL)
-            g_variant_builder_add(&dictBuilder, "{sv}", "autoconfigURL", gVariantNewString(m_capabilities.proxy->autoconfigURL->string().utf8()));
+            g_variant_builder_add(&dictBuilder, "{sv}", "autoconfigURL", g_variant_new_string(m_capabilities.proxy->autoconfigURL->string().utf8().legacyCStringPointer()));
         if (m_capabilities.proxy->ftpURL)
-            g_variant_builder_add(&dictBuilder, "{sv}", "ftpURL", gVariantNewString(m_capabilities.proxy->ftpURL->string().utf8()));
+            g_variant_builder_add(&dictBuilder, "{sv}", "ftpURL", g_variant_new_string(m_capabilities.proxy->ftpURL->string().utf8().legacyCStringPointer()));
         if (m_capabilities.proxy->httpURL)
-            g_variant_builder_add(&dictBuilder, "{sv}", "httpURL", gVariantNewString(m_capabilities.proxy->httpURL->string().utf8()));
+            g_variant_builder_add(&dictBuilder, "{sv}", "httpURL", g_variant_new_string(m_capabilities.proxy->httpURL->string().utf8().legacyCStringPointer()));
         if (m_capabilities.proxy->httpsURL)
-            g_variant_builder_add(&dictBuilder, "{sv}", "httpsURL", gVariantNewString(m_capabilities.proxy->httpsURL->string().utf8()));
+            g_variant_builder_add(&dictBuilder, "{sv}", "httpsURL", g_variant_new_string(m_capabilities.proxy->httpsURL->string().utf8().legacyCStringPointer()));
         if (m_capabilities.proxy->socksURL) {
             URL socksURL = m_capabilities.proxy->socksURL.value();
             ASSERT(m_capabilities.proxy->socksVersion);
@@ -348,13 +347,13 @@ bool SessionHost::buildSessionCapabilities(GVariantBuilder* builder) const
             default:
                 break;
             }
-            g_variant_builder_add(&dictBuilder, "{sv}", "socksURL", gVariantNewString(socksURL.string().utf8()));
+            g_variant_builder_add(&dictBuilder, "{sv}", "socksURL", g_variant_new_string(socksURL.string().utf8().legacyCStringPointer()));
         }
         if (!m_capabilities.proxy->ignoreAddressList.isEmpty()) {
             GUniquePtr<char*> ignoreAddressList(static_cast<char**>(g_new0(char*, m_capabilities.proxy->ignoreAddressList.size() + 1)));
             unsigned i = 0;
             for (const auto& ignoreAddress : m_capabilities.proxy->ignoreAddressList)
-                ignoreAddressList.get()[i++] = gStrdup(ignoreAddress.utf8());
+                ignoreAddressList.get()[i++] = g_strdup(ignoreAddress.utf8().legacyCStringPointer());
             g_variant_builder_add(&dictBuilder, "{sv}", "ignoreAddressList", g_variant_new_strv(ignoreAddressList.get(), -1));
         }
         g_variant_builder_add(builder, "{sv}", "proxy", g_variant_builder_end(&dictBuilder));
@@ -370,7 +369,7 @@ void SessionHost::startAutomationSession(Function<void (bool, std::optional<Stri
     m_startSessionCompletionHandler = WTF::move(completionHandler);
     m_sessionID = createVersion4UUIDString();
     GVariantBuilder builder;
-    m_socketConnection->sendMessage("StartAutomationSession"_s, gVariantNew("(sa{sv})", m_sessionID.utf8(), buildSessionCapabilities(&builder) ? &builder : nullptr));
+    m_socketConnection->sendMessage("StartAutomationSession"_s, g_variant_new("(sa{sv})", m_sessionID.utf8().legacyCStringPointer(), buildSessionCapabilities(&builder) ? &builder : nullptr));
 }
 
 void SessionHost::didStartAutomationSession(GVariant* parameters)
@@ -427,7 +426,7 @@ void SessionHost::sendMessageToBackend(const String& message)
     ASSERT(m_socketConnection);
     ASSERT(m_connectionID);
     ASSERT(m_target.id);
-    m_socketConnection->sendMessage("SendMessageToBackend"_s, gVariantNew("(tts)", m_connectionID, m_target.id, message.utf8()));
+    m_socketConnection->sendMessage("SendMessageToBackend"_s, g_variant_new("(tts)", m_connectionID, m_target.id, message.utf8().legacyCStringPointer()));
 }
 
 } // namespace WebDriver

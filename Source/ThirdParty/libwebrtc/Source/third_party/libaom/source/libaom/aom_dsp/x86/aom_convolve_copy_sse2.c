@@ -10,7 +10,6 @@
  */
 
 #include <immintrin.h>
-#include <string.h>
 
 #include "config/aom_dsp_rtcd.h"
 
@@ -45,20 +44,20 @@ void aom_convolve_copy_sse2(const uint8_t *src, ptrdiff_t src_stride,
 
   if (w == 2) {
     do {
-      memcpy(dst, src, 2 * sizeof(*src));
+      memmove(dst, src, 2 * sizeof(*src));
       src += src_stride;
       dst += dst_stride;
-      memcpy(dst, src, 2 * sizeof(*src));
+      memmove(dst, src, 2 * sizeof(*src));
       src += src_stride;
       dst += dst_stride;
       h -= 2;
     } while (h);
   } else if (w == 4) {
     do {
-      memcpy(dst, src, 4 * sizeof(*src));
+      memmove(dst, src, 4 * sizeof(*src));
       src += src_stride;
       dst += dst_stride;
-      memcpy(dst, src, 4 * sizeof(*src));
+      memmove(dst, src, 4 * sizeof(*src));
       src += src_stride;
       dst += dst_stride;
       h -= 2;

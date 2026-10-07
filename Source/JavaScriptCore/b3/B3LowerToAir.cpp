@@ -66,7 +66,6 @@
 #include <wtf/IndexSet.h>
 #include <wtf/Scope.h>
 #include <wtf/StdLibExtras.h>
-#include <wtf/TZoneMallocInlines.h>
 
 // On Windows, there's macros for these which interfere with the opcodes. The
 // undefs have to follow every #include: <windows.h> defines them, so anything
@@ -827,7 +826,7 @@ private:
     }
 
     template<typename Functor>
-    void forEachImmOrTmp(Value* value, NOESCAPE const Functor& func)
+    void forEachImmOrTmp(Value* value, const Functor& func)
     {
         ASSERT(value->type() != Void);
         if (!value->type().isTuple()) {
@@ -1825,12 +1824,12 @@ private:
     template<typename CompareFunctor, typename TestFunctor, typename CompareDoubleFunctor, typename CompareFloatFunctor, typename CompareDoubleWithZeroFunctor, typename CompareFloatWithZeroFunctor>
     Inst createGenericCompare(
         Value* value,
-        NOESCAPE const CompareFunctor& compare, // Signature: (Width, Arg relCond, Arg, Arg) -> Inst
-        NOESCAPE const TestFunctor& test, // Signature: (Width, Arg resCond, Arg, Arg) -> Inst
-        NOESCAPE const CompareDoubleFunctor& compareDouble, // Signature: (Arg doubleCond, Arg, Arg) -> Inst
-        NOESCAPE const CompareFloatFunctor& compareFloat, // Signature: (Arg doubleCond, Arg, Arg) -> Inst
-        NOESCAPE const CompareDoubleWithZeroFunctor& compareDoubleWithZero, // Signature: (Arg doubleCond, Arg) -> Inst
-        NOESCAPE const CompareFloatWithZeroFunctor& compareFloatWithZero, // Signature: (Arg doubleCond, Arg) -> Inst
+        const CompareFunctor& compare, // Signature: (Width, Arg relCond, Arg, Arg) -> Inst
+        const TestFunctor& test, // Signature: (Width, Arg resCond, Arg, Arg) -> Inst
+        const CompareDoubleFunctor& compareDouble, // Signature: (Arg doubleCond, Arg, Arg) -> Inst
+        const CompareFloatFunctor& compareFloat, // Signature: (Arg doubleCond, Arg, Arg) -> Inst
+        const CompareDoubleWithZeroFunctor& compareDoubleWithZero, // Signature: (Arg doubleCond, Arg) -> Inst
+        const CompareFloatWithZeroFunctor& compareFloatWithZero, // Signature: (Arg doubleCond, Arg) -> Inst
         bool inverted = false)
     {
         // NOTE: This is totally happy to match comparisons that have already been computed elsewhere

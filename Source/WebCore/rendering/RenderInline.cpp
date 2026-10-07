@@ -80,6 +80,13 @@ RenderInline::RenderInline(Type type, Document& document, Style::ComputedStyle&&
 
 RenderInline::~RenderInline() = default;
 
+void RenderInline::styleDidChange(Style::Difference diff, const Style::ComputedStyle* oldStyle)
+{
+    RenderBoxModelObject::styleDidChange(diff, oldStyle);
+
+    propagateStyleToAnonymousChildren(StylePropagationType::AllChildren);
+}
+
 ASCIILiteral RenderInline::renderName() const
 {
     if (isRelativelyPositioned())

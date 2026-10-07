@@ -94,9 +94,8 @@ ScrollbarsController& ScrollableArea::scrollbarsController() const
 void ScrollableArea::internalCreateScrollbarsController()
 {
     if (mockScrollbarsControllerEnabled()) {
-        auto mockController = makeUnique<ScrollbarsControllerMock>(const_cast<ScrollableArea&>(*this), [weakThis = WeakPtr { *this }](const String& message) {
-            if (CheckedPtr protectedThis = weakThis)
-                protectedThis->logMockScrollbarsControllerMessage(message);
+        auto mockController = makeUnique<ScrollbarsControllerMock>(const_cast<ScrollableArea&>(*this), [this](const String& message) {
+            logMockScrollbarsControllerMessage(message);
         });
         setScrollbarsController(WTF::move(mockController));
     } else

@@ -254,8 +254,8 @@ struct FeaturesGL : FeatureSetBase
         &members,
     };
 
-    FeatureInfo resetBaseLevelForASTCImage = {
-        "resetBaseLevelForASTCImage",
+    FeatureInfo resetBaseLevelForASTCSubImage = {
+        "resetBaseLevelForASTCSubImage",
         FeatureCategory::OpenGLWorkarounds,
         &members,
     };
@@ -286,12 +286,6 @@ struct FeaturesGL : FeatureSetBase
 
     FeatureInfo limitMax3dArrayTextureSizeTo1024 = {
         "limitMax3dArrayTextureSizeTo1024",
-        FeatureCategory::OpenGLWorkarounds,
-        &members,
-    };
-
-    FeatureInfo roundUp3dTextureSizeToPOTForLimit = {
-        "roundUp3dTextureSizeToPOTForLimit",
         FeatureCategory::OpenGLWorkarounds,
         &members,
     };
@@ -712,6 +706,12 @@ struct FeaturesGL : FeatureSetBase
 
     FeatureInfo validateMaxPerStageUniformBlocksAtCompileTime = {
         "validateMaxPerStageUniformBlocksAtCompileTime",
+        FeatureCategory::OpenGLWorkarounds,
+        &members,
+    };
+
+    FeatureInfo expandFragmentOutputsToVec4 = {
+        "expandFragmentOutputsToVec4",
         FeatureCategory::OpenGLWorkarounds,
         &members,
     };

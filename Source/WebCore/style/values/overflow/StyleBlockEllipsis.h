@@ -33,7 +33,7 @@
 namespace WebCore {
 namespace Style {
 
-// <'block-ellipsis'> = no-ellipsis | ellipsis | <string>
+// <'block-ellipse'> = no-ellipsis | auto | <string>
 // https://www.w3.org/TR/css-overflow-4/#propdef-block-ellipsis
 struct BlockEllipsis {
     BlockEllipsis(CSS::Keyword::NoEllipsis)
@@ -55,7 +55,7 @@ struct BlockEllipsis {
     bool isEllipsis() const { return m_type == Type::Ellipsis; }
     bool isString() const { return m_type == Type::String; }
 
-    template<typename... F> decltype(auto) switchOn(NOESCAPE F&&... f) const
+    template<typename... F> decltype(auto) switchOn(F&&... f) const
     {
         auto visitor = WTF::makeVisitor(std::forward<F>(f)...);
 

@@ -155,11 +155,10 @@ bool RenderWidget::setWidgetGeometry(const LayoutRect& frame)
     if (!weakThis)
         return true;
 
-    bool sizeChanged = oldFrameRect.size() != newFrameRect.size();
-    if (sizeChanged)
+    if (boundsChanged)
         view().compositor().widgetDidChangeSize(*this);
 
-    return sizeChanged;
+    return oldFrameRect.size() != newFrameRect.size();
 }
 
 bool RenderWidget::updateWidgetGeometry()

@@ -410,20 +410,13 @@ RefPtr<RemoteImageBufferProxy> RemoteRenderingBackendProxy::takeTransferredBuffe
     auto resultIdentifier = result->renderingResourceIdentifier();
     auto addResult = m_imageBuffers.add(resultIdentifier, result);
     ASSERT_UNUSED(addResult, addResult.isNewEntry);
-    send(Messages::RemoteRenderingBackend::TakeTransferredBuffer(handle, resultIdentifier, result->contextIdentifier()));
+    send(Messages::RemoteRenderingBackend::TakeTransferredBuffer(handle.identifier, resultIdentifier, result->contextIdentifier()));
     return result;
 }
 
-void RemoteRenderingBackendProxy::createSnapshot(RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier rootFrameIdentifier, const WebCore::FloatSize& size)
+UniqueRef<RemoteSnapshotRecorderProxy> RemoteRenderingBackendProxy::createSnapshotRecorder(const FloatRect& initialClip, RemoteSnapshotIdentifier snapshotIdentifier)
 {
-    // Waited for, so that the snapshot exists before any frame hosted elsewhere is asked to record
-    // into it.
-    sendSync(Messages::RemoteRenderingBackend::CreateSnapshot(snapshotIdentifier, rootFrameIdentifier, size));
-}
-
-UniqueRef<RemoteSnapshotRecorderProxy> RemoteRenderingBackendProxy::createSnapshotRecorder(const FloatRect& initialClip, RemoteSnapshotIdentifier snapshotIdentifier, RenderingMode renderingMode)
-{
-    auto recorder = makeUniqueRef<RemoteSnapshotRecorderProxy>(initialClip, renderingMode, *this);
+    auto recorder = makeUniqueRef<RemoteSnapshotRecorderProxy>(initialClip, *this);
     send(Messages::RemoteRenderingBackend::CreateSnapshotRecorder(recorder->identifier(), snapshotIdentifier));
     return recorder;
 }

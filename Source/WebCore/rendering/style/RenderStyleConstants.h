@@ -138,8 +138,6 @@ constexpr auto allInternalPseudoElementTypes = EnumSet {
 
 constexpr auto allPseudoElementTypes = allPublicPseudoElementTypes | allInternalPseudoElementTypes;
 
-enum class PseudoElementBoxGeneration : bool { Normal, NotForBeforeOrAfter };
-
 inline std::optional<PseudoElementType> parentPseudoElement(PseudoElementType pseudoElementType)
 {
     switch (pseudoElementType) {
@@ -805,7 +803,6 @@ enum class TransformBox : uint8_t {
 enum class OverflowContinue : uint8_t {
     Auto,
     Discard,
-    Collapse,
     WebkitLegacy
 };
 

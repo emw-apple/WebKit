@@ -64,22 +64,11 @@ TEST(DrawingToPDF, GradientIntoPDF)
     Util::run(&didTakeSnapshot);
 }
 
-static void enableFeature(WKWebViewConfiguration *configuration, NSString *key)
-{
-    auto preferences = [configuration preferences];
-    for (_WKFeature *feature in [WKPreferences _features]) {
-        if ([feature.key isEqualToString:key]) {
-            [preferences _setEnabled:YES forFeature:feature];
-            break;
-        }
-    }
-}
-
-static void runCSSFilterInvertAppliedOnPDFTest(WKWebViewConfiguration *webViewConfiguration)
+TEST(DrawingToPDF, CSSFilterInvertAppliedOnPDF)
 {
     __block bool didTakeSnapshot = false;
 
-    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 200, 200) configuration:webViewConfiguration]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 200, 200)]);
 
     [webView synchronouslyLoadHTMLString:@"<style>body { margin: 0 } .box { width: 100px; height: 100px; background: black; filter: invert(1); print-color-adjust: exact; }</style><div class=\"box\"></div>"];
 
@@ -101,23 +90,11 @@ static void runCSSFilterInvertAppliedOnPDFTest(WKWebViewConfiguration *webViewCo
     Util::run(&didTakeSnapshot);
 }
 
-TEST(DrawingToPDF, CSSFilterInvertAppliedOnPDF)
+TEST(DrawingToPDF, BackgroundClipText)
 {
-    runCSSFilterInvertAppliedOnPDFTest(adoptNS([[WKWebViewConfiguration alloc] init]).get());
-}
+    static bool didTakeSnapshot;
 
-TEST(DrawingToPDF, CSSFilterInvertAppliedOnPDFWithRemoteSnapshotting)
-{
-    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
-    enableFeature(configuration, @"RemoteSnapshottingEnabled");
-    runCSSFilterInvertAppliedOnPDFTest(configuration);
-}
-
-static void runBackgroundClipTextTest(WKWebViewConfiguration *webViewConfiguration)
-{
-    __block bool didTakeSnapshot = false;
-
-    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600) configuration:webViewConfiguration]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
 
     [webView synchronouslyLoadHTMLString:@"<style>@font-face { font-family: Ahem; src: url(Ahem.ttf); }"
         "body { margin: 0 }"
@@ -144,16 +121,15 @@ static void runBackgroundClipTextTest(WKWebViewConfiguration *webViewConfigurati
     Util::run(&didTakeSnapshot);
 }
 
-TEST(DrawingToPDF, BackgroundClipText)
+static void enableSiteIsolation(WKWebViewConfiguration *configuration)
 {
-    runBackgroundClipTextTest(adoptNS([[WKWebViewConfiguration alloc] init]).get());
-}
-
-TEST(DrawingToPDF, BackgroundClipTextWithRemoteSnapshotting)
-{
-    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
-    enableFeature(configuration, @"RemoteSnapshottingEnabled");
-    runBackgroundClipTextTest(configuration);
+    auto preferences = [configuration preferences];
+    for (_WKFeature *feature in [WKPreferences _features]) {
+        if ([feature.key isEqualToString:@"SiteIsolationEnabled"]) {
+            [preferences _setEnabled:YES forFeature:feature];
+            break;
+        }
+    }
 }
 
 TEST(DrawingToPDF, SiteIsolationFormControl)
@@ -161,7 +137,7 @@ TEST(DrawingToPDF, SiteIsolationFormControl)
     static bool didTakeSnapshot;
 
     RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
-    enableFeature(configuration, @"SiteIsolationEnabled");
+    enableSiteIsolation(configuration.get());
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600) configuration:configuration.get()]);
     [webView synchronouslyLoadHTMLString:@"<meta name='viewport' content='width=device-width'><body bgcolor=#00ff00><input type='checkbox'><label> Checkbox</label></body>"];

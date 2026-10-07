@@ -28,8 +28,6 @@
 
 #if ENABLE(WPE_PLATFORM)
 #include <wpe/wpe-platform.h>
-#include <wtf/glib/GLibExtras.h>
-#include <wtf/glib/GSpanExtras.h>
 #include <wtf/glib/GUniquePtr.h>
 
 IGNORE_CLANG_WARNINGS_BEGIN("cast-align")
@@ -124,7 +122,9 @@ PlatformImage PlatformWebViewClientWPE::snapshot()
     if (!pixels)
         g_error("Failed to import buffer to pixels: %s\n", error->message);
 
-    GRefPtr bytes = gBytesNew(span(pixels));
+    gsize pixelsDataSize;
+    const auto* pixelsData = g_bytes_get_data(pixels, &pixelsDataSize);
+    GRefPtr<GBytes> bytes = adoptGRef(g_bytes_new(pixelsData, pixelsDataSize));
 
     auto width = wpe_buffer_get_width(m_buffer.get());
     auto height = wpe_buffer_get_height(m_buffer.get());

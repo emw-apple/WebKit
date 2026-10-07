@@ -123,19 +123,16 @@ ContentSecurityPolicy::ContentSecurityPolicy(URL&& protectedURL, ScriptExecution
     , m_protectedURL { WTF::move(protectedURL) }
 {
     ASSERT(scriptExecutionContext.securityOrigin());
-    Ref securityOrigin = *scriptExecutionContext.securityOrigin();
     // CSP3 2.2.2: a policy's self-origin is the response URL's origin. Apply when the runtime
     // origin is opaque and the URL is http(s); local schemes inherit via Document::initSecurityContext.
-    bool hasOpaqueOriginWithResponseURL = securityOrigin->isOpaque() && m_protectedURL.protocolIsInHTTPFamily();
+    bool hasOpaqueOriginWithResponseURL = scriptExecutionContext.securityOrigin()->isOpaque() && m_protectedURL.protocolIsInHTTPFamily();
     if (hasOpaqueOriginWithResponseURL)
         updateSourceSelf(SecurityOrigin::create(m_protectedURL).get());
     else
-        updateSourceSelf(securityOrigin);
+        updateSourceSelf(*protect(scriptExecutionContext.securityOrigin()));
     // FIXME: handle the non-document case.
     if (auto* document = dynamicDowncast<Document>(scriptExecutionContext)) {
-        RefPtr page = document->page();
-        bool shouldApplyExtensionContentSecurityPolicy = LegacySchemeRegistry::schemeShouldBypassContentSecurityPolicy(securityOrigin->protocol()) || document->settings().contentSecurityPolicyExtensionModeAppliesToAllSchemesForTesting();
-        if (page && shouldApplyExtensionContentSecurityPolicy)
+        if (auto* page = document->page())
             m_contentSecurityPolicyModeForExtension = page->contentSecurityPolicyModeForExtension();
     }
 }
@@ -147,7 +144,6 @@ void ContentSecurityPolicy::copyStateFrom(const ContentSecurityPolicy* other, Sh
     if (m_hasAPIPolicy)
         return;
     ASSERT(m_policies.isEmpty());
-    m_contentSecurityPolicyModeForExtension = other->m_contentSecurityPolicyModeForExtension;
     m_sandboxFlags = other->m_sandboxFlags;
     for (auto& policy : other->m_policies)
         didReceiveHeader(policy->header(), policy->headerType(), ContentSecurityPolicy::PolicyFrom::Inherited, String { });
@@ -382,7 +378,7 @@ bool ContentSecurityPolicy::allPoliciesWithDispositionAllow(Disposition disposit
 }
 
 template<typename Predicate, typename... Args>
-bool ContentSecurityPolicy::allPoliciesWithDispositionAllow(Disposition disposition, NOESCAPE const ViolatedDirectiveCallback& callback, Predicate&& predicate, Args&&... args) const
+bool ContentSecurityPolicy::allPoliciesWithDispositionAllow(Disposition disposition, ViolatedDirectiveCallback&& callback, Predicate&& predicate, Args&&... args) const
 {
     bool isReportOnly = disposition == ContentSecurityPolicy::Disposition::ReportOnly;
     bool isAllowed = true;
@@ -950,7 +946,7 @@ void ContentSecurityPolicy::reportViolation(const String& effectiveViolatedDirec
         blockedURI = createURLForReporting(preRedirectURL.isNull() ? URL { blockedURLString } : preRedirectURL, effectiveViolatedDirective, usesReportTo);
     }
 
-    info.url = m_documentURL ? m_documentURL.value().strippedForUseAsReferrer().string : blockedURI;
+    info.documentURI = m_documentURL ? m_documentURL.value().strippedForUseAsReferrer().string : blockedURI;
     info.sample = violatedDirectiveList.shouldReportSample(effectiveViolatedDirective) ? sourceContent.toString() : emptyString();
 
     // Line number and column number are only included when source file is set.
@@ -960,14 +956,11 @@ void ContentSecurityPolicy::reportViolation(const String& effectiveViolatedDirec
     }
 
     if (!m_client) {
-        RefPtr scriptExecutionContext = m_scriptExecutionContext;
-        if (!isAnyOf<Document, WorkerGlobalScope>(scriptExecutionContext))
-            return;
-        if (auto* document = dynamicDowncast<Document>(*scriptExecutionContext); document && !document->frame())
+        RefPtr<Document> document = dynamicDowncast<Document>(m_scriptExecutionContext.get());
+        if (!document || !document->frame())
             return;
 
-        auto& contextURL = scriptExecutionContext->url();
-        info.url = shouldReportProtocolOnly(contextURL) ? contextURL.protocol().toString() : contextURL.strippedForUseAsReferrer().string;
+        info.documentURI = shouldReportProtocolOnly(document->url()) ? document->url().protocol().toString() : document->url().strippedForUseAsReferrer().string;
 
         auto stack = createScriptCallStack(JSExecState::currentState(), 2);
         auto* callFrame = stack->firstNonNativeCallFrame();
@@ -977,7 +970,7 @@ void ContentSecurityPolicy::reportViolation(const String& effectiveViolatedDirec
             info.columnNumber = callFrame->columnNumber();
         }
     }
-    ASSERT((m_client || isAnyOf<Document, WorkerGlobalScope>(m_scriptExecutionContext.get())));
+    ASSERT(m_client || is<Document>(m_scriptExecutionContext.get()));
 
     // FIXME: Is it policy to not use the status code for HTTPS, or is that a bug?
     unsigned short httpStatusCode = m_selfSourceProtocol == "http"_s ? m_httpStatusCode : 0;
@@ -990,7 +983,7 @@ void ContentSecurityPolicy::reportViolation(const String& effectiveViolatedDirec
 
     // 1. Dispatch violation event.
     SecurityPolicyViolationEventInit violationEventInit;
-    violationEventInit.documentURI = info.url;
+    violationEventInit.documentURI = info.documentURI;
     violationEventInit.referrer = m_referrer;
     violationEventInit.blockedURI = blockedURI;
     violationEventInit.violatedDirective = effectiveViolatedDirective; // Historical alias to effectiveDirective: https://www.w3.org/TR/CSP3/#violation-events.
@@ -1012,20 +1005,20 @@ void ContentSecurityPolicy::reportViolation(const String& effectiveViolatedDirec
     auto reportBody = CSPViolationReportBody::create(SecurityPolicyViolationEventInit { violationEventInit });
 
     if (usesReportTo && m_reportingClient) {
-        m_reportingClient->notifyReportObservers(Report::create(reportBody->type(), info.url, reportBody.copyRef()));
+        m_reportingClient->notifyReportObservers(Report::create(reportBody->type(), info.documentURI, reportBody.copyRef()));
         endpointTokens = violatedDirectiveList.reportToTokens();
     } else
         endpointURIs = violatedDirectiveList.reportURIs();
 
     if (m_client)
         m_client->enqueueSecurityPolicyViolationEvent(WTF::move(violationEventInit));
-    else if (RefPtr document = dynamicDowncast<Document>(*m_scriptExecutionContext)) {
-        if (element && &element->document() == document.get())
+    else {
+        Ref document = downcast<Document>(*m_scriptExecutionContext);
+        if (element && &element->document() == document.ptr())
             element->enqueueSecurityPolicyViolationEvent(WTF::move(violationEventInit));
         else
             document->enqueueSecurityPolicyViolationEvent(WTF::move(violationEventInit));
-    } else
-        protect(downcast<WorkerGlobalScope>(*m_scriptExecutionContext))->enqueueSecurityPolicyViolationEvent(WTF::move(violationEventInit));
+    }
 
     // 2. Send violation report (if applicable).
     if (endpointURIs.isEmpty() && endpointTokens.isEmpty())

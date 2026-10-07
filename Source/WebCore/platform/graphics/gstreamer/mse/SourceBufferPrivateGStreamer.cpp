@@ -64,15 +64,14 @@ bool SourceBufferPrivateGStreamer::isContentTypeSupported(const ContentType& typ
     return containerType == "audio/mpeg"_s || containerType.endsWith("mp4"_s) || containerType.endsWith("aac"_s) || containerType.endsWith("webm"_s);
 }
 
-Ref<SourceBufferPrivateGStreamer> SourceBufferPrivateGStreamer::create(MediaSourcePrivateGStreamer& mediaSource, const ContentType& contentType, bool textTracksEnabled)
+Ref<SourceBufferPrivateGStreamer> SourceBufferPrivateGStreamer::create(MediaSourcePrivateGStreamer& mediaSource, const ContentType& contentType)
 {
-    return adoptRef(*new SourceBufferPrivateGStreamer(mediaSource, contentType, textTracksEnabled));
+    return adoptRef(*new SourceBufferPrivateGStreamer(mediaSource, contentType));
 }
 
-SourceBufferPrivateGStreamer::SourceBufferPrivateGStreamer(MediaSourcePrivateGStreamer& mediaSource, const ContentType& contentType, bool textTracksEnabled)
+SourceBufferPrivateGStreamer::SourceBufferPrivateGStreamer(MediaSourcePrivateGStreamer& mediaSource, const ContentType& contentType)
     : SourceBufferPrivate(mediaSource)
     , m_type(contentType)
-    , m_textTracksEnabled(textTracksEnabled)
     , m_appendPipeline(makeUnique<AppendPipeline>(*this, *player()))
 #if !RELEASE_LOG_DISABLED
     , m_logger(mediaSource.logger())

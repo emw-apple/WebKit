@@ -784,6 +784,16 @@ egl::ConfigSet DisplayGLX::generateConfigs()
     return configs;
 }
 
+bool DisplayGLX::testDeviceLost()
+{
+    return false;
+}
+
+egl::Error DisplayGLX::restoreLostDevice(const egl::Display *display)
+{
+    return egl::Error(EGL_BAD_DISPLAY);
+}
+
 bool DisplayGLX::isValidNativeWindow(EGLNativeWindowType window) const
 {
 

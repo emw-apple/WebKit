@@ -75,6 +75,7 @@
 #include "SearchFieldCancelButtonPart.h"
 #include "SearchFieldPart.h"
 #include "SearchFieldResultsPart.h"
+#include "SelectPopoverElement.h"
 #include "SliderThumbElement.h"
 #include "SliderThumbPart.h"
 #include "SliderTrackPart.h"
@@ -143,7 +144,7 @@ StyleAppearance RenderTheme::adjustAppearanceForElement(Style::ComputedStyle& st
 
     auto appearance = style.usedAppearance();
     if (appearance == StyleAppearance::BaseSelect) {
-        if (element && element->supportsBaseAppearance(StyleAppearance::BaseSelect)) [[likely]] {
+        if (isAnyOf<HTMLSelectElement, SelectPopoverElement>(element)) [[likely]] {
             style.setUsedAppearance(StyleAppearance::Base);
             return StyleAppearance::Base;
         }
@@ -1759,12 +1760,12 @@ auto RenderTheme::colorCache(OptionSet<StyleColorOptions> options) const -> Colo
 
 static Color defaultLinkColor(bool useDarkAppearance)
 {
-    return { useDarkAppearance ? SRGBA<uint8_t> { 158, 158, 255 } : SRGBA<uint8_t> { 0, 0, 238 }, Color::Flags::Semantic };
+    return useDarkAppearance ? SRGBA<uint8_t> { 158, 158, 255 } : SRGBA<uint8_t> { 0, 0, 238 };
 }
 
 static Color defaultVisitedLinkColor(bool useDarkAppearance)
 {
-    return { useDarkAppearance ? SRGBA<uint8_t> { 208, 173, 240 } : SRGBA<uint8_t> { 85, 26, 139 }, Color::Flags::Semantic };
+    return useDarkAppearance ? SRGBA<uint8_t> { 208, 173, 240 } : SRGBA<uint8_t> { 85, 26, 139 };
 }
 
 Color RenderTheme::systemColor(CSSValueID cssValueId, OptionSet<StyleColorOptions> options) const
@@ -1797,7 +1798,7 @@ Color RenderTheme::systemColor(CSSValueID cssValueId, OptionSet<StyleColorOption
     // Text in active links. For light backgrounds, traditionally red.
     case CSSValueActivetext:
     case CSSValueWebkitActivelink: // Non-standard addition.
-        return { useDarkAppearance ? SRGBA<uint8_t> { 255, 158, 158 } : Color::red, Color::Flags::Semantic };
+        return useDarkAppearance ? SRGBA<uint8_t> { 255, 158, 158 } : Color::red;
 
     // https://drafts.csswg.org/css-color-4/#valdef-system-color-buttonface
     // The face background color for push buttons.
@@ -1891,11 +1892,7 @@ Color RenderTheme::systemColor(CSSValueID cssValueId, OptionSet<StyleColorOption
     // https://drafts.csswg.org/css-color-4/#activecaption
     // DEPRECATED: Active window caption.
     case CSSValueActivecaption:
-#if PLATFORM(COCOA)
-        if (!linkedOnOrAfterSDKWithBehavior(SDKAlignedBehavior::DeprecatedSystemColorsUseCSSColor4Mappings))
-            return systemColor(CSSValueCanvastext, options);
-#endif
-        return systemColor(CSSValueCanvas, options);
+        return systemColor(CSSValueCanvastext, options);
 
     // https://drafts.csswg.org/css-color-4/#appworkspace
     // DEPRECATED: Background color of multiple document interface.

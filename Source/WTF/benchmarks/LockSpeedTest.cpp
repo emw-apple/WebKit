@@ -80,7 +80,7 @@ HashMap<ASCIICString, Vector<double>> results;
 
 void reportResult(ASCIILiteral name, double value, ASCIILiteral unit = "KHz"_s)
 {
-    SAFE_DATALOGF("%s: %.3lf %s\n", name, value, unit);
+    dataLogF("%s: %.3lf %s\n", name.characters(), value, unit.characters());
     results.add(ASCIICString { name }, Vector<double>()).iterator->value.append(value);
 }
 
@@ -295,7 +295,7 @@ int main(int argc, char** argv)
     }
     
     for (auto& entry : results) {
-        SAFE_PRINTF("%s = {", entry.key);
+        printf("%s = {", entry.key.data());
         bool first = true;
         for (double value : entry.value) {
             if (first)

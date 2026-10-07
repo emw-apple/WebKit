@@ -39,7 +39,6 @@ struct BorderImageSource;
 struct BorderImageWidth;
 struct BorderImage;
 struct BorderRadius;
-struct BorderRadiusSide;
 struct PropertyParserState;
 }
 
@@ -63,11 +62,6 @@ std::optional<CSS::BorderRadius> consumeUnresolvedBorderRadius(CSSParserTokenRan
 
 // Non-standard -webkit-border-radius.
 std::optional<CSS::BorderRadius> consumeUnresolvedWebKitBorderRadius(CSSParserTokenRange&, CSS::PropertyParserState&);
-
-// <'border-top-radius'>, <'border-right-radius'>, <'border-bottom-radius'>, <'border-left-radius'>, and their logical equivalents.
-// <length-percentage [0,∞]>{1,2} [ / <length-percentage [0,∞]>{1,2} ]?
-// https://drafts.csswg.org/css-borders-4/#corner-sizing-side-shorthands
-std::optional<CSS::BorderRadiusSide> consumeUnresolvedBorderRadiusSide(CSSParserTokenRange&, CSS::PropertyParserState&);
 
 // MARK: - Border Image
 

@@ -40,7 +40,6 @@
 #include "HTMLNames.h"
 #include "ImageBuffer.h"
 #include "ImageQualityController.h"
-#include "ImageSizingContext.h"
 #include "InlineIteratorBoxInlines.h"
 #include "InlineIteratorInlineBox.h"
 #include "LayoutIntegrationLineLayout.h"
@@ -167,14 +166,6 @@ void RenderBoxModelObject::styleWillChange(Style::Difference diff, const Style::
         view().unregisterAnchor(*this);
 
     RenderLayerModelObject::styleWillChange(diff, newStyle);
-}
-
-void RenderBoxModelObject::styleDidChange(Style::Difference diff, const Style::ComputedStyle* oldStyle)
-{
-    RenderLayerModelObject::styleDidChange(diff, oldStyle);
-
-    if (isInlineBox())
-        propagateStyleToAnonymousChildren(StylePropagationType::BlockAndRubyChildren);
 }
 
 void RenderBoxModelObject::setSelectionState(HighlightState state)
@@ -742,6 +733,11 @@ LayoutUnit RenderBoxModelObject::offsetTop() const
     return adjustedPositionRelativeToOffsetParent(firstFragmentBorderBoxRect().location()).y();
 }
 
+InterpolationQuality RenderBoxModelObject::chooseInterpolationQuality(GraphicsContext& context, Image& image, const void* layer, const LayoutSize& size) const
+{
+    return view().imageQualityController().chooseInterpolationQuality(context, const_cast<RenderBoxModelObject*>(this), image, layer, size);
+}
+
 void RenderBoxModelObject::paintMaskForTextFillBox(GraphicsContext& context, const FloatRect& paintRect, const InlineIterator::InlineBoxIterator& inlineBox, const LayoutRect& scrolledPaintRect)
 {
     // Now add the text to the clip. We do this by painting using a special paint phase that signals to
@@ -763,26 +759,92 @@ void RenderBoxModelObject::paintMaskForTextFillBox(GraphicsContext& context, con
     paint(maskInfo, scrolledPaintRect.location() - localOffset);
 }
 
-LayoutSize RenderBoxModelObject::calculateImageIntrinsicDimensions(const Style::Image& image, const ImageSizingContext& sizing, ScaleByUsedZoom scaleByUsedZoom) const
+static inline LayoutUnit NODELETE resolveWidthForRatio(LayoutUnit height, const LayoutSize& intrinsicRatio)
 {
-    auto reported = image.naturalDimensions(*this, sizing);
+    return height * intrinsicRatio.width() / intrinsicRatio.height();
+}
 
-    LayoutSize resolvedSize(reported.width.value_or(0), reported.height.value_or(0));
+static inline LayoutUnit NODELETE resolveHeightForRatio(LayoutUnit width, const LayoutSize& intrinsicRatio)
+{
+    return width * intrinsicRatio.height() / intrinsicRatio.width();
+}
+
+static inline LayoutSize NODELETE resolveAgainstIntrinsicWidthOrHeightAndRatio(const LayoutSize& size, const LayoutSize& intrinsicRatio, LayoutUnit useWidth, LayoutUnit useHeight)
+{
+    if (intrinsicRatio.isEmpty()) {
+        if (useWidth)
+            return LayoutSize(useWidth, size.height());
+        return LayoutSize(size.width(), useHeight);
+    }
+
+    if (useWidth)
+        return LayoutSize(useWidth, resolveHeightForRatio(useWidth, intrinsicRatio));
+    return LayoutSize(resolveWidthForRatio(useHeight, intrinsicRatio), useHeight);
+}
+
+static inline LayoutSize NODELETE resolveAgainstIntrinsicRatio(const LayoutSize& size, const LayoutSize& intrinsicRatio)
+{
+    // Two possible solutions: (size.width(), solutionHeight) or (solutionWidth, size.height())
+    // "... must be assumed to be the largest dimensions..." = easiest answer: the rect with the largest surface area.
+
+    LayoutUnit solutionWidth = resolveWidthForRatio(size.height(), intrinsicRatio);
+    LayoutUnit solutionHeight = resolveHeightForRatio(size.width(), intrinsicRatio);
+    if (solutionWidth <= size.width()) {
+        if (solutionHeight <= size.height()) {
+            // If both solutions fit, choose the one covering the larger area.
+            LayoutUnit areaOne = solutionWidth * size.height();
+            LayoutUnit areaTwo = size.width() * solutionHeight;
+            if (areaOne < areaTwo)
+                return LayoutSize(size.width(), solutionHeight);
+            return LayoutSize(solutionWidth, size.height());
+        }
+
+        // Only the first solution fits.
+        return LayoutSize(solutionWidth, size.height());
+    }
+
+    // Only the second solution fits, assert that.
+    ASSERT(solutionHeight <= size.height());
+    return LayoutSize(size.width(), solutionHeight);
+}
+
+LayoutSize RenderBoxModelObject::calculateImageIntrinsicDimensions(Style::Image* image, const LayoutSize& positioningAreaSize, ScaleByUsedZoom scaleByUsedZoom) const
+{
+    // A generated image without a fixed size, will always return the container size as intrinsic size.
+    if (!image->imageHasNaturalDimensions())
+        return LayoutSize(positioningAreaSize.width(), positioningAreaSize.height());
+
+    float intrinsicWidth = 0;
+    float intrinsicHeight = 0;
+    FloatSize intrinsicRatio;
+    image->computeIntrinsicDimensions(this, intrinsicWidth, intrinsicHeight, intrinsicRatio);
+
+    LayoutSize resolvedSize(intrinsicWidth, intrinsicHeight);
     LayoutSize minimumSize(resolvedSize.width() > 0 ? 1 : 0, resolvedSize.height() > 0 ? 1 : 0);
+
     if (scaleByUsedZoom == ScaleByUsedZoom::Yes)
         resolvedSize.scale(style().usedZoom());
     resolvedSize.clampToMinimumSize(minimumSize);
 
-    NaturalDimensions naturalDimensions;
-    if (resolvedSize.width() > 0)
-        naturalDimensions.width = resolvedSize.width().toFloat();
-    if (resolvedSize.height() > 0)
-        naturalDimensions.height = resolvedSize.height().toFloat();
-    naturalDimensions.aspectRatio = reported.aspectRatio;
+    if (!resolvedSize.isEmpty())
+        return resolvedSize;
 
-    auto concreteObjectSize = sizing.resolve(naturalDimensions).size();
+    // If the image has one of either an intrinsic width or an intrinsic height:
+    // * and an intrinsic aspect ratio, then the missing dimension is calculated from the given dimension and the ratio.
+    // * and no intrinsic aspect ratio, then the missing dimension is assumed to be the size of the rectangle that
+    //   establishes the coordinate system for the 'background-position' property.
+    if (resolvedSize.width() > 0 || resolvedSize.height() > 0)
+        return resolveAgainstIntrinsicWidthOrHeightAndRatio(positioningAreaSize, LayoutSize(intrinsicRatio), resolvedSize.width(), resolvedSize.height());
 
-    return { LayoutUnit::fromFloatRound(concreteObjectSize.width()), LayoutUnit::fromFloatRound(concreteObjectSize.height()) };
+    // If the image has no intrinsic dimensions and has an intrinsic ratio the dimensions must be assumed to be the
+    // largest dimensions at that ratio such that neither dimension exceeds the dimensions of the rectangle that
+    // establishes the coordinate system for the 'background-position' property.
+    if (!intrinsicRatio.isEmpty())
+        return resolveAgainstIntrinsicRatio(positioningAreaSize, LayoutSize(intrinsicRatio));
+
+    // If the image has no intrinsic ratio either, then the dimensions must be assumed to be the rectangle that
+    // establishes the coordinate system for the 'background-position' property.
+    return positioningAreaSize;
 }
 
 bool RenderBoxModelObject::fixedBackgroundPaintsInLocalCoordinates() const

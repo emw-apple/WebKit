@@ -58,8 +58,10 @@ class DXGISwapChainWindowSurfaceWGL : public SurfaceWGL
     EGLint getSwapBehavior() const override;
     HDC getDC() const override;
 
-    void attachToFramebuffer(const gl::Context *context, gl::Framebuffer *framebuffer) override;
-    void detachFromFramebuffer(gl::Framebuffer *framebuffer) override;
+    egl::Error attachToFramebuffer(const gl::Context *context,
+                                   gl::Framebuffer *framebuffer) override;
+    egl::Error detachFromFramebuffer(const gl::Context *context,
+                                     gl::Framebuffer *framebuffer) override;
 
   private:
     egl::Error setObjectsLocked(bool locked);

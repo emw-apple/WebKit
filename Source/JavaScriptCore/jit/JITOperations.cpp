@@ -2967,6 +2967,12 @@ JSC_DEFINE_JIT_OPERATION(operationOptimize, UGPRPair, (VM* vmPointer, uint32_t b
     if (level == DFG::CannotCompile)
         OPERATION_RETURN(scope, encodeResult(nullptr, nullptr));
     
+    if (bytecodeIndex) {
+        // If we're attempting to OSR from a loop, assume that this should be
+        // separately optimized.
+        codeBlock->m_shouldAlwaysBeInlined = false;
+    }
+
     if (Options::verboseOSR()) [[unlikely]] {
         dataLog(
             *codeBlock, ": Entered optimize with bytecodeIndex = ", bytecodeIndex,
@@ -3000,6 +3006,13 @@ JSC_DEFINE_JIT_OPERATION(operationOptimize, UGPRPair, (VM* vmPointer, uint32_t b
     if (debugger && (debugger->isStepping() || codeBlock->baselineAlternative()->hasDebuggerRequests())) [[unlikely]] {
         CODEBLOCK_LOG_EVENT(codeBlock, "delayOptimizeToDFG", ("debugger is stepping or has requests"));
         updateAllPredictionsAndOptimizeAfterWarmUp(codeBlock);
+        OPERATION_RETURN(scope, encodeResult(nullptr, nullptr));
+    }
+
+    if (codeBlock->m_shouldAlwaysBeInlined) {
+        CODEBLOCK_LOG_EVENT(codeBlock, "delayOptimizeToDFG", ("should always be inlined"));
+        updateAllPredictionsAndOptimizeAfterWarmUp(codeBlock);
+        dataLogLnIf(Options::verboseOSR(), "Choosing not to optimize ", *codeBlock, " yet, because m_shouldAlwaysBeInlined == true.");
         OPERATION_RETURN(scope, encodeResult(nullptr, nullptr));
     }
 
@@ -3400,6 +3413,15 @@ JSC_DEFINE_JIT_OPERATION(operationIteratorNextTryFast, UGPRPair, (JSGlobalObject
         OPERATION_RETURN(scope, makeUGPRPair(JSValue::encode(jsBoolean(done)), JSValue::encode(value)));
     }
 
+    if (auto* stringIterator = dynamicDowncast<JSStringIterator>(iterator)) {
+        metadata.m_iterationMetadata.seenModes = metadata.m_iterationMetadata.seenModes | IterationMode::FastString;
+        JSString* nextValue = stringIterator->nextWithAdvance(globalObject, vm);
+        OPERATION_RETURN_IF_EXCEPTION(scope, makeUGPRPair(0, 0));
+        bool done = !nextValue;
+        JSValue value = done ? JSValue() : JSValue(nextValue);
+        OPERATION_RETURN(scope, makeUGPRPair(JSValue::encode(jsBoolean(done)), JSValue::encode(value)));
+    }
+
     RELEASE_ASSERT_NOT_REACHED();
     OPERATION_RETURN(scope, makeUGPRPair(0, 0));
 }
@@ -3425,23 +3447,6 @@ JSC_DEFINE_JIT_OPERATION(operationIteratorNextFastArray, UGPRPair, (JSGlobalObje
     OPERATION_RETURN_IF_EXCEPTION(scope, makeUGPRPair(0, 0));
 
     OPERATION_RETURN(scope, makeUGPRPair(JSValue::encode(jsBoolean(!hasNext)), JSValue::encode(value)));
-}
-
-JSC_DEFINE_JIT_OPERATION(operationIteratorNextFastString, UGPRPair, (JSGlobalObject* globalObject, JSString* string, EncodedJSValue* indexInFrame, void* metadataPointer))
-{
-    VM& vm = globalObject->vm();
-    CallFrame* callFrame = DECLARE_CALL_FRAME(vm);
-    JITOperationPrologueCallFrameTracer tracer(vm, callFrame);
-    auto scope = DECLARE_THROW_SCOPE(vm);
-
-    auto& metadata = *std::bit_cast<OpIteratorNext::Metadata*>(metadataPointer);
-    metadata.m_iterationMetadata.seenModes = metadata.m_iterationMetadata.seenModes | IterationMode::FastString;
-
-    auto [value, nextPosition] = JSStringIterator::advance(globalObject, vm, string, JSValue::decode(*indexInFrame).asInt32());
-    OPERATION_RETURN_IF_EXCEPTION(scope, makeUGPRPair(0, 0));
-    *indexInFrame = JSValue::encode(jsNumber(nextPosition));
-
-    OPERATION_RETURN(scope, makeUGPRPair(JSValue::encode(jsBoolean(!value)), JSValue::encode(value)));
 }
 
 #endif

@@ -415,7 +415,6 @@
 #if PLATFORM(MAC)
 #include "GraphicsChecksMac.h"
 #include "ScrollbarsControllerMac.h"
-#include "ServicesOverlayController.h"
 #endif
 
 #if PLATFORM(IOS_FAMILY)
@@ -450,10 +449,6 @@
 
 #if ENABLE(SPATIAL_PORTAL)
 #include "SpatialPortalController.h"
-#endif
-
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-#include "ElementVolumetricScene.h"
 #endif
 
 #if ENABLE(SERVICE_CONTROLS)
@@ -641,8 +636,6 @@ void Internals::resetToConsistentState(Page& page)
     page.setDefersLoading(false);
     page.setResourceCachingDisabledByWebInspector(false);
     page.setConsoleMessageListenerForTesting(nullptr);
-    page.setQuirksSubframeURLForTesting({ });
-    page.setQuirksTopDocumentHostForTesting({ });
 
     RefPtr localMainFrame = page.localMainFrame();
     if (!localMainFrame)
@@ -1377,13 +1370,6 @@ void Internals::setForceUpdateImageDataEnabledForTesting(HTMLImageElement& eleme
 {
     if (auto* cachedImage = element.cachedImage())
         cachedImage->setForceUpdateImageDataEnabledForTesting(enabled);
-}
-
-// Stands in for the disk cache handing the memory cache a file-backed copy of a resource's body.
-void Internals::simulateImageDataReplacedForTesting(HTMLImageElement& element)
-{
-    if (RefPtr bitmapImage = bitmapImageFromImageElement(element))
-        bitmapImage->simulateDataReplacedForTesting();
 }
 
 void Internals::setHasHDRContentForTesting(HTMLImageElement& element)
@@ -2225,12 +2211,6 @@ Ref<DOMRect> Internals::boundingBoxInRootViewCoordinates(Element& element)
 {
     protect(element.document())->updateLayout(LayoutOptions::IgnorePendingStylesheets);
     return DOMRect::create(element.boundingBoxInRootViewCoordinates());
-}
-
-Ref<DOMRect> Internals::boundingBoxInMainFrameViewCoordinates(Element& element)
-{
-    protect(element.document())->updateLayout(LayoutOptions::IgnorePendingStylesheets);
-    return DOMRect::create(element.boundingBoxInMainFrameViewCoordinates());
 }
 
 ExceptionOr<unsigned> Internals::inspectorGridOverlayCount()
@@ -4944,17 +4924,6 @@ void Internals::setAccessibilityFormErrorSettleDelay(double seconds)
 #endif
 }
 
-bool Internals::isWatchingForAccessibilityFormErrors() const
-{
-#if PLATFORM(COCOA)
-    if (RefPtr document = contextDocument()) {
-        if (CheckedPtr cache = document->axObjectCache())
-            return cache->isWatchingForFormErrors();
-    }
-#endif
-    return false;
-}
-
 unsigned Internals::liveRegionSnapshotBuildCount() const
 {
     if (RefPtr document = contextDocument()) {
@@ -5260,7 +5229,7 @@ bool Internals::isSelectPopupVisible(HTMLSelectElement& element)
     protect(element.document())->updateLayout(LayoutOptions::IgnorePendingStylesheets);
 
 #if !PLATFORM(IOS_FAMILY)
-    return element.isOpen();
+    return element.popupIsVisible();
 #else
     return false;
 #endif
@@ -5743,8 +5712,6 @@ void Internals::setMediaElementRestrictions(HTMLMediaElement& element, StringVie
         if (equalLettersIgnoringASCIICase(restrictionString, "requirepagevisibilityforvideotobenowplaying"_s))
             restrictions |= MediaElementSession::RequirePageVisibilityForVideoToBeNowPlaying;
 #endif
-        if (equalLettersIgnoringASCIICase(restrictionString, "requireusergesturetostartaudibleplaybackwhenhidden"_s))
-            restrictions |= MediaElementSession::RequireUserGestureToStartAudiblePlaybackWhenHidden;
     }
     mediaSession->addBehaviorRestriction(restrictions);
 }
@@ -5810,7 +5777,7 @@ ExceptionOr<void> Internals::postSystemRemoteControlCommand(const String& comman
 void Internals::activeAudioRouteDidChange(bool shouldPause)
 {
 #if PLATFORM(IOS) || PLATFORM(VISION)
-    protect(MediaSessionHelper::sharedHelper())->activeAudioRouteDidChange(shouldPause ? MediaSessionHelperClient::ShouldPause::Yes : MediaSessionHelperClient::ShouldPause::No);
+    MediaSessionHelper::sharedHelper().activeAudioRouteDidChange(shouldPause ? MediaSessionHelperClient::ShouldPause::Yes : MediaSessionHelperClient::ShouldPause::No);
 #else
     UNUSED_PARAM(shouldPause);
 #endif
@@ -5916,10 +5883,6 @@ void Internals::resumeAllMediaPlayback()
     page->resumeAllMediaPlayback();
 }
 
-void Internals::setMediaElementGracePeriodForResumingPlaybackInBackground(const HTMLMediaElement& element, double gracePeriodInSeconds)
-{
-    element.mediaSession().setGracePeriodForResumingPlaybackInBackgroundForTesting(Seconds(gracePeriodInSeconds));
-}
 #endif // ENABLE(VIDEO)
 
 #if ENABLE(WEB_AUDIO)
@@ -6443,26 +6406,6 @@ String Internals::documentIPAddressSpace() const
     return "unknown"_s;
 }
 
-void Internals::setDocumentIPAddressSpace(const String& addressSpace)
-{
-    RefPtr document = contextDocument();
-    if (!document)
-        return;
-
-    if (addressSpace == "public"_s)
-        document->setIPAddressSpace(IPAddressSpace::Public);
-    else if (addressSpace == "local"_s)
-        document->setIPAddressSpace(IPAddressSpace::Local);
-    else if (addressSpace == "loopback"_s)
-        document->setIPAddressSpace(IPAddressSpace::Loopback);
-}
-
-void Internals::setLoadSourceOriginOverride(const String& origin)
-{
-    if (RefPtr document = contextDocument())
-        document->setLoadSourceOriginOverrideForTesting(SecurityOrigin::createFromString(origin));
-}
-
 void Internals::queueMicroTask(int testNumber)
 {
     RefPtr document = contextDocument();
@@ -6926,7 +6869,6 @@ void Internals::markContextAsInsecure()
         return;
 
     document->securityOrigin().setIsPotentiallyTrustworthy(false);
-    document->markAsInsecureContextForTesting();
 }
 
 void Internals::postTask(Ref<VoidCallback>&& callback)
@@ -7053,12 +6995,6 @@ void Internals::simulateEventForWebGLContext(SimulatedWebGLContextEvent event, W
     case SimulatedWebGLContextEvent::Timeout:
         contextEvent = WebGLRenderingContext::SimulatedEventForTesting::Timeout;
         break;
-    case SimulatedWebGLContextEvent::DisplayBufferAllocationFailure:
-        contextEvent = WebGLRenderingContext::SimulatedEventForTesting::DisplayBufferAllocationFailure;
-        break;
-    case SimulatedWebGLContextEvent::RenderbufferAllocationFailure:
-        contextEvent = WebGLRenderingContext::SimulatedEventForTesting::RenderbufferAllocationFailure;
-        break;
     default:
         ASSERT_NOT_REACHED();
         return;
@@ -7079,15 +7015,6 @@ Internals::RequestedGPU Internals::requestedGPU(WebGLRenderingContextBase& conte
     ASSERT_NOT_REACHED();
     return RequestedGPU::Default;
 
-}
-
-Vector<int> Internals::webglMaxDrawingBufferSize(WebGLRenderingContextBase& context)
-{
-    RefPtr gl = context.graphicsContextGL();
-    if (!gl)
-        return { };
-    auto size = gl->maxDrawingBufferSize();
-    return { size[0], size[1] };
 }
 #endif
 
@@ -8416,19 +8343,6 @@ void Internals::setContentSizeCategory(Internals::ContentSizeCategory category)
 #endif
 }
 
-#if ENABLE(TELEPHONE_NUMBER_DETECTION)
-unsigned Internals::telephoneNumberRangesChangedCount() const
-{
-#if PLATFORM(MAC)
-    if (RefPtr document = contextDocument()) {
-        if (RefPtr page = document->page())
-            return page->servicesOverlayController().telephoneNumberRangesChangedCountForTesting();
-    }
-#endif
-    return 0;
-}
-#endif
-
 #if ENABLE(ATTACHMENT_ELEMENT)
 #if ENABLE(SERVICE_CONTROLS)
 bool Internals::hasImageControls(const HTMLImageElement& element) const
@@ -8982,28 +8896,6 @@ void Internals::setTopDocumentURLForQuirks(const String& urlString)
     document->quirks().setTopDocumentURLForTesting(URL { urlString });
 }
 
-void Internals::setSubframeURLForQuirks(const String& urlString)
-{
-    RefPtr document = contextDocument();
-    if (!document || !document->page())
-        return;
-
-    Ref page = *protect(document->page());
-    page->settings().setNeedsSiteSpecificQuirks(true);
-    page->setQuirksSubframeURLForTesting(URL { urlString });
-}
-
-void Internals::setTopDocumentHostForQuirks(const String& host)
-{
-    RefPtr document = contextDocument();
-    if (!document || !document->page())
-        return;
-
-    Ref page = *protect(document->page());
-    page->settings().setNeedsSiteSpecificQuirks(true);
-    page->setQuirksTopDocumentHostForTesting(String { host });
-}
-
 Vector<String> Internals::activeQuirks() const
 {
     RefPtr document = contextDocument();
@@ -9147,37 +9039,6 @@ bool Internals::isModelElementIntersectingViewport(HTMLModelElement& element)
 }
 #endif
 
-#if ENABLE(MODEL_PROCESS)
-void Internals::modelSceneGraphAsText(Element& element, const ModelSceneGraphAsTextOptions& options, DOMPromiseDeferred<IDLDOMString>&& promise)
-{
-    protect(element.document())->updateStyleIfNeeded();
-
-    auto completionHandler = [promise = WTF::move(promise)](String&& sceneGraph) mutable {
-        if (sceneGraph.isNull()) {
-            promise.reject(Exception { ExceptionCode::InvalidStateError, "The element has no loaded model"_s });
-            return;
-        }
-        promise.resolve(WTF::move(sceneGraph));
-    };
-
-#if ENABLE(SPATIAL_PORTAL)
-    CheckedPtr controller = element.spatialPortalController();
-    if (controller) {
-        controller->sceneGraphAsTextForTesting(std::nullopt, options, WTF::move(completionHandler));
-        return;
-    }
-#endif
-
-    RefPtr model = dynamicDowncast<HTMLModelElement>(element);
-    if (model) {
-        model->sceneGraphAsTextForTesting(options, WTF::move(completionHandler));
-        return;
-    }
-
-    completionHandler({ });
-}
-#endif
-
 #if ENABLE(SPATIAL_PORTAL)
 unsigned Internals::numberOfHostedModelsInSpatialPortal(Element& element)
 {
@@ -9230,13 +9091,6 @@ String Internals::effectiveEnvironmentMap(Element& element)
     UNUSED_PARAM(element);
 #endif
     return "auto"_s;
-}
-#endif
-
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-String Internals::volumetricScenePresentationMode(Element& element)
-{
-    return ElementVolumetricScene::presentationModeForTesting(element);
 }
 #endif
 

@@ -2837,13 +2837,13 @@ RetainPtr<NSView> WebViewImpl::hitTest(CGPoint point)
     return hitView;
 }
 
-void WebViewImpl::scheduleMouseDidMoveOverElementForModifierFlagsChange(NSEvent *flagsChangedEvent)
+void WebViewImpl::scheduleMouseDidMoveOverElement(NSEvent *flagsChangedEvent)
 {
     RetainPtr fakeEvent = [NSEvent mouseEventWithType:NSEventTypeMouseMoved location:flagsChangedEvent.window.mouseLocationOutsideOfEventStream
         modifierFlags:flagsChangedEvent.modifierFlags timestamp:flagsChangedEvent.timestamp windowNumber:flagsChangedEvent.windowNumber
         context:nullptr eventNumber:0 clickCount:0 pressure:0];
     Ref webEvent = NativeWebMouseEvent::create(fakeEvent.get(), m_lastPressureEvent.get(), m_view.get().get(), WebEventInputSource::UserDriven);
-    m_page->dispatchMouseDidMoveOverElementForModifierFlagsChange(WTF::move(webEvent));
+    m_page->dispatchMouseDidMoveOverElementAsynchronously(WTF::move(webEvent));
 }
 
 WebCore::ColorSpace WebViewImpl::colorSpace()
@@ -3620,7 +3620,7 @@ void WebViewImpl::setContinuousSpellCheckingEnabled(bool enabled)
         return;
 
     TextChecker::setContinuousSpellCheckingEnabled(enabled);
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::toggleContinuousSpellChecking()
@@ -3628,7 +3628,7 @@ void WebViewImpl::toggleContinuousSpellChecking()
     bool spellCheckingEnabled = !TextChecker::state().contains(TextCheckerState::ContinuousSpellCheckingEnabled);
     TextChecker::setContinuousSpellCheckingEnabled(spellCheckingEnabled);
 
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 bool WebViewImpl::isGrammarCheckingEnabled()
@@ -3642,7 +3642,7 @@ void WebViewImpl::setGrammarCheckingEnabled(bool flag)
         return;
 
     TextChecker::setGrammarCheckingEnabled(flag);
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::toggleGrammarChecking()
@@ -3650,14 +3650,14 @@ void WebViewImpl::toggleGrammarChecking()
     bool grammarCheckingEnabled = !TextChecker::state().contains(TextCheckerState::GrammarCheckingEnabled);
     TextChecker::setGrammarCheckingEnabled(grammarCheckingEnabled);
 
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::toggleAutomaticSpellingCorrection()
 {
     TextChecker::setAutomaticSpellingCorrectionEnabled(!TextChecker::state().contains(TextCheckerState::AutomaticSpellingCorrectionEnabled));
 
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::orderFrontSubstitutionsPanel(id sender)
@@ -3692,13 +3692,13 @@ void WebViewImpl::setAutomaticQuoteSubstitutionEnabled(bool flag)
         return;
 
     TextChecker::setAutomaticQuoteSubstitutionEnabled(flag);
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::toggleAutomaticQuoteSubstitution()
 {
     TextChecker::setAutomaticQuoteSubstitutionEnabled(!TextChecker::state().contains(TextCheckerState::AutomaticQuoteSubstitutionEnabled));
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 bool WebViewImpl::isAutomaticDashSubstitutionEnabled()
@@ -3712,13 +3712,13 @@ void WebViewImpl::setAutomaticDashSubstitutionEnabled(bool flag)
         return;
 
     TextChecker::setAutomaticDashSubstitutionEnabled(flag);
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::toggleAutomaticDashSubstitution()
 {
     TextChecker::setAutomaticDashSubstitutionEnabled(!TextChecker::state().contains(TextCheckerState::AutomaticDashSubstitutionEnabled));
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 bool WebViewImpl::isAutomaticLinkDetectionEnabled()
@@ -3732,13 +3732,13 @@ void WebViewImpl::setAutomaticLinkDetectionEnabled(bool flag)
         return;
 
     TextChecker::setAutomaticLinkDetectionEnabled(flag);
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::toggleAutomaticLinkDetection()
 {
     TextChecker::setAutomaticLinkDetectionEnabled(!TextChecker::state().contains(TextCheckerState::AutomaticLinkDetectionEnabled));
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 bool WebViewImpl::isAutomaticTextReplacementEnabled()
@@ -3752,13 +3752,13 @@ void WebViewImpl::setAutomaticTextReplacementEnabled(bool flag)
         return;
 
     TextChecker::setAutomaticTextReplacementEnabled(flag);
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::toggleAutomaticTextReplacement()
 {
     TextChecker::setAutomaticTextReplacementEnabled(!TextChecker::state().contains(TextCheckerState::AutomaticTextReplacementEnabled));
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 bool WebViewImpl::isSmartListsEnabled()
@@ -3778,7 +3778,7 @@ void WebViewImpl::setSmartListsEnabled(bool flag)
         return;
 
     TextChecker::setSmartListsEnabled(flag);
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::toggleSmartLists()
@@ -3787,7 +3787,7 @@ void WebViewImpl::toggleSmartLists()
         return;
 
     TextChecker::setSmartListsEnabled(!TextChecker::state().contains(TextCheckerState::SmartListsEnabled));
-    WebProcessPool::notifyProcessPoolsTextCheckerStateChanged();
+    protect(m_page->legacyMainFrameProcess())->updateTextCheckerState();
 }
 
 void WebViewImpl::uppercaseWord()
@@ -4179,6 +4179,11 @@ NSObject *WebViewImpl::immediateActionAnimationControllerForHitTestResult(API::H
     return [m_view.get() _web_immediateActionAnimationControllerForHitTestResultInternal:hitTestResult withType:type userData:userData];
 }
 
+void WebViewImpl::didPerformImmediateActionHitTest(const WebHitTestResultData& result, bool contentPreventsDefault, API::Object* userData)
+{
+    [m_immediateActionController didPerformImmediateActionHitTest:result contentPreventsDefault:contentPreventsDefault userData:userData];
+}
+
 void WebViewImpl::prepareForImmediateActionAnimation()
 {
     [m_view.get() _web_prepareForImmediateActionAnimation];
@@ -4565,15 +4570,7 @@ void WebViewImpl::setAcceleratedCompositingRootLayer(CALayer *rootLayer)
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
 
-    RetainPtr sublayers = adoptNS([NSMutableArray new]);
-#if ENABLE(CONTENT_INSET_BACKGROUND_FILL)
-    if (RetainPtr captureLayer = [[m_topScrollPocket captureView] layer])
-        [sublayers addObject:captureLayer];
-#endif
-    if (rootLayer)
-        [sublayers addObject:rootLayer];
-
-    [m_layerHostingView layer].sublayers = sublayers;
+    [m_layerHostingView layer].sublayers = rootLayer ? @[ rootLayer ] : nil;
 
     [CATransaction commit];
 
@@ -5078,7 +5075,6 @@ void WebViewImpl::startDrag(const WebCore::DragItem& item, ShareableBitmap::Hand
 
 #if HAVE(APPKIT_GESTURES_SUPPORT)
     RetainPtr gestureController = appKitGestureController();
-    [gestureController didReceiveDragStart];
     bool missingDragInitiator = !m_lastMouseDownEvent && ![gestureController activeDragGestureRecognizer];
 #else
     bool missingDragInitiator = !m_lastMouseDownEvent;
@@ -5860,7 +5856,7 @@ void WebViewImpl::gestureEventWasNotHandledByWebCore(const NativeWebGestureEvent
     }
 
 #if HAVE(APPKIT_GESTURES_SUPPORT)
-    if (event.type() == WebEventType::GestureChange && event.kind() == NativeWebGestureEvent::Kind::Magnification && event.gestureScale())
+    if (event.type() == WebEventType::GestureChange && event.kind() == NativeWebGestureEvent::Kind::Magnification)
         [appKitGestureController() transformGestureWasNotHandledByContent];
 #endif
 
@@ -6949,7 +6945,7 @@ void WebViewImpl::createFlagsChangedEventMonitor()
     WeakPtr weakThis { *this };
     m_flagsChangedEventMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskFlagsChanged handler:[weakThis] (NSEvent *flagsChangedEvent) {
         if (CheckedPtr checkedThis = weakThis)
-            checkedThis->scheduleMouseDidMoveOverElementForModifierFlagsChange(flagsChangedEvent);
+            checkedThis->scheduleMouseDidMoveOverElement(flagsChangedEvent);
         return flagsChangedEvent;
     }];
 }
@@ -8111,21 +8107,10 @@ void WebViewImpl::updateWebContentDistancesFromEdges()
 
     auto leftInset = obscuredContentInsets().left();
     auto viewWidth = [view bounds].size.width;
-    auto contentsWidth = static_cast<CGFloat>(m_lastPageContentsSize.width);
-    auto effectiveScrollOffsetX = static_cast<CGFloat>(m_scrollOffsetBeforeTransientZoom
+    auto contentsWidth = m_lastPageContentsSize.width;
+    auto effectiveScrollOffsetX = m_scrollOffsetBeforeTransientZoom
         ? m_scrollOffsetBeforeTransientZoom->x()
-        : m_lastPageScrollOffset.x());
-
-    // These distances are in view coordinates, but with delegated scaling the web process reports the contents
-    // size and scroll offset unscaled, since Frame::frameScaleFactor() is 1 there. Otherwise the page scale is
-    // already baked into both.
-    if (m_page->delegatesScalingToUIProcess()) {
-        // The scale those values were reported at. That's the committed one except mid-gesture, where the block
-        // below carries the geometry the rest of the way.
-        auto baselineScale = m_pageScaleBeforeTransientZoom.value_or(m_page->pageScaleFactor());
-        contentsWidth = std::trunc(contentsWidth * baselineScale);
-        effectiveScrollOffsetX = std::trunc(effectiveScrollOffsetX * baselineScale);
-    }
+        : m_lastPageScrollOffset.x();
 
     auto leftDistance = leftInset - effectiveScrollOffsetX;
     auto rightDistance = viewWidth - leftInset - contentsWidth + effectiveScrollOffsetX;

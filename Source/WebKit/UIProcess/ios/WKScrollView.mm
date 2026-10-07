@@ -31,7 +31,6 @@
 #import "Logging.h"
 #import "UIKitSPI.h"
 #import "UIKitUtilities.h"
-#import "VisibleContentRectUpdateInfo.h"
 #import "WKBrowserEngineDefinitions.h"
 #import "WKContentViewInteraction.h"
 #import "WKDeferringGestureRecognizer.h"

@@ -33,7 +33,6 @@
 #if ENABLE(WK_WEB_EXTENSIONS_NOTIFICATIONS)
 
 #import "WKWebExtensionControllerDelegatePrivate.h"
-#import "WebExtensionContextProxyMessages.h"
 #import "WebExtensionController.h"
 #import "WebExtensionPermission.h"
 #import "WebExtensionUtilities.h"
@@ -137,110 +136,6 @@ void WebExtensionContext::notificationsUpdate(const String& identifier, const We
         m_notifications.set(identifier, WTF::move(merged));
         completionHandler(true);
     }).get()];
-}
-
-void WebExtensionContext::notificationsClear(const String& identifier, CompletionHandler<void(std::expected<bool, WebExtensionError>&&)>&& completionHandler)
-{
-    static NSString * const apiName = @"notifications.clear()";
-
-    auto entry = m_notifications.find(identifier);
-    if (entry == m_notifications.end()) {
-        completionHandler(false);
-        return;
-    }
-
-    RefPtr controller = extensionController();
-    if (!controller) {
-        completionHandler(toWebExtensionError(apiName, nullString(), @"the extension is not loaded"));
-        return;
-    }
-
-    auto *controllerDelegate = controller->delegate();
-    if (![controllerDelegate respondsToSelector:@selector(_webExtensionController:clearNotification:forExtensionContext:completionHandler:)]) {
-        completionHandler(toWebExtensionError(apiName, nullString(), @"it is not implemented"));
-        return;
-    }
-
-    auto *notification = createNotificationObject(wrapper(), entry->value);
-
-    [controllerDelegate _webExtensionController:controller->wrapper() clearNotification:notification forExtensionContext:wrapper() completionHandler:makeBlockPtr([this, protectedThis = Ref { *this }, identifier, completionHandler = WTF::move(completionHandler)](NSError *error) mutable {
-        if (error) {
-            completionHandler(toWebExtensionError(apiName, nullString(), error.localizedDescription));
-            return;
-        }
-
-        m_notifications.remove(identifier);
-        completionHandler(true);
-    }).get()];
-}
-
-void WebExtensionContext::notificationsGetAll(CompletionHandler<void(Vector<String>&&)>&& completionHandler)
-{
-    completionHandler(copyToVector(m_notifications.keys()));
-}
-
-void WebExtensionContext::notificationsGetPermissionLevel(CompletionHandler<void(std::expected<String, WebExtensionError>&&)>&& completionHandler)
-{
-    static NSString * const apiName = @"notifications.getPermissionLevel()";
-
-    RefPtr controller = extensionController();
-    if (!controller) {
-        completionHandler(toWebExtensionError(apiName, nullString(), @"the extension is not loaded"));
-        return;
-    }
-
-    auto *controllerDelegate = controller->delegate();
-    if (![controllerDelegate respondsToSelector:@selector(_webExtensionController:mayPresentNotificationsForExtensionContext:completionHandler:)]) {
-        completionHandler(toWebExtensionError(apiName, nullString(), @"it is not implemented"));
-        return;
-    }
-
-    [controllerDelegate _webExtensionController:controller->wrapper() mayPresentNotificationsForExtensionContext:wrapper() completionHandler:makeBlockPtr([protectedThis = Ref { *this }, completionHandler = WTF::move(completionHandler)](BOOL mayPresent, NSError *error) mutable {
-        if (error) {
-            completionHandler(toWebExtensionError(apiName, nullString(), error.localizedDescription));
-            return;
-        }
-
-        completionHandler(String { mayPresent ? "granted"_s : "denied"_s });
-    }).get()];
-}
-
-void WebExtensionContext::fireNotificationsClickedEventIfNeeded(const String& identifier)
-{
-    if (!m_notifications.contains(identifier))
-        return;
-
-    constexpr auto type = WebExtensionEventListenerType::NotificationsOnClicked;
-    wakeUpBackgroundContentIfNecessaryToFireEvents({ type }, [=, this, protectedThis = Ref { *this }] {
-        sendToProcessesForEvent(type, Messages::WebExtensionContextProxy::DispatchNotificationsClickedEvent(identifier));
-    });
-}
-
-void WebExtensionContext::fireNotificationsButtonClickedEventIfNeeded(const String& identifier, size_t buttonIndex)
-{
-    auto entry = m_notifications.find(identifier);
-    if (entry == m_notifications.end())
-        return;
-
-    auto& buttons = entry->value.buttons;
-    if (!buttons || buttonIndex >= buttons->size())
-        return;
-
-    constexpr auto type = WebExtensionEventListenerType::NotificationsOnButtonClicked;
-    wakeUpBackgroundContentIfNecessaryToFireEvents({ type }, [=, this, protectedThis = Ref { *this }] {
-        sendToProcessesForEvent(type, Messages::WebExtensionContextProxy::DispatchNotificationsButtonClickedEvent(identifier, buttonIndex));
-    });
-}
-
-void WebExtensionContext::fireNotificationsClosedEventIfNeeded(const String& identifier, UserTriggered userTriggered)
-{
-    if (!m_notifications.remove(identifier))
-        return;
-
-    constexpr auto type = WebExtensionEventListenerType::NotificationsOnClosed;
-    wakeUpBackgroundContentIfNecessaryToFireEvents({ type }, [=, this, protectedThis = Ref { *this }] {
-        sendToProcessesForEvent(type, Messages::WebExtensionContextProxy::DispatchNotificationsClosedEvent(identifier, userTriggered == UserTriggered::Yes));
-    });
 }
 
 }

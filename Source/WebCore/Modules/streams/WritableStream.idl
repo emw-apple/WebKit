@@ -33,8 +33,7 @@
     Exposed=*,
     PrivateIdentifier,
     PublicIdentifier,
-    SkipVTableValidation,
-    Transferable
+    SkipVTableValidation
 ] interface WritableStream {
     [CallWith=CurrentGlobalObject] constructor(optional object underlyingSink, optional object strategy);
 

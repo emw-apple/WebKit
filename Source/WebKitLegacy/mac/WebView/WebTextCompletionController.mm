@@ -60,6 +60,16 @@
     return self;
 }
 
+- (void)dealloc
+{
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_popupWindow release];
+    SUPPRESS_UNRETAINED_ARG [_completions release];
+    SUPPRESS_UNRETAINED_ARG [_originalString release];
+    
+    [super dealloc];
+}
+
 - (void)_insertMatch:(NSString *)match
 {
     // FIXME: 3769654 - We should preserve case of string being inserted, even in prefix (but then also be
@@ -80,8 +90,8 @@
     [column setWidth:tableFrame.size.width];
     [column setEditable:NO];
     
-    RetainPtr tableView = adoptNS([[NSTableView alloc] initWithFrame:tableFrame]);
-    _tableView = tableView;
+    _tableView = [[NSTableView alloc] initWithFrame:tableFrame];
+    RetainPtr tableView = _tableView;
     [tableView setAutoresizingMask:NSViewWidthSizable];
     [tableView addTableColumn:column.get()];
     [tableView setGridStyleMask:NSTableViewGridNone];
@@ -98,8 +108,9 @@
     [scrollView setHasVerticalScroller:YES];
     [scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
     [scrollView setDocumentView:tableView];
+    [tableView release];
     
-    _popupWindow = adoptNS([[NSWindow alloc] initWithContentRect:scrollFrame styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO]);
+    _popupWindow = [[NSWindow alloc] initWithContentRect:scrollFrame styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
     RetainPtr popupWindow = _popupWindow;
     [popupWindow setAlphaValue:0.88f];
     [popupWindow setContentView:scrollView.get()];
@@ -185,8 +196,10 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         prefixLength = [prefixStr length];
 
         // Lookup matches
+        SUPPRESS_UNRETAINED_ARG [_completions release];
         _completions = [checker completionsForPartialWordRange:NSMakeRange(0, [prefixStr length]) inString:prefixStr language:nil inSpellDocumentWithTag:[protect(_view) spellCheckerDocumentTag]];
         RetainPtr completions = _completions;
+        [completions retain];
     
         if (!completions || ![completions count]) {
             NSBeep();
@@ -194,7 +207,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
             [self _insertMatch:[completions objectAtIndex:0]];
         } else {
             ASSERT(!_originalString);       // this should only be set IFF we have a popup window
-            _originalString = [frame _stringForRange:selection.get()];
+            _originalString = [[frame _stringForRange:selection.get()] retain];
             [self _buildUI];
             NSRect wordRect = [frame _caretRectAtPosition:WebCore::Position(core([wholeWord startContainer]), [wholeWord startOffset], WebCore::Position::PositionIsOffsetInAnchor) affinity:NSSelectionAffinityDownstream];
             // +1 to be under the word, not the caret
@@ -218,7 +231,8 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         [[protect(_view) window] removeChildWindow:popupWindow];
         [popupWindow orderOut:self];
         // Must autorelease because event tracking code may be on the stack touching UI
-        _popupWindow.autorelease();
+        [popupWindow autorelease];
+        _popupWindow = nil;
 
         if (revertChange) {
             WebFrame *frame = [htmlView _frame];
@@ -229,6 +243,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
             else
                 [htmlView moveForward:nil];
         }
+        [originalString release];
         _originalString = nil;
     }
     // else there is no state to abort if the window was not up

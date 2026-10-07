@@ -53,9 +53,6 @@
 
 namespace WTF {
 
-// Instantiate Function<void()> so the static analyzer does not treat it as forward declared.
-static_assert(sizeof(Function<void()>));
-
 /*
  * A promise manages an asynchronous request that may or may not be able to be fulfilled immediately.
  * When an API returns a promise, the consumer may attach callbacks to be invoked (asynchronously, on a specified thread)
@@ -985,7 +982,7 @@ private:
     };
 
     template <typename F, typename Arg>
-    static auto invokeWithVoidOrWithArg(NOESCAPE F&& f, Arg&& arg)
+    static auto invokeWithVoidOrWithArg(F&& f, Arg&& arg)
     {
         if constexpr (std::is_invocable_v<F>)
             return std::invoke(std::forward<F>(f));

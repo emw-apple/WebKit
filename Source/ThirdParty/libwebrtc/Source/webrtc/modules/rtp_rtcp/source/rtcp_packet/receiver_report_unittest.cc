@@ -12,7 +12,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -24,6 +23,7 @@
 
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
+using ::testing::make_tuple;
 using webrtc::rtcp::ReceiverReport;
 using webrtc::rtcp::ReportBlock;
 
@@ -85,8 +85,7 @@ TEST(RtcpPacketReceiverReportTest, CreateWithOneReportBlock) {
 
   Buffer raw = rr.Build();
 
-  EXPECT_THAT(std::make_tuple(raw.data(), raw.size()),
-              ElementsAreArray(kPacket));
+  EXPECT_THAT(make_tuple(raw.data(), raw.size()), ElementsAreArray(kPacket));
 }
 
 TEST(RtcpPacketReceiverReportTest, CreateAndParseWithoutReportBlocks) {

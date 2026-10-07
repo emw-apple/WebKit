@@ -59,8 +59,6 @@ public:
     void selectedTelephoneNumberRangesChanged();
     void selectionRectsDidChange(const Vector<LayoutRect>&, const Vector<GapRects>&, bool isTextOnly);
 
-    unsigned telephoneNumberRangesChangedCountForTesting() const { return m_telephoneNumberRangesChangedCountForTesting; }
-
 private:
     // PageOverlayClient
     void willMoveToPage(PageOverlay&, Page*) override;
@@ -127,8 +125,6 @@ private:
 
     Timer m_determineActiveHighlightTimer;
     Timer m_buildHighlightsTimer;
-
-    unsigned m_telephoneNumberRangesChangedCountForTesting { 0 };
 };
 
 } // namespace WebCore

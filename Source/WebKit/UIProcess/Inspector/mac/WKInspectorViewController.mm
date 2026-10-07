@@ -34,7 +34,6 @@
 #import "WKInspectorResourceURLSchemeHandler.h"
 #import "WKInspectorWKWebView.h"
 #import "WKOpenPanelParameters.h"
-#import "WKPreferencesInternal.h"
 #import "WKProcessPoolInternal.h"
 #import "WKWebViewInternal.h"
 #import "WKWebsiteDataStoreInternal.h"
@@ -173,9 +172,6 @@ static void* const safeAreaInsetsKVOContext = (void*)&safeAreaInsetsKVOContext;
 
     // Disable Site Isolation for Web Inspector View.
     preferences.get()._siteIsolationEnabled = NO;
-
-    // The Find banner and Search sidebar use the legacy results=N attribute for recent searches.
-    protect(*preferences.get()->_preferences)->setSearchInputResultsAttributeEnabled(true);
 
     [_configuration applyToWebViewConfiguration:configuration.get()];
 

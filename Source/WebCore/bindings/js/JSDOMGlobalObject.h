@@ -27,7 +27,6 @@
 #pragma once
 
 #include <JavaScriptCore/JSGlobalObject.h>
-#include <JavaScriptCore/ScriptFetchParameters.h>
 #include <JavaScriptCore/WeakGCMap.h>
 #include <WebCore/ProcessQualified.h>
 #include <wtf/Compiler.h>
@@ -37,6 +36,7 @@
 
 namespace JSC {
 
+class ScriptFetchParameters;
 class ScriptFetcher;
 class WebAssemblyCompileOptions;
 enum class JSPromiseRejectionOperation : unsigned;
@@ -152,7 +152,6 @@ protected:
     static JSC::JSValue moduleLoaderEvaluate(JSC::JSGlobalObject*, JSC::JSModuleLoader*, JSC::JSValue, JSC::JSValue, RefPtr<JSC::ScriptFetcher>, JSC::JSValue, JSC::JSValue);
     static JSC::JSPromise* moduleLoaderImportModule(JSC::JSGlobalObject*, JSC::JSModuleLoader*, JSC::JSString*, RefPtr<JSC::ScriptFetchParameters>, const JSC::SourceOrigin&, bool deferred);
     static JSC::JSObject* moduleLoaderCreateImportMetaProperties(JSC::JSGlobalObject*, JSC::JSModuleLoader*, JSC::JSValue, JSC::JSModuleRecord*, RefPtr<JSC::ScriptFetcher>);
-    static bool moduleTypeIsAllowed(JSC::ScriptFetchParameters::Type);
 
     JSDOMStructureMap m_structures WTF_GUARDED_BY_LOCK(m_gcLock);
     DOMGuardedObjectSet m_guardedObjects WTF_GUARDED_BY_LOCK(m_gcLock);

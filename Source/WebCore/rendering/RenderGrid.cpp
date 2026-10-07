@@ -317,7 +317,7 @@ enum class AlignmentContextTypes : uint8_t {
 };
 
 template<typename F>
-static void cacheBaselineAlignedGridItems(const RenderGrid& grid, GridTrackSizingAlgorithm& algorithm, OptionSet<AlignmentContextTypes> alignmentContextTypes, NOESCAPE const F& callback, bool cachingRowSubgridsForRootGrid)
+static void cacheBaselineAlignedGridItems(const RenderGrid& grid, GridTrackSizingAlgorithm& algorithm, OptionSet<AlignmentContextTypes> alignmentContextTypes, F& callback, bool cachingRowSubgridsForRootGrid)
 {
     ASSERT_IMPLIES(cachingRowSubgridsForRootGrid, !algorithm.renderGrid()->isSubgridRows() && (algorithm.renderGrid() == &grid || grid.isSubgridOf(GridLayoutFunctions::flowAwareDirectionForGridItem(*algorithm.renderGrid(), grid, Style::GridTrackSizingDirection::Rows), *algorithm.renderGrid())));
 
@@ -1997,7 +1997,7 @@ std::optional<LayoutUnit> RenderGrid::firstLineBaseline() const
         // mode root. This would also fix some cases where the grid is orthogonal to its container.
         auto gridWritingMode = style().writingMode();
         auto dominantBaseline = BaselineAlignment::dominantBaseline(gridWritingMode);
-        auto direction = isHorizontalWritingMode() ? BoxAxis::Horizontal : BoxAxis::Vertical;
+        auto direction = isHorizontalWritingMode() ? LineDirection::Horizontal : LineDirection::Vertical;
         baseline = BaselineAlignment::synthesizedBaseline(*baselineGridItem, dominantBaseline, gridWritingMode, direction, BaselineSynthesisEdge::BorderBox);
     }
     return logicalTopForChild(*baselineGridItem) + *baseline;
@@ -2017,7 +2017,7 @@ std::optional<LayoutUnit> RenderGrid::lastLineBaseline() const
         baseline = baselineGridItem->lastLineBaseline();
 
     if (!baseline) {
-        auto direction = isHorizontalWritingMode() ? BoxAxis::Horizontal : BoxAxis::Vertical;
+        auto direction = isHorizontalWritingMode() ? LineDirection::Horizontal : LineDirection::Vertical;
         auto gridWritingMode = style().writingMode();
         auto dominantBaseline = BaselineAlignment::dominantBaseline(gridWritingMode);
         baseline = BaselineAlignment::synthesizedBaseline(*baselineGridItem, dominantBaseline, gridWritingMode, direction, BaselineSynthesisEdge::BorderBox);

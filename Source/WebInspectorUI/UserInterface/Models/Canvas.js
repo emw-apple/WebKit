@@ -132,7 +132,7 @@ WI.Canvas = class Canvas extends WI.Object
             contextAttributes: payload.contextAttributes,
             features: payload.features,
             memoryCost: payload.memoryCost,
-            stackTrace: WI.StackTrace.fromPayload(target, payload.stackTrace, {deliveredOnTarget: true}),
+            stackTrace: WI.StackTrace.fromPayload(target, payload.stackTrace),
             displayName: payload.name,
         });
     }
@@ -363,15 +363,6 @@ WI.Canvas = class Canvas extends WI.Object
 
     }
 
-    nameChanged(name)
-    {
-        // Called from WI.CanvasManager.
-
-        this._displayName = name || "";
-
-        this.dispatchEventToListeners(WI.Canvas.Event.NameChanged);
-    }
-
     sizeChanged(sizes)
     {
         // Called from WI.CanvasManager.
@@ -556,7 +547,6 @@ WI.Canvas.RecordingState = {
 };
 
 WI.Canvas.Event = {
-    NameChanged: "canvas-name-changed",
     SizeChanged: "canvas-size-changed",
     MemoryChanged: "canvas-memory-changed",
     ExtensionEnabled: "canvas-extension-enabled",

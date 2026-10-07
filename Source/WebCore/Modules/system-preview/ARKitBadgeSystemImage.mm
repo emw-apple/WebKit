@@ -58,10 +58,10 @@ static NSBundle *arKitBundle()
 
 static RetainPtr<CGPDFPageRef> loadARKitPDFPage(NSString *imageName)
 {
-    RetainPtr url = [protect(arKitBundle()) URLForResource:imageName withExtension:@"pdf"];
+    NSURL *url = [arKitBundle() URLForResource:imageName withExtension:@"pdf"];
     if (!url)
         return nullptr;
-    RetainPtr document = adoptCF(CGPDFDocumentCreateWithURL((CFURLRef)url.get()));
+    auto document = adoptCF(CGPDFDocumentCreateWithURL((CFURLRef)url));
     if (!document)
         return nullptr;
     if (!CGPDFDocumentGetNumberOfPages(document.get()))
@@ -124,7 +124,7 @@ void ARKitBadgeSystemImage::draw(GraphicsContext& graphicsContext, const FloatRe
 
     GraphicsContextStateSaver stateSaver(graphicsContext);
 
-    RetainPtr ctx = graphicsContext.platformContext();
+    CGContextRef ctx = graphicsContext.platformContext();
     if (!ctx)
         return;
 
@@ -161,44 +161,44 @@ void ARKitBadgeSystemImage::draw(GraphicsContext& graphicsContext, const FloatRe
 
     RetainPtr<CGImageRef> cgImage;
     if (hasBackdropImage) {
-        RetainPtr inputImage = [CIImage imageWithCGImage:nativeImage->platformImage().get()];
+        CIImage *inputImage = [CIImage imageWithCGImage:nativeImage->platformImage().get()];
 
         // Draw the blurred backdrop. Scale from intrinsic size to render size.
         CGAffineTransform transform = CGAffineTransformIdentity;
         transform = CGAffineTransformScale(transform, rect.width() / m_imageSize.width(), rect.height() / m_imageSize.height());
-        RetainPtr scaledImage = [inputImage imageByApplyingTransform:transform];
+        CIImage *scaledImage = [inputImage imageByApplyingTransform:transform];
 
         // CoreImage coordinates are y-up, so we need to flip the badge rectangle within the image frame.
         CGRect flippedInsetBadgeRect = CGRectMake(insetBadgeRect.origin.x, rect.height() - insetBadgeRect.origin.y - insetBadgeRect.size.height, badgeDimension, badgeDimension);
 
         // Create a cropped region with pixel values extending outwards.
-        RetainPtr clampedImage = [scaledImage imageByClampingToRect:flippedInsetBadgeRect];
+        CIImage *clampedImage = [scaledImage imageByClampingToRect:flippedInsetBadgeRect];
 
         // Blur.
-        RetainPtr blurredImage = [clampedImage imageByApplyingGaussianBlurWithSigma:10];
+        CIImage *blurredImage = [clampedImage imageByApplyingGaussianBlurWithSigma:10];
 
         // Saturate.
-        RetainPtr saturationFilter = [CIFilter filterWithName:@"CIColorControls"];
+        CIFilter *saturationFilter = [CIFilter filterWithName:@"CIColorControls"];
         [saturationFilter setValue:blurredImage forKey:kCIInputImageKey];
         [saturationFilter setValue:@1.8 forKey:kCIInputSaturationKey];
 
         // Tint.
-        RetainPtr tintFilter1 = [CIFilter filterWithName:@"CIConstantColorGenerator"];
-        RetainPtr tintColor1 = [CIColor colorWithRed:1 green:1 blue:1 alpha:0.18];
+        CIFilter *tintFilter1 = [CIFilter filterWithName:@"CIConstantColorGenerator"];
+        CIColor *tintColor1 = [CIColor colorWithRed:1 green:1 blue:1 alpha:0.18];
         [tintFilter1 setValue:tintColor1 forKey:kCIInputColorKey];
 
         // Blend the tint with the saturated output.
-        RetainPtr sourceOverFilter = [CIFilter filterWithName:@"CISourceOverCompositing"];
-        [sourceOverFilter setValue:[tintFilter1 outputImage] forKey:kCIInputImageKey];
-        [sourceOverFilter setValue:[saturationFilter outputImage] forKey:kCIInputBackgroundImageKey];
+        CIFilter *sourceOverFilter = [CIFilter filterWithName:@"CISourceOverCompositing"];
+        [sourceOverFilter setValue:tintFilter1.outputImage forKey:kCIInputImageKey];
+        [sourceOverFilter setValue:saturationFilter.outputImage forKey:kCIInputBackgroundImageKey];
 
         RetainPtr<CIContext> ciContext = [CIContext context];
 
 #if HAVE(IOSURFACE_COREIMAGE_SUPPORT)
         if (isInGPUProcess()) {
             // Crop the result to the badge location.
-            RetainPtr croppedImage = [[sourceOverFilter outputImage] imageByCroppingToRect:flippedInsetBadgeRect];
-            RetainPtr translatedImage = [croppedImage imageByApplyingTransform:CGAffineTransformMakeTranslation(-flippedInsetBadgeRect.origin.x, -flippedInsetBadgeRect.origin.y)];
+            CIImage *croppedImage = [sourceOverFilter.outputImage imageByCroppingToRect:flippedInsetBadgeRect];
+            CIImage *translatedImage = [croppedImage imageByApplyingTransform:CGAffineTransformMakeTranslation(-flippedInsetBadgeRect.origin.x, -flippedInsetBadgeRect.origin.y)];
 
             auto surfaceDimension = useSmallBadge ? BadgeMetrics::smallDimension : BadgeMetrics::largeDimension;
             std::unique_ptr<IOSurface> badgeSurface = IOSurface::create(&IOSurfacePool::sharedPoolSingleton(), { surfaceDimension, surfaceDimension }, ColorSpace::SRGB());
@@ -208,7 +208,7 @@ void ARKitBadgeSystemImage::draw(GraphicsContext& graphicsContext, const FloatRe
             cgImage = badgeSurface->createImage(surfaceContext.get());
         } else
 #endif
-        cgImage = adoptCF([ciContext createCGImage:[sourceOverFilter outputImage] fromRect:flippedInsetBadgeRect]);
+        cgImage = adoptCF([ciContext createCGImage:sourceOverFilter.outputImage fromRect:flippedInsetBadgeRect]);
     }
 
     // Before we render the result, we should clip to a circle around the badge rectangle.

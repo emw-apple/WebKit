@@ -700,11 +700,7 @@ void ImageBitmap::createCompletionHandler(ScriptExecutionContext& scriptExecutio
         }
         auto concreteSize = ConcreteObjectSize::fixed(imageSize);
         FloatRect destRect(FloatPoint(), outputSize);
-        ImagePaintingOptions paintingOptions { interpolationQualityForResizeQuality(options.resizeQuality), options.resolvedImageOrientation(orientation), drawsHDRContent, scriptExecutionContext.settingsValues().hdrAcceleratedApplyGainMapEnabled ? AllowAcceleratedApplyGainMap::Yes : AllowAcceleratedApplyGainMap::No };
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-        paintingOptions = { paintingOptions, InvertContent::No };
-#endif
-        bitmapData->context().drawImage(*sourceImage, concreteSize, destRect, sourceRect, paintingOptions);
+        bitmapData->context().drawImage(*sourceImage, concreteSize, destRect, sourceRect, { interpolationQualityForResizeQuality(options.resizeQuality), options.resolvedImageOrientation(orientation), drawsHDRContent, scriptExecutionContext.settingsValues().hdrAcceleratedApplyGainMapEnabled ? AllowAcceleratedApplyGainMap::Yes : AllowAcceleratedApplyGainMap::No });
     }
 
     auto imageBitmap = create(bitmapData.releaseNonNull(), originClean, premultiplyAlpha, false, bufferAlphaFormat);
@@ -1095,7 +1091,7 @@ void ImageBitmap::createFromBuffer(ScriptExecutionContext& scriptExecutionContex
     auto observer = ImageBitmapImageObserver::create(mimeType, expectedContentLength, sourceURL);
     auto image = BitmapImage::create(observer.ptr());
     auto result = image->setData(sharedBuffer.copyRef(), true);
-    if (result != EncodedDataStatus::Complete || !image->hasSomethingToDraw()) {
+    if (result != EncodedDataStatus::Complete || image->isNull()) {
         completionHandler(Exception { ExceptionCode::InvalidStateError, "Cannot decode the data in the argument to createImageBitmap"_s });
         return;
     }

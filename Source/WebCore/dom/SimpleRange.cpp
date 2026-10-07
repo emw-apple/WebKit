@@ -253,7 +253,7 @@ bool intersectsForTesting(TreeType type, const SimpleRange& a, const SimpleRange
     case ComposedTree:
         return intersects<ComposedTree>(a, b);
     case ComposedTreeIncludingPseudoElements:
-        return intersects<ComposedTreeIncludingPseudoElements>(a, b);
+        return contains<ComposedTreeIncludingPseudoElements>(a, b);
     }
     ASSERT_NOT_REACHED();
     return false;
@@ -342,7 +342,7 @@ bool intersectsForTesting(TreeType type, const SimpleRange& range, const Node& n
     case ComposedTree:
         return intersects<ComposedTree>(range, node);
     case ComposedTreeIncludingPseudoElements:
-        return intersects<ComposedTreeIncludingPseudoElements>(range, node);
+        return contains<ComposedTreeIncludingPseudoElements>(range, node);
     }
     ASSERT_NOT_REACHED();
     return false;

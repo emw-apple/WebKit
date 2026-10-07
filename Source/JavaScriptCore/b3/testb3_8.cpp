@@ -815,8 +815,9 @@ void testLoad(B3::Type type, B3::Opcode opcode, InputType value)
         Procedure proc;
         BasicBlock* root = proc.addBlock();
 
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<MemoryValue>(
+        root->appendNewControlValue(
+            proc, Return, Origin(),
+            root->appendNew<MemoryValue>(
                 proc, opcode, type, Origin(),
                 root->appendNew<ConstPtrValue>(proc, Origin(), &value)));
 
@@ -829,8 +830,9 @@ void testLoad(B3::Type type, B3::Opcode opcode, InputType value)
         BasicBlock* root = proc.addBlock();
         auto arguments = cCallArgumentValues<void*>(proc, root);
 
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<MemoryValue>(
+        root->appendNewControlValue(
+            proc, Return, Origin(),
+            root->appendNew<MemoryValue>(
                 proc, opcode, type, Origin(),
                 arguments[0]));
 
@@ -843,8 +845,9 @@ void testLoad(B3::Type type, B3::Opcode opcode, InputType value)
         BasicBlock* root = proc.addBlock();
         auto arguments = cCallArgumentValues<void*>(proc, root);
 
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<MemoryValue>(
+        root->appendNewControlValue(
+            proc, Return, Origin(),
+            root->appendNew<MemoryValue>(
                 proc, opcode, type, Origin(),
                 arguments[0],
                 static_cast<int32_t>(sizeof(InputType))));
@@ -858,8 +861,9 @@ void testLoad(B3::Type type, B3::Opcode opcode, InputType value)
         BasicBlock* root = proc.addBlock();
         auto arguments = cCallArgumentValues<void*, intptr_t>(proc, root);
 
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<MemoryValue>(
+        root->appendNewControlValue(
+            proc, Return, Origin(),
+            root->appendNew<MemoryValue>(
                 proc, opcode, type, Origin(),
                 root->appendNew<Value>(
                     proc, Add, Origin(),
@@ -878,8 +882,9 @@ void testLoad(B3::Type type, B3::Opcode opcode, InputType value)
         BasicBlock* root = proc.addBlock();
         auto arguments = cCallArgumentValues<void*, intptr_t>(proc, root);
 
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<MemoryValue>(
+        root->appendNewControlValue(
+            proc, Return, Origin(),
+            root->appendNew<MemoryValue>(
                 proc, opcode, type, Origin(),
                 root->appendNew<Value>(
                     proc, Add, Origin(),
@@ -994,8 +999,7 @@ void testWasmAddressDoesNotCSE()
     UpsilonValue* takeB = b->appendNew<UpsilonValue>(proc, Origin(), b->appendNew<Const32Value>(proc, Origin(), 20));
     UpsilonValue* takeC = c->appendNew<UpsilonValue>(proc, Origin(), c->appendNew<Const32Value>(proc, Origin(), 30));
     for (auto* i : { a, b, c }) {
-        i->setSuccessors(FrequentedBlock(continuation));
-        i->appendNew<Value>(proc, Jump, Origin());
+        i->appendNewControlValue(proc, Jump, Origin(), FrequentedBlock(continuation));
         i->setSuccessors(FrequentedBlock(continuation));
     }
 
@@ -1008,8 +1012,7 @@ void testWasmAddressDoesNotCSE()
         0);
 
     auto* returnVal = address2;
-    continuation->clearSuccessors();
-    continuation->appendNew<Value>(proc, Return, Origin(), returnVal);
+    continuation->appendNewControlValue(proc, Return, Origin(), returnVal);
 
     takeA->setPhi(takenPhi);
     takeB->setPhi(takenPhi);
@@ -1107,8 +1110,7 @@ void testStoreAfterClobberExitsSideways()
     root->appendNew<WasmBoundsCheckValue>(proc, Origin(), pinnedSizeGPR, pointer, 0);
 
     root->appendNew<MemoryValue>(proc, Store, Origin(), root->appendNew<Const32Value>(proc, Origin(), 20), resultAddress, 0);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Const32Value>(proc, Origin(), 30));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<Const32Value>(proc, Origin(), 30));
 
     auto binary = compileProc(proc);
 
@@ -1155,8 +1157,7 @@ void testStoreAfterClobberDifferentWidth()
     auto* resultAddress = root->appendNew<WasmAddressValue>(proc, Origin(), pointer, pinnedBaseGPR);
     root->appendNew<MemoryValue>(proc, Store, Origin(), root->appendNew<ConstPtrValue>(proc, Origin(), -1), resultAddress, 0);
     root->appendNew<MemoryValue>(proc, Store, Origin(), root->appendNew<Const32Value>(proc, Origin(), 20), resultAddress, 0);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Const32Value>(proc, Origin(), 30));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<Const32Value>(proc, Origin(), 30));
 
     auto binary = compileProc(proc);
 
@@ -1205,13 +1206,11 @@ void testStoreAfterClobberDifferentWidthSuccessor()
     c->appendNew<MemoryValue>(proc, Store, Origin(), c->appendNew<Const32Value>(proc, Origin(), 30), resultAddress, 0);
 
     for (auto* i : { a, b, c }) {
-        i->setSuccessors(FrequentedBlock(continuation));
-        i->appendNew<Value>(proc, Jump, Origin());
+        i->appendNewControlValue(proc, Jump, Origin(), FrequentedBlock(continuation));
         i->setSuccessors(FrequentedBlock(continuation));
     }
 
-    continuation->clearSuccessors();
-    continuation->appendNew<Value>(proc, Return, Origin(), continuation->appendNew<Const32Value>(proc, Origin(), 40));
+    continuation->appendNewControlValue(proc, Return, Origin(), continuation->appendNew<Const32Value>(proc, Origin(), 40));
 
     auto binary = compileProc(proc);
 
@@ -1306,15 +1305,13 @@ void testStoreAfterClobberExitsSidewaysSuccessor()
     UpsilonValue* takeC = c->appendNew<UpsilonValue>(proc, Origin(), c->appendNew<Const64Value>(proc, Origin(), 30));
 
     for (auto* i : { a, b, c }) {
-        i->setSuccessors(FrequentedBlock(continuation));
-        i->appendNew<Value>(proc, Jump, Origin());
+        i->appendNewControlValue(proc, Jump, Origin(), FrequentedBlock(continuation));
         i->setSuccessors(FrequentedBlock(continuation));
     }
 
     auto* takenPhi = continuation->appendNew<Value>(proc, Phi, Int64, Origin());
     continuation->appendNew<MemoryValue>(proc, Store, Origin(), takenPhi, resultAddress, 0);
-    continuation->clearSuccessors();
-    continuation->appendNew<Value>(proc, Return, Origin(), continuation->appendNew<Const32Value>(proc, Origin(), 40));
+    continuation->appendNewControlValue(proc, Return, Origin(), continuation->appendNew<Const32Value>(proc, Origin(), 40));
 
     takeA->setPhi(takenPhi);
     takeB->setPhi(takenPhi);
@@ -1390,8 +1387,7 @@ void testNarrowLoad()
     BasicBlock* root = proc.addBlock();
     auto* value1 = root->appendNew<MemoryValue>(proc, Load, Int64, Origin(), root->appendNew<ArgumentRegValue>(proc, Origin(), GPRInfo::argumentGPR0));
     auto* value2 = root->appendNew<MemoryValue>(proc, Load, Int32, Origin(), root->appendNew<ArgumentRegValue>(proc, Origin(), GPRInfo::argumentGPR0));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
 
     uint64_t value = 0x1000000010000000ULL;
     CHECK_EQ(compileAndRun<uint64_t>(proc, &value), 0x1000000020000000ULL);
@@ -1405,8 +1401,7 @@ void testNarrowLoadClobber()
     auto* value1 = root->appendNew<MemoryValue>(proc, Load, Int64, Origin(), address);
     root->appendNew<MemoryValue>(proc, Store, Origin(), root->appendNew<Const64Value>(proc, Origin(), 0), address, 0);
     auto* value2 = root->appendNew<MemoryValue>(proc, Load, Int32, Origin(), root->appendNew<ArgumentRegValue>(proc, Origin(), GPRInfo::argumentGPR0));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
 
     uint64_t value = 0x1000000010000000ULL;
     CHECK_EQ(compileAndRun<uint64_t>(proc, &value), 0x1000000010000000ULL);
@@ -1421,8 +1416,7 @@ void testNarrowLoadClobberNarrow()
     auto* value1 = root->appendNew<MemoryValue>(proc, Load, Int64, Origin(), address);
     root->appendNew<MemoryValue>(proc, Store, Origin(), root->appendNew<Const32Value>(proc, Origin(), 0), address, 0);
     auto* value2 = root->appendNew<MemoryValue>(proc, Load, Int32, Origin(), root->appendNew<ArgumentRegValue>(proc, Origin(), GPRInfo::argumentGPR0));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
 
     uint64_t value = 0x1000000010000000ULL;
     CHECK_EQ(compileAndRun<uint64_t>(proc, &value), 0x1000000010000000ULL);
@@ -1437,8 +1431,7 @@ void testNarrowLoadNotClobber()
     auto* value1 = root->appendNew<MemoryValue>(proc, Load, Int64, Origin(), address);
     root->appendNew<MemoryValue>(proc, Store, Origin(), root->appendNew<Const32Value>(proc, Origin(), 0), address, 4);
     auto* value2 = root->appendNew<MemoryValue>(proc, Load, Int32, Origin(), root->appendNew<ArgumentRegValue>(proc, Origin(), GPRInfo::argumentGPR0));
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
 
     uint64_t value = 0x1000000010000000ULL;
     CHECK_EQ(compileAndRun<uint64_t>(proc, &value), 0x1000000020000000ULL);
@@ -1452,8 +1445,7 @@ void testNarrowLoadUpper()
     auto* address = root->appendNew<ArgumentRegValue>(proc, Origin(), GPRInfo::argumentGPR0);
     auto* value1 = root->appendNew<MemoryValue>(proc, Load, Int64, Origin(), address);
     auto* value2 = root->appendNew<MemoryValue>(proc, Load, Int32, Origin(), address, 4);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Int64, Origin(), value1, root->appendNew<Value>(proc, ZExt32, Int64, Origin(), value2)));
 
     uint64_t value = 0x2000000010000000ULL;
     CHECK_EQ(compileAndRun<uint64_t>(proc, &value), 0x2000000030000000ULL);
@@ -1476,8 +1468,7 @@ void testConstDoubleMove()
         for (uint8_t i = 0; i < UINT8_MAX; ++i) {
             Procedure proc;
             BasicBlock* root = proc.addBlock();
-            root->clearSuccessors();
-            root->appendNew<Value>(proc, Return, Origin(), root->appendNew<ConstDoubleValue>(proc, Origin(), encode(i)));
+            root->appendNewControlValue(proc, Return, Origin(), root->appendNew<ConstDoubleValue>(proc, Origin(), encode(i)));
             CHECK_EQ(compileAndRun<double>(proc), encode(i));
         }
     }
@@ -1502,8 +1493,7 @@ void testConstDoubleMove()
         for (uint8_t i = 0; i < UINT8_MAX; ++i) {
             Procedure proc;
             BasicBlock* root = proc.addBlock();
-            root->clearSuccessors();
-            root->appendNew<Value>(proc, Return, Origin(), root->appendNew<ConstDoubleValue>(proc, Origin(), std::bit_cast<double>(encode(i))));
+            root->appendNewControlValue(proc, Return, Origin(), root->appendNew<ConstDoubleValue>(proc, Origin(), std::bit_cast<double>(encode(i))));
             CHECK_EQ(std::bit_cast<uint64_t>(compileAndRun<double>(proc)), encode(i));
         }
     }
@@ -1525,8 +1515,7 @@ void testConstFloatMove()
     for (uint8_t i = 0; i < UINT8_MAX; ++i) {
         Procedure proc;
         BasicBlock* root = proc.addBlock();
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), root->appendNew<ConstFloatValue>(proc, Origin(), encode(i)));
+        root->appendNewControlValue(proc, Return, Origin(), root->appendNew<ConstFloatValue>(proc, Origin(), encode(i)));
         CHECK_EQ(compileAndRun<float>(proc), encode(i));
     }
 }
@@ -1540,8 +1529,7 @@ void testSShrCompare32(int32_t constantValue)
         auto* shifted = root->appendNew<Value>(proc, SShr, Origin(), arguments[0], root->appendNew<Const32Value>(proc, Origin(), shiftAmount));
         auto* constant = root->appendNew<Const32Value>(proc, Origin(), constantValue);
         auto* comparison = root->appendNew<Value>(proc, opcode, Origin(), shifted, constant);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), comparison);
+        root->appendNewControlValue(proc, Return, Origin(), comparison);
         return compileProc(proc);
     };
 
@@ -1576,8 +1564,7 @@ void testSShrCompare64(int64_t constantValue)
         auto* shifted = root->appendNew<Value>(proc, SShr, Origin(), arguments[0], root->appendNew<Const32Value>(proc, Origin(), shiftAmount));
         auto* constant = root->appendNew<Const64Value>(proc, Origin(), constantValue);
         auto* comparison = root->appendNew<Value>(proc, opcode, Origin(), shifted, constant);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), comparison);
+        root->appendNewControlValue(proc, Return, Origin(), comparison);
         return compileProc(proc);
     };
 
@@ -1612,8 +1599,9 @@ void testMulHigh64()
     Value* argumentA = arguments[0];
     Value* argumentB = arguments[1];
 
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(
+    root->appendNewControlValue(
+        proc, Return, Origin(),
+        root->appendNew<Value>(
             proc, MulHigh, Origin(),
             argumentA,
             argumentB));
@@ -1631,8 +1619,9 @@ void testMulHigh32()
     BasicBlock* root = proc.addBlock();
     auto arguments = cCallArgumentValues<int32_t, int32_t>(proc, root);
 
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(
+    root->appendNewControlValue(
+        proc, Return, Origin(),
+        root->appendNew<Value>(
             proc, MulHigh, Origin(),
             arguments[0],
             arguments[1]));
@@ -1653,8 +1642,9 @@ void testUMulHigh64()
     Value* argumentA = arguments[0];
     Value* argumentB = arguments[1];
 
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(
+    root->appendNewControlValue(
+        proc, Return, Origin(),
+        root->appendNew<Value>(
             proc, UMulHigh, Origin(),
             argumentA,
             argumentB));
@@ -1672,8 +1662,9 @@ void testUMulHigh32()
     BasicBlock* root = proc.addBlock();
     auto arguments = cCallArgumentValues<uint32_t, uint32_t>(proc, root);
 
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(
+    root->appendNewControlValue(
+        proc, Return, Origin(),
+        root->appendNew<Value>(
             proc, UMulHigh, Origin(),
             arguments[0],
             arguments[1]));
@@ -1691,8 +1682,7 @@ void testMemoryCopy()
     BasicBlock* root = proc.addBlock();
     auto arguments = cCallArgumentValues<void*, void*, void*>(proc, root);
     root->appendNew<BulkMemoryValue>(proc, MemoryCopy, Origin(), arguments[0], arguments[1], arguments[2]);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     Vector<uint8_t> src(4096 + 1024);
@@ -1740,8 +1730,7 @@ void testMemoryCopyConstant()
         BasicBlock* root = proc.addBlock();
         auto arguments = cCallArgumentValues<void*, void*>(proc, root);
         root->appendNew<BulkMemoryValue>(proc, MemoryCopy, Origin(), arguments[0], arguments[1], root->appendIntConstant(proc, Origin(), pointerType(), width));
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin());
+        root->appendNewControlValue(proc, Return, Origin());
         auto code = compileProc(proc);
 
         for (auto a : int32Operands()) {
@@ -1775,8 +1764,7 @@ void testMemoryFill()
     BasicBlock* root = proc.addBlock();
     auto arguments = cCallArgumentValues<void*, uint32_t, void*>(proc, root);
     root->appendNew<BulkMemoryValue>(proc, MemoryFill, Origin(), arguments[0], arguments[1], arguments[2]);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin());
+    root->appendNewControlValue(proc, Return, Origin());
 
     auto code = compileProc(proc);
     Vector<uint8_t> src(4096 + 1024);
@@ -1804,8 +1792,7 @@ void testMemoryFillConstant()
             BasicBlock* root = proc.addBlock();
             auto arguments = cCallArgumentValues<void*>(proc, root);
             root->appendNew<BulkMemoryValue>(proc, MemoryFill, Origin(), arguments[0], root->appendIntConstant(proc, Origin(), Int32, a.value), root->appendIntConstant(proc, Origin(), pointerType(), width));
-            root->clearSuccessors();
-            root->appendNew<Value>(proc, Return, Origin());
+            root->appendNewControlValue(proc, Return, Origin());
             auto code = compileProc(proc);
 
             src.fill(0);
@@ -1829,8 +1816,7 @@ void testLoadImmutable()
     root->appendNew<MemoryValue>(proc, Store, Origin(), root->appendNew<Const32Value>(proc, Origin(), 0), arguments[1]);
     auto* value2 = root->appendNew<MemoryValue>(proc, Load, Int64, Origin(), arguments[0]);
     value2->setReadsMutability(B3::Mutability::Immutable);
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Origin(), value1, value2));
+    root->appendNewControlValue(proc, Return, Origin(), root->appendNew<Value>(proc, Add, Origin(), value1, value2));
     auto code = compileProc(proc);
 
     memory.fill(42);
@@ -1853,14 +1839,17 @@ void testCCmpAnd32(int32_t a, int32_t b, int32_t c, int32_t d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b && c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -1879,14 +1868,17 @@ void testCCmpAnd64(int64_t a, int64_t b, int64_t c, int64_t d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b && c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -1905,14 +1897,17 @@ void testCCmpOr32(int32_t a, int32_t b, int32_t c, int32_t d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b || c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -1931,14 +1926,17 @@ void testCCmpOr64(int64_t a, int64_t b, int64_t c, int64_t d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b || c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -1961,14 +1959,17 @@ void testCCmpAndAnd32(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int
     Value* cmp3 = root->appendNew<Value>(proc, Equal, Origin(), arguments[4], arguments[5]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), and1, cmp3);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b && c == d && e == f) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d, e, f), expected);
@@ -1990,14 +1991,17 @@ void testCCmpOrOr32(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int32
     Value* cmp3 = root->appendNew<Value>(proc, Equal, Origin(), arguments[4], arguments[5]);
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), or1, cmp3);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b || c == d || e == f) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d, e, f), expected);
@@ -2019,14 +2023,17 @@ void testCCmpAndOr32(int32_t a, int32_t b, int32_t c, int32_t d, int32_t e, int3
     Value* cmp3 = root->appendNew<Value>(proc, Equal, Origin(), arguments[4], arguments[5]);
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), and1, cmp3);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = ((a == b && c == d) || e == f) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d, e, f), expected);
@@ -2047,14 +2054,17 @@ void testCCmnAnd32WithNegativeImm(int32_t a, int32_t b)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[1], root->appendNew<Const32Value>(proc, Origin(), -5));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a > 10 && b == -5) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2074,14 +2084,17 @@ void testCCmnAnd64WithNegativeImm(int64_t a, int64_t b)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[1], root->appendNew<Const64Value>(proc, Origin(), -31));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a > 10 && b == -31) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2101,14 +2114,17 @@ void testCCmpWithLargePositiveImm(int32_t a, int32_t b)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[1], root->appendNew<Const32Value>(proc, Origin(), 100));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a > 10 && b == 100) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2128,14 +2144,17 @@ void testCCmpWithLargeNegativeImm(int32_t a, int32_t b)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[1], root->appendNew<Const32Value>(proc, Origin(), -100));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a > 10 && b == -100) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2160,14 +2179,17 @@ void testCCmpSmartOperandOrdering32(int32_t a, int32_t b)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[1], root->appendNew<Const32Value>(proc, Origin(), 1000));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == 5 && b == 1000) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2187,14 +2209,17 @@ void testCCmpSmartOperandOrdering64(int64_t a, int64_t b)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[1], root->appendNew<Const64Value>(proc, Origin(), 5000));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == 10 && b == 5000) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2218,14 +2243,17 @@ void testCCmpOperandCommutation32(int32_t a, int32_t b)
     Value* cmp2 = root->appendNew<Value>(proc, GreaterThan, Origin(), arguments[1], root->appendNew<Const32Value>(proc, Origin(), 100));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (15 == a && b > 100) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2245,14 +2273,17 @@ void testCCmpOperandCommutation64(int64_t a, int64_t b)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), root->appendNew<Const64Value>(proc, Origin(), 20), arguments[1]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a < 50 && 20 == b) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2275,14 +2306,17 @@ void testCCmpCombinedOptimizations(int32_t a, int32_t b)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[1], root->appendNew<Const32Value>(proc, Origin(), 2000));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (10 == a && b == 2000) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2303,14 +2337,17 @@ void testCCmpZeroRegisterOptimization32(int32_t a, int32_t b)
     Value* cmp2 = root->appendNew<Value>(proc, GreaterThan, Origin(), arguments[1], root->appendNew<Const32Value>(proc, Origin(), 5));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == 0 && b > 5) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2330,14 +2367,17 @@ void testCCmpZeroRegisterOptimization64(int64_t a, int64_t b)
     Value* cmp2 = root->appendNew<Value>(proc, LessThan, Origin(), arguments[1], root->appendNew<Const64Value>(proc, Origin(), 100));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (0 == a && b < 100) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2360,14 +2400,17 @@ void testCCmpMixedAndOr32(int32_t a, int32_t b, int32_t c)
     Value* cmp3 = root->appendNew<Value>(proc, GreaterThan, Origin(), arguments[0], root->appendNew<Const32Value>(proc, Origin(), 100));
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), andVal, cmp3);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = ((a == b && b == c) || a > 100) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c), expected);
@@ -2389,14 +2432,17 @@ void testCCmpMixedOrAnd32(int32_t a, int32_t b, int32_t c)
     Value* andVal = root->appendNew<Value>(proc, BitAnd, Origin(), cmp2, cmp3);
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), cmp1, andVal);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a < 0 || (b == c && c > 50)) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c), expected);
@@ -2436,14 +2482,18 @@ void testCCmpNegatedAnd32(int32_t a, int32_t b)
         andResult,
         root->appendNew<Const32Value>(proc, Origin(), 0));
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), negated);
+    root->appendNewControlValue(
+        proc, Branch, Origin(),
+        negated,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = !(a > 10 && b == 20) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2483,14 +2533,18 @@ void testCCmpNegatedOr32(int32_t a, int32_t b)
         orResult,
         root->appendNew<Const32Value>(proc, Origin(), 0));
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), negated);
+    root->appendNewControlValue(
+        proc, Branch, Origin(),
+        negated,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = !(a < 5 || b >= 100) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2526,14 +2580,17 @@ void testCCmpMixedWidth32And64(int32_t a, int64_t b, int32_t c)
 
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), and1, cmp3);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == 5 && b == 1000 && c == 10) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c), expected);
@@ -2559,14 +2616,17 @@ void testCCmpMixedWidth64And32(int64_t a, int32_t b)
 
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == 5000 && b == 10) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b), expected);
@@ -2592,14 +2652,17 @@ void testCCmpChainRollback(int32_t i, int32_t len, int32_t a, int32_t b, int32_t
         outerOr, root->appendNew<Const32Value>(proc, Origin(), 0));
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), iLtLen, eqZero);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int zero = 0; // style checker complains about == 0
     int32_t expected = (i < len && ((((a == b) & (c == d)) | (a ^ c)) == zero)) ? 1 : 0;
@@ -2610,8 +2673,8 @@ void testConstDoubleZero()
 {
     Procedure proc;
     BasicBlock* root = proc.addBlock();
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<ConstDoubleValue>(proc, Origin(), 0.0));
+    root->appendNewControlValue(proc, Return, Origin(),
+        root->appendNew<ConstDoubleValue>(proc, Origin(), 0.0));
     CHECK_EQ(compileAndRun<double>(proc), 0.0);
 }
 
@@ -2619,8 +2682,8 @@ void testConstDoubleNegativeZero()
 {
     Procedure proc;
     BasicBlock* root = proc.addBlock();
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<ConstDoubleValue>(proc, Origin(), -0.0));
+    root->appendNewControlValue(proc, Return, Origin(),
+        root->appendNew<ConstDoubleValue>(proc, Origin(), -0.0));
     double result = compileAndRun<double>(proc);
     CHECK_EQ(std::bit_cast<uint64_t>(result), 0x8000000000000000ULL);
 }
@@ -2629,8 +2692,8 @@ void testConstFloatZero()
 {
     Procedure proc;
     BasicBlock* root = proc.addBlock();
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<ConstFloatValue>(proc, Origin(), 0.0f));
+    root->appendNewControlValue(proc, Return, Origin(),
+        root->appendNew<ConstFloatValue>(proc, Origin(), 0.0f));
     CHECK_EQ(compileAndRun<float>(proc), 0.0f);
 }
 
@@ -2638,8 +2701,8 @@ void testConstFloatNegativeZero()
 {
     Procedure proc;
     BasicBlock* root = proc.addBlock();
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), root->appendNew<ConstFloatValue>(proc, Origin(), -0.0f));
+    root->appendNewControlValue(proc, Return, Origin(),
+        root->appendNew<ConstFloatValue>(proc, Origin(), -0.0f));
     float result = compileAndRun<float>(proc);
     CHECK_EQ(std::bit_cast<uint32_t>(result), 0x80000000U);
 }
@@ -2652,8 +2715,7 @@ void testConstDoubleAddZero()
         auto arguments = cCallArgumentValues<double>(proc, root);
         Value* zero = root->appendNew<ConstDoubleValue>(proc, Origin(), 0.0);
         Value* result = root->appendNew<Value>(proc, Add, Origin(), arguments[0], zero);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), result);
+        root->appendNewControlValue(proc, Return, Origin(), result);
         CHECK_EQ(compileAndRun<double>(proc, input), expected);
     };
 
@@ -2670,8 +2732,7 @@ void testConstFloatAddZero()
         auto arguments = cCallArgumentValues<float>(proc, root);
         Value* zero = root->appendNew<ConstFloatValue>(proc, Origin(), 0.0f);
         Value* result = root->appendNew<Value>(proc, Add, Origin(), arguments[0], zero);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), result);
+        root->appendNewControlValue(proc, Return, Origin(), result);
         CHECK_EQ(compileAndRun<float>(proc, input), expected);
     };
 
@@ -2688,8 +2749,7 @@ void testConstDoubleCompareZero()
         auto arguments = cCallArgumentValues<double>(proc, root);
         Value* zero = root->appendNew<ConstDoubleValue>(proc, Origin(), 0.0);
         Value* result = root->appendNew<Value>(proc, Equal, Origin(), arguments[0], zero);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), result);
+        root->appendNewControlValue(proc, Return, Origin(), result);
         CHECK_EQ(compileAndRun<int32_t>(proc, input), expected);
     };
 
@@ -2707,8 +2767,7 @@ void testConstFloatCompareZero()
         auto arguments = cCallArgumentValues<float>(proc, root);
         Value* zero = root->appendNew<ConstFloatValue>(proc, Origin(), 0.0f);
         Value* result = root->appendNew<Value>(proc, Equal, Origin(), arguments[0], zero);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), result);
+        root->appendNewControlValue(proc, Return, Origin(), result);
         CHECK_EQ(compileAndRun<int32_t>(proc, input), expected);
     };
 
@@ -2726,8 +2785,7 @@ void testConstDoubleSelectZero()
         auto arguments = cCallArgumentValues<int32_t, double>(proc, root);
         Value* zero = root->appendNew<ConstDoubleValue>(proc, Origin(), 0.0);
         Value* result = root->appendNew<Value>(proc, Select, Origin(), arguments[0], arguments[1], zero);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), result);
+        root->appendNewControlValue(proc, Return, Origin(), result);
         CHECK_EQ(compileAndRun<double>(proc, selector, input), expected);
     };
 
@@ -2743,8 +2801,7 @@ void testConstFloatSelectZero()
         auto arguments = cCallArgumentValues<int32_t, float>(proc, root);
         Value* zero = root->appendNew<ConstFloatValue>(proc, Origin(), 0.0f);
         Value* result = root->appendNew<Value>(proc, Select, Origin(), arguments[0], arguments[1], zero);
-        root->clearSuccessors();
-        root->appendNew<Value>(proc, Return, Origin(), result);
+        root->appendNewControlValue(proc, Return, Origin(), result);
         CHECK_EQ(compileAndRun<float>(proc, selector, input), expected);
     };
 
@@ -2765,8 +2822,7 @@ void testConstDoubleMultipleZeroUses()
     Value* bPlusZero = root->appendNew<Value>(proc, Add, Origin(), arguments[1], zero);
     Value* result = root->appendNew<Value>(proc, Add, Origin(), aPlusZero, bPlusZero);
 
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), result);
+    root->appendNewControlValue(proc, Return, Origin(), result);
 
     CHECK_EQ(compileAndRun<double>(proc, 2.5, 3.5), 6.0);
 }
@@ -2784,8 +2840,7 @@ void testConstFloatMultipleZeroUses()
     Value* bPlusZero = root->appendNew<Value>(proc, Add, Origin(), arguments[1], zero);
     Value* result = root->appendNew<Value>(proc, Add, Origin(), aPlusZero, bPlusZero);
 
-    root->clearSuccessors();
-    root->appendNew<Value>(proc, Return, Origin(), result);
+    root->appendNewControlValue(proc, Return, Origin(), result);
 
     CHECK_EQ(compileAndRun<float>(proc, 2.5f, 3.5f), 6.0f);
 }
@@ -2803,14 +2858,17 @@ void testFCCmpAndDouble(double a, double b, double c, double d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b && c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -2829,14 +2887,17 @@ void testFCCmpOrDouble(double a, double b, double c, double d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b || c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -2855,14 +2916,17 @@ void testFCCmpAndFloat(float a, float b, float c, float d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b && c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -2881,14 +2945,17 @@ void testFCCmpOrFloat(float a, float b, float c, float d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b || c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -2909,14 +2976,17 @@ void testFCCmpAndAndDouble(double a, double b, double c, double d, double e, dou
     Value* cmp3 = root->appendNew<Value>(proc, Equal, Origin(), arguments[4], arguments[5]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), and1, cmp3);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b && c == d && e == f) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d, e, f), expected);
@@ -2935,14 +3005,17 @@ void testFCCmpMixedIntDouble(int32_t a, int32_t b, double c, double d)
     Value* cmp2 = root->appendNew<Value>(proc, LessThan, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b && c < d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -2961,14 +3034,17 @@ void testFCCmpMixedDoubleInt(double a, double b, int32_t c, int32_t d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a < b && c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -2987,14 +3063,17 @@ void testFCCmpLessThanAndDouble(double a, double b, double c, double d)
     Value* cmp2 = root->appendNew<Value>(proc, LessThan, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a < b && c < d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -3013,14 +3092,17 @@ void testFCCmpGreaterEqualOrDouble(double a, double b, double c, double d)
     Value* cmp2 = root->appendNew<Value>(proc, GreaterEqual, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitOr, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a >= b || c >= d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -3040,14 +3122,17 @@ void testFCCmpNaN(double a, double b, double c, double d)
     Value* cmp2 = root->appendNew<Value>(proc, Equal, Origin(), arguments[2], arguments[3]);
     Value* condition = root->appendNew<Value>(proc, BitAnd, Origin(), cmp1, cmp2);
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), condition);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), condition,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = (a == b && c == d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);
@@ -3072,14 +3157,17 @@ void testFCCmpNegatedAndDouble(double a, double b, double c, double d)
         andResult,
         root->appendNew<Const32Value>(proc, Origin(), 0));
 
-    root->setSuccessors(FrequentedBlock(thenCase), FrequentedBlock(elseCase));
-    root->appendNew<Value>(proc, Branch, Origin(), negated);
+    root->appendNewControlValue(
+        proc, Branch, Origin(), negated,
+        FrequentedBlock(thenCase), FrequentedBlock(elseCase));
 
-    thenCase->clearSuccessors();
-    thenCase->appendNew<Value>(proc, Return, Origin(), thenCase->appendNew<Const32Value>(proc, Origin(), 1));
+    thenCase->appendNewControlValue(
+        proc, Return, Origin(),
+        thenCase->appendNew<Const32Value>(proc, Origin(), 1));
 
-    elseCase->clearSuccessors();
-    elseCase->appendNew<Value>(proc, Return, Origin(), elseCase->appendNew<Const32Value>(proc, Origin(), 0));
+    elseCase->appendNewControlValue(
+        proc, Return, Origin(),
+        elseCase->appendNew<Const32Value>(proc, Origin(), 0));
 
     int32_t expected = !(a < b && c < d) ? 1 : 0;
     CHECK_EQ(compileAndRun<int32_t>(proc, a, b, c, d), expected);

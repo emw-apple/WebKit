@@ -169,7 +169,6 @@
 #include <JavaScriptCore/CPU.h>
 #include <JavaScriptCore/Forward.h>
 #include <JavaScriptCore/JSCConfig.h>
-#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/OptionsList.h>
 #include <JavaScriptCore/SourceID.h>
 #include <JavaScriptCore/Weak.h>
@@ -498,6 +497,7 @@
 #include <wtf/LazyRef.h>
 #include <wtf/LazyUniqueRef.h>
 #include <wtf/MallocPtr.h>
+#include <wtf/MetaAllocatorHandle.h>
 #include <wtf/NakedPtr.h>
 #include <wtf/OSAllocator.h>
 #include <wtf/PackedRefPtr.h>

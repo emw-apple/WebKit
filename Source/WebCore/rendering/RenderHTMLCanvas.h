@@ -53,8 +53,6 @@ public:
     RenderBlock* innerRenderer() const { return m_innerRenderer.get(); }
     void setInnerRenderer(RenderBlock*);
 
-    bool hasDrawableContent() const;
-
     std::optional<CanvasElementSnapshot> drawableRendererSnapshot(RenderElement&) const;
 
 private:
@@ -72,7 +70,7 @@ private:
     void styleDidChange(Style::Difference, const Style::ComputedStyle* oldStyle) override;
 
     SingleThreadWeakPtr<RenderBlock> m_innerRenderer;
-    HashMap<SingleThreadWeakRef<RenderElement>, Ref<DisplayList::RecorderImpl>> m_drawableRendererSnapshotRecorderMap;
+    HashMap<SingleThreadWeakRef<RenderElement>, UniqueRef<DisplayList::RecorderImpl>> m_drawableRendererSnapshotRecorderMap;
 };
 
 } // namespace WebCore

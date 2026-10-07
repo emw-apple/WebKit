@@ -39,22 +39,7 @@ set_target_properties(TestRunnerInjectedBundle PROPERTIES
     BUNDLE_EXTENSION bundle
     OUTPUT_NAME WebKitTestRunnerInjectedBundle
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_BINARY_DIR}/InjectedBundle-Info.plist"
-    CODE_SIGN_BUNDLE "$<TARGET_BUNDLE_DIR:TestRunnerInjectedBundle>"
 )
-
-# Embed the Info.plist in the __TEXT,__info_plist section; WebKit's
-# isRunningTest() checks the resulting bundle identifier.
-set(PRODUCT_NAME WebKitTestRunner)
-set(PRODUCT_BUNDLE_IDENTIFIER com.apple.WebKit.WebKitTestRunner)
-configure_file("${WebKitTestRunner_DIR}/Info.plist"
-               "${CMAKE_CURRENT_BINARY_DIR}/WebKitTestRunner-Info.plist")
-unset(PRODUCT_NAME)
-unset(PRODUCT_BUNDLE_IDENTIFIER)
-
-target_link_options(WebKitTestRunner PRIVATE
-    "LINKER:-sectcreate,__TEXT,__info_plist,${CMAKE_CURRENT_BINARY_DIR}/WebKitTestRunner-Info.plist")
-set_property(TARGET WebKitTestRunner APPEND PROPERTY LINK_DEPENDS
-    "${CMAKE_CURRENT_BINARY_DIR}/WebKitTestRunner-Info.plist")
 
 if (USE_APPLE_INTERNAL_SDK)
     set_property(TARGET WebKitTestRunner PROPERTY CODE_SIGN_ENTITLEMENTS
@@ -94,11 +79,6 @@ list(APPEND WebKitTestRunner_LIBRARIES
     ${CARBON_LIBRARY}
 )
 
-list(APPEND WebKitTestRunner_PRIVATE_LIBRARIES
-    "-framework Cocoa"
-    "-framework UniformTypeIdentifiers"
-)
-
 set(_wtr_mac_include_dirs
     ${CMAKE_BINARY_DIR}
     ${CMAKE_SOURCE_DIR}/WebKitLibraries
@@ -120,6 +100,11 @@ set(_wtr_mac_include_dirs
 # TestRunnerInjectedBundle is a separate target with its own include list.
 list(APPEND WebKitTestRunner_INCLUDE_DIRECTORIES ${_wtr_mac_include_dirs})
 list(APPEND TestRunnerInjectedBundle_INCLUDE_DIRECTORIES ${_wtr_mac_include_dirs})
+
+# TestRunnerInjectedBundle links WebCoreTestSupport (static) which references
+# WTF symbols. The bundle is loaded into a process that already has WTF, so
+# use -undefined dynamic_lookup to resolve them at runtime.
+target_link_options(TestRunnerInjectedBundle PRIVATE "LINKER:-undefined,dynamic_lookup")
 
 list(APPEND TestRunnerInjectedBundle_SOURCES
     ${WebKitTestRunner_DIR}/cocoa/CrashReporterInfo.mm
@@ -150,15 +135,7 @@ list(APPEND TestRunnerInjectedBundle_LIBRARIES
     WebCoreTestSupport
     WebKit
 )
-
-list(APPEND TestRunnerInjectedBundle_PRIVATE_LIBRARIES
-    "-framework Carbon"
-    "-framework Cocoa"
-    "-framework CoreText"
-    "-framework QuartzCore"
-    "-lAccessibility"
-    ICU::uc
-)
+set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "-framework Cocoa")
 
 list(APPEND WebKitTestRunner_SOURCES
     ${WebKitTestRunner_DIR}/cocoa/CrashReporterInfo.mm
@@ -217,15 +194,11 @@ set(EXECUTABLE_NAME WebKitTestRunnerInjectedBundle)
 set(PRODUCT_BUNDLE_IDENTIFIER com.apple.WebKitTestRunner.InjectedBundle)
 configure_file("${WebKitTestRunner_DIR}/InjectedBundle-Info.plist"
                "${CMAKE_CURRENT_BINARY_DIR}/InjectedBundle-Info.plist")
-set(_wktr_app_dir "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/WebKitTestRunnerApp.app")
-# TestControllerIOS.mm loads the injected bundle out of the app's PlugIns directory.
 set_target_properties(TestRunnerInjectedBundle PROPERTIES
     BUNDLE TRUE
     BUNDLE_EXTENSION bundle
     OUTPUT_NAME WebKitTestRunnerInjectedBundle
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_BINARY_DIR}/InjectedBundle-Info.plist"
-    LIBRARY_OUTPUT_DIRECTORY "${_wktr_app_dir}/PlugIns"
-    CODE_SIGN_BUNDLE "$<TARGET_BUNDLE_DIR:TestRunnerInjectedBundle>"
 )
 
 # Fonts for layout tests.
@@ -273,7 +246,7 @@ set(_wktr_ios_include_dirs
 list(APPEND WebKitTestRunner_INCLUDE_DIRECTORIES ${_wktr_ios_include_dirs})
 list(APPEND TestRunnerInjectedBundle_INCLUDE_DIRECTORIES ${_wktr_ios_include_dirs})
 
-target_link_options(TestRunnerInjectedBundle PRIVATE "LINKER:-not_for_dyld_shared_cache")
+target_link_options(TestRunnerInjectedBundle PRIVATE "LINKER:-undefined,dynamic_lookup" "LINKER:-not_for_dyld_shared_cache")
 
 list(APPEND TestRunnerInjectedBundle_SOURCES
     ${WebKitTestRunner_DIR}/cocoa/CrashReporterInfo.mm
@@ -282,9 +255,6 @@ list(APPEND TestRunnerInjectedBundle_SOURCES
     ${WebKitTestRunner_DIR}/InjectedBundle/cocoa/AccessibilityTextMarkerRangeCocoa.mm
     ${WebKitTestRunner_DIR}/InjectedBundle/cocoa/ActivateFontsCocoa.mm
     ${WebKitTestRunner_DIR}/InjectedBundle/cocoa/InjectedBundlePageCocoa.mm
-
-    ${WebKitTestRunner_DIR}/InjectedBundle/mac/AccessibilityNotificationHandler.mm
-    ${WebKitTestRunner_DIR}/InjectedBundle/mac/TestRunnerMac.mm
 
     ${WebKitTestRunner_DIR}/InjectedBundle/ios/AccessibilityControllerIOS.mm
     ${WebKitTestRunner_DIR}/InjectedBundle/ios/AccessibilityTextMarkerIOS.mm
@@ -298,16 +268,6 @@ list(APPEND TestRunnerInjectedBundle_LIBRARIES
     JavaScriptCore
     WebCoreTestSupport
     WebKit
-)
-
-list(APPEND TestRunnerInjectedBundle_PRIVATE_LIBRARIES
-    "-framework CFNetwork"
-    "-framework CoreFoundation"
-    "-framework CoreGraphics"
-    "-framework CoreText"
-    "-framework QuartzCore"
-    ${UIKIT_LIBRARY}
-    ICU::uc
 )
 
 list(APPEND WebKitTestRunner_SOURCES
@@ -345,64 +305,13 @@ target_link_libraries(WebKitTestRunner PRIVATE
     ${UIKIT_LIBRARY}
 )
 
-# TestControllerIOS.mm uses GCMouse.
-if (WEBKIT_SDK_IS_IOS OR WEBKIT_SDK_IS_XROS)
-    target_link_libraries(WebKitTestRunner PRIVATE "-framework GameController")
-elseif (WEBKIT_SDK_IS_WATCHOS)
-    target_link_libraries(WebKitTestRunner PRIVATE "-framework PepperUICore")
-endif ()
-
-set(_wktr_bundle_id "org.webkit.WebKitTestRunnerApp")
-
-set(PRODUCT_NAME WebKitTestRunnerApp)
-set(EXECUTABLE_NAME WebKitTestRunnerApp)
-set(PRODUCT_BUNDLE_IDENTIFIER ${_wktr_bundle_id})
-set(_wktr_app_plist "${CMAKE_CURRENT_BINARY_DIR}/WebKitTestRunnerApp-Info.plist")
-configure_file("${WebKitTestRunner_DIR}/WebKitTestRunnerApp/WebKitTestRunnerApp-Info.plist"
-               "${_wktr_app_plist}")
-
-WEBKIT_GET_DEVICE_FAMILY(_wktr_device_family 1 2 3 4 7)
-WEBKIT_ADD_EMBEDDED_BUNDLE_PLIST_KEYS(${_wktr_app_plist} ${_wktr_device_family})
-
-# webkitpy and DefaultWebBrowserChecks.mm expect WebKitTestRunnerApp.app.
-set(WebKitTestRunner_OUTPUT_NAME WebKitTestRunnerApp)
 set_target_properties(WebKitTestRunner PROPERTIES
     MACOSX_BUNDLE TRUE
-    MACOSX_BUNDLE_INFO_PLIST "${_wktr_app_plist}"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "org.webkit.WebKitTestRunner"
+    MACOSX_BUNDLE_BUNDLE_NAME "WebKitTestRunner"
 )
 
-if (WEBKIT_SDK_IS_TVOS OR WEBKIT_SDK_IS_WATCHOS)
-    set(_wktr_entitlements "${WebKitTestRunner_DIR}/Configurations/WebKitTestRunnerApp-watchOS.entitlements")
-elseif (WEBKIT_SDK_IS_IOS AND WEBKIT_SDK_IS_SIMULATOR)
-    set(_wktr_entitlements "${WebKitTestRunner_DIR}/Configurations/WebKitTestRunnerApp-iOS-simulator.entitlements")
-else ()
-    set(_wktr_entitlements "${WebKitTestRunner_DIR}/Configurations/WebKitTestRunnerApp-iOS.entitlements")
-endif ()
-
-if (WEBKIT_SDK_IS_SIMULATOR)
-    WEBKIT_EMBED_ENTITLEMENTS(WebKitTestRunner ${_wktr_entitlements})
-    set(_wktr_sign_entitlements "${CMAKE_CURRENT_BINARY_DIR}/WebKitTestRunnerApp-get-task-allow.entitlements")
-    WEBKIT_WRITE_SIMULATOR_SIGNING_ENTITLEMENTS(${_wktr_sign_entitlements})
-else ()
-    set(_wktr_sign_entitlements "${_wktr_entitlements}")
-endif ()
-set_target_properties(WebKitTestRunner PROPERTIES
-    CODE_SIGN_ENTITLEMENTS "${_wktr_sign_entitlements}"
-    CODE_SIGN_BUNDLE "$<TARGET_BUNDLE_DIR:WebKitTestRunner>"
-)
-
-add_custom_command(
-    OUTPUT "${_wktr_app_dir}/Launch.storyboardc"
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${_wktr_app_dir}"
-    COMMAND ibtool --compile "${_wktr_app_dir}/Launch.storyboardc" "${WebKitTestRunner_DIR}/ios/Launch.storyboard"
-    DEPENDS "${WebKitTestRunner_DIR}/ios/Launch.storyboard"
-    VERBATIM)
-
-target_sources(WebKitTestRunner PRIVATE "${_wktr_app_dir}/Launch.storyboardc")
-# The app signs in POST_BUILD, which only re-runs on relink.
-set_property(TARGET WebKitTestRunner APPEND PROPERTY LINK_DEPENDS
-    "$<TARGET_FILE:TestRunnerInjectedBundle>"
-    "${_wktr_app_dir}/Launch.storyboardc")
+set(_wktr_bundle_id "org.webkit.WebKitTestRunner")
 
 if (USE_EXTENSIONKIT)
     add_dependencies(WebKitTestRunner WebContentExtension WebContentCaptivePortalExtension NetworkingExtension)

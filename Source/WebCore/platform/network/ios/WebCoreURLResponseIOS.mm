@@ -47,11 +47,11 @@ static inline bool shouldPreferTextPlainMIMEType(const String& mimeType, const S
 
 void adjustMIMETypeIfNecessary(CFURLResponseRef response, IsMainResourceLoad isMainResourceLoad, IsNoSniffSet isNoSniffSet)
 {
-    RetainPtr type = CFURLResponseGetMIMEType(response);
+    auto type = CFURLResponseGetMIMEType(response);
     if (!type) {
         // FIXME: <rdar://problem/46332893> is fixed, but for some reason, this special case is still needed; should resolve that issue and remove this.
-        if (RetainPtr extension = filePathExtension(response)) {
-            if (CFStringCompare(extension, CFSTR("mjs"), kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
+        if (auto extension = filePathExtension(response)) {
+            if (CFStringCompare(extension.get(), CFSTR("mjs"), kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
                 CFURLResponseSetMIMEType(response, CFSTR("text/javascript"));
                 return;
             }
@@ -64,14 +64,14 @@ void adjustMIMETypeIfNecessary(CFURLResponseRef response, IsMainResourceLoad isM
 #else
     // Ensure that the MIME type is correct so that QuickLook's web plug-in is called when needed.
     // The shouldUseQuickLookForMIMEType function filters out the common MIME types so we don't do unnecessary work in those cases.
-    if (isMainResourceLoad == IsMainResourceLoad::Yes && isNoSniffSet == IsNoSniffSet::No && shouldUseQuickLookForMIMEType(bridge_cast(type.get()))) {
+    if (isMainResourceLoad == IsMainResourceLoad::Yes && isNoSniffSet == IsNoSniffSet::No && shouldUseQuickLookForMIMEType(bridge_cast(type))) {
         RetainPtr<NSString> updatedType;
-        RetainPtr suggestedFilename = adoptCF(CFURLResponseCopySuggestedFilename(response));
-        if (RetainPtr quickLookType = adoptNS(PAL::softLink_QuickLook_QLTypeCopyBestMimeTypeForFileNameAndMimeType(bridge_cast(suggestedFilename.get()), bridge_cast(type.get()))))
+        auto suggestedFilename = adoptCF(CFURLResponseCopySuggestedFilename(response));
+        if (auto quickLookType = adoptNS(PAL::softLink_QuickLook_QLTypeCopyBestMimeTypeForFileNameAndMimeType(bridge_cast(suggestedFilename.get()), bridge_cast(type))))
             updatedType = quickLookType.get();
-        else if (RetainPtr extension = filePathExtension(response))
+        else if (auto extension = filePathExtension(response))
             updatedType = preferredMIMETypeForFileExtensionFromUTType(bridge_cast(extension.get()));
-        if (updatedType && !shouldPreferTextPlainMIMEType(type.get(), updatedType.get()) && (!type || CFStringCompare(type, bridge_cast(updatedType.get()), kCFCompareCaseInsensitive) != kCFCompareEqualTo)) {
+        if (updatedType && !shouldPreferTextPlainMIMEType(type, updatedType.get()) && (!type || CFStringCompare(type, bridge_cast(updatedType.get()), kCFCompareCaseInsensitive) != kCFCompareEqualTo)) {
             CFURLResponseSetMIMEType(response, bridge_cast(updatedType.get()));
             return;
         }

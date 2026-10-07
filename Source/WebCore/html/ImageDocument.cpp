@@ -41,7 +41,6 @@
 #include "HTMLHtmlElement.h"
 #include "HTMLImageElement.h"
 #include "HTMLNames.h"
-#include "Image.h"
 #include "LayoutSize.h"
 #include "LocalDOMWindow.h"
 #include "LocalFrame.h"
@@ -53,7 +52,6 @@
 #include "Page.h"
 #include "RawDataDocumentParser.h"
 #include "RenderElement.h"
-#include "RenderElementInlines.h"
 #include "Settings.h"
 #include "UserScriptTypes.h"
 #include <pal/text/TextEncoding.h>
@@ -145,13 +143,10 @@ LayoutSize ImageDocument::imageSize()
     RefPtr imageElement = m_imageElement;
     ASSERT(imageElement);
     updateStyleIfNeeded();
-    CheckedPtr renderer = imageElement->renderer();
-    if (!renderer)
+    RefPtr cachedImage = imageElement->cachedImage();
+    if (!cachedImage)
         return { };
-    auto size = renderer->usedZoomedImageSize();
-    if (!size)
-        return { };
-    return LayoutSize(*size);
+    return cachedImage->imageSizeForRenderer(protect(imageElement->renderer()).get(), frame() ? frame()->pageZoomFactor() : 1);
 }
 
 void ImageDocument::updateDuringParsing()
@@ -193,10 +188,10 @@ void ImageDocument::finishedParsing()
         cachedImage->finishLoading(data.get(), { });
         cachedImage->finish();
 
+        // Report the natural image size in the page title, regardless of zoom level.
+        // At a zoom level of 1 the image is guaranteed to have an integer size.
         updateStyleIfNeeded();
-        RefPtr sourceImage = imageElement->sourceImage();
-        auto naturalDimensions = sourceImage ? sourceImage->naturalDimensions() : NaturalDimensions::none();
-        auto size = flooredIntSize(FloatSize { naturalDimensions.width.value_or(0), naturalDimensions.height.value_or(0) });
+        IntSize size = flooredIntSize(cachedImage->imageSizeForRenderer(protect(imageElement->renderer()).get(), 1));
         if (size.width()) {
             // Compute the title. We use the decoded filename of the resource, falling
             // back on the hostname if there is no path.
@@ -250,8 +245,8 @@ Ref<DocumentParser> ImageDocument::createParser()
 void ImageDocument::createDocumentStructure()
 {
     Ref rootElement = HTMLHtmlElement::create(*this);
-    rootElement->setAttribute(styleAttr, "color-scheme: light dark; height: 100%"_s);
     appendChild(rootElement);
+    rootElement->setInlineStyleProperty(CSSPropertyHeight, 100, CSSUnitType::Percentage);
 
     if (RefPtr localFrame = frame())
         localFrame->injectUserScripts(UserScriptInjectionTime::DocumentStart);

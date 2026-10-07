@@ -25,7 +25,6 @@
 #include "ContainerNodeInlines.h"
 #include "FEFlood.h"
 #include "RenderElement.h"
-#include "SVGElementTypeHelpers.h"
 #include "SVGNames.h"
 #include "SVGPropertyOwnerRegistry.h"
 #include "StyleComputedStyle+GettersInlines.h"
@@ -37,7 +36,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGFEFloodElement);
 
 inline SVGFEFloodElement::SVGFEFloodElement(const QualifiedName& tagName, Document& document)
-    : SVGFilterPrimitiveStandardAttributes(tagName, document, PropertyRegistry::singleton())
+    : SVGFilterPrimitiveStandardAttributes(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::feFloodTag));
 }

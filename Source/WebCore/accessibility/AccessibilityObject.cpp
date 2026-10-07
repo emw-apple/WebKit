@@ -99,8 +99,6 @@
 #include "ProgressTracker.h"
 #include "Range.h"
 #include "RemoteFrame.h"
-#include "RenderBlockFlow.h"
-#include "RenderDescendantIterator.h"
 #include "RenderElementInlines.h"
 #include "RenderImage.h"
 #include "RenderImageResource.h"
@@ -153,9 +151,9 @@ AccessibilityObject::~AccessibilityObject()
 {
     AX_ASSERT(isDetached());
 
-    if (CheckedPtr cache = axObjectCache()) {
-        if (cache->isCounted(*this))
-            cache->uncount(*this);
+    if (!cachedIsIgnored()) {
+        if (auto* cache = m_axObjectCache.get())
+            cache->decrementUnignoredContentObjectCount(role());
     }
 }
 
@@ -2171,7 +2169,7 @@ bool AccessibilityObject::isReplacedElementForTextEmission() const
     // can apply the ignored check themselves: an ignored replaced element (e.g. a <legend>) emits
     // no U+FFFC, but its block boundaries still don't emit newlines.
     RefPtr node = this->node();
-    return node && !node->isTextNode() && isRendererReplacedElement(protect(node->renderer()));
+    return node && !node->isTextNode() && isRendererReplacedElement(node->renderer());
 }
 
 bool AccessibilityObject::isInUserAgentShadowTree() const
@@ -3402,7 +3400,7 @@ FloatSize AccessibilityObject::imageDataSize() const
 RefPtr<SharedBuffer> AccessibilityObject::imageData(const AXImageDataParameters& parameters) const
 {
     RefPtr image = imageFromRenderer(renderer());
-    if (!image || !image->hasSomethingToDraw())
+    if (!image || image->isNull())
         return nullptr;
 
     auto nativeSize = image->size();
@@ -3509,38 +3507,14 @@ bool AccessibilityObject::isSelected() const
         return option->selected();
     }
 
-#if USE(ATSPI)
-    // ATSPI reports the focused or active menu item as selected, and announces it with a selected state change
-    // when it gets focus. ARIA menu items have no selected state otherwise, so other platforms don't do this.
     if (isMenuItem()) {
         if (isFocused())
             return true;
         WeakPtr parent = parentObjectUnignored();
         return parent && parent->activeDescendant() == this;
     }
-#endif // USE(ATSPI)
 
     return false;
-}
-
-String AccessibilityObject::selectedOptionCheckmark() const
-{
-    // Options in a base-appearance select render a ::checkmark, which the UA stylesheet hides unless the option is selected.
-    RefPtr option = dynamicDowncast<HTMLOptionElement>(node());
-    CheckedPtr renderer = option ? option->renderer() : nullptr;
-    CheckedPtr checkmark = renderer ? renderer->pseudoElementRenderer(PseudoElementType::Checkmark).get() : nullptr;
-    if (!checkmark || checkmark->style().usedVisibility() != Visibility::Visible || !option->selected())
-        return { };
-
-    StringBuilder glyph;
-    for (CheckedRef text : descendantsOfType<RenderText>(*checkmark))
-        glyph.append(text->text());
-    String trimmedGlyph = glyph.toString().trim(isASCIIWhitespace);
-    if (!trimmedGlyph.isEmpty())
-        return trimmedGlyph;
-
-    // A checkmark without text is drawn some other way, like with an image or borders.
-    return String { span(checkMarkCharacter) };
 }
 
 bool AccessibilityObject::isTabItemSelected() const
@@ -3755,7 +3729,7 @@ void AccessibilityObject::setFocused(bool focus)
 
         // Legacy WebKit1 case.
         if (frameView->platformWidget())
-            makeFirstResponderForPlatformWidget(page->chrome().client(), *frameView);
+            makeFirstResponderForPlatformWidget(page->chrome().client(), frameView->platformWidget());
 #endif
 #if PLATFORM(MAC)
         else
@@ -3971,7 +3945,7 @@ bool AccessibilityObject::isExpanded() const
 
     if (supportsExpanded()) {
         if (RefPtr select = dynamicDowncast<HTMLSelectElement>(node()); select && select->usesMenuList())
-            return select->isOpen();
+            return select->popupIsVisible();
         if (RefPtr commandForElement = this->commandForElement())
             return commandForElement->isPopoverShowing();
         if (RefPtr popoverTargetElement = this->popoverTargetElement())
@@ -4605,11 +4579,14 @@ bool AccessibilityObject::isIgnoredWithoutCache(AXObjectCache* cache) const
         ignored = computeIsIgnored();
 
     auto previousLastKnownIsIgnoredValue = m_lastKnownIsIgnoredValue;
-    bool wasCounted = cache && cache->isCounted(*this);
     const_cast<AccessibilityObject*>(this)->setLastKnownIsIgnoredValue(ignored);
 
     if (cache) {
-        cache->reconcileCount(*this, wasCounted);
+        bool wasCountedAsUnignored = previousLastKnownIsIgnoredValue == AccessibilityObjectInclusion::IncludeObject;
+        if (!wasCountedAsUnignored && !ignored)
+            cache->incrementUnignoredContentObjectCount(role());
+        else if (wasCountedAsUnignored && ignored)
+            cache->decrementUnignoredContentObjectCount(role());
 
         bool becameUnignored = previousLastKnownIsIgnoredValue == AccessibilityObjectInclusion::IgnoreObject && !ignored;
         bool becameIgnored = !becameUnignored && previousLastKnownIsIgnoredValue == AccessibilityObjectInclusion::IncludeObject && ignored;

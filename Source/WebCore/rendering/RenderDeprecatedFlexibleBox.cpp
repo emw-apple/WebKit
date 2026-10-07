@@ -212,9 +212,9 @@ void RenderDeprecatedFlexibleBox::styleWillChange(Style::Difference diff, const 
 {
     auto shouldClearLineClamp = [&] {
         auto* oldStyle = hasInitializedStyle() ? &style() : nullptr;
-        if (!oldStyle || !oldStyle->hasLegacyLineClamp())
+        if (!oldStyle || oldStyle->lineClamp().isNone())
             return false;
-        if (!newStyle.hasLegacyLineClamp())
+        if (newStyle.lineClamp().isNone())
             return true;
         return newStyle.boxOrient() == BoxOrient::Horizontal;
     };
@@ -333,7 +333,7 @@ bool RenderDeprecatedFlexibleBox::hasClampingAndNoFlexing() const
         return false;
 
     auto& style = this->style();
-    if (!style.hasLegacyLineClamp())
+    if (style.lineClamp().isNone())
         return false;
     if (!style.logicalHeight().isAuto() || !firstChildBox->style().logicalHeight().isAuto())
         return false;
@@ -809,9 +809,9 @@ void RenderDeprecatedFlexibleBox::layoutVerticalBox(RelayoutChildren relayoutChi
 
     // We confine the line clamp ugliness to vertical flexible boxes (thus keeping it out of
     // mainstream block layout); this is not really part of the XUL box model.
-    bool haveLegacyLineClamp = style().hasLegacyLineClamp();
+    bool haveLineClamp = !style().lineClamp().isNone();
     auto clampedContent = ClampedContent { };
-    if (haveLegacyLineClamp)
+    if (haveLineClamp)
         clampedContent = applyLineClamp(iterator, relayoutChildren);
 
     beginUpdateScrollInfoAfterLayoutTransaction();
@@ -826,7 +826,7 @@ void RenderDeprecatedFlexibleBox::layoutVerticalBox(RelayoutChildren relayoutChi
 
         for (RenderBox* child = iterator.first(); child; child = iterator.next()) {
             // Make sure we relayout children if we need it.
-            if (!haveLegacyLineClamp && relayoutChildren == RelayoutChildren::Yes)
+            if (!haveLineClamp && relayoutChildren == RelayoutChildren::Yes)
                 child->setChildNeedsLayout(MarkingBehavior::MarkOnlyThis);
 
             if (child->isOutOfFlowPositioned()) {
@@ -847,7 +847,7 @@ void RenderDeprecatedFlexibleBox::layoutVerticalBox(RelayoutChildren relayoutChi
             // Add in the child's marginTop to our height.
             setBorderBoxHeight(borderBoxHeight() + child->marginTop());
 
-            if (!haveLegacyLineClamp)
+            if (!haveLineClamp)
                 child->markForPaginationRelayoutIfNeeded();
 
             // Now do a layout.
@@ -1033,7 +1033,7 @@ void RenderDeprecatedFlexibleBox::layoutVerticalBox(RelayoutChildren relayoutChi
 
     // So that the computeLogicalHeight in layoutBlock() knows to relayout positioned objects because of
     // a height change, we revert our height back to the intrinsic height before returning.
-    if (haveLegacyLineClamp && clampedContent.renderer) {
+    if (haveLineClamp && clampedContent.renderer) {
         auto contentOffset = [&] {
             auto* clampedRenderer = clampedContent.renderer.get();
             auto contentLogicalTop = clampedRenderer->logicalTop() + clampedRenderer->contentBoxLocation().y();
@@ -1115,12 +1115,12 @@ RenderDeprecatedFlexibleBox::ClampedContent RenderDeprecatedFlexibleBox::applyLi
         layoutState.setLegacyLineClamp(ancestorLineClamp);
     });
 
-    auto lineCountForLineClamp = WTF::switchOn(style().maxLines(),
-        [](const CSS::Keyword::Auto&) -> size_t {
+    auto lineCountForLineClamp = WTF::switchOn(style().lineClamp(),
+        [](const CSS::Keyword::None&) -> size_t {
             ASSERT_NOT_REACHED();
             return 1;
         },
-        [](const Style::MaximumLines::Integer& integer) -> size_t {
+        [](const Style::WebkitLineClamp::Integer& integer) -> size_t {
             return integer.value;
         }
     );

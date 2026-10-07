@@ -32,8 +32,6 @@ WI.ShaderProgramTreeElement = class ShaderProgramTreeElement extends WI.GeneralT
         const subtitle = null;
         super("shader-program", shaderProgram.displayName, subtitle, shaderProgram);
 
-        this.representedObject.addEventListener(WI.ShaderProgram.Event.NameChanged, this._handleNameChanged, this);
-
         if (this.representedObject.supportsDisabling) {
             this._disabledImageElement = document.createElement("img");
             this._disabledImageElement.title = WI.UIString("Disable Program");
@@ -91,11 +89,6 @@ WI.ShaderProgramTreeElement = class ShaderProgramTreeElement extends WI.GeneralT
     _disabledImageElementClicked(event)
     {
         this.representedObject.disabled = !this.representedObject.disabled;
-    }
-
-    _handleNameChanged()
-    {
-        this.mainTitle = this.representedObject.displayName;
     }
 
     _handleShaderProgramDisabledChanged(event)

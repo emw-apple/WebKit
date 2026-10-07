@@ -55,7 +55,7 @@ protected:
 
 private:
     PaintRenderingContext2D(CustomPaintCanvas&);
-    mutable RefPtr<DisplayList::RecorderImpl> m_recordingContext;
+    mutable std::optional<DisplayList::RecorderImpl> m_recordingContext;
 };
 
 } // namespace WebCore

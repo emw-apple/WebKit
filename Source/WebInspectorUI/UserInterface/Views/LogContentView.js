@@ -248,8 +248,7 @@ WI.LogContentView = class LogContentView extends WI.ContentView
 
         // Some results don't populate until further backend dispatches occur (like the DOM tree).
         // We want to remove focusable children after those pending dispatches too.
-        let activeCallFrame = WI.runtimeManager.useActiveCallFrame ? WI.debuggerManager.activeCallFrame : null;
-        let target = messageView.message?.target || activeCallFrame?.target || WI.runtimeManager.activeExecutionContext.target;
+        let target = messageView.message ? messageView.message.target : WI.runtimeManager.activeExecutionContext.target;
         target.connection.runAfterPendingDispatches(clearFocusableChildren);
 
         if (!this._scopeBar.item(WI.LogContentView.Scopes.All).selected) {

@@ -156,7 +156,6 @@ String GPUDevice::label() const
 void GPUDevice::setLabel(String&& label)
 {
     m_backing->setLabel(WTF::move(label));
-    InspectorInstrumentation::didChangeWebGPUDeviceLabel(*this);
 }
 
 Ref<GPUSupportedFeatures> GPUDevice::features() const

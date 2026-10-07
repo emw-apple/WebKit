@@ -83,7 +83,8 @@ public class TCPChannelClientTest {
     }
   }
 
-  private void connectIPv4Helper() {
+  @Test
+  public void testConnectIPv4() {
     setUpIPv4Server();
     try {
       Thread.sleep(SERVER_WAIT);
@@ -94,11 +95,6 @@ public class TCPChannelClientTest {
 
     verify(serverEvents, timeout(CONNECT_TIMEOUT)).onTCPConnected(true);
     verify(clientEvents, timeout(CONNECT_TIMEOUT)).onTCPConnected(false);
-  }
-
-  @Test
-  public void testConnectIPv4() {
-    connectIPv4Helper();
   }
 
   // TODO:b/389829614 - Below test is failing.
@@ -119,7 +115,7 @@ public class TCPChannelClientTest {
 
   @Test
   public void testSendData() {
-    connectIPv4Helper();
+    testConnectIPv4();
 
     executeAndWait(new Runnable() {
       @Override
@@ -135,7 +131,7 @@ public class TCPChannelClientTest {
 
   @Test
   public void testDisconnectServer() {
-    connectIPv4Helper();
+    testConnectIPv4();
     executeAndWait(new Runnable() {
       @Override
       public void run() {
@@ -149,7 +145,7 @@ public class TCPChannelClientTest {
 
   @Test
   public void testDisconnectClient() {
-    connectIPv4Helper();
+    testConnectIPv4();
     executeAndWait(new Runnable() {
       @Override
       public void run() {

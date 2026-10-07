@@ -30,18 +30,12 @@
 #include "EventDispatcher.h"
 #include "IdentifierTypes.h"
 #include "NetworkProcessConnection.h"
-#include "RemoteSnapshotIdentifier.h"
 #include "ScriptTrackingPrivacyFilter.h"
 #include "SharedPreferencesForWebProcess.h"
 #include "StorageAreaMapIdentifier.h"
 #include "TextCheckerState.h"
 #include "WebInspectorInterruptDispatcher.h"
 #include "WebPageProxyIdentifier.h"
-#if ENABLE(OFFSCREEN_CANVAS) && ENABLE(GPU_PROCESS)
-#include <WebCore/ImageBuffer.h>
-#include <WebCore/PlaceholderFrameIdentifier.h>
-#include <WebCore/PlaceholderRenderingContextIdentifier.h>
-#endif
 #include "WebSocketChannelManager.h"
 #include <WebCore/ActivityState.h>
 #include <WebCore/BackForwardFrameItemIdentifier.h>
@@ -51,7 +45,6 @@
 #include <WebCore/PageIdentifier.h>
 #include <WebCore/ProcessIdentity.h>
 #include <WebCore/RegistrableDomain.h>
-#include <WebCore/RenderingMode.h>
 #include <WebCore/ServiceWorkerTypes.h>
 #include <WebCore/ThirdPartyCookieBlockingMode.h>
 #include <WebCore/Timer.h>
@@ -89,7 +82,7 @@ OBJC_CLASS NSMutableDictionary;
 #include "RendererBufferTransportMode.h"
 #endif
 
-#if ENABLE(UI_SIDE_COMPOSITING)
+#if PLATFORM(IOS_FAMILY)
 #include "ViewUpdateDispatcher.h"
 #endif
 
@@ -263,12 +256,6 @@ public:
     bool fullKeyboardAccessEnabled() const { return m_fullKeyboardAccessEnabled; }
 
     void contentWorldDestroyed(ContentWorldIdentifier);
-#if ENABLE(OFFSCREEN_CANVAS) && ENABLE(GPU_PROCESS)
-    void commitOffscreenCanvasPlaceholderFrame(WebCore::PlaceholderRenderingContextIdentifier, WebCore::ImageBufferTransferHandle&&, WebCore::PlaceholderFrameIdentifier, bool originClean, bool opaque, CompletionHandler<void(bool)>&&);
-    // For a transferred buffer this process owns but has no use for; it is otherwise kept until this
-    // process exits.
-    void releaseTransferredImageBuffer(WebCore::ImageBufferTransferIdentifier);
-#endif
 
 #if HAVE(MOUSE_DEVICE_OBSERVATION)
     bool hasMouseDevice() const { return m_hasMouseDevice; }
@@ -313,10 +300,6 @@ public:
 
 #if ENABLE(GPU_PROCESS)
     GPUProcessConnection& ensureGPUProcessConnection();
-    // Resolves a frame of a snapshot that will not be recorded, so that the snapshot does not wait for it.
-    void abandonSnapshotFrame(RemoteSnapshotIdentifier, WebCore::FrameIdentifier);
-    // Fails a snapshot whose root will not be recorded, so that nothing waits for it.
-    void failSnapshot(RemoteSnapshotIdentifier);
     GPUProcessConnection* existingGPUProcessConnection() { return m_gpuProcessConnection.get(); }
     // Returns timeout duration for GPU process connections. Thread-safe.
     Seconds NODELETE gpuProcessTimeoutDuration() const;
@@ -629,10 +612,6 @@ private:
     void setAccessibilityMode(WebCore::AccessibilityMode);
     void bindAccessibilityFrameWithData(WebCore::FrameIdentifier, std::span<const uint8_t>);
 
-#if ENABLE(GPU_PROCESS)
-    void drawFrameToSnapshot(WebCore::FrameIdentifier, const WebCore::IntRect&, RemoteSnapshotIdentifier, WebCore::RenderingMode);
-#endif
-
     void startMemorySampler(SandboxExtension::Handle&&, const String&, const double);
     void stopMemorySampler();
     
@@ -808,7 +787,7 @@ private:
     Seconds m_hiddenPageDOMTimerThrottlingIncreaseLimit;
 
     EventDispatcher m_eventDispatcher;
-#if ENABLE(UI_SIDE_COMPOSITING)
+#if PLATFORM(IOS_FAMILY)
     ViewUpdateDispatcher m_viewUpdateDispatcher;
 #endif
     WebInspectorInterruptDispatcher m_webInspectorInterruptDispatcher;

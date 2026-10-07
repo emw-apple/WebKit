@@ -343,7 +343,7 @@ public:
     
 #if ENABLE(JIT)
     template<typename Func>
-    void forEachReg(NOESCAPE const Func& func)
+    void forEachReg(const Func& func)
     {
         switch (m_technique) {
         case InGPR:

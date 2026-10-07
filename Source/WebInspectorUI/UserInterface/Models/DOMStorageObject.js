@@ -25,16 +25,13 @@
 
 WI.DOMStorageObject = class DOMStorageObject extends WI.Object
 {
-    constructor(id, host, isLocalStorage, {target} = {})
+    constructor(id, host, isLocalStorage)
     {
         super();
 
         this._id = id;
         this._host = host;
         this._isLocalStorage = isLocalStorage;
-
-        this._target = target ?? null;
-
         this._entries = new Map;
     }
 
@@ -43,21 +40,6 @@ WI.DOMStorageObject = class DOMStorageObject extends WI.Object
     get id() { return this._id; }
     get host() { return this._host; }
     get entries() { return this._entries; }
-
-    get target()
-    {
-        // The frame target dies with its frame; fall back rather than use a dead connection.
-        if (this._target && !this._target.isDestroyed)
-            return this._target;
-        return WI.assumingMainTarget();
-    }
-
-    set target(target)
-    {
-        console.assert(!target || target instanceof WI.FrameTarget, target);
-
-        this._target = target ?? null;
-    }
 
     saveIdentityToCookie(cookie)
     {
@@ -87,7 +69,7 @@ WI.DOMStorageObject = class DOMStorageObject extends WI.Object
             callback(error, entries);
         }
 
-        let target = this.target;
+        let target = WI.assumingMainTarget();
         target.DOMStorageAgent.getDOMStorageItems(this._id, innerCallback.bind(this));
     }
 
@@ -95,19 +77,19 @@ WI.DOMStorageObject = class DOMStorageObject extends WI.Object
     {
         console.assert(this._entries.has(key));
 
-        let target = this.target;
+        let target = WI.assumingMainTarget();
         return target.DOMStorageAgent.removeDOMStorageItem(this._id, key);
     }
 
     setItem(key, value)
     {
-        let target = this.target;
+        let target = WI.assumingMainTarget();
         return target.DOMStorageAgent.setDOMStorageItem(this._id, key, value);
     }
 
     clear()
     {
-        let target = this.target;
+        let target = WI.assumingMainTarget();
 
         // COMPATIBILITY (iOS 13.4): DOMStorage.clearDOMStorageItems did not exist yet.
         if (!target.hasCommand("DOMStorage.clearDOMStorageItems")) {

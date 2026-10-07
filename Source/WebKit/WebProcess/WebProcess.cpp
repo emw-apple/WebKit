@@ -79,9 +79,6 @@
 #include "WebPermissionController.h"
 #include "WebPlatformStrategies.h"
 #include "WebProcessCreationParameters.h"
-#if ENABLE(OFFSCREEN_CANVAS) && ENABLE(GPU_PROCESS)
-#include <WebCore/PlaceholderRenderingContextSource.h>
-#endif
 #if ENABLE(GPU_PROCESS)
 #include "RemoteImageBufferProxy.h"
 #endif
@@ -196,9 +193,7 @@
 #endif
 
 #if ENABLE(GPU_PROCESS)
-#include "GPUConnectionToWebProcessMessages.h"
 #include "GPUProcessConnection.h"
-#include "RemoteRenderingBackendProxy.h"
 #endif
 
 #if ENABLE(MODEL_PROCESS)
@@ -271,7 +266,6 @@
 #endif
 
 #if PLATFORM(MAC)
-#import <WebCore/LocalDefaultSystemAppearance.h>
 #import <wtf/spi/darwin/SandboxSPI.h>
 #endif
 
@@ -349,7 +343,7 @@ UserMediaCaptureManager& WebProcess::userMediaCaptureManager()
 
 WebProcess::WebProcess()
     : m_eventDispatcher(*this)
-#if ENABLE(UI_SIDE_COMPOSITING)
+#if PLATFORM(IOS_FAMILY)
     , m_viewUpdateDispatcher(*this)
 #endif
     , m_webInspectorInterruptDispatcher(*this)
@@ -472,9 +466,9 @@ void WebProcess::initializeConnection(IPC::Connection* connection)
 #endif
 
     protect(eventDispatcher())->initializeConnection(*connection);
-#if ENABLE(UI_SIDE_COMPOSITING)
+#if PLATFORM(IOS_FAMILY)
     Ref { m_viewUpdateDispatcher }->initializeConnection(*connection);
-#endif
+#endif // PLATFORM(IOS_FAMILY)
 
     protect(m_webInspectorInterruptDispatcher)->initializeConnection(*connection);
 #if ENABLE(WEBASSEMBLY_DEBUGGER) && ENABLE(REMOTE_INSPECTOR)
@@ -505,14 +499,6 @@ void WebProcess::initializeWebProcess(WebProcessCreationParameters&& parameters,
         setWebsiteDataStoreParameters(WTF::move(*parameters.websiteDataStoreParameters));
 
     setLegacyPresentingApplicationPID(parameters.presentingApplicationPID);
-
-#if ENABLE(OFFSCREEN_CANVAS) && ENABLE(GPU_PROCESS)
-    WebCore::PlaceholderRenderingContextSource::setPlaceholderLifetimeHandlers([](WebCore::PlaceholderRenderingContextIdentifier identifier) {
-        WebProcess::singleton().send(Messages::WebProcessProxy::OffscreenCanvasPlaceholderCreated(identifier), 0);
-    }, [](WebCore::PlaceholderRenderingContextIdentifier identifier) {
-        WebProcess::singleton().send(Messages::WebProcessProxy::OffscreenCanvasPlaceholderDestroyed(identifier), 0);
-    });
-#endif
 
 #if OS(LINUX)
     MemoryPressureHandler::ReliefLogger::setLoggingEnabled(parameters.shouldEnableMemoryPressureReliefLogging);
@@ -939,10 +925,6 @@ void WebProcess::prewarmGlobally()
         return;
     }
     WebCore::ProcessWarming::prewarmGlobally();
-
-#if PLATFORM(MAC)
-    WebCore::LocalDefaultSystemAppearance appearance(false);
-#endif
 }
 
 void WebProcess::prewarmWithDomainInformation(WebCore::PrewarmInformation&& prewarmInformation)
@@ -1261,8 +1243,8 @@ std::optional<WebCore::UserGestureTokenIdentifier> WebProcess::userGestureTokenI
     if (!token || !token->processingUserGesture())
         return std::nullopt;
 
-    auto result = m_userGestureTokens.ensure(*token, [&] {
-        return token->identifier();
+    auto result = m_userGestureTokens.ensure(*token, [] {
+        return UserGestureTokenIdentifier::generate();
     });
     if (result.isNewEntry) {
         Ref { result.iterator->key }->addDestructionObserver([pageID] (UserGestureToken& tokenBeingDestroyed) {
@@ -1821,34 +1803,6 @@ void WebProcess::updateCPUMonitorState(CPUMonitorUpdateReason)
 
 void WebProcess::bindAccessibilityFrameWithData(WebCore::FrameIdentifier, std::span<const uint8_t>)
 {
-}
-
-#endif
-
-#if ENABLE(GPU_PROCESS)
-
-// Received by the process rather than a page, because the frame's page may have gone here since the
-// frame was painted, and a request that reached nothing would leave the snapshot waiting for it.
-void WebProcess::drawFrameToSnapshot(WebCore::FrameIdentifier frameID, const WebCore::IntRect& rect, RemoteSnapshotIdentifier snapshotIdentifier, WebCore::RenderingMode renderingMode)
-{
-    RefPtr frame = webFrame(frameID);
-    RefPtr page = frame ? frame->page() : nullptr;
-    if (!page) {
-        abandonSnapshotFrame(snapshotIdentifier, frameID);
-        return;
-    }
-    page->drawFrameToSnapshot(frameID, rect, snapshotIdentifier, renderingMode);
-}
-
-void WebProcess::abandonSnapshotFrame(RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID)
-{
-    // Not through a page's rendering backend, since there may be no page left to have one.
-    protect(ensureGPUProcessConnection().connection())->send(Messages::GPUConnectionToWebProcess::AbandonSnapshotFrame(snapshotIdentifier, frameID), 0);
-}
-
-void WebProcess::failSnapshot(RemoteSnapshotIdentifier snapshotIdentifier)
-{
-    protect(ensureGPUProcessConnection().connection())->send(Messages::GPUConnectionToWebProcess::FailSnapshot(snapshotIdentifier), 0);
 }
 
 #endif
@@ -2811,31 +2765,6 @@ void WebProcess::contentWorldDestroyed(ContentWorldIdentifier identifier)
 {
     WebUserContentController::removeContentWorld(identifier);
 }
-
-#if ENABLE(OFFSCREEN_CANVAS) && ENABLE(GPU_PROCESS)
-void WebProcess::commitOffscreenCanvasPlaceholderFrame(WebCore::PlaceholderRenderingContextIdentifier identifier, WebCore::ImageBufferTransferHandle&& transferHandle, WebCore::PlaceholderFrameIdentifier frame, bool originClean, bool opaque, CompletionHandler<void(bool)>&& completionHandler)
-{
-    // Always true, only false if this processed crashed.
-    completionHandler(true);
-
-    if (WebCore::PlaceholderRenderingContextSource::commitFrameFromAnotherProcess(identifier, transferHandle, frame, originClean, opaque))
-        return;
-
-    if (!m_pageMap.isEmpty()) {
-        Ref page = m_pageMap.begin()->value;
-        if (protect(page->ensureRemoteRenderingBackendProxy())->takeTransferredBuffer(transferHandle))
-            return;
-    }
-    releaseTransferredImageBuffer(transferHandle.identifier);
-}
-
-void WebProcess::releaseTransferredImageBuffer(WebCore::ImageBufferTransferIdentifier identifier)
-{
-    // The buffer went with the GPU process if there is no connection to it.
-    if (RefPtr gpuProcessConnection = existingGPUProcessConnection())
-        gpuProcessConnection->connection().send(Messages::GPUConnectionToWebProcess::ReleaseTransferredImageBuffer(identifier), 0);
-}
-#endif
 
 } // namespace WebKit
 

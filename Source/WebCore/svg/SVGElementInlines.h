@@ -34,7 +34,7 @@ namespace WebCore {
 
 inline void SVGElement::detachAllProperties()
 {
-    propertyRegistry().detachAllProperties(*this);
+    propertyRegistry().detachAllProperties();
 }
 
 inline void SVGElement::setAnimatedSVGAttributesAreDirty()

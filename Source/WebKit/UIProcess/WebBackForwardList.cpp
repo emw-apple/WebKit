@@ -545,7 +545,7 @@ void WebBackForwardList::clear()
     page->didChangeBackForwardList(nullptr, WTF::move(removedItems));
 }
 
-BackForwardListState WebBackForwardList::backForwardListState(NOESCAPE const WTF::Function<bool(WebBackForwardListItem&)>& filter) const
+BackForwardListState WebBackForwardList::backForwardListState(WTF::Function<bool (WebBackForwardListItem&)>&& filter) const
 {
     ASSERT(!m_currentIndex || *m_currentIndex < m_entries.size());
 
@@ -600,7 +600,7 @@ void WebBackForwardList::setItemsAsRestoredFromSession()
     });
 }
 
-void WebBackForwardList::setItemsAsRestoredFromSessionIf(NOESCAPE const Function<bool(WebBackForwardListItem&)>& functor)
+void WebBackForwardList::setItemsAsRestoredFromSessionIf(NOESCAPE Function<bool(WebBackForwardListItem&)>&& functor)
 {
     for (auto& entry : m_entries) {
         if (functor(entry))
@@ -1183,19 +1183,5 @@ WebKit::WebBackForwardListItem* itemAtIndexInBackForwardListItemVector(const Vec
     return items[index].ptr();
 }
 
-size_t frameStateChildCount(const WebKit::FrameState& frameState)
-{
-    return frameState.children.size();
-}
-
-WebKit::FrameState* frameStateChildAtIndex(const WebKit::FrameState& frameState, size_t index)
-{
-    return frameState.children[index].ptr();
-}
-
-unsigned maxFrameStateDepthForMessageCheck()
-{
-    return WebCore::Page::maxFrameDepth;
-}
 
 #endif // ENABLE(BACK_FORWARD_LIST_SWIFT)

@@ -103,7 +103,6 @@
 #include <JavaScriptCore/ObjectConstructor.h>
 #include <JavaScriptCore/PropertyNameArray.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
-#include <JavaScriptCore/StructureCreateInlines.h>
 #include <JavaScriptCore/SubspaceInlines.h>
 #include <type_traits>
 #include <wtf/GetPtr.h>
@@ -2388,6 +2387,7 @@ static JSC_DECLARE_HOST_FUNCTION(jsTestObjPrototypeFunction_methodWithNullableUS
 static JSC_DECLARE_HOST_FUNCTION(jsTestObjPrototypeFunction_methodWithUSVStringArgTreatingNullAsEmptyString);
 static JSC_DECLARE_HOST_FUNCTION(jsTestObjPrototypeFunction_methodWithByteStringArg);
 static JSC_DECLARE_HOST_FUNCTION(jsTestObjPrototypeFunction_methodWithNullableByteStringArg);
+static JSC_DECLARE_HOST_FUNCTION(jsTestObjPrototypeFunction_methodWithByteStringArgTreatingNullAsEmptyString);
 static JSC_DECLARE_HOST_FUNCTION(jsTestObjPrototypeFunction_serializedValue);
 static JSC_DECLARE_HOST_FUNCTION(jsTestObjPrototypeFunction_methodWithRecord);
 static JSC_DECLARE_HOST_FUNCTION(jsTestObjPrototypeFunction_customMethod);
@@ -2591,6 +2591,8 @@ static JSC_DECLARE_CUSTOM_GETTER(jsTestObj_stringAttrTreatingNullAsEmptyString);
 static JSC_DECLARE_CUSTOM_SETTER(setJSTestObj_stringAttrTreatingNullAsEmptyString);
 static JSC_DECLARE_CUSTOM_GETTER(jsTestObj_usvstringAttrTreatingNullAsEmptyString);
 static JSC_DECLARE_CUSTOM_SETTER(setJSTestObj_usvstringAttrTreatingNullAsEmptyString);
+static JSC_DECLARE_CUSTOM_GETTER(jsTestObj_byteStringAttrTreatingNullAsEmptyString);
+static JSC_DECLARE_CUSTOM_SETTER(setJSTestObj_byteStringAttrTreatingNullAsEmptyString);
 static JSC_DECLARE_CUSTOM_GETTER(jsTestObj_stringLongRecordAttr);
 static JSC_DECLARE_CUSTOM_SETTER(setJSTestObj_stringLongRecordAttr);
 static JSC_DECLARE_CUSTOM_GETTER(jsTestObj_usvstringLongRecordAttr);
@@ -3017,7 +3019,7 @@ template<> void JSTestObjDOMConstructor::initializeProperties(VM& vm, JSDOMGloba
 
 /* Hash table for prototype */
 
-static const std::array<HashTableValue, 305> JSTestObjPrototypeTableValues {
+static const std::array<HashTableValue, 307> JSTestObjPrototypeTableValues {
     HashTableValue { "constructor"_s, static_cast<unsigned>(PropertyAttribute::DontEnum), NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObjConstructor, 0 } },
     HashTableValue { "readOnlyLongAttr"_s, JSC::PropertyAttribute::ReadOnly | JSC::PropertyAttribute::CustomAccessor | JSC::PropertyAttribute::DOMAttribute, NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_readOnlyLongAttr, 0 } },
     HashTableValue { "readOnlyStringAttr"_s, JSC::PropertyAttribute::ReadOnly | JSC::PropertyAttribute::CustomAccessor | JSC::PropertyAttribute::DOMAttribute, NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_readOnlyStringAttr, 0 } },
@@ -3041,6 +3043,7 @@ static const std::array<HashTableValue, 305> JSTestObjPrototypeTableValues {
     HashTableValue { "lenientTestObjAttr"_s, static_cast<unsigned>(JSC::PropertyAttribute::CustomAccessor), NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_lenientTestObjAttr, setJSTestObj_lenientTestObjAttr } },
     HashTableValue { "stringAttrTreatingNullAsEmptyString"_s, JSC::PropertyAttribute::CustomAccessor | JSC::PropertyAttribute::DOMAttribute, NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_stringAttrTreatingNullAsEmptyString, setJSTestObj_stringAttrTreatingNullAsEmptyString } },
     HashTableValue { "usvstringAttrTreatingNullAsEmptyString"_s, JSC::PropertyAttribute::CustomAccessor | JSC::PropertyAttribute::DOMAttribute, NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_usvstringAttrTreatingNullAsEmptyString, setJSTestObj_usvstringAttrTreatingNullAsEmptyString } },
+    HashTableValue { "byteStringAttrTreatingNullAsEmptyString"_s, JSC::PropertyAttribute::CustomAccessor | JSC::PropertyAttribute::DOMAttribute, NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_byteStringAttrTreatingNullAsEmptyString, setJSTestObj_byteStringAttrTreatingNullAsEmptyString } },
     HashTableValue { "stringLongRecordAttr"_s, JSC::PropertyAttribute::CustomAccessor | JSC::PropertyAttribute::DOMAttribute, NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_stringLongRecordAttr, setJSTestObj_stringLongRecordAttr } },
     HashTableValue { "usvstringLongRecordAttr"_s, JSC::PropertyAttribute::CustomAccessor | JSC::PropertyAttribute::DOMAttribute, NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_usvstringLongRecordAttr, setJSTestObj_usvstringLongRecordAttr } },
     HashTableValue { "usvstringLongRecordAttr"_s, JSC::PropertyAttribute::CustomAccessor | JSC::PropertyAttribute::DOMAttribute, NoIntrinsic, { HashTableValue::GetterSetterType, jsTestObj_usvstringLongRecordAttr, setJSTestObj_usvstringLongRecordAttr } },
@@ -3212,6 +3215,7 @@ static const std::array<HashTableValue, 305> JSTestObjPrototypeTableValues {
     HashTableValue { "methodWithUSVStringArgTreatingNullAsEmptyString"_s, static_cast<unsigned>(JSC::PropertyAttribute::Function), NoIntrinsic, { HashTableValue::NativeFunctionType, jsTestObjPrototypeFunction_methodWithUSVStringArgTreatingNullAsEmptyString, 1 } },
     HashTableValue { "methodWithByteStringArg"_s, static_cast<unsigned>(JSC::PropertyAttribute::Function), NoIntrinsic, { HashTableValue::NativeFunctionType, jsTestObjPrototypeFunction_methodWithByteStringArg, 1 } },
     HashTableValue { "methodWithNullableByteStringArg"_s, static_cast<unsigned>(JSC::PropertyAttribute::Function), NoIntrinsic, { HashTableValue::NativeFunctionType, jsTestObjPrototypeFunction_methodWithNullableByteStringArg, 1 } },
+    HashTableValue { "methodWithByteStringArgTreatingNullAsEmptyString"_s, static_cast<unsigned>(JSC::PropertyAttribute::Function), NoIntrinsic, { HashTableValue::NativeFunctionType, jsTestObjPrototypeFunction_methodWithByteStringArgTreatingNullAsEmptyString, 1 } },
     HashTableValue { "serializedValue"_s, static_cast<unsigned>(JSC::PropertyAttribute::Function), NoIntrinsic, { HashTableValue::NativeFunctionType, jsTestObjPrototypeFunction_serializedValue, 1 } },
     HashTableValue { "methodWithRecord"_s, static_cast<unsigned>(JSC::PropertyAttribute::Function), NoIntrinsic, { HashTableValue::NativeFunctionType, jsTestObjPrototypeFunction_methodWithRecord, 1 } },
     HashTableValue { "customMethod"_s, static_cast<unsigned>(JSC::PropertyAttribute::Function), NoIntrinsic, { HashTableValue::NativeFunctionType, jsTestObjPrototypeFunction_customMethod, 0 } },
@@ -3608,7 +3612,7 @@ bool JSTestObj::put(JSCell* cell, JSGlobalObject* lexicalGlobalObject, PropertyN
         return JSObject::put(thisObject, lexicalGlobalObject, propertyName, value, putPropertySlot);
 
     // Temporary quirk for ungap/@custom-elements polyfill (rdar://problem/111008826), consider removing in 2025.
-    if (RefPtr document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {
+    if (auto* document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {
         if (document->quirks().needsConfigurableIndexedPropertiesQuirk()) [[unlikely]]
             return JSObject::put(thisObject, lexicalGlobalObject, propertyName, value, putPropertySlot);
     }
@@ -3635,7 +3639,7 @@ bool JSTestObj::putByIndex(JSCell* cell, JSGlobalObject* lexicalGlobalObject, un
 {
 
     // Temporary quirk for ungap/@custom-elements polyfill (rdar://problem/111008826), consider removing in 2025.
-    if (RefPtr document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {
+    if (auto* document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {
         if (document->quirks().needsConfigurableIndexedPropertiesQuirk()) [[unlikely]]
             return JSObject::putByIndex(cell, lexicalGlobalObject, index, value, shouldThrow);
     }
@@ -3673,7 +3677,7 @@ bool JSTestObj::deleteProperty(JSCell* cell, JSGlobalObject* lexicalGlobalObject
     SUPPRESS_UNCOUNTED_LOCAL auto& impl = thisObject.wrapped();
 
     // Temporary quirk for ungap/@custom-elements polyfill (rdar://problem/111008826), consider removing in 2025.
-    if (RefPtr document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {
+    if (auto* document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {
         if (document->quirks().needsConfigurableIndexedPropertiesQuirk()) [[unlikely]]
             return JSObject::deleteProperty(cell, lexicalGlobalObject, propertyName, slot);
     }
@@ -3690,7 +3694,7 @@ bool JSTestObj::deletePropertyByIndex(JSCell* cell, JSGlobalObject* lexicalGloba
     SUPPRESS_UNCOUNTED_LOCAL auto& impl = thisObject.wrapped();
 
     // Temporary quirk for ungap/@custom-elements polyfill (rdar://problem/111008826), consider removing in 2025.
-    if (RefPtr document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {
+    if (auto* document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {
         if (document->quirks().needsConfigurableIndexedPropertiesQuirk()) [[unlikely]]
             return JSObject::deletePropertyByIndex(cell, lexicalGlobalObject, index);
     }
@@ -4459,6 +4463,39 @@ static inline bool setJSTestObj_usvstringAttrTreatingNullAsEmptyStringSetter(JSG
 JSC_DEFINE_CUSTOM_SETTER(setJSTestObj_usvstringAttrTreatingNullAsEmptyString, (JSGlobalObject* lexicalGlobalObject, EncodedJSValue thisValue, EncodedJSValue encodedValue, PropertyName attributeName))
 {
     return IDLAttribute<JSTestObj>::set<setJSTestObj_usvstringAttrTreatingNullAsEmptyStringSetter>(*lexicalGlobalObject, thisValue, encodedValue, attributeName);
+}
+
+static inline JSValue jsTestObj_byteStringAttrTreatingNullAsEmptyStringGetter(JSGlobalObject& lexicalGlobalObject, JSTestObj& thisObject)
+{
+    auto& vm = JSC::getVM(&lexicalGlobalObject);
+    auto throwScope = DECLARE_THROW_SCOPE(vm);
+    SUPPRESS_UNCOUNTED_LOCAL auto& impl = thisObject.wrapped();
+    RELEASE_AND_RETURN(throwScope, (toJS<IDLLegacyNullToEmptyStringAdaptor<IDLByteString>>(lexicalGlobalObject, throwScope, impl.byteStringAttrTreatingNullAsEmptyString())));
+}
+
+JSC_DEFINE_CUSTOM_GETTER(jsTestObj_byteStringAttrTreatingNullAsEmptyString, (JSGlobalObject* lexicalGlobalObject, EncodedJSValue thisValue, PropertyName attributeName))
+{
+    return IDLAttribute<JSTestObj>::get<jsTestObj_byteStringAttrTreatingNullAsEmptyStringGetter, CastedThisErrorBehavior::Assert>(*lexicalGlobalObject, thisValue, attributeName);
+}
+
+static inline bool setJSTestObj_byteStringAttrTreatingNullAsEmptyStringSetter(JSGlobalObject& lexicalGlobalObject, JSTestObj& thisObject, JSValue value)
+{
+    auto& vm = JSC::getVM(&lexicalGlobalObject);
+    UNUSED_PARAM(vm);
+    auto throwScope = DECLARE_THROW_SCOPE(vm);
+    SUPPRESS_UNCOUNTED_LOCAL auto& impl = thisObject.wrapped();
+    auto nativeValueConversionResult = convert<IDLLegacyNullToEmptyStringAdaptor<IDLByteString>>(lexicalGlobalObject, value);
+    if (nativeValueConversionResult.hasException(throwScope)) [[unlikely]]
+        return false;
+    invokeFunctorPropagatingExceptionIfNecessary(lexicalGlobalObject, throwScope, [&] {
+        return impl.setByteStringAttrTreatingNullAsEmptyString(nativeValueConversionResult.releaseReturnValue());
+    });
+    return true;
+}
+
+JSC_DEFINE_CUSTOM_SETTER(setJSTestObj_byteStringAttrTreatingNullAsEmptyString, (JSGlobalObject* lexicalGlobalObject, EncodedJSValue thisValue, EncodedJSValue encodedValue, PropertyName attributeName))
+{
+    return IDLAttribute<JSTestObj>::set<setJSTestObj_byteStringAttrTreatingNullAsEmptyStringSetter>(*lexicalGlobalObject, thisValue, encodedValue, attributeName);
 }
 
 static inline JSValue jsTestObj_stringLongRecordAttrGetter(JSGlobalObject& lexicalGlobalObject, JSTestObj& thisObject)
@@ -8487,6 +8524,27 @@ static inline JSC::EncodedJSValue jsTestObjPrototypeFunction_methodWithNullableB
 JSC_DEFINE_HOST_FUNCTION(jsTestObjPrototypeFunction_methodWithNullableByteStringArg, (JSGlobalObject* lexicalGlobalObject, CallFrame* callFrame))
 {
     return IDLOperation<JSTestObj>::call<jsTestObjPrototypeFunction_methodWithNullableByteStringArgBody>(*lexicalGlobalObject, *callFrame, "methodWithNullableByteStringArg"_s);
+}
+
+static inline JSC::EncodedJSValue jsTestObjPrototypeFunction_methodWithByteStringArgTreatingNullAsEmptyStringBody(JSC::JSGlobalObject* lexicalGlobalObject, JSC::CallFrame* callFrame, typename IDLOperation<JSTestObj>::ClassParameter castedThis)
+{
+    auto& vm = JSC::getVM(lexicalGlobalObject);
+    auto throwScope = DECLARE_THROW_SCOPE(vm);
+    UNUSED_PARAM(throwScope);
+    UNUSED_PARAM(callFrame);
+    SUPPRESS_UNCOUNTED_LOCAL auto& impl = castedThis->wrapped();
+    if (callFrame->argumentCount() < 1) [[unlikely]]
+        return throwVMError(lexicalGlobalObject, throwScope, createNotEnoughArgumentsError(lexicalGlobalObject));
+    EnsureStillAliveScope argument0 = callFrame->uncheckedArgument(0);
+    auto strConversionResult = convert<IDLLegacyNullToEmptyStringAdaptor<IDLByteString>>(*lexicalGlobalObject, argument0.value());
+    if (strConversionResult.hasException(throwScope)) [[unlikely]]
+       return encodedJSValue();
+    RELEASE_AND_RETURN(throwScope, JSValue::encode(toJS<IDLUndefined>(*lexicalGlobalObject, throwScope, [&] -> decltype(auto) { return impl.methodWithByteStringArgTreatingNullAsEmptyString(strConversionResult.releaseReturnValue()); })));
+}
+
+JSC_DEFINE_HOST_FUNCTION(jsTestObjPrototypeFunction_methodWithByteStringArgTreatingNullAsEmptyString, (JSGlobalObject* lexicalGlobalObject, CallFrame* callFrame))
+{
+    return IDLOperation<JSTestObj>::call<jsTestObjPrototypeFunction_methodWithByteStringArgTreatingNullAsEmptyStringBody>(*lexicalGlobalObject, *callFrame, "methodWithByteStringArgTreatingNullAsEmptyString"_s);
 }
 
 static inline JSC::EncodedJSValue jsTestObjPrototypeFunction_serializedValueBody(JSC::JSGlobalObject* lexicalGlobalObject, JSC::CallFrame* callFrame, typename IDLOperation<JSTestObj>::ClassParameter castedThis)

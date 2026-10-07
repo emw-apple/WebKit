@@ -317,9 +317,10 @@ AccessibilityObject* AccessibilityRenderObject::parentObject() const
 #endif // !USE(ATSPI)
 
     // Expose markers that are not direct children of a list item too.
-    if (CheckedPtr marker = dynamicDowncast<RenderListOutsideMarker>(*m_renderer)) {
-        if (CheckedPtr listItem = marker->listItem(); listItem && listItem->markerBox() == marker) {
-            if (RefPtr parent = cache->getOrCreate(*listItem); parent && parent->isListItem())
+    if (m_renderer->isRenderListOutsideMarker()) {
+        for (CheckedRef listItemAncestor : ancestorsOfType<RenderListItem>(*m_renderer)) {
+            RefPtr parent = dynamicDowncast<AccessibilityRenderObject>(protect(axObjectCache())->getOrCreate(listItemAncestor));
+            if (parent && parent->markerRenderer() == m_renderer)
                 return parent.unsafeGet();
         }
     }
@@ -1021,12 +1022,11 @@ bool AccessibilityRenderObject::computeIsIgnored() const
     AX_ASSERT(m_initialized);
 #endif
 
-    if (RefPtr popover = dynamicDowncast<SelectPopoverElement>(node())) {
-        // The base-appearance picker (Menu) must always be included so that it
+    if (is<SelectPopoverElement>(node())) {
+        // The base-appearance select popover (Menu) must always be included so that it
         // properly wraps the menu items. Check before the !m_renderer bailout
         // because the popover has display:contents (no renderer) when closed.
-        RefPtr select = popover->selectElement();
-        return !select || !select->usesBaseAppearancePicker();
+        return false;
     }
 
     if (!m_renderer)
@@ -1261,14 +1261,10 @@ bool AccessibilityRenderObject::computeIsIgnored() const
             if (image->borderBoxHeight() <= 1 || image->borderBoxWidth() <= 1)
                 return true;
 
-            if (RefPtr cachedImage = image->cachedImage()) {
-                // check whether the image has loaded
-                if (!cachedImage->hasImage())
-                    return true;
-
-                // check whether rendered image was stretched from one-dimensional file image
-                auto naturalDimensions = cachedImage->naturalDimensions();
-                return naturalDimensions.width && naturalDimensions.height && (*naturalDimensions.width <= 1 || *naturalDimensions.height <= 1);
+            // check whether rendered image was stretched from one-dimensional file image
+            if (image->cachedImage()) {
+                LayoutSize imageSize = protect(image->cachedImage())->imageSizeForRenderer(image, image->view().pageZoomFactor());
+                return imageSize.height() <= 1 || imageSize.width() <= 1;
             }
         }
         return false;
@@ -1633,7 +1629,7 @@ AXTextRuns AccessibilityRenderObject::textRuns()
         if (textBoxStyle->textTransform().contains(Style::TextTransformValue::FullSizeKana)) {
             // We don't want to serve transformed kana text to AT since it is a visual affordance.
             // Using the original text from the renderer provides the untransformed string.
-            text = protect(textBox->renderer())->originalText().substring(textBox->start(), textBox->length());
+            text = textBox->renderer().originalText().substring(textBox->start(), textBox->length());
         }
 
         bool collapseTabs = textBoxStyle->collapseWhiteSpace();
@@ -1921,7 +1917,7 @@ bool AccessibilityRenderObject::press()
                 cache->postNotification(selectElement.get(), AXNotification::PressDidFail);
             return false;
         }
-        if (selectElement->isOpen())
+        if (selectElement->popupIsVisible())
             selectElement->hidePickerPopoverElement();
         else
             selectElement->openPickerForUserInteraction();
@@ -3023,8 +3019,7 @@ void AccessibilityRenderObject::addChildren()
     };
 
     auto addListBoxChildrenIfNecessary = [&](Node& node) -> bool {
-        // Only a RenderListBox paints its list items itself.
-        if (role() == AccessibilityRole::ListBox && is<RenderListBox>(m_renderer)) {
+        if (role() == AccessibilityRole::ListBox) {
             if (RefPtr selectElement = dynamicDowncast<HTMLSelectElement>(node)) {
                 for (const auto& listItem : selectElement->listItems())
                     addChild(protect(cache->getOrCreate(protect(listItem.get()))), AccessibilityObject::DescendIfIgnored::No);

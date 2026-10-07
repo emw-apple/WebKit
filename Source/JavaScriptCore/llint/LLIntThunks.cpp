@@ -80,7 +80,7 @@ namespace LLInt {
 // and others LLIntEntrypoints.
 
 template<PtrTag tag>
-static MacroAssemblerCodeRef<tag> generateThunkWithJumpTo(LLIntCode target, ASCIILiteral thunkKind)
+static MacroAssemblerCodeRef<tag> generateThunkWithJumpTo(LLIntCode target, const char *thunkKind)
 {
     JSInterfaceJIT jit;
 
@@ -95,17 +95,17 @@ static MacroAssemblerCodeRef<tag> generateThunkWithJumpTo(LLIntCode target, ASCI
     jit.farJump(scratch, OperationPtrTag);
 
     LinkBuffer patchBuffer(jit, GLOBAL_THUNK_ID, LinkBuffer::Profile::LLIntThunk);
-    return FINALIZE_THUNK(patchBuffer, tag, thunkKind, "LLInt %s thunk", thunkKind.characters());
+    return FINALIZE_THUNK(patchBuffer, tag, ASCIILiteral::fromLiteralUnsafe(thunkKind), "LLInt %s thunk", thunkKind);
 }
 
 template<PtrTag tag>
-static MacroAssemblerCodeRef<tag> generateThunkWithJumpTo(OpcodeID opcodeID, ASCIILiteral thunkKind)
+static MacroAssemblerCodeRef<tag> generateThunkWithJumpTo(OpcodeID opcodeID, const char *thunkKind)
 {
     return generateThunkWithJumpTo<tag>(LLInt::getCodeFunctionPtr<OperationPtrTag>(opcodeID), thunkKind);
 }
 
 template<PtrTag tag>
-static MacroAssemblerCodeRef<tag> generateThunkWithJumpToPrologue(OpcodeID opcodeID, ASCIILiteral thunkKind)
+static MacroAssemblerCodeRef<tag> generateThunkWithJumpToPrologue(OpcodeID opcodeID, const char *thunkKind)
 {
     JSInterfaceJIT jit;
 
@@ -122,21 +122,21 @@ static MacroAssemblerCodeRef<tag> generateThunkWithJumpToPrologue(OpcodeID opcod
     jit.farJump(scratch, OperationPtrTag);
 
     LinkBuffer patchBuffer(jit, GLOBAL_THUNK_ID, LinkBuffer::Profile::LLIntThunk);
-    return FINALIZE_THUNK(patchBuffer, tag, thunkKind, "LLInt %s jump to prologue thunk", thunkKind.characters());
+    return FINALIZE_THUNK(patchBuffer, tag, ASCIILiteral::fromLiteralUnsafe(thunkKind), "LLInt %s jump to prologue thunk", thunkKind);
 }
 
 template<PtrTag tag>
-static MacroAssemblerCodeRef<tag> generateThunkWithJumpToLLIntReturnPoint(LLIntCode target, ASCIILiteral thunkKind)
+static MacroAssemblerCodeRef<tag> generateThunkWithJumpToLLIntReturnPoint(LLIntCode target, const char *thunkKind)
 {
     JSInterfaceJIT jit;
     assertIsTaggedWith<OperationPtrTag>(target);
     jit.farJump(CCallHelpers::TrustedImmPtr(target), OperationPtrTag);
     LinkBuffer patchBuffer(jit, GLOBAL_THUNK_ID, LinkBuffer::Profile::LLIntThunk);
-    return FINALIZE_THUNK(patchBuffer, tag, thunkKind, "LLInt %s return point thunk", thunkKind.characters());
+    return FINALIZE_THUNK(patchBuffer, tag, ASCIILiteral::fromLiteralUnsafe(thunkKind), "LLInt %s return point thunk", thunkKind);
 }
 
 template<PtrTag tag>
-static MacroAssemblerCodeRef<tag> generateThunkWithJumpToLLIntReturnPoint(OpcodeID opcodeID, ASCIILiteral thunkKind)
+static MacroAssemblerCodeRef<tag> generateThunkWithJumpToLLIntReturnPoint(OpcodeID opcodeID, const char *thunkKind)
 {
     return generateThunkWithJumpToLLIntReturnPoint<tag>(LLInt::getCodeFunctionPtr<OperationPtrTag>(opcodeID), thunkKind);
 }

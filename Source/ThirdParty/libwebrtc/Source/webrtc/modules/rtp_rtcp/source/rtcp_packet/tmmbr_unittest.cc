@@ -11,7 +11,6 @@
 #include "modules/rtp_rtcp/source/rtcp_packet/tmmbr.h"
 
 #include <cstdint>
-#include <tuple>
 
 #include "modules/rtp_rtcp/source/rtcp_packet/tmmb_item.h"
 #include "rtc_base/buffer.h"
@@ -20,6 +19,7 @@
 #include "test/rtcp_packet_parser.h"
 
 using ::testing::ElementsAreArray;
+using ::testing::make_tuple;
 using webrtc::rtcp::TmmbItem;
 using webrtc::rtcp::Tmmbr;
 
@@ -41,7 +41,7 @@ TEST(RtcpPacketTmmbrTest, Create) {
 
   Buffer packet = tmmbr.Build();
 
-  EXPECT_THAT(std::make_tuple(packet.data(), packet.size()),
+  EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kPacket));
 }
 

@@ -15,7 +15,7 @@
 #include <optional>
 #include <utility>
 
-#include "api/environment/environment.h"
+#include "api/field_trials.h"
 #include "api/test/mock_video_decoder.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
@@ -27,7 +27,7 @@
 #include "modules/video_coding/include/video_error_codes.h"
 #include "modules/video_coding/timing/timing.h"
 #include "system_wrappers/include/clock.h"
-#include "test/create_test_environment.h"
+#include "test/create_test_field_trials.h"
 #include "test/gmock.h"
 #include "test/gtest.h"
 
@@ -87,11 +87,12 @@ class VideoReceiver2Test : public ::testing::Test {
     receiver_.RegisterReceiveCodec(payload_type, settings);
   }
 
+  FieldTrials field_trials_ = CreateTestFieldTrials();
   SimulatedClock clock_{Timestamp::Millis(1337)};
-  Environment env_ = CreateTestEnvironment({.time = &clock_});
-  VCMTiming timing_{env_, /*render_time=*/TimeDelta::Millis(10)};
+  VCMTiming timing_{&clock_, field_trials_,
+                    /*render_time=*/TimeDelta::Millis(10)};
   NiceMock<MockVCMReceiveCallback> receive_callback_;
-  VideoReceiver2 receiver_{&clock_, &timing_, env_.field_trials(),
+  VideoReceiver2 receiver_{&clock_, &timing_, field_trials_,
                            /*corruption_score_calculator=*/nullptr};
 };
 

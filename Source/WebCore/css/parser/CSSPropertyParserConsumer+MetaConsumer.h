@@ -125,7 +125,7 @@ struct MetaConsumerUnroller {
     }
 
     template<CSSParserTokenType, typename ResultType, typename F>
-    static std::nullopt_t consume(CSSParserTokenRange&, CSS::PropertyParserState&, CSSCalcSymbolsAllowed, CSSPropertyParserOptions, NOESCAPE const F&)
+    static std::nullopt_t consume(CSSParserTokenRange&, CSS::PropertyParserState&, CSSCalcSymbolsAllowed, CSSPropertyParserOptions, NOESCAPE F&&)
     {
         return std::nullopt;
     }
@@ -148,14 +148,14 @@ struct MetaConsumerUnroller<T, Ts...> {
     }
 
     template<CSSParserTokenType tokenType, typename ResultType, typename F>
-    static std::optional<ResultType> consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, CSSCalcSymbolsAllowed symbolsAllowed, CSSPropertyParserOptions options, NOESCAPE const F& functor)
+    static std::optional<ResultType> consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, CSSCalcSymbolsAllowed symbolsAllowed, CSSPropertyParserOptions options, NOESCAPE F&& functor)
     {
         using Consumer = MetaConsumerDispatcher<tokenType, ConsumerDefinition<T>>;
         if constexpr (Consumer::supported) {
             if (auto result = Consumer::consume(range, state, symbolsAllowed, options))
                 return std::make_optional(functor(T { *result }));
         }
-        return MetaConsumerUnroller<Ts...>::template consume<tokenType, ResultType>(range, state, symbolsAllowed, options, functor);
+        return MetaConsumerUnroller<Ts...>::template consume<tokenType, ResultType>(range, state, symbolsAllowed, options, std::forward<F>(functor));
     }
 };
 
@@ -181,7 +181,7 @@ struct MetaConsumer {
     using Unroller = MetaConsumerUnroller<T, Ts...>;
 
     template<typename... F>
-    static decltype(auto) consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, CSSCalcSymbolsAllowed symbolsAllowed, CSSPropertyParserOptions options, NOESCAPE F&&... f)
+    static decltype(auto) consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, CSSCalcSymbolsAllowed symbolsAllowed, CSSPropertyParserOptions options, F&&... f)
     {
         auto visitor = WTF::makeVisitor(std::forward<F>(f)...);
         using ResultType = decltype(visitor(std::declval<T>()));
@@ -209,21 +209,21 @@ struct MetaConsumer {
 
     // Overloaded with the `CSSPropertyParserOptions` parameter removed so it can be defaulted when using the continuation functor parameters.
     template<typename... F>
-    static decltype(auto) consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, CSSCalcSymbolsAllowed symbolsAllowed, NOESCAPE F&&... f)
+    static decltype(auto) consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, CSSCalcSymbolsAllowed symbolsAllowed, F&&... f)
     {
         return consume(range, state, WTF::move(symbolsAllowed), { }, std::forward<F>(f)...);
     }
 
     // Overloaded with the `CSSCalcSymbolsAllowed` parameter removed so it can be defaulted when using the continuation functor parameters.
     template<typename... F>
-    static decltype(auto) consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, CSSPropertyParserOptions options, NOESCAPE F&&... f)
+    static decltype(auto) consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, CSSPropertyParserOptions options, F&&... f)
     {
         return consume(range, state, { }, options, std::forward<F>(f)...);
     }
 
     // Overloaded with the `CSSPropertyParserOptions` and `CSSCalcSymbolsAllowed` parameters removed so they can be defaulted when using the continuation functor parameters.
     template<typename... F>
-    static decltype(auto) consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, NOESCAPE F&&... f)
+    static decltype(auto) consume(CSSParserTokenRange& range, CSS::PropertyParserState& state, F&&... f)
     {
         return consume(range, state, { }, { }, std::forward<F>(f)...);
     }

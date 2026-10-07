@@ -19,6 +19,7 @@ use core::{
         c_long,
         c_void, //
     },
+    marker::PhantomData,
     ptr::{
         NonNull,
         null_mut, //
@@ -29,10 +30,7 @@ use core::{
 use once_cell::sync::Lazy;
 
 use crate::{
-    CertCallback,
-    HandshakeCompleteMethods,
     Methods,
-    MethodsRef,
     PrivateKeyMethods,
     VerifyCertificateMethods,
     abort_on_panic,
@@ -52,10 +50,6 @@ use crate::{
             complete,
             decrypt,
             sign, //
-        },
-        select_cert::{
-            ClientCertificateSelector,
-            ServerCertificateSelector, //
         }, //
     },
     errors::TlsRetryReason,
@@ -71,12 +65,9 @@ pub(super) struct RustConnectionMethods<Mode> {
     pub private_key_delegate: Option<Box<dyn PrivateKeyDelegate>>,
     /// Certificate verifier handle.
     pub verify_certificate_methods: Option<Box<dyn VerifyCertificate>>,
-    /// Handshake-complete callback.
-    pub handshake_complete: Option<Box<dyn super::lifecycle::HandshakeComplete>>,
-    pub server_cert_cb: Option<Box<dyn ServerCertificateSelector<Mode>>>,
-    pub client_cert_cb: Option<Box<dyn ClientCertificateSelector<Mode>>>,
     /// A mailbox to propagate IO retrying reasons.
     pub pending_reason: Option<TlsRetryReason>,
+    _p: PhantomData<fn() -> Mode>,
 }
 
 impl<M> RustConnectionMethods<M> {
@@ -85,10 +76,8 @@ impl<M> RustConnectionMethods<M> {
             bio: None,
             private_key_delegate: None,
             verify_certificate_methods: None,
-            handshake_complete: None,
-            server_cert_cb: None,
-            client_cert_cb: None,
             pending_reason: None,
+            _p: PhantomData,
         }
     }
 
@@ -108,7 +97,7 @@ impl<M> RustConnectionMethods<M> {
     }
 }
 
-impl<Mode: HasTlsConnectionMethod> MethodsRef for RustConnectionMethods<Mode> {
+impl<Mode: HasTlsConnectionMethod> Methods for RustConnectionMethods<Mode> {
     unsafe extern "C" fn from_ssl<'a>(ssl: *mut bssl_sys::SSL) -> Option<&'a Self> {
         unsafe {
             // Safety: `ssl` is originated from `TlsConnection::from_ssl`.
@@ -117,23 +106,7 @@ impl<Mode: HasTlsConnectionMethod> MethodsRef for RustConnectionMethods<Mode> {
                 !methods.is_null(),
                 "connection method should have been attached at construction time"
             );
-            // Safety: `methods` is originated from `Box::into_raw`
-            Some(&*(methods as *const RustConnectionMethods<Mode>))
-        }
-    }
-}
-
-impl<Mode: HasTlsConnectionMethod> Methods for RustConnectionMethods<Mode> {
-    unsafe extern "C" fn from_ssl<'a>(ssl: *mut bssl_sys::SSL) -> Option<&'a mut Self> {
-        unsafe {
-            // Safety: `ssl` is originated from `TlsConnection::from_ssl`.
-            let methods = bssl_sys::SSL_get_ex_data(ssl, Mode::registration());
-            debug_assert!(
-                !methods.is_null(),
-                "connection method should have been attached at construction time"
-            );
-            // Safety: `methods` is originated from `Box::into_raw`.
-            // The caller must ensure exclusive access to the connection.
+            // Safety: `ctx` is originated from `Box::into_raw`
             Some(&mut *(methods as *mut RustConnectionMethods<Mode>))
         }
     }
@@ -148,24 +121,6 @@ impl<M: HasTlsConnectionMethod> PrivateKeyMethods for RustConnectionMethods<M> {
 impl<Mode: HasTlsConnectionMethod> VerifyCertificateMethods for RustConnectionMethods<Mode> {
     fn verify_certificate_methods(&self) -> Option<&dyn VerifyCertificate> {
         self.verify_certificate_methods.as_deref()
-    }
-}
-
-impl<M: HasTlsConnectionMethod> HandshakeCompleteMethods for RustConnectionMethods<M> {
-    fn handshake_complete_methods(
-        &mut self,
-    ) -> Option<Box<dyn super::lifecycle::HandshakeComplete>> {
-        self.handshake_complete.take()
-    }
-}
-
-impl<M: HasTlsConnectionMethod> CertCallback<M> for RustConnectionMethods<M> {
-    fn server_cert_cb(&self) -> Option<&(dyn ServerCertificateSelector<M> + 'static)> {
-        self.server_cert_cb.as_deref()
-    }
-
-    fn client_cert_cb(&self) -> Option<&(dyn ClientCertificateSelector<M> + 'static)> {
-        self.client_cert_cb.as_deref()
     }
 }
 

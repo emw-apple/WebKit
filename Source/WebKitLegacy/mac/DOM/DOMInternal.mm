@@ -48,16 +48,16 @@
 
 #ifdef NEEDS_WRAPPER_CACHE_LOCK
 static Lock wrapperCacheLock;
-static HashMap<void*, NSObject *>& wrapperCache() WTF_REQUIRES_LOCK(wrapperCacheLock)
+static HashMap<DOMObjectInternal*, NSObject *>& wrapperCache() WTF_REQUIRES_LOCK(wrapperCacheLock)
 #else
-static HashMap<void*, NSObject *>& NODELETE wrapperCache()
+static HashMap<DOMObjectInternal*, NSObject *>& NODELETE wrapperCache()
 #endif
 {
-    static NeverDestroyed<HashMap<void*, NSObject *>> map;
+    static NeverDestroyed<HashMap<DOMObjectInternal*, NSObject *>> map;
     return map;
 }
 
-NSObject* getDOMWrapper(void* impl)
+NSObject* getDOMWrapper(DOMObjectInternal* impl)
 {
 #ifdef NEEDS_WRAPPER_CACHE_LOCK
     Locker stateLocker { wrapperCacheLock };
@@ -65,7 +65,7 @@ NSObject* getDOMWrapper(void* impl)
     return wrapperCache().get(impl);
 }
 
-void addDOMWrapper(NSObject* wrapper, void* impl)
+void addDOMWrapper(NSObject* wrapper, DOMObjectInternal* impl)
 {
 #ifdef NEEDS_WRAPPER_CACHE_LOCK
     Locker stateLocker { wrapperCacheLock };
@@ -73,7 +73,7 @@ void addDOMWrapper(NSObject* wrapper, void* impl)
     wrapperCache().set(impl, wrapper);
 }
 
-void removeDOMWrapper(void* impl)
+void removeDOMWrapper(DOMObjectInternal* impl)
 {
 #ifdef NEEDS_WRAPPER_CACHE_LOCK
     Locker stateLocker { wrapperCacheLock };
@@ -121,13 +121,12 @@ void removeDOMWrapper(void* impl)
         return;
 
     // The global object which should own this node - FIXME: does this need to be isolated-world aware?
-    CheckedRef script = frame->script();
-    auto* globalObject = script->globalObject(WebCore::mainThreadNormalWorldSingleton());
+    auto* globalObject = frame->script().globalObject(WebCore::mainThreadNormalWorldSingleton());
 
     // Get (or create) a cached JS object for the DOM node.
     JSC::JSObject *scriptImp = asObject(WebCore::toJS(globalObject, globalObject, *nodeImpl));
 
-    RefPtr rootObject = script->bindingRootObject();
+    RefPtr rootObject = frame->script().bindingRootObject();
 
     [self _setImp:scriptImp originRootObject:rootObject.copyRef() rootObject:rootObject.copyRef()];
 }

@@ -274,8 +274,10 @@ static void runFocusNavigationIntoFrameWithNestedRemoteFrameTest(bool siteIsolat
     [webView typeCharacter:'\t'];
     EXPECT_WK_STREQ([uiDelegate waitForAlert], "innerInput focused");
 
-    [webView typeCharacter:'\t'];
-    EXPECT_WK_STREQ([uiDelegate waitForAlert], "outerInput focused");
+    if (!siteIsolationEnabled) {
+        [webView typeCharacter:'\t'];
+        EXPECT_WK_STREQ([uiDelegate waitForAlert], "outerInput focused");
+    }
 }
 
 TEST(FocusWebView, FocusNavigationIntoFrameWithNestedRemoteFrame)

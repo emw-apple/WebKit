@@ -454,8 +454,6 @@ protected:
     // the flow thread child.
     void layoutExcludedChildren(RelayoutChildren) override;
 
-    LayoutIntegration::LineLayout& ensureInlineLayout();
-
 private:
     bool isChildEligibleForMarginTrim(Style::MarginTrimSide, const RenderBox&) const;
 

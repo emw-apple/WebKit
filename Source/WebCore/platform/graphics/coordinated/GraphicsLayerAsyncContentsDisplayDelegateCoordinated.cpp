@@ -48,7 +48,7 @@ GraphicsLayerAsyncContentsDisplayDelegateCoordinated::GraphicsLayerAsyncContents
 
 GraphicsLayerAsyncContentsDisplayDelegateCoordinated::~GraphicsLayerAsyncContentsDisplayDelegateCoordinated() = default;
 
-bool GraphicsLayerAsyncContentsDisplayDelegateCoordinated::tryCopyToLayer(ImageBuffer& imageBuffer, bool, PlaceholderFrameIdentifier)
+bool GraphicsLayerAsyncContentsDisplayDelegateCoordinated::tryCopyToLayer(ImageBuffer& imageBuffer, bool)
 {
     auto image = ImageBuffer::sinkIntoNativeImage(imageBuffer.clone());
     if (!image)

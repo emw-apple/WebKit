@@ -31,7 +31,6 @@
 #include "Page.h"
 #include <glib/gi18n-lib.h>
 #include <locale.h>
-#include <wtf/glib/GLibExtras.h>
 
 namespace WebCore {
 DEFINE_ALLOCATOR_WITH_HEAP_IDENTIFIER(AccessibilityRootAtspi);
@@ -187,19 +186,19 @@ GVariant* AccessibilityRootAtspi::applicationReference() const
 {
     if (m_parentUniqueName.isNull())
         return AccessibilityAtspi::singleton().nullReference();
-    return gVariantNew("(so)", m_parentUniqueName.utf8(), "/org/a11y/atspi/accessible/root");
+    return g_variant_new("(so)", m_parentUniqueName.utf8().legacyCStringPointer(), "/org/a11y/atspi/accessible/root");
 }
 
 GVariant* AccessibilityRootAtspi::reference() const
 {
-    return gVariantNew("(so)", AccessibilityAtspi::singleton().uniqueName(), m_path.utf8());
+    return g_variant_new("(so)", AccessibilityAtspi::singleton().uniqueName(), m_path.utf8().legacyCStringPointer());
 }
 
 GVariant* AccessibilityRootAtspi::parentReference() const
 {
     if (m_parentUniqueName.isNull())
         return AccessibilityAtspi::singleton().nullReference();
-    return gVariantNew("(so)", m_parentUniqueName.utf8(), m_parentPath.utf8());
+    return g_variant_new("(so)", m_parentUniqueName.utf8().legacyCStringPointer(), m_parentPath.utf8().legacyCStringPointer());
 }
 
 AccessibilityObjectAtspi* AccessibilityRootAtspi::child() const
@@ -236,7 +235,7 @@ void AccessibilityRootAtspi::childRemoved(AccessibilityObjectAtspi& child)
 
 void AccessibilityRootAtspi::serialize(GVariantBuilder* builder) const
 {
-    gVariantBuilderAdd(builder, "(so)", AccessibilityAtspi::singleton().uniqueName(), m_path.utf8());
+    g_variant_builder_add(builder, "(so)", AccessibilityAtspi::singleton().uniqueName(), m_path.utf8().legacyCStringPointer());
     g_variant_builder_add(builder, "@(so)", applicationReference());
     g_variant_builder_add(builder, "@(so)", parentReference());
 

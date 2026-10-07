@@ -93,6 +93,7 @@ class MarkStackMergingConstraint;
 class BlockDirectory;
 class MarkedVectorBase;
 class MarkingConstraint;
+class MarkingConstraintSet;
 class MutatorScheduler;
 class RunningScope;
 class SlotVisitor;
@@ -348,7 +349,7 @@ public:
 
     Heap(VM&, HeapType);
     ~Heap();
-    void shutDown();
+    void lastChanceToFinalize();
     void releaseDelayedReleasedObjects();
 
     VM& vm() const;
@@ -474,7 +475,7 @@ public:
 
     UncheckedKeyHashSet<MarkedVectorBase*>& markListSet() { return m_markListSet; }
 
-    template<typename Functor> inline void forEachProtectedCell(NOESCAPE const Functor&);
+    template<typename Functor> inline void forEachProtectedCell(const Functor&);
     template<typename Functor> inline void forEachCodeBlock(NOESCAPE const Functor&);
     template<typename Functor> inline void forEachCodeBlockIgnoringJITPlans(const AbstractLocker& codeBlockSetLocker, NOESCAPE const Functor&);
 
@@ -701,7 +702,7 @@ private:
     bool stopIfNecessarySlow(unsigned extraStateBits);
     
     template<typename Func>
-    void waitForCollector(NOESCAPE const Func&);
+    void waitForCollector(const Func&);
     
     JS_EXPORT_PRIVATE void acquireAccessSlow();
     JS_EXPORT_PRIVATE void releaseAccessSlow();
@@ -719,10 +720,11 @@ private:
     void clearMutatorWaiting();
     void notifyThreadStopping(const AbstractLocker&);
     
+    GCRequest::Ticket requestCollection(GCRequest);
     void waitForCollection(GCRequest::Ticket);
-    void waitForAllCollections();
     
-    void willStartCollection(CollectionScope);
+    void willStartCollection();
+    void prepareForMarking();
     
     void gatherStackRoots(ConservativeRoots&);
     void gatherVMRoots(ConservativeRoots&);
@@ -733,12 +735,8 @@ private:
 #endif
     void visitCompilerWorklistWeakReferences();
     void removeDeadCompilerWorklistEntries();
-    void rememberExecutingAndCompilingCodeBlocks(SlotVisitor&);
-    void recordBytesVisited(size_t bytesVisited);
-    void endMarking(size_t bytesVisited);
-    void verifyMarking();
-    void pruneDeadReferences();
-    void prepareForAllocation();
+    void updateObjectCounts();
+    void endMarking();
 
     void cancelDeferredWorkIfNeeded();
     void reapWeakHandles();
@@ -757,8 +755,7 @@ private:
     JS_EXPORT_PRIVATE void addToRememberedSet(const JSCell*);
     double projectedGCRateLimitingValue(MonotonicTime);
     void updateAllocationLimits();
-    void didFinishCollection();
-    void recordCollectionTime(Seconds duration);
+    void didFinishCollection(Seconds duration);
     void gatherExtraHeapData(HeapProfiler&);
     void removeDeadHeapSnapshotNodes(HeapProfiler&);
     void runCollectionEpilogue();
@@ -771,14 +768,16 @@ private:
     void destroyAllPooledWeakBlocks();
     unsigned maxPooledWeakBlocks();
 
+    bool shouldDoFullCollection();
+
     inline void incrementDeferralDepth();
     inline void decrementDeferralDepth();
     inline void decrementDeferralDepthAndGCIfNeeded();
     JS_EXPORT_PRIVATE void decrementDeferralDepthAndGCIfNeededSlow();
 
     
-    void forEachCodeBlockImpl(NOESCAPE const ScopedLambda<void(CodeBlock*)>&);
-    void forEachCodeBlockIgnoringJITPlansImpl(const AbstractLocker& codeBlockSetLocker, NOESCAPE const ScopedLambda<void(CodeBlock*)>&);
+    void forEachCodeBlockImpl(const ScopedLambda<void(CodeBlock*)>&);
+    void forEachCodeBlockIgnoringJITPlansImpl(const AbstractLocker& codeBlockSetLocker, const ScopedLambda<void(CodeBlock*)>&);
     
     void setMutatorShouldBeFenced(bool value);
     
@@ -795,11 +794,11 @@ private:
     void iterateExecutingAndCompilingCodeBlocks(Visitor&, NOESCAPE const Function<void(CodeBlock*)>&);
     
     template<typename Func, typename Visitor>
-    void iterateExecutingAndCompilingCodeBlocksWithoutHoldingLocks(Visitor&, NOESCAPE const Func&);
+    void iterateExecutingAndCompilingCodeBlocksWithoutHoldingLocks(Visitor&, const Func&);
     
     void dumpHeapStatisticsAtVMDestruction();
-    void lastChanceToFinalize();
 
+    static bool useGenerationalGC();
     bool shouldSweepSynchronously();
 
     void verifyGC();
@@ -852,6 +851,7 @@ private:
     const std::unique_ptr<Collector> m_collector;
     std::unique_ptr<SlotVisitor> m_mutatorSlotVisitor;
     std::unique_ptr<MarkStackArray> m_mutatorMarkStack;
+    std::unique_ptr<MarkingConstraintSet> m_constraintSet;
     std::unique_ptr<VerifierSlotVisitor> m_verifierSlotVisitor;
     
     StrongSet m_strongSet;
@@ -948,6 +948,7 @@ private:
     bool m_didDeferGCWork { false };
 
     uint64_t m_mutatorExecutionVersion { 0 };
+    uint64_t m_gcVersion { 0 };
 
     MonotonicTime m_lastGCEndTime;
     MonotonicTime m_currentGCStartTime;
@@ -1114,7 +1115,7 @@ public:
     CodeBlockSpaceAndSet codeBlockSpaceAndSet;
 
     template<typename Func>
-    void forEachCodeBlockSpace(NOESCAPE const Func& func)
+    void forEachCodeBlockSpace(const Func& func)
     {
         func(codeBlockSpaceAndSet);
     }
@@ -1154,7 +1155,7 @@ public:
     ScriptExecutableSpaceAndSets programExecutableSpaceAndSet;
 
     template<typename Func>
-    void forEachScriptExecutableSpace(NOESCAPE const Func& func)
+    void forEachScriptExecutableSpace(const Func& func)
     {
         if (m_evalExecutableSpace)
             func(*m_evalExecutableSpace);

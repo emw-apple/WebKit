@@ -29,9 +29,9 @@ namespace WebCore {
 class TransformPaintScope {
     WTF_MAKE_NONCOPYABLE(TransformPaintScope);
 public:
-    TransformPaintScope(GraphicsContext& context, const RenderLayer::LayerPaintingInfo& paintingInfo, const TransformationMatrix& transform, float deviceScaleFactor, const LayoutSize& adjustedSubpixelOffset, CheckedPtr<RenderLayer> newRootLayer = nullptr, StateSavedByCaller stateSavedByCaller = StateSavedByCaller::No)
+    TransformPaintScope(GraphicsContext& context, const RenderLayer::LayerPaintingInfo& paintingInfo, const TransformationMatrix& transform, float deviceScaleFactor, const LayoutSize& adjustedSubpixelOffset, CheckedPtr<RenderLayer> newRootLayer = nullptr)
         : m_context(context)
-        , m_oldTransform(stateSavedByCaller == StateSavedByCaller::No ? std::optional { context.getCTM() } : std::nullopt)
+        , m_oldTransform(context.getCTM())
         , m_affineTransform(transform.toAffineTransform())
         , m_transformedPaintingInfo(paintingInfo)
     {
@@ -61,8 +61,7 @@ public:
         if (CheckedPtr regionContext = m_transformedPaintingInfo.regionContext)
             regionContext->popTransform();
 
-        if (m_oldTransform)
-            m_context.setCTM(*m_oldTransform);
+        m_context.setCTM(m_oldTransform);
     }
 
     const RenderLayer::LayerPaintingInfo& transformedPaintingInfo() const { return m_transformedPaintingInfo; }
@@ -70,7 +69,7 @@ public:
 
 private:
     GraphicsContext& m_context;
-    std::optional<AffineTransform> m_oldTransform;
+    AffineTransform m_oldTransform;
     AffineTransform m_affineTransform;
     RenderLayer::LayerPaintingInfo m_transformedPaintingInfo;
 };

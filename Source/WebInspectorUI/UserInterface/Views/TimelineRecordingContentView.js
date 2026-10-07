@@ -517,9 +517,6 @@ WI.TimelineRecordingContentView = class TimelineRecordingContentView extends WI.
         if (!WI.visible)
             return;
 
-        if (WI.timelineManager.activeRecording !== this._recording)
-            return;
-
         if (typeof startTime === "number")
             this._currentTime = startTime;
         else if (!isNaN(this._currentTime)) {

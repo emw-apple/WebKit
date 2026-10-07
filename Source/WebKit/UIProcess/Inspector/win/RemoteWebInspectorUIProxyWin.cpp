@@ -110,8 +110,6 @@ WebPageProxy* RemoteWebInspectorUIProxy::platformCreateFrontendPageAndWindow()
     preferences->setDeveloperExtrasEnabled(true);
     preferences->setLogsPageMessagesToSystemConsoleEnabled(true);
 #endif
-    // The Find banner and Search sidebar use the legacy results=N attribute for recent searches.
-    preferences->setSearchInputResultsAttributeEnabled(true);
 
     RefPtr<WebPageGroup> pageGroup = WebPageGroup::create(WebKit::defaultInspectorPageGroupIdentifierForPage(nullptr));
 

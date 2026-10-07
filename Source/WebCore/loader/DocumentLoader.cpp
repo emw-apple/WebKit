@@ -107,7 +107,6 @@
 #include "TextResourceDecoder.h"
 #include "UserContentProvider.h"
 #include "UserContentURLPattern.h"
-#include "ViewTransition.h"
 #include "ViolationReportType.h"
 #include <wtf/Assertions.h>
 #include <wtf/CompletionHandler.h>
@@ -388,11 +387,11 @@ void DocumentLoader::stopLoading()
         if (isLoadingMainResource()) {
             // Stop the main resource loader and let it send the cancelled message.
             cancelMainResourceLoad(frameLoader->cancelledError(m_request));
-        } else if (!m_plugInStreamLoaders.isEmpty() || std::ranges::any_of(m_subresourceLoaders, [](auto& loader) { return !loader->options().keepAlive; })) {
+        } else if (!m_subresourceLoaders.isEmpty() || !m_plugInStreamLoaders.isEmpty()) {
             // The main resource loader already finished loading. Set the cancelled error on the
             // document and let the subresourceLoaders and pluginLoaders send individual cancelled messages below.
             setMainDocumentError(frameLoader->cancelledError(m_request));
-        } else if (m_subresourceLoaders.isEmpty()) {
+        } else {
             // If there are no resource loaders, we need to manufacture a cancelled message.
             // (A back/forward navigation has no resource loaders because its resources are cached.)
             mainReceivedError(frameLoader->cancelledError(m_request));
@@ -656,26 +655,6 @@ void DocumentLoader::redirectReceived(ResourceRequest&& request, const ResourceR
     });
 }
 
-void DocumentLoader::updateRequestForUnpartitionedStorageAccess(ResourceRequest& request, bool isRedirect) const
-{
-    bool wasUnpartitioned = request.isTopSite();
-    bool isUnpartitioned = hasUnpartitionedStorageAccess(request.url());
-    if (isUnpartitioned)
-        request.setFirstPartyForCookies(request.url());
-
-    if (wasUnpartitioned == isUnpartitioned)
-        return;
-
-    request.setIsTopSite(isUnpartitioned);
-    if (!isUnpartitioned) {
-        if (RefPtr frame = m_frame.get(); frame && frame->document())
-            request.setFirstPartyForCookies(FrameLoader::partitionedFirstPartyForCookiesForSubframeNavigation(*protect(frame->document())));
-    }
-
-    if (isRedirect)
-        request.setIsSameSite(false);
-}
-
 void DocumentLoader::willSendRequest(ResourceRequest&& newRequest, const ResourceResponse& redirectResponse, CompletionHandler<void(ResourceRequest&&)>&& completionHandler)
 {
     // Note that there are no asserts here as there are for the other callbacks. This is due to the
@@ -759,10 +738,6 @@ void DocumentLoader::willSendRequest(ResourceRequest&& newRequest, const Resourc
     // URL of the main frame which doesn't change when we redirect.
     if (frame->isMainFrame())
         newRequest.setFirstPartyForCookies(newRequest.url());
-    else if (didReceiveRedirectResponse)
-        m_unpartitionedStorageSite = std::nullopt;
-    else
-        updateRequestForUnpartitionedStorageAccess(newRequest, isContinuingLoadAfterProvisionalLoadStarted());
 
     FrameLoader::addSameSiteInfoToRequestIfNeeded(newRequest, document.get());
 
@@ -818,11 +793,6 @@ void DocumentLoader::willSendRequest(ResourceRequest&& newRequest, const Resourc
             stopLoadingForPolicyChange(navigationPolicyDecision == NavigationPolicyDecision::LoadWillContinueInAnotherProcess ? LoadWillContinueInAnotherProcess::Yes : LoadWillContinueInAnotherProcess::No);
             break;
         case NavigationPolicyDecision::ContinueLoad:
-            if (!frame->isMainFrame()) {
-                updateRequestForUnpartitionedStorageAccess(request, true);
-                setRequest(ResourceRequest { request });
-            }
-
             // The client may have updated the User-Agent (via webView.customUserAgent,
             // WKWebpagePreferences._customUserAgent, an Inspector override, or a quirk
             // triggered by the redirect target URL) during the policy callback. The
@@ -1074,18 +1044,13 @@ void DocumentLoader::responseReceived(ResourceResponse&& response, CompletionHan
             frameLoader->notifier().dispatchDidReceiveResponse(this, *m_identifierForLoadWithoutResourceLoader, m_response, 0);
     }
 
-    // Don't ask the client about error responses from failed prefetches. The response will
-    // not be committed, and the navigation will be retried with a fresh request when the load finishes.
-    if (m_prefetchResponseFailed)
-        return;
-
     ASSERT(!m_waitingForContentPolicy);
     ASSERT(frameLoader());
     m_waitingForContentPolicy = true;
 
     // Always show content with valid substitute data.
     if (m_substituteData.isValid()) {
-        continueAfterContentPolicy(PolicyAction::Use, completionHandlerCaller.release());
+        continueAfterContentPolicy(PolicyAction::Use);
         return;
     }
 
@@ -1102,12 +1067,11 @@ void DocumentLoader::responseReceived(ResourceResponse&& response, CompletionHan
 
     protect(frameLoader())->checkContentPolicy(m_response, [this, protectedThis = Ref { *this }, mainResourceLoader = WTF::move(mainResourceLoader),
         completionHandler = completionHandlerCaller.release()] (PolicyAction policy) mutable {
-        continueAfterContentPolicy(policy, [mainResourceLoader = WTF::move(mainResourceLoader), completionHandler = WTF::move(completionHandler)] mutable {
-            if (mainResourceLoader)
-                mainResourceLoader->didReceiveResponsePolicy();
-            if (completionHandler)
-                completionHandler();
-        });
+        continueAfterContentPolicy(policy);
+        if (mainResourceLoader)
+            mainResourceLoader->didReceiveResponsePolicy();
+        if (completionHandler)
+            completionHandler();
     });
 }
 
@@ -1163,9 +1127,8 @@ bool DocumentLoader::disallowDataRequest() const
     return true;
 }
 
-void DocumentLoader::continueAfterContentPolicy(PolicyAction policy, CompletionHandler<void()>&& completionHandler)
+void DocumentLoader::continueAfterContentPolicy(PolicyAction policy)
 {
-    CompletionHandlerCallingScope callCompletionHandler(WTF::move(completionHandler));
     ASSERT(m_waitingForContentPolicy);
     m_waitingForContentPolicy = false;
     if (isStopping())
@@ -1193,6 +1156,16 @@ void DocumentLoader::continueAfterContentPolicy(PolicyAction policy, CompletionH
         if (!m_mainResource) {
             DOCUMENTLOADER_RELEASE_LOG("continueAfterContentPolicy: cannot show URL");
             mainReceivedError(platformStrategies()->loaderStrategy()->cannotShowURLError(m_request));
+            return;
+        }
+
+        // Defense-in-depth: refuse to download a data: URL through a top-frame navigation that
+        // wasn't initiated by the user or the API client, mirroring the existing check in the
+        // PolicyAction::Use branch. The primary defense lives in the UI process; this guards
+        // ports / future flows that don't share that boundary.
+        if (disallowDataRequest()) {
+            protect(frameLoader())->policyChecker().cannotShowMIMEType(m_response);
+            stopLoadingForPolicyChange();
             return;
         }
 
@@ -1254,23 +1227,6 @@ void DocumentLoader::continueAfterContentPolicy(PolicyAction policy, CompletionH
         }
     }
 
-    // https://html.spec.whatwg.org/multipage/browsing-the-web.html#deactivate-a-document-for-a-cross-document-navigation
-    // Nothing is committed until the rest of the response comes through, so holding it back holds the
-    // navigation back while the current document captures a view transition into this one.
-    RefPtr frameLoader = this->frameLoader();
-    if (!frameLoader)
-        return;
-    m_waitingForOutboundViewTransitionCapture = true;
-    frameLoader->waitForOutboundViewTransitionCapture(*this, false, [this, protectedThis = Ref { *this }, completionHandler = callCompletionHandler.release()] mutable {
-        if (std::exchange(m_waitingForOutboundViewTransitionCapture, false))
-            commitSubstituteDataIfNeeded();
-        if (completionHandler)
-            completionHandler();
-    });
-}
-
-void DocumentLoader::commitSubstituteDataIfNeeded()
-{
     if (!isStopping() && m_substituteData.isValid() && isLoadingMainResource()) {
         RefPtr content = m_substituteData.content();
         if (content && content->size()) {
@@ -1646,7 +1602,6 @@ void DocumentLoader::clearMainResourceLoader()
 {
     m_loadingMainResource = false;
     m_isContinuingLoad = ShouldTreatAsContinuingLoad::No;
-    m_isCacheOnlyLoadRetry = false;
 
     RefPtr frameLoader = this->frameLoader();
 
@@ -2134,7 +2089,7 @@ void DocumentLoader::removePlugInStreamLoader(ResourceLoader& loader)
     ASSERT(m_plugInStreamLoaders.contains(&loader));
     m_plugInStreamLoaders.remove(&loader);
     if (m_frame && m_frame->document()) {
-        protect(protect(m_frame->document())->eventLoop())->queueTask(TaskSource::Networking, [protectedThis = Ref { *this }]() {
+        protect(m_frame->document())->eventLoop().queueTask(TaskSource::Networking, [protectedThis = Ref { *this }]() {
             protectedThis->checkLoadComplete();
         });
     }
@@ -2441,15 +2396,6 @@ void DocumentLoader::cancelPolicyCheckIfNeeded()
         m_waitingForContentPolicy = false;
         m_waitingForNavigationPolicy = false;
     }
-
-    // The current document stays, so it stops holding its rendering for a transition that will not happen.
-    if (std::exchange(m_waitingForOutboundViewTransitionCapture, false)) {
-        RefPtr frame = m_frame.get();
-        if (RefPtr document = frame ? frame->document() : nullptr) {
-            if (RefPtr viewTransition = document->activeViewTransition())
-                viewTransition->skipTransition();
-        }
-    }
 }
 
 void DocumentLoader::cancelMainResourceLoad(const ResourceError& resourceError, LoadWillContinueInAnotherProcess loadWillContinueInAnotherProcess)
@@ -2490,7 +2436,6 @@ void DocumentLoader::clearMainResource()
 
     m_mainResource = nullptr;
     m_isContinuingLoad = ShouldTreatAsContinuingLoad::No;
-    m_isCacheOnlyLoadRetry = false;
 
     unregisterReservedServiceWorkerClient();
 }

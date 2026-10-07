@@ -54,16 +54,11 @@ Ref<RealtimeIncomingAudioSourceLibWebRTC> RealtimeIncomingAudioSourceLibWebRTC::
 RealtimeIncomingAudioSourceLibWebRTC::RealtimeIncomingAudioSourceLibWebRTC(Ref<webrtc::AudioTrackInterface>&& audioTrack, String&& audioTrackId)
     : RealtimeIncomingAudioSource(WTF::move(audioTrack), WTF::move(audioTrackId))
 {
-#ifndef GST_DISABLE_GST_DEBUG
     static std::once_flag onceFlag;
     std::call_once(onceFlag, [] {
         GST_DEBUG_CATEGORY_INIT(webkit_libwebrtc_incoming_audio_debug, "webkitlibwebrtcaudioincoming", 0, "WebKit LibWebRTC incoming audio source");
     });
-#if GST_CHECK_VERSION(1, 22, 0)
-    m_id = persistentID().ascii();
-    GST_DEBUG("Created incoming audio source with ID: %s", m_id);
-#endif
-#endif
+    GST_DEBUG("Created incoming audio source with ID: %s", persistentID().utf8());
 }
 
 RealtimeIncomingAudioSourceLibWebRTC::~RealtimeIncomingAudioSourceLibWebRTC()
@@ -73,12 +68,10 @@ RealtimeIncomingAudioSourceLibWebRTC::~RealtimeIncomingAudioSourceLibWebRTC()
 
 void RealtimeIncomingAudioSourceLibWebRTC::OnData(const void* audioData, int, int sampleRate, size_t numberOfChannels, size_t numberOfFrames)
 {
-#ifndef GST_DISABLE_GST_DEBUG
 #if GST_CHECK_VERSION(1, 22, 0)
-    GST_TRACE_ID(m_id.data(), "Handling %zu incoming audio frames", numberOfFrames);
+    GST_TRACE_ID(persistentID().utf8().legacyCStringPointer(), "Handling %zu incoming audio frames", numberOfFrames);
 #else
     GST_TRACE("Handling %zu incoming audio frames", numberOfFrames);
-#endif
 #endif
     GstAudioInfo info;
     GstAudioFormat format = gst_audio_format_build_integer(

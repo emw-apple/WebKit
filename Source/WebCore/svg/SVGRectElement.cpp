@@ -28,7 +28,6 @@
 #include "NodeName.h"
 #include "RenderSVGRect.h"
 #include "SVGElementInlines.h"
-#include "SVGElementTypeHelpers.h"
 #include "SVGNames.h"
 #include "SVGParsingError.h"
 #include "SVGPropertyOwnerRegistry.h"
@@ -40,7 +39,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGRectElement);
 
 inline SVGRectElement::SVGRectElement(const QualifiedName& tagName, Document& document)
-    : SVGGeometryElement(tagName, document, PropertyRegistry::singleton())
+    : SVGGeometryElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::rectTag));
 

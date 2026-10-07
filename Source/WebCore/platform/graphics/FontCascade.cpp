@@ -247,13 +247,13 @@ RefPtr<const DisplayList::DisplayList> FontCascade::displayListForGlyphBuffer(Gr
     constexpr auto drawGlyphsMode = DisplayList::Recorder::DrawGlyphsMode::Deconstruct;
 #endif
 
-    Ref recordingContext = DisplayList::RecorderImpl::create(context.state().clone(GraphicsContextState::Purpose::Initial), { },
+    DisplayList::RecorderImpl recordingContext(context.state().clone(GraphicsContextState::Purpose::Initial), { },
         context.getCTM(GraphicsContext::DefinitelyIncludeDeviceScale), context.colorSpace(), drawGlyphsMode);
 
     FloatPoint startPoint = toFloatPoint(WebCore::size(glyphBuffer.initialAdvance()));
     drawGlyphBuffer(recordingContext, glyphBuffer, startPoint, customFontNotReadyAction);
 
-    return recordingContext->takeDisplayList();
+    return recordingContext.takeDisplayList();
 }
 
 float FontCascade::widthOfTextRange(const TextRun& run, unsigned from, unsigned to, float& outWidthBeforeRange, float& outWidthAfterRange) const
@@ -1107,7 +1107,7 @@ bool FontCascade::isCJKIdeographOrSymbol(char32_t c)
     if (c >= 0x2672 && c <= 0x267D)
         return true;
 
-    if ((c == 0x26A0) || (c == 0x26BD) || (c == 0x26BE) || (c == checkMarkCharacter) || (c == 0x271A) || (c == 0x273F) || (c == 0x2740) || (c == 0x2756))
+    if ((c == 0x26A0) || (c == 0x26BD) || (c == 0x26BE) || (c == 0x2713) || (c == 0x271A) || (c == 0x273F) || (c == 0x2740) || (c == 0x2756))
         return true;
 
     if (c >= 0x2776 && c <= 0x277F)

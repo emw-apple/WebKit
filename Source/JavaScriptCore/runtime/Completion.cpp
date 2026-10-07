@@ -206,8 +206,6 @@ static ScriptFetchParameters::Type getSourceType(const SourceCode& source)
         return ScriptFetchParameters::Type::JSON;
     case SourceProviderSourceType::Text:
         return ScriptFetchParameters::Type::Text;
-    case SourceProviderSourceType::CSS:
-        return ScriptFetchParameters::Type::CSS;
     case SourceProviderSourceType::WebAssembly:
         return ScriptFetchParameters::Type::WebAssembly;
     case SourceProviderSourceType::Module:
@@ -367,12 +365,8 @@ std::optional<ScriptFetchParameters::Type> retrieveTypeImportAttribute(JSGlobalO
 
     String value = iterator->value;
     auto result = ScriptFetchParameters::parseType(value);
-
     if (result == ScriptFetchParameters::Type::Text && !Options::useImportText())
         result = std::nullopt;
-    else if (result == ScriptFetchParameters::Type::CSS && !Options::useCSSModuleScripts())
-        result = std::nullopt;
-
     if (result)
         return result;
 

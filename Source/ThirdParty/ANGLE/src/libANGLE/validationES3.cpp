@@ -23,7 +23,6 @@
 #include "libANGLE/formatutils.h"
 #include "libANGLE/validationES.h"
 #include "libANGLE/validationES3.h"
-#include "platform/autogen/FrontendFeatures_autogen.h"
 
 using namespace angle;
 
@@ -727,14 +726,6 @@ bool ValidateES3TexImageParametersBase(const Context *context,
                     return false;
                 }
             }
-        }
-
-        if (!isSubImage &&
-            !ValidateHardenedContextTextureLevelRedefine(context, entryPoint, texture, level, width,
-                                                         height, depth, actualFormatInfo))
-        {
-            // Error already generated
-            return false;
         }
     }
 

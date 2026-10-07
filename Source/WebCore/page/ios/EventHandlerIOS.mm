@@ -183,7 +183,7 @@ void EventHandler::focusDocumentView()
         return;
 
     if (RefPtr frameView = m_frame->view()) {
-        if (RetainPtr documentView = frameView->documentView()) {
+        if (NSView *documentView = frameView->documentView()) {
             page->chrome().focusNSView(documentView);
             // Check page() again because focusNSView can cause reentrancy.
             if (!m_frame->page())
@@ -224,11 +224,10 @@ static bool lastEventIsMouseUp()
 
     BEGIN_BLOCK_OBJC_EXCEPTIONS
     WebEvent *currentEventAfterHandlingMouseDown = [WAKWindow currentEvent];
-    RetainPtr currentEvent = EventHandler::currentEvent();
     return currentEventAfterHandlingMouseDown
-        && currentEvent != currentEventAfterHandlingMouseDown
+        && EventHandler::currentEvent() != currentEventAfterHandlingMouseDown
         && currentEventAfterHandlingMouseDown.type == WebEventMouseUp
-        && currentEventAfterHandlingMouseDown.timestamp >= [currentEvent timestamp];
+        && currentEventAfterHandlingMouseDown.timestamp >= EventHandler::currentEvent().timestamp;
     END_BLOCK_OBJC_EXCEPTIONS
 
     return false;
@@ -253,11 +252,10 @@ bool EventHandler::passMouseDownEventToWidget(Widget* pWidget)
 
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
-    RetainPtr nodeView = widget->platformWidget();
+    NSView *nodeView = widget->platformWidget();
     ASSERT(nodeView);
     ASSERT([nodeView superview]);
-    RetainPtr event = currentEvent();
-    NSView *view = [nodeView hitTest:[[nodeView superview] convertPoint:[event locationInWindow] fromView:nil]];
+    NSView *view = [nodeView hitTest:[[nodeView superview] convertPoint:currentEvent().locationInWindow fromView:nil]];
     if (!view) {
         // We probably hit the border of a RenderWidget
         return true;
@@ -290,7 +288,7 @@ bool EventHandler::passMouseDownEventToWidget(Widget* pWidget)
 
     {
         WidgetHierarchyUpdatesSuspensionScope suspendWidgetHierarchyUpdates;
-        [view mouseDown:event];
+        [view mouseDown:currentEvent()];
     }
 
     m_sendingEventToSubview = false;
@@ -343,7 +341,7 @@ RetainPtr<NSView> EventHandler::mouseDownViewIfStillGood()
         return nil;
     }
     RefPtr topFrameView = m_frame->view();
-    RetainPtr<NSView> topView = topFrameView ? topFrameView->platformWidget() : nil;
+    NSView *topView = topFrameView ? topFrameView->platformWidget() : nil;
     if (!topView || !findViewInSubviews(topView, mouseDownView.get())) {
         m_mouseDownView = nil;
         return nil;
@@ -366,7 +364,7 @@ bool EventHandler::eventLoopHandleMouseUp(const MouseEventWithHitTestResults&)
         ASSERT(!m_sendingEventToSubview);
         m_sendingEventToSubview = true;
         BEGIN_BLOCK_OBJC_EXCEPTIONS
-        [view mouseUp:protect(currentEvent())];
+        [view mouseUp:currentEvent()];
         END_BLOCK_OBJC_EXCEPTIONS
         m_sendingEventToSubview = false;
     }
@@ -378,7 +376,7 @@ bool EventHandler::passSubframeEventToSubframe(MouseEventWithHitTestResults& eve
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
-    WebEventType currentEventType = [protect(currentEvent()) type];
+    WebEventType currentEventType = currentEvent().type;
     switch (currentEventType) {
     case WebEventMouseMoved: {
         // Since we're passing in currentNSEvent() here, we can call
@@ -432,7 +430,7 @@ bool EventHandler::passWheelEventToWidget(const PlatformWheelEvent& wheelEvent, 
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
-    RetainPtr nodeView = widget.platformWidget();
+    NSView* nodeView = widget.platformWidget();
     if (!nodeView) {
         // WebKit2 code path.
         RefPtr frameView = dynamicDowncast<LocalFrameView>(widget);
@@ -442,13 +440,12 @@ bool EventHandler::passWheelEventToWidget(const PlatformWheelEvent& wheelEvent, 
         return result.wasHandled();
     }
 
-    RetainPtr event = currentEvent();
-    if ([event type] != WebEventScrollWheel || m_sendingEventToSubview)
+    if (currentEvent().type != WebEventScrollWheel || m_sendingEventToSubview)
         return false;
 
     ASSERT(nodeView);
     ASSERT([nodeView superview]);
-    NSView *view = [nodeView hitTest:[[nodeView superview] convertPoint:[event locationInWindow] fromView:nil]];
+    NSView *view = [nodeView hitTest:[[nodeView superview] convertPoint:currentEvent().locationInWindow fromView:nil]];
     if (!view) {
         // We probably hit the border of a RenderWidget
         return false;
@@ -456,7 +453,7 @@ bool EventHandler::passWheelEventToWidget(const PlatformWheelEvent& wheelEvent, 
 
     ASSERT(!m_sendingEventToSubview);
     m_sendingEventToSubview = true;
-    [view scrollWheel:event];
+    [view scrollWheel:currentEvent()];
     m_sendingEventToSubview = false;
     return true;
 
@@ -524,7 +521,7 @@ void EventHandler::mouseMoved(WebEvent *event)
         callOnMainThread([frame = protect(m_frame)] {
             // This is called by WebKitLegacy only.
             if (RefPtr document = frame->document())
-                protect(document->contentChangeObserver())->willNotProceedWithFixedObservationTimeWindow();
+                document->contentChangeObserver().willNotProceedWithFixedObservationTimeWindow();
         });
 #endif
     }
@@ -587,7 +584,7 @@ OptionSet<PlatformEvent::Modifier> EventHandler::accessKeyModifiers()
 
 PlatformMouseEvent EventHandler::currentPlatformMouseEvent() const
 {
-    return PlatformEventFactory::createPlatformMouseEvent(protect(currentEvent()));
+    return PlatformEventFactory::createPlatformMouseEvent(currentEvent());
 }
 
 static IntPoint adjustAutoscrollDestinationForInsetEdges(IntPoint autoscrollPoint, std::optional<IntPoint> initialAutoscrollPoint, FloatRect unobscuredRootViewRect, float zoomScale)
@@ -717,10 +714,6 @@ std::optional<NodeIdentifier> EventHandler::requestInteractiveModelElementAtPoin
 
     if (RefPtr modelElement = dynamicDowncast<HTMLModelElement>(targetElement)) {
         if (modelElement->supportsStageModeInteraction()) {
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-            if (modelElement->isPresentedInVolumetricScene())
-                return std::nullopt;
-#endif
             auto transform = TransformationMatrix::identity;
             transform.translate(clientPosition.x(), clientPosition.y());
 
@@ -730,31 +723,6 @@ std::optional<NodeIdentifier> EventHandler::requestInteractiveModelElementAtPoin
     }
 
     return std::nullopt;
-}
-
-void EventHandler::stageModeSessionDidBegin(NodeIdentifier nodeID, const TransformationMatrix& transform)
-{
-    RefPtr node = Node::fromIdentifier(nodeID);
-    if (!node)
-        return;
-
-#if ENABLE(SPATIAL_PORTAL)
-    if (RefPtr element = dynamicDowncast<Element>(node.get())) {
-        if (CheckedPtr controller = element->spatialPortalController(); controller && controller->supportsInteraction()) {
-            controller->beginStageModeTransform(transform);
-            return;
-        }
-    }
-#endif
-
-    RefPtr modelElement = dynamicDowncast<HTMLModelElement>(node);
-    if (!modelElement)
-        return;
-
-    if (!modelElement->supportsStageModeInteraction())
-        return;
-
-    modelElement->beginStageModeTransform(transform);
 }
 
 void EventHandler::stageModeSessionDidUpdate(std::optional<NodeIdentifier> nodeID, const TransformationMatrix& transform)

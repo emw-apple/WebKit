@@ -52,7 +52,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGAElement);
 
 inline SVGAElement::SVGAElement(const QualifiedName& tagName, Document& document)
-    : SVGGraphicsElement(tagName, document, PropertyRegistry::singleton())
+    : SVGGraphicsElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
     , SVGURIReference(this)
 {
     ASSERT(hasTagName(SVGNames::aTag));

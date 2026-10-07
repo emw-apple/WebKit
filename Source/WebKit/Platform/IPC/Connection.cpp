@@ -100,7 +100,7 @@ public:
     bool processIncomingMessage(Connection& connectionForLockCheck, UniqueRef<Decoder>&) WTF_REQUIRES_LOCK(connectionForLockCheck.m_incomingMessagesLock);
 
     // Dispatch pending messages that should be dispatched while waiting for a sync reply.
-    void dispatchMessages(NOESCAPE const Function<void(MessageName, uint64_t)>& willDispatchMessage = { });
+    void dispatchMessages(Function<void(MessageName, uint64_t)>&& willDispatchMessage = { });
 
     // Dispatch pending messages that should be dispatched while waiting for a sync reply,
     // up until the message with the provided identifier.
@@ -230,7 +230,7 @@ bool Connection::SyncMessageState::processIncomingMessage(Connection& connection
     return true;
 }
 
-void Connection::SyncMessageState::dispatchMessages(NOESCAPE const Function<void(MessageName, uint64_t)>& willDispatchMessage)
+void Connection::SyncMessageState::dispatchMessages(Function<void(MessageName, uint64_t)>&& willDispatchMessage)
 {
     assertIsCurrent(m_dispatcher.get());
     {
@@ -1763,8 +1763,3 @@ void Connection::logFailedMessageCheck(const String& reason, const String& funct
 }
 
 } // namespace IPC
-
-#if ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
-// Workaround for rdar://188816334
-template void WTF::ThreadSafeRefCountedAndCanMakeThreadSafeWeakPtr<IPC::Connection, WTF::DestructionThread::MainRunLoop>::operator delete(void*);
-#endif

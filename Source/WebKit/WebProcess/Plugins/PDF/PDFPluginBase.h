@@ -71,7 +71,6 @@ class Color;
 class FragmentedSharedBuffer;
 class GraphicsContext;
 class Element;
-class FrameView;
 class HTMLPlugInElement;
 class NetscapePlugInStreamLoaderClient;
 class ResourceResponse;
@@ -263,12 +262,6 @@ public:
             return inverseTransform->mapPoint(value);
     }
 
-    // Under site isolation, the root view above is this process's local root, not the main frame.
-    // Anything sent to the UI process in root view coordinates should be converted with these first.
-    // FIXME: boundsOnScreen(), the accessibility screen conversions and autoscroll need this too.
-    WebCore::FloatPoint convertFromRootViewToMainFrameView(WebCore::FloatPoint) const;
-    WebCore::FloatRect convertFromRootViewToMainFrameView(WebCore::FloatRect) const;
-
     WebCore::IntRect boundsOnScreen() const;
 
     bool showContextMenuAtPoint(const WebCore::IntPoint&);
@@ -388,10 +381,6 @@ protected:
 private:
     bool documentFinishedLoading() const { return m_documentFinishedLoading; }
     void ensureDataBufferLength(uint64_t) WTF_REQUIRES_LOCK(m_streamedDataLock);
-
-    // The view that convertFromPluginToRootView() maps into: the top of the plugin's widget tree,
-    // where Widget::convertToRootView() stops.
-    RefPtr<WebCore::FrameView> rootView() const;
 
     bool NODELETE haveStreamedDataForRange(uint64_t offset, size_t count) const WTF_REQUIRES_LOCK(m_streamedDataLock);
     // This just checks whether the CFData is large enough; it doesn't know if we filled this range with data.

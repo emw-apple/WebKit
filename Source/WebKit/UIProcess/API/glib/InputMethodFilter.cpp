@@ -71,8 +71,6 @@ void InputMethodFilter::setContext(WebKitInputMethodContext* context)
     }
 
     m_context = context;
-    m_cursorLocation = { };
-    m_surrounding = { };
     if (!m_context)
         return;
 
@@ -215,8 +213,6 @@ void InputMethodFilter::notifyFocusedOut()
         return;
 
     cancelComposition();
-    m_cursorLocation = { };
-    m_surrounding = { };
     webkit_input_method_context_notify_focus_out(m_context.get());
 }
 
@@ -258,8 +254,7 @@ void InputMethodFilter::notifySurrounding(const String& text, uint64_t cursorPos
     auto selectionPositionUTF8 = cursorPositionUTF8;
     if (cursorPosition != selectionPosition)
         selectionPositionUTF8 = selectionPosition != text.length() ? StringView(text).left(selectionPosition).utf8().length() : textUTF8.length();
-    auto textCharacters = byteCast<char>(textUTF8.span());
-    webkit_input_method_context_notify_surrounding(m_context.get(), textCharacters.data(), textCharacters.size(), cursorPositionUTF8, selectionPositionUTF8);
+    webkit_input_method_context_notify_surrounding(m_context.get(), textUTF8.legacyCStringPointer(), textUTF8.length(), cursorPositionUTF8, selectionPositionUTF8);
 }
 
 void InputMethodFilter::preeditStarted()
@@ -294,7 +289,6 @@ void InputMethodFilter::preeditChanged()
 
     m_preedit.text = String::fromUTF8(newPreedit.span());
     m_preedit.cursorOffset = std::min(cursorOffset, m_preedit.text.length());
-    m_preedit.underlines.clear();
     if (underlines) {
         for (auto* it = underlines; it; it = g_list_next(it)) {
             auto* underline = static_cast<WebKitInputMethodUnderline*>(it->data);
@@ -306,7 +300,7 @@ void InputMethodFilter::preeditChanged()
 
     auto* webView = webkitInputMethodContextGetWebView(m_context.get());
     ASSERT(webView);
-    webkitWebViewSetComposition(webView, m_preedit.text, m_preedit.underlines, EditingRange(m_preedit.cursorOffset, 0));
+    webkitWebViewSetComposition(webView, m_preedit.text, m_preedit.underlines, EditingRange(m_preedit.cursorOffset, 1));
 }
 
 void InputMethodFilter::preeditFinished()
@@ -325,7 +319,7 @@ void InputMethodFilter::preeditFinished()
 
     auto* webView = webkitInputMethodContextGetWebView(m_context.get());
     ASSERT(webView);
-    webkitWebViewSetComposition(webView, { }, { }, EditingRange(0, 0));
+    webkitWebViewSetComposition(webView, { }, { }, EditingRange(0, 1));
 }
 
 void InputMethodFilter::committed(const char* compositionString)

@@ -376,11 +376,15 @@ Device::~Device()
     MTLRemoveDeviceObserver(m_deviceObserver);
     ALLOW_DEPRECATED_DECLARATIONS_END
 #endif
-    if (m_deviceLostCallback)
-        m_deviceLostCallback(WebGPU::DeviceLostReason::Destroyed, ""_s);
+    if (m_deviceLostCallback) {
+        m_deviceLostCallback(WGPUDeviceLostReason_Destroyed, ""_s);
+        m_deviceLostCallback = nullptr;
+    }
 
-    if (m_uncapturedErrorCallback)
-        m_uncapturedErrorCallback(false, std::nullopt);
+    if (m_uncapturedErrorCallback) {
+        m_uncapturedErrorCallback(WGPUErrorType_NoError, ""_s);
+        m_uncapturedErrorCallback = nullptr;
+    }
 }
 
 RefPtr<XRSubImage> Device::getXRViewSubImage(XRProjectionLayer& projectionLayer)
@@ -416,8 +420,10 @@ void Device::loseTheDevice(WGPUDeviceLostReason reason)
 
     m_adapter->makeInvalid();
 
-    if (m_deviceLostCallback)
-        m_deviceLostCallback(fromAPI(reason).value_or(WebGPU::DeviceLostReason::Unknown), "Device lost."_s);
+    if (m_deviceLostCallback) {
+        m_deviceLostCallback(reason, "Device lost."_s);
+        m_deviceLostCallback = nullptr;
+    }
 
     protect(m_defaultQueue)->makeInvalid();
     m_isLost = true;
@@ -452,9 +458,19 @@ void Device::destroy()
     loseTheDevice(WGPUDeviceLostReason_Destroyed);
 }
 
-Vector<WebGPU::FeatureName> Device::features() const
+size_t Device::enumerateFeatures(WGPUFeatureName* features)
 {
-    return featuresFromAPI(m_capabilities.features.span());
+    // The API contract for this requires that sufficient space has already been allocated for the output.
+    // This requires the caller calling us twice: once to get the amount of space to allocate, and once to fill the space.
+    if (features)
+        std::ranges::copy(m_capabilities.features, features);
+    return m_capabilities.features.size();
+}
+
+bool Device::getLimits(WGPUSupportedLimits& limits)
+{
+    limits.limits = toAPI(m_capabilities.limits);
+    return true;
 }
 
 id<MTLTexture> Device::placeholderTexture(WGPUTextureFormat format) const
@@ -492,12 +508,14 @@ void Device::generateAValidationError(String&& message)
     auto* scope = currentErrorScope(WGPUErrorFilter_Validation);
     if (scope) {
         if (!scope->error)
-            scope->error = WebGPU::Error { WebGPU::ErrorType::Validation, WTF::move(message) };
+            scope->error = Error { WGPUErrorType_Validation, WTF::move(message) };
         return;
     }
 
-    if (m_uncapturedErrorCallback)
-        m_uncapturedErrorCallback(true, WebGPU::Error { WebGPU::ErrorType::Validation, WTF::move(message) });
+    if (m_uncapturedErrorCallback) {
+        m_uncapturedErrorCallback(WGPUErrorType_Validation, WTF::move(message));
+        m_uncapturedErrorCallback = nullptr;
+    }
 }
 
 void Device::generateAnOutOfMemoryError(String&& message)
@@ -511,12 +529,14 @@ void Device::generateAnOutOfMemoryError(String&& message)
 
     if (scope) {
         if (!scope->error)
-            scope->error = WebGPU::Error { WebGPU::ErrorType::OutOfMemory, WTF::move(message) };
+            scope->error = Error { WGPUErrorType_OutOfMemory, WTF::move(message) };
         return;
     }
 
-    if (m_uncapturedErrorCallback)
-        m_uncapturedErrorCallback(true, WebGPU::Error { WebGPU::ErrorType::OutOfMemory, WTF::move(message) });
+    if (m_uncapturedErrorCallback) {
+        m_uncapturedErrorCallback(WGPUErrorType_OutOfMemory, WTF::move(message));
+        m_uncapturedErrorCallback = nullptr;
+    }
 }
 
 void Device::generateAnInternalError(String&& message)
@@ -530,12 +550,14 @@ void Device::generateAnInternalError(String&& message)
 
     if (scope) {
         if (!scope->error)
-            scope->error = WebGPU::Error { WebGPU::ErrorType::Internal, WTF::move(message) };
+            scope->error = Error { WGPUErrorType_Internal, WTF::move(message) };
         return;
     }
 
-    if (m_uncapturedErrorCallback)
-        m_uncapturedErrorCallback(true, WebGPU::Error { WebGPU::ErrorType::Internal, WTF::move(message) });
+    if (m_uncapturedErrorCallback) {
+        m_uncapturedErrorCallback(WGPUErrorType_Internal, WTF::move(message));
+        m_uncapturedErrorCallback = nullptr;
+    }
 }
 
 id<MTLBuffer> Device::newBufferWithBytes(const void* pointer, size_t length, MTLResourceOptions options, bool skipAttribution) const
@@ -577,40 +599,44 @@ std::optional<WGPUErrorType> Device::validatePopErrorScope() const
     return std::nullopt;
 }
 
-void Device::popErrorScope(CompletionHandler<void(bool, std::optional<WebGPU::Error>&&)>&& callback)
+bool Device::popErrorScope(CompletionHandler<void(WGPUErrorType, String&&)>&& callback)
 {
     // https://gpuweb.github.io/gpuweb/#dom-gpudevice-poperrorscope
 
     if (auto errorType = validatePopErrorScope()) {
-        // A lost device completes as a scope without errors.
-        callback(*errorType == WGPUErrorType_NoError, std::nullopt);
-        return;
+        callback(*errorType, "popErrorScope() failed validation."_s);
+        return false;
     }
 
     auto scope = m_errorScopeStack.takeLast();
 
     if (auto inst = instance(); inst.get()) {
         inst->scheduleWork([scope = WTF::move(scope), callback = WTF::move(callback)]() mutable {
-            bool caughtNoError = !scope.error;
-            callback(caughtNoError, WTF::move(scope.error));
+            if (scope.error)
+                callback(scope.error->type, WTF::move(scope.error->message));
+            else
+                callback(WGPUErrorType_NoError, { });
         });
     } else
-        callback(true, std::nullopt);
+        callback(WGPUErrorType_NoError, { });
+
+    // FIXME: Make sure this is the right thing to return.
+    return true;
 }
 
-void Device::pushErrorScope(WebGPU::ErrorFilter filter)
+void Device::pushErrorScope(WGPUErrorFilter filter)
 {
     // https://gpuweb.github.io/gpuweb/#dom-gpudevice-pusherrorscope
 
-    ErrorScope scope { std::nullopt, toAPI(filter) };
+    ErrorScope scope { std::nullopt, filter };
 
     m_errorScopeStack.append(WTF::move(scope));
 }
 
-void Device::resolveDeviceLostPromise(CompletionHandler<void(WebGPU::DeviceLostReason, String&&)>&& callback)
+void Device::setDeviceLostCallback(Function<void(WGPUDeviceLostReason, String&&)>&& callback)
 {
     if (m_deviceLostCallback)
-        m_deviceLostCallback(WebGPU::DeviceLostReason::Destroyed, ""_s);
+        m_deviceLostCallback(WGPUDeviceLostReason_Destroyed, ""_s);
 
     m_deviceLostCallback = WTF::move(callback);
     if (m_isLost)
@@ -619,10 +645,10 @@ void Device::resolveDeviceLostPromise(CompletionHandler<void(WebGPU::DeviceLostR
         loseTheDevice(WGPUDeviceLostReason_Undefined);
 }
 
-void Device::resolveUncapturedErrorEvent(CompletionHandler<void(bool, std::optional<WebGPU::Error>&&)>&& callback)
+void Device::setUncapturedErrorCallback(Function<void(WGPUErrorType, String&&)>&& callback)
 {
     if (m_uncapturedErrorCallback)
-        m_uncapturedErrorCallback(false, std::nullopt);
+        m_uncapturedErrorCallback(WGPUErrorType_NoError, ""_s);
     m_uncapturedErrorCallback = WTF::move(callback);
 }
 
@@ -677,12 +703,12 @@ id<MTLRenderPipelineState> Device::indexBufferClampPipeline(MTLIndexType indexTy
     static id<MTLFunction> functionUshort = nil;
     NSError *error = nil;
     static std::once_flag onceFlag;
-    std::call_once(onceFlag, [&, &device = m_device] {
+    std::call_once(onceFlag, [&] {
         MTLCompileOptions* options = [MTLCompileOptions new];
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         options.fastMathEnabled = YES;
         ALLOW_DEPRECATED_DECLARATIONS_END
-        /* NOLINT */ id<MTLLibrary> library = [device newLibraryWithSource:@R"(
+        /* NOLINT */ id<MTLLibrary> library = [m_device newLibraryWithSource:@R"(
 #define vertexCount 0
 #define primitiveRestart 1
 #define indexCountMinusOne 2
@@ -832,12 +858,12 @@ id<MTLRenderPipelineState> Device::indirectBufferClampPipeline(NSUInteger raster
     static id<MTLFunction> function = nil;
     NSError *error = nil;
     static std::once_flag onceFlag;
-    std::call_once(onceFlag, [&, &device = m_device, maxVerticesPerDrawCall = m_maxVerticesPerDrawCall] {
+    std::call_once(onceFlag, [&] {
         MTLCompileOptions* options = [MTLCompileOptions new];
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         options.fastMathEnabled = YES;
         ALLOW_DEPRECATED_DECLARATIONS_END
-        /* NOLINT */ id<MTLLibrary> library = [device newLibraryWithSource:[NSString stringWithFormat:@R"(
+        /* NOLINT */ id<MTLLibrary> library = [m_device newLibraryWithSource:[NSString stringWithFormat:@R"(
     using namespace metal;
     )"  OBJC_STRINGIFY(WEBKIT_DRAW_INDIRECT_STRUCT_TYPE)   @R"(
     [[vertex]] void vsIndirect(device const MTLDrawPrimitivesIndirectArguments& input [[buffer(0)]], device WebKitMTLDrawPrimitivesIndirectArguments& wkoutput [[buffer(1)]], const constant uint* minCounts [[buffer(2)]])
@@ -856,7 +882,7 @@ id<MTLRenderPipelineState> Device::indirectBufferClampPipeline(NSUInteger raster
         output.baseInstance = input.baseInstance;
         if (lostCondition)
             wkoutput.lostOrOOBRead = 1;
-    })", maxVerticesPerDrawCall, maxVerticesPerDrawCall, maxVerticesPerDrawCall] /* NOLINT */ options:options error:&error];
+    })", m_maxVerticesPerDrawCall, m_maxVerticesPerDrawCall, m_maxVerticesPerDrawCall] /* NOLINT */ options:options error:&error];
         if (error)
             WTFLogAlways("%@", error);
 
@@ -940,12 +966,12 @@ id<MTLFunction> Device::icbIndirectEncodeFunction(bool isIndexed, MTLIndexType i
     static std::once_flag onceFlag;
     // The shader below hardcodes [[buffer(1)]] for the ICB container to match bufferIndexForICBContainer().
     RELEASE_ASSERT(bufferIndexForICBContainer() == 1);
-    std::call_once(onceFlag, [&, &device = m_device] {
+    std::call_once(onceFlag, [&] {
         MTLCompileOptions* options = [MTLCompileOptions new];
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         options.fastMathEnabled = YES;
         ALLOW_DEPRECATED_DECLARATIONS_END
-        /* NOLINT */ id<MTLLibrary> library = [device newLibraryWithSource:@R"(
+        /* NOLINT */ id<MTLLibrary> library = [m_device newLibraryWithSource:@R"(
     using namespace metal;
     struct ICBContainer {
         device uint* outOfBoundsRead [[ id(0) ]];
@@ -1060,12 +1086,12 @@ id<MTLFunction> Device::icbCommandClampFunction(MTLIndexType indexType)
     static id<MTLFunction> functionUshort = nil;
     NSError *error = nil;
     static std::once_flag onceFlag;
-    std::call_once(onceFlag, [&, &device = m_device] {
+    std::call_once(onceFlag, [&] {
         MTLCompileOptions* options = [MTLCompileOptions new];
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         options.fastMathEnabled = YES;
         ALLOW_DEPRECATED_DECLARATIONS_END
-        /* NOLINT */ id<MTLLibrary> library = [device newLibraryWithSource:[NSString stringWithFormat:@R"(
+        /* NOLINT */ id<MTLLibrary> library = [m_device newLibraryWithSource:[NSString stringWithFormat:@R"(
     using namespace metal;
     struct ICBContainer {
         device uint* outOfBoundsRead [[ id(0) ]];
@@ -1198,9 +1224,6 @@ void Device::makeSubmitInvalidClearingEncoders(TrackedResourceContainer& command
 
 #pragma mark WGPU Stubs
 
-static constexpr auto invalidComputePipelineDescriptorMessage = "GPUComputePipelineDescriptor has no shader module"_s;
-static constexpr auto invalidRenderPipelineDescriptorMessage = "GPURenderPipelineDescriptor has no shader module or an invalid enum value or color write mask bit"_s;
-
 void NODELETE wgpuDeviceAddRef(WGPUDevice device)
 {
     WebGPU::Metal::fromAPI(device).ref();
@@ -1213,26 +1236,12 @@ void wgpuDeviceRelease(WGPUDevice device)
 
 WGPUBindGroup wgpuDeviceCreateBindGroup(WGPUDevice device, const WGPUBindGroupDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::BindGroupDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError("GPUBindGroupDescriptor has no layout or an entry without exactly one resource"_s);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::BindGroup::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createBindGroup(*apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createBindGroup(*descriptor));
 }
 
 WGPUBindGroupLayout wgpuDeviceCreateBindGroupLayout(WGPUDevice device, const WGPUBindGroupLayoutDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::BindGroupLayoutDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError("GPUBindGroupLayoutDescriptor has an invalid enum value or visibility bit"_s);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::BindGroupLayout::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createBindGroupLayout(*apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createBindGroupLayout(*descriptor));
 }
 
 WGPUXRBinding wgpuDeviceCreateXRBinding(WGPUDevice device)
@@ -1242,72 +1251,24 @@ WGPUXRBinding wgpuDeviceCreateXRBinding(WGPUDevice device)
 
 WGPUBuffer wgpuDeviceCreateBuffer(WGPUDevice device, const WGPUBufferDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError("GPUBufferDescriptor.usage has unknown bits"_s);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::Buffer::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createBuffer(*apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createBuffer(*descriptor));
 }
 
 WGPUCommandEncoder wgpuDeviceCreateCommandEncoder(WGPUDevice device, const WGPUCommandEncoderDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createCommandEncoder({ .label = WebGPU::Metal::fromAPI(descriptor->label) }));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createCommandEncoder(*descriptor));
 }
 
 WGPUComputePipeline wgpuDeviceCreateComputePipeline(WGPUDevice device, const WGPUComputePipelineDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::ComputePipelineDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError(invalidComputePipelineDescriptorMessage);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::ComputePipeline::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createComputePipeline(*apiDescriptor));
-}
-
-// The C API reports a failed asynchronous pipeline creation with a status and no pipeline.
-template<typename T>
-static auto createPipelineAsyncCompletion(Function<void(WGPUCreatePipelineAsyncStatus, T*, String&&)>&& callback)
-{
-    return [callback = WTF::move(callback)](auto&& pipeline) mutable {
-        if (!pipeline)
-            return callback(WGPUCreatePipelineAsyncStatus_ValidationError, nullptr, WTF::move(pipeline.error().message));
-        callback(WGPUCreatePipelineAsyncStatus_Success, WebGPU::Metal::releaseToAPI(WTF::move(*pipeline)), { });
-    };
-}
-
-// Reports a descriptor that did not convert, for the asynchronous pipeline creations.
-static void reportInvalidPipelineDescriptor(WebGPU::Metal::Device& device, ASCIILiteral message, auto&& callback)
-{
-    if (RefPtr instance = device.instance()) {
-        instance->scheduleWork([callback = WTF::move(callback), message]() mutable {
-            callback(WGPUCreatePipelineAsyncStatus_ValidationError, nullptr, message);
-        });
-        return;
-    }
-    callback(WGPUCreatePipelineAsyncStatus_ValidationError, nullptr, message);
-}
-
-static void createComputePipelineAsync(WGPUDevice device, const WGPUComputePipelineDescriptor& descriptor, WGPUComputePipeline pipelineToReplace, Function<void(WGPUCreatePipelineAsyncStatus, WGPUComputePipeline, String&&)>&& callback)
-{
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::ComputePipelineDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(descriptor, storage);
-    if (!apiDescriptor)
-        return reportInvalidPipelineDescriptor(protectedDevice, invalidComputePipelineDescriptorMessage, WTF::move(callback));
-    if (pipelineToReplace)
-        protectedDevice->createComputePipelineWithPipelineLayoutFromPipelineAsync(*apiDescriptor, protect(WebGPU::Metal::fromAPI(pipelineToReplace)), createPipelineAsyncCompletion(WTF::move(callback)));
-    else
-        protectedDevice->createComputePipelineAsync(*apiDescriptor, createPipelineAsyncCompletion(WTF::move(callback)));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createComputePipeline(*descriptor).first);
 }
 
 void wgpuDeviceCreateComputePipelineWithPipelineLayoutFromPipelineAsync(WGPUDevice device, const WGPUComputePipelineDescriptor* descriptor, WGPUComputePipeline pipelineToReplace, WGPUCreateComputePipelineAsyncCallback callback, void* userdata)
 {
-    createComputePipelineAsync(device, *descriptor, pipelineToReplace, [callback, userdata](WGPUCreatePipelineAsyncStatus status, WGPUComputePipeline pipeline, String&& message) {
-        callback(status, pipeline, WTF::move(message), userdata);
+    Ref protectedPipelineToReplace = WebGPU::Metal::fromAPI(pipelineToReplace);
+    protect(WebGPU::Metal::fromAPI(device))->createComputePipelineWithPipelineLayoutFromPipelineAsync(*descriptor, protectedPipelineToReplace, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::ComputePipeline>&& pipeline, String&& message) {
+        callback(status, status == WGPUCreatePipelineAsyncStatus_Success ? WebGPU::Metal::releaseToAPI(WTF::move(pipeline)) : nullptr, WTF::move(message), userdata);
     });
 }
 
@@ -1318,148 +1279,83 @@ void wgpuDevicePauseErrorReporting(WGPUDevice device, WGPUBool pauseErrors)
 
 void wgpuDeviceCreateComputePipelineAsync(WGPUDevice device, const WGPUComputePipelineDescriptor* descriptor, WGPUCreateComputePipelineAsyncCallback callback, void* userdata)
 {
-    createComputePipelineAsync(device, *descriptor, nullptr, [callback, userdata](WGPUCreatePipelineAsyncStatus status, WGPUComputePipeline pipeline, String&& message) {
-        callback(status, pipeline, WTF::move(message), userdata);
+    protect(WebGPU::Metal::fromAPI(device))->createComputePipelineAsync(*descriptor, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::ComputePipeline>&& pipeline, String&& message) {
+        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(pipeline)), WTF::move(message), userdata);
     });
 }
 
 void wgpuDeviceCreateComputePipelineAsyncWithBlock(WGPUDevice device, WGPUComputePipelineDescriptor const * descriptor, WGPUCreateComputePipelineAsyncBlockCallback callback)
 {
-    createComputePipelineAsync(device, *descriptor, nullptr, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCreatePipelineAsyncStatus status, WGPUComputePipeline pipeline, String&& message) {
-        callback(status, pipeline, WTF::move(message));
+    protect(WebGPU::Metal::fromAPI(device))->createComputePipelineAsync(*descriptor, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::ComputePipeline>&& pipeline, String&& message) {
+        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(pipeline)), WTF::move(message));
     });
 }
 
 WGPUPipelineLayout wgpuDeviceCreatePipelineLayout(WGPUDevice device, const WGPUPipelineLayoutDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::PipelineLayoutDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError("GPUPipelineLayoutDescriptor has a null bind group layout"_s);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::PipelineLayout::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createPipelineLayout(*apiDescriptor, !apiDescriptor->bindGroupLayouts));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createPipelineLayout(*descriptor, !descriptor->bindGroupLayouts));
 }
 
 WGPUQuerySet wgpuDeviceCreateQuerySet(WGPUDevice device, const WGPUQuerySetDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor);
-    // An unknown query type makes an invalid query set without a validation error.
-    if (!apiDescriptor)
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::QuerySet::createInvalid(protectedDevice));
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createQuerySet(*apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createQuerySet(*descriptor));
 }
 
 WGPURenderBundleEncoder wgpuDeviceCreateRenderBundleEncoder(WGPUDevice device, const WGPURenderBundleEncoderDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::RenderBundleEncoderDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
-    if (!apiDescriptor) {
-        NSString *error = @"GPURenderBundleEncoderDescriptor has an invalid texture format";
-        protectedDevice->generateAValidationError(error);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::RenderBundleEncoder::createInvalid(protectedDevice, error));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createRenderBundleEncoder(*apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createRenderBundleEncoder(*descriptor));
 }
 
 WGPURenderPipeline wgpuDeviceCreateRenderPipeline(WGPUDevice device, const WGPURenderPipelineDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::RenderPipelineDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError(invalidRenderPipelineDescriptorMessage);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::RenderPipeline::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createRenderPipeline(*apiDescriptor));
-}
-
-static void createRenderPipelineAsync(WGPUDevice device, const WGPURenderPipelineDescriptor& descriptor, WGPURenderPipeline pipelineToReplace, Function<void(WGPUCreatePipelineAsyncStatus, WGPURenderPipeline, String&&)>&& callback)
-{
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::RenderPipelineDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(descriptor, storage);
-    if (!apiDescriptor)
-        return reportInvalidPipelineDescriptor(protectedDevice, invalidRenderPipelineDescriptorMessage, WTF::move(callback));
-    if (pipelineToReplace)
-        protectedDevice->createRenderPipelineWithPipelineLayoutFromPipelineAsync(*apiDescriptor, protect(WebGPU::Metal::fromAPI(pipelineToReplace)), createPipelineAsyncCompletion(WTF::move(callback)));
-    else
-        protectedDevice->createRenderPipelineAsync(*apiDescriptor, createPipelineAsyncCompletion(WTF::move(callback)));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createRenderPipeline(*descriptor).first);
 }
 
 void wgpuDeviceCreateRenderPipelineWithPipelineLayoutFromPipelineAsync(WGPUDevice device, const WGPURenderPipelineDescriptor* descriptor, WGPURenderPipeline pipelineToReplace, WGPUCreateRenderPipelineAsyncCallback callback, void* userdata)
 {
-    createRenderPipelineAsync(device, *descriptor, pipelineToReplace, [callback, userdata](WGPUCreatePipelineAsyncStatus status, WGPURenderPipeline pipeline, String&& message) {
-        callback(status, pipeline, WTF::move(message), userdata);
+    Ref protectedPipelineToReplace = WebGPU::Metal::fromAPI(pipelineToReplace);
+    protect(WebGPU::Metal::fromAPI(device))->createRenderPipelineWithPipelineLayoutFromPipelineAsync(*descriptor, protectedPipelineToReplace, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::RenderPipeline>&& pipeline, String&& message) {
+        callback(status, status == WGPUCreatePipelineAsyncStatus_Success ? WebGPU::Metal::releaseToAPI(WTF::move(pipeline)) : nullptr, WTF::move(message), userdata);
     });
 }
 
 void wgpuDeviceCreateRenderPipelineAsync(WGPUDevice device, const WGPURenderPipelineDescriptor* descriptor, WGPUCreateRenderPipelineAsyncCallback callback, void* userdata)
 {
-    createRenderPipelineAsync(device, *descriptor, nullptr, [callback, userdata](WGPUCreatePipelineAsyncStatus status, WGPURenderPipeline pipeline, String&& message) {
-        callback(status, pipeline, WTF::move(message), userdata);
+    protect(WebGPU::Metal::fromAPI(device))->createRenderPipelineAsync(*descriptor, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::RenderPipeline>&& pipeline, String&& message) {
+        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(pipeline)), WTF::move(message), userdata);
     });
 }
 
 void wgpuDeviceCreateRenderPipelineAsyncWithBlock(WGPUDevice device, WGPURenderPipelineDescriptor const * descriptor, WGPUCreateRenderPipelineAsyncBlockCallback callback)
 {
-    createRenderPipelineAsync(device, *descriptor, nullptr, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCreatePipelineAsyncStatus status, WGPURenderPipeline pipeline, String&& message) {
-        callback(status, pipeline, WTF::move(message));
+    protect(WebGPU::Metal::fromAPI(device))->createRenderPipelineAsync(*descriptor, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::Metal::RenderPipeline>&& pipeline, String&& message) {
+        callback(status, WebGPU::Metal::releaseToAPI(WTF::move(pipeline)), WTF::move(message));
     });
 }
 
 WGPUSampler wgpuDeviceCreateSampler(WGPUDevice device, const WGPUSamplerDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError("GPUSamplerDescriptor has an invalid enum value"_s);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::Sampler::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createSampler(*apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createSampler(*descriptor));
 }
 
 WGPUExternalTexture wgpuDeviceImportExternalTexture(WGPUDevice device, const WGPUExternalTextureDescriptor* descriptor)
 {
-    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->importExternalTexture(WebGPU::Metal::fromAPI(*descriptor)));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createExternalTexture(*descriptor));
 }
 
 WGPUShaderModule wgpuDeviceCreateShaderModule(WGPUDevice device, const WGPUShaderModuleDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::ShaderModuleDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError("GPUShaderModuleDescriptor has no WGSL code or a null pipeline layout hint"_s);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::ShaderModule::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createShaderModule(*apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createShaderModule(*descriptor));
 }
 
 WGPUSwapChain wgpuDeviceCreateSwapChain(WGPUDevice device, WGPUSurface surface, const WGPUSwapChainDescriptor* descriptor)
 {
-    Ref presentationContext = WebGPU::Metal::fromAPI(surface);
-    WebGPU::Metal::CanvasConfigurationStorage storage;
-    if (auto configuration = WebGPU::Metal::fromAPI(device, *descriptor, storage))
-        presentationContext->configure(*configuration);
-    else if (descriptor->reportValidationErrors)
-        protect(WebGPU::Metal::fromAPI(device))->generateAValidationError("GPUCanvasConfiguration has an invalid enum value or usage bit"_s);
-    return WebGPU::Metal::releaseToAPI(WTF::move(presentationContext));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createSwapChain(protect(WebGPU::Metal::fromAPI(surface)), *descriptor));
 }
 
 WGPUTexture wgpuDeviceCreateTexture(WGPUDevice device, const WGPUTextureDescriptor* descriptor)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    WebGPU::Metal::TextureDescriptorStorage storage;
-    auto apiDescriptor = WebGPU::Metal::fromAPI(*descriptor, storage);
-    if (!apiDescriptor) {
-        protectedDevice->generateAValidationError("GPUTextureDescriptor has an invalid enum value or usage bit"_s);
-        return WebGPU::Metal::releaseToAPI(WebGPU::Metal::Texture::createInvalid(protectedDevice));
-    }
-    return WebGPU::Metal::releaseToAPI(protectedDevice->createTexture(*apiDescriptor));
+    return WebGPU::Metal::releaseToAPI(protect(WebGPU::Metal::fromAPI(device))->createTexture(*descriptor));
 }
 
 void wgpuDeviceDestroy(WGPUDevice device)
@@ -1469,19 +1365,12 @@ void wgpuDeviceDestroy(WGPUDevice device)
 
 size_t wgpuDeviceEnumerateFeatures(WGPUDevice device, WGPUFeatureName* features)
 {
-    // The caller calls this twice: once for the count, and once with space for that many features.
-    auto apiFeatures = protect(WebGPU::Metal::fromAPI(device))->features();
-    if (features) {
-        for (auto [i, feature] : indexedRange(apiFeatures))
-            unsafeMakeSpan(features, apiFeatures.size())[i] = WebGPU::Metal::toAPI(feature);
-    }
-    return apiFeatures.size();
+    return protect(WebGPU::Metal::fromAPI(device))->enumerateFeatures(features);
 }
 
 WGPUBool wgpuDeviceGetLimits(WGPUDevice device, WGPUSupportedLimits* limits)
 {
-    limits->limits = WebGPU::Metal::toAPI(WebGPU::Metal::fromAPI(device).limits());
-    return true;
+    return WebGPU::Metal::fromAPI(device).getLimits(*limits);
 }
 
 WGPUQueue wgpuDeviceGetQueue(WGPUDevice device)
@@ -1494,91 +1383,64 @@ WGPUBool wgpuDeviceHasFeature(WGPUDevice device, WGPUFeatureName feature)
     return protect(WebGPU::Metal::fromAPI(device))->hasFeature(feature);
 }
 
-// The C API reports a scope that could not be popped as WGPUErrorType_Unknown.
-static void popErrorScope(WGPUDevice device, Function<void(WGPUErrorType, const char*)>&& callback)
-{
-    protect(WebGPU::Metal::fromAPI(device))->popErrorScope([callback = WTF::move(callback)](bool succeeded, std::optional<WebGPU::Error>&& error) {
-        if (error)
-            return callback(WebGPU::Metal::toAPI(error), error->message.utf8().legacyCStringPointer());
-        if (succeeded)
-            return callback(WGPUErrorType_NoError, "");
-        callback(WGPUErrorType_Unknown, "popErrorScope() failed validation.");
-    });
-}
-
 void wgpuDevicePopErrorScope(WGPUDevice device, WGPUErrorCallback callback, void* userdata)
 {
-    popErrorScope(device, [callback, userdata](WGPUErrorType type, const char* message) {
-        callback(type, message, userdata);
+    protect(WebGPU::Metal::fromAPI(device))->popErrorScope([callback, userdata](WGPUErrorType type, String&& message) {
+        callback(type, message.utf8().legacyCStringPointer(), userdata);
     });
 }
 
 void wgpuDevicePopErrorScopeWithBlock(WGPUDevice device, WGPUErrorBlockCallback callback)
 {
-    popErrorScope(device, [callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUErrorType type, const char* message) {
-        callback(type, message);
+    protect(WebGPU::Metal::fromAPI(device))->popErrorScope([callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUErrorType type, String&& message) {
+        callback(type, message.utf8().legacyCStringPointer());
     });
 }
 
 void wgpuDevicePushErrorScope(WGPUDevice device, WGPUErrorFilter filter)
 {
-    Ref protectedDevice = WebGPU::Metal::fromAPI(device);
-    auto apiFilter = WebGPU::Metal::fromAPI(filter);
-    if (!apiFilter) {
-        protectedDevice->generateAValidationError("pushErrorScope: invalid error filter"_s);
-        return;
-    }
-    protectedDevice->pushErrorScope(*apiFilter);
+    protect(WebGPU::Metal::fromAPI(device))->pushErrorScope(filter);
 }
 
 void wgpuDeviceClearDeviceLostCallback(WGPUDevice device)
 {
-    return protect(WebGPU::Metal::fromAPI(device))->resolveDeviceLostPromise({ });
+    return protect(WebGPU::Metal::fromAPI(device))->setDeviceLostCallback(nullptr);
 }
 void wgpuDeviceClearUncapturedErrorCallback(WGPUDevice device)
 {
-    return protect(WebGPU::Metal::fromAPI(device))->resolveUncapturedErrorEvent({ });
+    return protect(WebGPU::Metal::fromAPI(device))->setUncapturedErrorCallback(nullptr);
 }
 
 void wgpuDeviceSetDeviceLostCallback(WGPUDevice device, WGPUDeviceLostCallback callback, void* userdata)
 {
-    return protect(WebGPU::Metal::fromAPI(device))->resolveDeviceLostPromise([callback, userdata](WebGPU::DeviceLostReason reason, String&& message) {
+    return protect(WebGPU::Metal::fromAPI(device))->setDeviceLostCallback([callback, userdata](WGPUDeviceLostReason reason, String&& message) {
         if (callback)
-            callback(WebGPU::Metal::toAPI(reason), message.utf8().legacyCStringPointer(), userdata);
+            callback(reason, message.utf8().legacyCStringPointer(), userdata);
     });
 }
 
 void wgpuDeviceSetDeviceLostCallbackWithBlock(WGPUDevice device, WGPUDeviceLostBlockCallback callback)
 {
-    return protect(WebGPU::Metal::fromAPI(device))->resolveDeviceLostPromise([callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WebGPU::DeviceLostReason reason, String&& message) {
+    return protect(WebGPU::Metal::fromAPI(device))->setDeviceLostCallback([callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUDeviceLostReason reason, String&& message) {
         if (callback)
-            callback(WebGPU::Metal::toAPI(reason), message.utf8().legacyCStringPointer());
+            callback(reason, message.utf8().legacyCStringPointer());
     });
-}
-
-// A callback completed without an error, when the device is destroyed or the callback is replaced,
-// is WGPUErrorType_NoError.
-static CompletionHandler<void(bool, std::optional<WebGPU::Error>&&)> uncapturedErrorCallback(Function<void(WGPUErrorType, const char*)>&& callback)
-{
-    return [callback = WTF::move(callback)](bool, std::optional<WebGPU::Error>&& error) {
-        callback(WebGPU::Metal::toAPI(error), error ? error->message.utf8().legacyCStringPointer() : "");
-    };
 }
 
 void wgpuDeviceSetUncapturedErrorCallback(WGPUDevice device, WGPUErrorCallback callback, void* userdata)
 {
-    return protect(WebGPU::Metal::fromAPI(device))->resolveUncapturedErrorEvent(uncapturedErrorCallback([callback, userdata](WGPUErrorType type, const char* message) {
+    return protect(WebGPU::Metal::fromAPI(device))->setUncapturedErrorCallback([callback, userdata](WGPUErrorType type, String&& message) {
         if (callback)
-            callback(type, message, userdata);
-    }));
+            callback(type, message.utf8().legacyCStringPointer(), userdata);
+    });
 }
 
 void wgpuDeviceSetUncapturedErrorCallbackWithBlock(WGPUDevice device, WGPUErrorBlockCallback callback)
 {
-    return protect(WebGPU::Metal::fromAPI(device))->resolveUncapturedErrorEvent(uncapturedErrorCallback([callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUErrorType type, const char* message) {
+    return protect(WebGPU::Metal::fromAPI(device))->setUncapturedErrorCallback([callback = WebGPU::Metal::fromAPI(WTF::move(callback))](WGPUErrorType type, String&& message) {
         if (callback)
-            callback(type, message);
-    }));
+            callback(type, message.utf8().legacyCStringPointer());
+    });
 }
 
 void wgpuDeviceSetLabel(WGPUDevice device, WGPUStringView label)

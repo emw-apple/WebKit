@@ -51,7 +51,7 @@ ImageControlsButtonMac::~ImageControlsButtonMac() = default;
 IntSize ImageControlsButtonMac::servicesRolloverButtonCellSize()
 {
     auto& controlFactory = ControlFactoryMac::singleton();
-    if (RetainPtr servicesRolloverButtonCell = controlFactory.servicesRolloverButtonCell())
+    if (auto* servicesRolloverButtonCell = controlFactory.servicesRolloverButtonCell())
         return IntSize { [servicesRolloverButtonCell cellSize] };
     return { };
 }

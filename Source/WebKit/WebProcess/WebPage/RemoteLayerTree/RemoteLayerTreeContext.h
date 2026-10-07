@@ -32,6 +32,7 @@
 #include <WebCore/FrameIdentifier.h>
 #include <WebCore/GraphicsLayerFactory.h>
 #include <WebCore/HTMLMediaElementIdentifier.h>
+#include <WebCore/LayerPool.h>
 #include <WebCore/PlatformCALayer.h>
 #include <wtf/CheckedPtr.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
@@ -73,6 +74,8 @@ public:
 
     void graphicsLayerDidEnterContext(GraphicsLayerCARemote&);
     void graphicsLayerWillLeaveContext(GraphicsLayerCARemote&);
+
+    WebCore::LayerPool& layerPool() { return m_layerPool.get(); }
 
     float NODELETE deviceScaleFactor() const;
     
@@ -129,6 +132,8 @@ private:
     HashSet<WeakRef<GraphicsLayerCARemote>> m_liveGraphicsLayers;
 
     const UniqueRef<RemoteLayerBackingStoreCollection> m_backingStoreCollection;
+
+    const UniqueRef<WebCore::LayerPool> m_layerPool;
 
     CheckedPtr<RemoteLayerTreeTransaction> m_currentTransaction;
 

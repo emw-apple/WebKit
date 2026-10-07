@@ -48,7 +48,7 @@ public:
 
 private:
     SVGUnknownElement(const QualifiedName& tagName, Document& document)
-        : SVGElement(tagName, document, PropertyRegistry::singleton(), TypeFlag::IsUnknownElement)
+        : SVGElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this), TypeFlag::IsUnknownElement)
     {
     }
 

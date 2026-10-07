@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -27,6 +28,7 @@
 #include "api/test/pclf/media_configuration.h"
 #include "api/test/pclf/media_quality_test_params.h"
 #include "api/test/pclf/peer_configurer.h"
+#include "api/test/time_controller.h"
 #include "api/video_codecs/builtin_video_decoder_factory.h"
 #include "api/video_codecs/builtin_video_encoder_factory.h"
 #include "api/video_codecs/video_decoder_factory.h"
@@ -193,9 +195,11 @@ PeerConnectionFactoryDependencies CreatePCFDependencies(
     std::unique_ptr<PeerConnectionFactoryComponents> pcf_dependencies,
     scoped_refptr<AudioDeviceModule> audio_device_module,
     Thread* signaling_thread,
+    Thread* worker_thread,
     Thread* network_thread) {
   PeerConnectionFactoryDependencies pcf_deps;
   pcf_deps.signaling_thread = signaling_thread;
+  pcf_deps.worker_thread = worker_thread;
   pcf_deps.network_thread = network_thread;
   pcf_deps.socket_factory = pcf_dependencies->socket_factory;
   pcf_deps.network_manager = std::move(pcf_dependencies->network_manager);
@@ -213,10 +217,6 @@ PeerConnectionFactoryDependencies CreatePCFDependencies(
   }
   if (pcf_dependencies->neteq_factory != nullptr) {
     pcf_deps.neteq_factory = std::move(pcf_dependencies->neteq_factory);
-  }
-  if (pcf_dependencies->video_jitter_timing_factory != nullptr) {
-    pcf_deps.video_jitter_timing_factory =
-        std::move(pcf_dependencies->video_jitter_timing_factory);
   }
 
   // Media dependencies
@@ -309,10 +309,18 @@ std::unique_ptr<TestPeer> TestPeerFactory::CreateTestPeer(
                           components->pcf_dependencies.get(),
                           video_analyzer_helper_);
 
-  PeerConnectionFactoryDependencies pcf_deps =
-      CreatePCFDependencies(env, std::move(components->pcf_dependencies),
-                            std::move(audio_device_module), signaling_thread_,
-                            components->network_thread);
+  std::unique_ptr<Thread> owned_worker_thread =
+      components->worker_thread != nullptr
+          ? nullptr
+          : time_controller_.CreateThread("worker_thread");
+  if (components->worker_thread == nullptr) {
+    components->worker_thread = owned_worker_thread.get();
+  }
+
+  PeerConnectionFactoryDependencies pcf_deps = CreatePCFDependencies(
+      env, std::move(components->pcf_dependencies),
+      std::move(audio_device_module), signaling_thread_,
+      components->worker_thread, components->network_thread);
   scoped_refptr<PeerConnectionFactoryInterface> peer_connection_factory =
       CreateModularPeerConnectionFactory(std::move(pcf_deps));
   peer_connection_factory->SetOptions(params->peer_connection_factory_options);
@@ -334,10 +342,10 @@ std::unique_ptr<TestPeer> TestPeerFactory::CreateTestPeer(
           .MoveValue();
   peer_connection->SetBitrate(params->bitrate_settings);
 
-  return absl::WrapUnique(new TestPeer(peer_connection_factory, peer_connection,
-                                       std::move(observer), std::move(*params),
-                                       std::move(*configurable_params),
-                                       std::move(video_sources)));
+  return absl::WrapUnique(new TestPeer(
+      peer_connection_factory, peer_connection, std::move(observer),
+      std::move(*params), std::move(*configurable_params),
+      std::move(video_sources), std::move(owned_worker_thread)));
 }
 
 }  // namespace webrtc_pc_e2e

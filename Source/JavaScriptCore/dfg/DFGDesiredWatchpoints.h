@@ -73,7 +73,7 @@ public:
     }
 
     template<typename Func>
-    bool addWatchpoint(NOESCAPE const Func& function)
+    bool addWatchpoint(const Func& function)
     {
         if (m_mode == WatchpointRegistrationMode::Add)
             return function(m_watchpoints[m_watchpointIndex++]);
@@ -82,7 +82,7 @@ public:
     }
 
     template<typename Func>
-    bool addAdaptiveStructureWatchpoint(NOESCAPE const Func& function)
+    bool addAdaptiveStructureWatchpoint(const Func& function)
     {
         if (m_mode == WatchpointRegistrationMode::Add)
             return function(m_adaptiveStructureWatchpoints[m_adaptiveStructureWatchpointsIndex++]);
@@ -91,7 +91,7 @@ public:
     }
 
     template<typename Func>
-    bool addAdaptiveInferredPropertyValueWatchpoint(NOESCAPE const Func& function)
+    bool addAdaptiveInferredPropertyValueWatchpoint(const Func& function)
     {
         if (m_mode == WatchpointRegistrationMode::Add)
             return function(m_adaptiveInferredPropertyValueWatchpoints[m_adaptiveInferredPropertyValueWatchpointsIndex++]);

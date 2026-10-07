@@ -11,9 +11,6 @@
 #ifndef INCLUDE_LIBYUV_PLANAR_FUNCTIONS_H_
 #define INCLUDE_LIBYUV_PLANAR_FUNCTIONS_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "libyuv/basic_types.h"
 
 // TODO(fbarchard): Remove the following headers includes.
@@ -51,14 +48,12 @@ void Convert16To8Plane(const uint16_t* src_y,
                        int width,
                        int height);
 
-// Convert 8 bit Y to 10/12/16 bit.
-// "bits" accepts bit depths (10, 12, 16) or legacy scale values (1024, 4096, 65536).
 LIBYUV_API
 void Convert8To16Plane(const uint8_t* src_y,
                        int src_stride_y,
                        uint16_t* dst_y,
                        int dst_stride_y,
-                       int bits,  // 10, 12, 16 bits (or 1024, 4096, 65536 scale)
+                       int scale,  // 1024 for 10 bits
                        int width,
                        int height);
 
@@ -479,21 +474,21 @@ int UYVYToNV12(const uint8_t* src_uyvy,
                int width,
                int height);
 
-// Convert NV12 to NV21.
+// Convert NV21 to NV12.
 LIBYUV_API
-int NV12ToNV21(const uint8_t* src_y,
+int NV21ToNV12(const uint8_t* src_y,
                int src_stride_y,
-               const uint8_t* src_uv,
-               int src_stride_uv,
+               const uint8_t* src_vu,
+               int src_stride_vu,
                uint8_t* dst_y,
                int dst_stride_y,
-               uint8_t* dst_vu,
-               int dst_stride_vu,
+               uint8_t* dst_uv,
+               int dst_stride_uv,
                int width,
                int height);
 
 // Alias
-#define NV21ToNV12 NV12ToNV21
+#define NV12ToNV21 NV21ToNV12
 
 LIBYUV_API
 int YUY2ToY(const uint8_t* src_yuy2,

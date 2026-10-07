@@ -41,12 +41,3 @@ private:
 };
 
 } // namespace WebCore
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::HTMLQuoteElement)
-    static bool isType(const WebCore::HTMLElement& element) { return element.hasTagName(WebCore::HTMLNames::qTag) || element.hasTagName(WebCore::HTMLNames::blockquoteTag); }
-    static bool isType(const WebCore::Node& node)
-    {
-        auto* htmlElement = dynamicDowncast<WebCore::HTMLElement>(node);
-        return htmlElement && isType(*htmlElement);
-    }
-SPECIALIZE_TYPE_TRAITS_END()

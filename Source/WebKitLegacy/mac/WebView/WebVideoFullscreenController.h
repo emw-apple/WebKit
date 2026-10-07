@@ -33,8 +33,14 @@ namespace WebCore {
 class HTMLVideoElement;
 }
 
+@class WebWindowFadeAnimation;
+
 @interface WebVideoFullscreenController : NSWindowController {
     RefPtr<WebCore::HTMLVideoElement> _videoElement;
+
+    NSWindow *_backgroundFullscreenWindow; // (retain)
+
+    WebWindowFadeAnimation *_fadeAnimation; // (retain)
 
     BOOL _isEndingFullscreen;
     BOOL _forceDisableAnimation;

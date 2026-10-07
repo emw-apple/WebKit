@@ -75,8 +75,8 @@ public:
     template<typename ValidationFunctor, typename BeforeSleepFunctor>
     static ParkResult parkConditionally(
         const void* address,
-        NOESCAPE const ValidationFunctor& validation,
-        NOESCAPE const BeforeSleepFunctor& beforeSleep,
+        const ValidationFunctor& validation,
+        const BeforeSleepFunctor& beforeSleep,
         const TimeWithDynamicClockType& timeout)
     {
         return parkConditionallyImpl(
@@ -131,14 +131,14 @@ public:
     // UnparkResult::mayHaveMoreThreads is false inside the callback, then we know that at that
     // moment nobody can add any threads to the queue because the queue lock is still held. Also,
     // WTF::Lock uses the timeToBeFair and token mechanism to implement eventual fairness.
-    static void unparkOne(const void* address, NOESCAPE const Invocable<intptr_t(ParkingLot::UnparkResult)> auto& callback)
+    static void unparkOne(const void* address, const Invocable<intptr_t(ParkingLot::UnparkResult)> auto& callback)
     {
         unparkCount(address, 1, callback);
     }
 
-    // Unparks up to a (nonzero) count of threads from the queue associated with the given address,
-    // and calls the given callback while the address is locked. The token the callback returns
-    // is delivered to every thread that was unparked.
+    // Unparks up to count threads from the queue associated with the given address, and calls
+    // the given callback while the address is locked. The token the callback returns is
+    // delivered to every thread that was unparked.
     //
     // This is the bulk analogue of the expert-mode unparkOne(), which is itself implemented on
     // top of it. Its reason to exist is that the callback runs before any of the unparked threads
@@ -149,10 +149,10 @@ public:
     // acquired in the meantime.
     //
     // The callback runs under the queue lock even when nothing was dequeued, which is what makes
-    // operating on an empty queue safe: a thread on its way to parking must take that same lock to
+    // acting on a zero count safe: a thread on its way to parking must take that same lock to
     // validate and enqueue, so it either gets dequeued here or observes whatever the callback
     // published and declines to park.
-    static void unparkCount(const void* address, unsigned count, NOESCAPE const Invocable<intptr_t(ParkingLot::UnparkResult)> auto& callback)
+    static void unparkCount(const void* address, unsigned count, const Invocable<intptr_t(ParkingLot::UnparkResult)> auto& callback)
     {
         unparkCountImpl(address, count, callback);
     }
@@ -178,7 +178,7 @@ public:
     // otherwise unconstrained. This method is useful primarily for debugging. It's also used by unit
     // tests.
     template<typename Func>
-    static void forEach(NOESCAPE const Func& func)
+    static void forEach(const Func& func)
     {
         // FIXME: Static analysis is complaining about `const ScopedLambda<void (uintptr_t, const void *)> &`
         // being forward-declared but ScopedLambda.h is included at the top of this file.
@@ -188,15 +188,15 @@ public:
 private:
     WTF_EXPORT_PRIVATE static ParkResult parkConditionallyImpl(
         const void* address,
-        NOESCAPE const ScopedLambda<bool()>& validation,
-        NOESCAPE const ScopedLambda<void()>& beforeSleep,
+        const ScopedLambda<bool()>& validation,
+        const ScopedLambda<void()>& beforeSleep,
         const TimeWithDynamicClockType& timeout);
 
     WTF_EXPORT_PRIVATE static void unparkCountImpl(
         const void* address, unsigned count,
-        NOESCAPE const ScopedLambda<intptr_t(UnparkResult)>& callback);
+        const ScopedLambda<intptr_t(UnparkResult)>& callback);
 
-    WTF_EXPORT_PRIVATE static void forEachImpl(NOESCAPE const ScopedLambda<void(uintptr_t, const void*)>&);
+    WTF_EXPORT_PRIVATE static void forEachImpl(const ScopedLambda<void(uintptr_t, const void*)>&);
 };
 
 } // namespace WTF

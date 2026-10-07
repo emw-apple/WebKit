@@ -48,8 +48,6 @@ public:
     struct LineClamp {
         size_t maximumLines { 0 };
         bool shouldDiscardOverflow { false };
-        // A clamp point between this block and its next sibling, which no line box precedes (see the auto clamp point).
-        SingleThreadWeakPtr<const RenderBox> clampAfterBox;
     };
 
     struct LegacyLineClamp {
@@ -200,23 +198,13 @@ private:
     const CheckedRef<const RenderBox> m_flexItem;
 };
 
-// Marks an orthogonal box that is being laid out only to supply its container's intrinsic inline-size contribution
-// (its own block size), so its own percentage min/max-height follows CSS Sizing 3 "Intrinsic Contributions of
-// Percentage-Sized Boxes". See RenderBox::computeIntrinsicLogicalHeight and RenderBox::computeLogicalHeight.
-class OrthogonalIntrinsicContributionLayoutScope {
+// Marks a box as being laid out solely to measure its intrinsic block-axis size, so its
+// own cyclic-percentage min/max block-size resolves per CSS Sizing 3 section 5.1.
+// See RenderBox::computeIntrinsicLogicalHeight and RenderBox::computeLogicalHeight.
+class IntrinsicLogicalHeightComputationScope {
 public:
-    OrthogonalIntrinsicContributionLayoutScope(LocalFrameViewLayoutContext&, const RenderBox&);
-    ~OrthogonalIntrinsicContributionLayoutScope();
-
-private:
-    const CheckedRef<LocalFrameViewLayoutContext> m_layoutContext;
-    const CheckedRef<const RenderBox> m_box;
-};
-
-class IntrinsicLogicalWidthComputationScope {
-public:
-    IntrinsicLogicalWidthComputationScope(LocalFrameViewLayoutContext&, const RenderBox&);
-    ~IntrinsicLogicalWidthComputationScope();
+    IntrinsicLogicalHeightComputationScope(LocalFrameViewLayoutContext&, const RenderBox&);
+    ~IntrinsicLogicalHeightComputationScope();
 
 private:
     const CheckedRef<LocalFrameViewLayoutContext> m_layoutContext;

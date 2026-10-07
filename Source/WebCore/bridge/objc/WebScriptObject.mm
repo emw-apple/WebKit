@@ -504,7 +504,7 @@ static void getListFromNSArray(JSC::JSGlobalObject* lexicalGlobalObject, NSArray
     JSC::JSGlobalObject* lexicalGlobalObject = [self _rootObject]->globalObject();
     JSLockHolder lock(lexicalGlobalObject);
 
-    return [protect((__bridge id)convertValueToObjcValue(lexicalGlobalObject, [self _imp], ObjcObjectType).objectValue) description];
+    return [(__bridge id)convertValueToObjcValue(lexicalGlobalObject, [self _imp], ObjcObjectType).objectValue description];
 }
 
 - (id)webScriptValueAtIndex:(unsigned)index

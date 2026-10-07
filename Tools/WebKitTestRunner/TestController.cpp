@@ -378,16 +378,6 @@ static bool shouldAllowDeviceOrientationAndMotionAccess(WKPageRef, WKSecurityOri
     return TestController::singleton().handleDeviceOrientationAndMotionAccessRequest(origin, frame);
 }
 
-static String originString(WKSecurityOriginRef origin)
-{
-    return toWTFString(adoptWK(WKSecurityOriginCopyToString(origin)).get());
-}
-
-static String localNetworkAccessPermissionKey(const String& requestingOrigin, bool isLoopback)
-{
-    return makeString(requestingOrigin, isLoopback ? " loopback"_s : " local"_s);
-}
-
 // A placeholder to tell WebKit the client is WebKitTestRunner.
 static void runWebAuthenticationPanel()
 {
@@ -462,17 +452,6 @@ void TestController::handleQueryPermission(WKStringRef string, WKSecurityOriginR
 
         if (m_isGeolocationPermissionSet) {
             if (m_isGeolocationPermissionAllowed)
-                WKQueryPermissionResultCallbackCompleteWithGranted(callback);
-            else
-                WKQueryPermissionResultCallbackCompleteWithDenied(callback);
-            return;
-        }
-    }
-
-    if (toWTFString(string) == "local-network"_s || toWTFString(string) == "loopback-network"_s) {
-        auto iterator = m_localNetworkAccessPermissions.find(localNetworkAccessPermissionKey(originString(securityOrigin), toWTFString(string) == "loopback-network"_s));
-        if (iterator != m_localNetworkAccessPermissions.end()) {
-            if (iterator->value)
                 WKQueryPermissionResultCallbackCompleteWithGranted(callback);
             else
                 WKQueryPermissionResultCallbackCompleteWithDenied(callback);
@@ -871,7 +850,7 @@ PlatformWebView* TestController::createOtherPlatformWebView(PlatformWebView* par
         nullptr, // runWebAuthenticationPanel
         nullptr, // decidePolicyForSpeechRecognitionPermissionRequest
         nullptr, // decidePolicyForMediaKeySystemPermissionRequest
-        queryPermission,
+        nullptr, // queryPermission
         nullptr, // lockScreenOrientationCallback,
         nullptr, // unlockScreenOrientationCallback,
         addMessageToConsole,
@@ -1723,7 +1702,6 @@ bool TestController::resetStateToConsistentValues(const TestOptions& options, Re
 
     {
         bool done { false };
-        m_localNetworkAccessPermissions.clear();
         WKWebsiteDataStoreClearLocalNetworkAccessPermissionsForTesting(websiteDataStore(), &done, [] (void* context) {
             *(bool*)context = true;
         });
@@ -2178,7 +2156,7 @@ WKURLRef TestController::createTestURL(std::span<const char> pathOrURL)
 
     // Creating from filesytem path.
     auto urlString = makeString("file://"_s, FileSystem::realPath(String::fromUTF8(pathOrURL))).utf8();
-    auto url = toWKURL(urlString);
+    auto url = adoptWK(WKURLCreateWithUTF8String(urlString.legacyCStringPointer(), urlString.length()));
     auto path = testPath(url.get());
     auto pathString = String::fromUTF8(std::span { path });
     if (!m_usingServerMode && !FileSystem::fileExists(pathString)) {
@@ -2475,7 +2453,7 @@ if (window.testRunner) {
         callback?.(entries);
     };
     testRunner.setLocalNetworkAccessPermission = (granted, isLoopback, requestingOrigin) => // NOLINT
-        post(['SetLocalNetworkAccessPermission', { Value: granted, IsLoopback: isLoopback, RequestingOrigin: requestingOrigin ?? location.href }]);
+        post(['SetLocalNetworkAccessPermission', { Value: granted, IsLoopback: isLoopback, TopOrigin: location.href, RequestingOrigin: requestingOrigin ?? location.href }]);
     testRunner.revokeLocalNetworkAccessPermissions = () => // NOLINT
         post(['RevokeLocalNetworkAccessPermissions', { Origin: location.href }]);
     testRunner.setStorageAccessPermission = async (granted, subFrameURL, callback) => { // NOLINT
@@ -2529,7 +2507,8 @@ static WKRetainPtr<WKArrayRef> WKURLArrayFromWKStringArray(const WKTypeRef array
     const auto length = WKArrayGetSize(stringArray);
     for (size_t i = 0; i < length; i++) {
         auto str = WKArrayGetItemAtIndex(stringArray, i);
-        WKArrayAppendItem(urlArray.get(), toWKURL(toWTFString(stringValue(str))).get());
+        auto cstr = toWTFString(stringValue(str)).utf8();
+        WKArrayAppendItem(urlArray.get(), adoptWK(WKURLCreateWithUTF8CString(cstr.legacyCStringPointer())).get());
     }
 
     return urlArray;
@@ -2599,7 +2578,7 @@ static WKRetainPtr<WKURLRef> makeOpenPanelURL(WKURLRef baseURL, const String& fi
         baseURL = fileURL.get();
     }
 #endif
-    return toWKURL(baseURL, filePath);
+    return adoptWK(WKURLCreateWithBaseURL(baseURL, filePath.utf8().legacyCStringPointer()));
 }
 
 void TestController::didReceiveScriptMessage(WKScriptMessageRef message, CompletionHandler<void(WKTypeRef)>&& completionHandler)
@@ -2729,7 +2708,6 @@ void TestController::didReceiveScriptMessage(WKScriptMessageRef message, Complet
 
     if (WKStringIsEqualToUTF8CString(command, "RevokeLocalNetworkAccessPermissions")) {
         auto origin = stringValue(dictionaryValue(argument), "Origin");
-        m_localNetworkAccessPermissions.clear();
         return WKWebsiteDataStoreRevokeLocalNetworkAccessPermissionsForTesting(websiteDataStore(), origin, completionHandler.leak(), adoptAndCallCompletionHandler);
     }
 
@@ -2737,10 +2715,9 @@ void TestController::didReceiveScriptMessage(WKScriptMessageRef message, Complet
         auto argumentDictionary = dictionaryValue(argument);
         auto value = booleanValue(argumentDictionary, "Value");
         auto isLoopback = booleanValue(argumentDictionary, "IsLoopback");
+        auto topOrigin = stringValue(argumentDictionary, "TopOrigin");
         auto requestingOrigin = stringValue(argumentDictionary, "RequestingOrigin");
-        m_localNetworkAccessPermissions.set(localNetworkAccessPermissionKey(originString(adoptWK(WKSecurityOriginCreateFromString(requestingOrigin)).get()), isLoopback), value);
-        // WebKit keeps the answers it was given, so an embedder that changes one has to drop them.
-        return WKWebsiteDataStoreClearLocalNetworkAccessPermissionsForTesting(websiteDataStore(), completionHandler.leak(), adoptAndCallCompletionHandler);
+        return WKWebsiteDataStoreSetLocalNetworkAccessPermissionForTesting(websiteDataStore(), topOrigin, requestingOrigin, isLoopback, value, completionHandler.leak(), adoptAndCallCompletionHandler);
     }
 
     if (WKStringIsEqualToUTF8CString(command, "SetStorageAccessPermission")) {
@@ -3795,7 +3772,7 @@ void TestController::didReceiveSynchronousMessageFromInjectedBundle(WKStringRef 
         }
 #endif
 
-#if PLATFORM(MAC)
+#if ENABLE(MAC_GESTURE_EVENTS)
         if (WKStringIsEqualToUTF8CString(subMessageName, "ScaleGestureStart")) {
             auto scale = doubleValue(dictionary, "Scale");
             m_eventSenderProxy->scaleGestureStart(scale);
@@ -3813,7 +3790,7 @@ void TestController::didReceiveSynchronousMessageFromInjectedBundle(WKStringRef 
             m_eventSenderProxy->scaleGestureEnd(scale);
             return completionHandler(nullptr);
         }
-#endif // PLATFORM(MAC)
+#endif // ENABLE(MAC_GESTURE_EVENTS)
 
         if (WKStringIsEqualToUTF8CString(subMessageName, "SetPageZoom")) {
             auto* page = mainWebView()->page();
@@ -3913,45 +3890,45 @@ WKRetainPtr<WKTypeRef> TestController::getInjectedBundleInitializationUserData()
 
 // WKContextClient
 
-static ASCIILiteral terminationReasonToString(WKProcessTerminationReason reason)
+static const char* terminationReasonToString(WKProcessTerminationReason reason)
 {
     switch (reason) {
     case kWKProcessTerminationReasonExceededMemoryLimit:
-        return "exceeded memory limit"_s;
+        return "exceeded memory limit";
     case kWKProcessTerminationReasonExceededCPULimit:
-        return "exceeded cpu limit"_s;
+        return "exceeded cpu limit";
         break;
     case kWKProcessTerminationReasonRequestedByClient:
-        return "requested by client"_s;
+        return "requested by client";
     case kWKProcessTerminationReasonCrash:
-        return "crash"_s;
+        return "crash";
     default:
         break;
     }
     ASSERT_NOT_REACHED();
-    return "unknown reason"_s;
+    return "unknown reason";
 }
 
 void TestController::networkProcessDidCrash(WKProcessID processID, WKProcessTerminationReason reason)
 {
-    SAFE_FPRINTF(stderr, "%s terminated (pid %ld) for reason: %s\n", networkProcessName(), static_cast<long>(processID), terminationReasonToString(reason));
-    SAFE_FPRINTF(stderr, "#CRASHED - %s (pid %ld)\n", networkProcessName(), static_cast<long>(processID));
+    fprintf(stderr, "%s terminated (pid %ld) for reason: %s\n", networkProcessName().characters(), static_cast<long>(processID), terminationReasonToString(reason));
+    fprintf(stderr, "#CRASHED - %s (pid %ld)\n", networkProcessName().characters(), static_cast<long>(processID));
     if (m_shouldExitWhenAuxiliaryProcessCrashes)
         exitProcess(1);
 }
 
 void TestController::serviceWorkerProcessDidCrash(WKProcessID processID, WKProcessTerminationReason reason)
 {
-    SAFE_FPRINTF(stderr, "%s terminated (pid %ld) for reason: %s\n", "ServiceWorkerProcess"_s, static_cast<long>(processID), terminationReasonToString(reason));
-    SAFE_FPRINTF(stderr, "#CRASHED - %s (pid %ld)\n", serviceWorkerProcessName(), static_cast<long>(processID));
+    fprintf(stderr, "%s terminated (pid %ld) for reason: %s\n", "ServiceWorkerProcess", static_cast<long>(processID), terminationReasonToString(reason));
+    fprintf(stderr, "#CRASHED - %s (pid %ld)\n", serviceWorkerProcessName().characters(), static_cast<long>(processID));
     if (m_shouldExitWhenAuxiliaryProcessCrashes)
         exitProcess(1);
 }
 
 void TestController::gpuProcessDidCrash(WKProcessID processID, WKProcessTerminationReason reason)
 {
-    SAFE_FPRINTF(stderr, "%s terminated (pid %ld) for reason: %s\n", gpuProcessName(), static_cast<long>(processID), terminationReasonToString(reason));
-    SAFE_FPRINTF(stderr, "#CRASHED - %s (pid %ld)\n", gpuProcessName(), static_cast<long>(processID));
+    fprintf(stderr, "%s terminated (pid %ld) for reason: %s\n", gpuProcessName().characters(), static_cast<long>(processID), terminationReasonToString(reason));
+    fprintf(stderr, "#CRASHED - %s (pid %ld)\n", gpuProcessName().characters(), static_cast<long>(processID));
     if (m_shouldExitWhenAuxiliaryProcessCrashes)
         exitProcess(1);
 }
@@ -4337,13 +4314,13 @@ void TestController::webProcessDidTerminate(WKProcessTerminationReason reason)
     // ensure we only print the crashed message once.
     if (!m_didPrintWebProcessCrashedMessage) {
         pid_t pid = WKPageGetProcessIdentifier(m_mainWebView->page());
-        SAFE_FPRINTF(stderr, "%s terminated (pid %ld) for reason: %s\n", webProcessName(), static_cast<long>(pid), terminationReasonToString(reason));
+        fprintf(stderr, "%s terminated (pid %ld) for reason: %s\n", webProcessName().characters(), static_cast<long>(pid), terminationReasonToString(reason));
         if (reason == kWKProcessTerminationReasonRequestedByClient) {
             fflush(stderr);
             return;
         }
 
-        SAFE_FPRINTF(stderr, "#CRASHED - %s (pid %ld)\n", webProcessName(), static_cast<long>(pid));
+        fprintf(stderr, "#CRASHED - %s (pid %ld)\n", webProcessName().characters(), static_cast<long>(pid));
         fflush(stderr);
         m_didPrintWebProcessCrashedMessage = true;
     }

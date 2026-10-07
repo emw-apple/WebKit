@@ -74,18 +74,14 @@ messages -> WebPage WantsAsyncDispatchMessage {
     SelectPositionAtPoint(std::optional<WebCore::FrameIdentifier> frameID, WebCore::IntPoint point, bool isInteractingWithFocusedElement) -> (struct std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData)
     UpdateSelectionWithExtentPoint(WebCore::IntPoint point, bool isInteractingWithFocusedElement, enum:bool WebKit::RespectSelectionAnchor respectSelectionAnchor) -> (bool endIsMoving)
     UpdateSelectionWithExtentPointAndBoundary(WebCore::IntPoint point, enum:uint8_t WebCore::TextGranularity granularity, bool isInteractingWithFocusedElement, enum:uint8_t WebKit::TextInteractionSource sources, enum:bool WebKit::SelectionExtentAnchor anchor) -> (bool endIsMoving)
-    SelectTextWithGranularityAtPoint(std::optional<WebCore::FrameIdentifier> frameID, WebCore::IntPoint point, enum:uint8_t WebCore::TextGranularity granularity, bool isInteractingWithFocusedElement) -> (struct std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData, bool preventedByPage)
+    SelectTextWithGranularityAtPoint(std::optional<WebCore::FrameIdentifier> frameID, WebCore::IntPoint point, enum:uint8_t WebCore::TextGranularity granularity, bool isInteractingWithFocusedElement) -> (struct std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData)
 #endif
 
 #if ENABLE(TWO_PHASE_CLICKS)
     PotentialTapAtPosition(std::optional<WebCore::FrameIdentifier> frameID, WebKit::TapIdentifier requestID, WebCore::FloatPoint point, bool shouldRequestMagnificationInformation, enum:uint8_t WebKit::WebEventInputSource inputSource) -> (struct std::optional<WebCore::RemoteUserInputEventData> data)
-    CommitPotentialTap(std::optional<WebCore::FrameIdentifier> frameID, OptionSet<WebKit::WebEventModifier> modifiers, WebKit::TransactionID lastLayerTreeTransactionId, WebCore::PointerID pointerId, enum:bool WebKit::CompletesDoubleClick completesDoubleClick) -> (std::optional<WebCore::FrameIdentifier> remoteFrameID)
+    CommitPotentialTap(std::optional<WebCore::FrameIdentifier> frameID, OptionSet<WebKit::WebEventModifier> modifiers, WebKit::TransactionID lastLayerTreeTransactionId, WebCore::PointerID pointerId) -> (std::optional<WebCore::FrameIdentifier> remoteFrameID)
     CancelPotentialTap()
-    HandleDoubleTapForDoubleClickAtPoint(std::optional<WebCore::FrameIdentifier> frameID, WebCore::IntPoint point, OptionSet<WebKit::WebEventModifier> modifiers, WebKit::TransactionID lastLayerTreeTransactionId, enum:uint8_t WebKit::WebEventInputSource inputSource, enum:uint8_t WebKit::WebMouseEventSyntheticClickType syntheticClickType) -> (struct std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData)
-#endif
-
-#if PLATFORM(MAC)
-    DispatchTrackedPointerEvent(std::optional<WebCore::FrameIdentifier> frameID, enum:uint8_t WebKit::WebEventPhase phase, WebCore::FloatPoint locationInRootView, OptionSet<WebKit::WebEventModifier> modifiers) -> (bool wasCanceled, struct std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData)
+    HandleDoubleTapForDoubleClickAtPoint(WebCore::IntPoint point, OptionSet<WebKit::WebEventModifier> modifiers, WebKit::TransactionID lastLayerTreeTransactionId, enum:uint8_t WebKit::WebEventInputSource inputSource, enum:uint8_t WebKit::WebMouseEventSyntheticClickType syntheticClickType)
 #endif
 
 #if PLATFORM(IOS_FAMILY)
@@ -106,12 +102,12 @@ messages -> WebPage WantsAsyncDispatchMessage {
     InspectorNodeSearchEndedAtPosition(WebCore::FloatPoint point)
     BlurFocusedElement()
     UpdateSelectionWithTouches(WebCore::IntPoint point, enum:uint8_t WebKit::SelectionTouch touches, bool baseIsStart) -> (WebCore::IntPoint point, enum:uint8_t WebKit::SelectionTouch touch, OptionSet<WebKit::SelectionFlags> selectionFlags)
-    SelectWithTwoTouches(std::optional<WebCore::FrameIdentifier> frameID, WebCore::IntPoint from, WebCore::IntPoint to, enum:uint8_t WebKit::GestureType gestureType, enum:uint8_t WebKit::GestureRecognizerState gestureState) -> (WebCore::IntPoint point, enum:uint8_t WebKit::GestureType gestureType, enum:uint8_t WebKit::GestureRecognizerState gestureState, OptionSet<WebKit::SelectionFlags> selectionFlags, struct std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData)
+    SelectWithTwoTouches(WebCore::IntPoint from, WebCore::IntPoint to, enum:uint8_t WebKit::GestureType gestureType, enum:uint8_t WebKit::GestureRecognizerState gestureState) -> (WebCore::IntPoint point, enum:uint8_t WebKit::GestureType gestureType, enum:uint8_t WebKit::GestureRecognizerState gestureState, OptionSet<WebKit::SelectionFlags> selectionFlags)
     ExtendSelection(enum:uint8_t WebCore::TextGranularity granularity) -> ()
     SelectWordBackward()
     ExtendSelectionForReplacement() -> ()
     MoveSelectionByOffset(int32_t offset) -> ()
-    SelectPositionAtBoundaryWithDirection(std::optional<WebCore::FrameIdentifier> frameID, WebCore::IntPoint point, enum:uint8_t WebCore::TextGranularity granularity, enum:uint8_t WebCore::SelectionDirection direction, bool isInteractingWithFocusedElement) -> (struct std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData)
+    SelectPositionAtBoundaryWithDirection(WebCore::IntPoint point, enum:uint8_t WebCore::TextGranularity granularity, enum:uint8_t WebCore::SelectionDirection direction, bool isInteractingWithFocusedElement) -> ()
     MoveSelectionAtBoundaryWithDirection(enum:uint8_t WebCore::TextGranularity granularity, enum:uint8_t WebCore::SelectionDirection direction) -> ()
     BeginSelectionInDirection(enum:uint8_t WebCore::SelectionDirection direction) -> (bool endIsMoving)
     DidReleaseAllTouchPoints()
@@ -226,9 +222,9 @@ messages -> WebPage WantsAsyncDispatchMessage {
     CreateRemoteSubframe(WebCore::FrameIdentifier parentID, WebCore::FrameIdentifier newChildID, String frameName, WebCore::ProcessIdentifier hostingProcessID, Ref<WebCore::FrameTreeSyncData> frameTreeSyncData)
 
     GetFrameTree() -> (struct std::optional<WebKit::FrameTreeNodeData> data)
-    GetBackForwardCacheEntryTopDocumentURL(WebCore::BackForwardFrameItemIdentifier frameItemID) -> (URL topDocumentURL)
+    GetFrameTreeForBackForwardCacheEntry(WebCore::BackForwardFrameItemIdentifier frameItemID) -> (struct std::optional<WebKit::FrameTreeNodeData> data)
     DidFinishLoadInAnotherProcess(WebCore::FrameIdentifier frameID)
-    FrameWasRemovedInAnotherProcess(WebCore::FrameIdentifier frameID) -> ()
+    FrameWasRemovedInAnotherProcess(WebCore::FrameIdentifier frameID)
 
     TopDocumentSyncDataChangedInAnotherProcess(struct WebCore::DocumentSyncSerializationData documentSyncData)
     AllTopDocumentSyncDataChangedInAnotherProcess(Ref<WebCore::DocumentSyncData> documentSyncData)
@@ -236,16 +232,14 @@ messages -> WebPage WantsAsyncDispatchMessage {
     FrameTreeSyncDataChangedInAnotherProcess(WebCore::FrameIdentifier frameID, struct WebCore::FrameTreeSyncSerializationData frameTreeSyncData)
     AllFrameTreeSyncDataChangedInAnotherProcess(WebCore::FrameIdentifier frameID, Ref<WebCore::FrameTreeSyncData> frameTreeSyncData)
 
-    UpdateUserActivationState(Vector<WebCore::FrameIdentifier> frameIDs, MonotonicTime activationTime, std::optional<WebCore::UserGestureTokenIdentifier> forcedActivationToken)
+    UpdateUserActivationState(Vector<WebCore::FrameIdentifier> frameIDs, MonotonicTime activationTime)
     ConsumeUserActivations(Vector<WebCore::FrameIdentifier> frameIDs)
-    RevokeForcedUserActivation(WebCore::UserGestureTokenIdentifier forcedActivationToken)
     UpdateLastHandledUserGestureTimestamp(Vector<WebCore::FrameIdentifier> frameIDs, MonotonicTime gestureTime)
 
     GetPDFFirstPageSize(WebCore::FrameIdentifier frameID) -> (WebCore::FloatSize size)
 
 #if PLATFORM(IOS_FAMILY) && ENABLE(UNIFIED_PDF)
     RequestPDFDisplayMode(enum:uint8_t WebKit::PDFPluginDisplayMode mode)
-    SetInitialPDFDisplayMode(enum:uint8_t WebKit::PDFPluginDisplayMode mode)
 #endif
 
     Reload(WebCore::NavigationIdentifier navigationID, OptionSet<WebCore::ReloadOption> reloadOptions, WebKit::SandboxExtensionHandle sandboxExtensionHandle)
@@ -262,8 +256,6 @@ messages -> WebPage WantsAsyncDispatchMessage {
 
     UpdateWebsitePolicies(struct WebKit::WebsitePoliciesData websitePolicies)
 
-    SetDevicePostureType(enum:uint8_t WebCore::DevicePostureType devicePostureType)
-
     ClearSelection()
     RestoreSelectionInFocusedEditableElement()
 
@@ -278,7 +270,7 @@ messages -> WebPage WantsAsyncDispatchMessage {
     GetMainResourceDataOfFrame(WebCore::FrameIdentifier frameID) -> (std::optional<IPC::SharedBufferReference> buffer)
     GetResourceDataFromFrame(WebCore::FrameIdentifier frameID, String resourceURL) -> (std::optional<IPC::SharedBufferReference> buffer)
     GetRenderTreeExternalRepresentation() -> (String string)
-    GetSelectionOrContentsAsString(WebCore::FrameIdentifier frameID) -> (String string)
+    GetSelectionOrContentsAsString() -> (String string)
     GetSourceForFrame(WebCore::FrameIdentifier frameID) -> (String string)
     GetWebArchiveOfFrameWithFileName(WebCore::FrameIdentifier frameID, Vector<WebCore::MarkupExclusionRule> markupExclusionRules, String fileName) -> (std::optional<IPC::SharedBufferReference> dataReference)
 #if PLATFORM(COCOA)
@@ -414,24 +406,17 @@ messages -> WebPage WantsAsyncDispatchMessage {
 #if ENABLE(DRAG_SUPPORT)
     DidStartDrag(std::optional<WebCore::FrameIdentifier> frameID)
     DragEnded(std::optional<WebCore::FrameIdentifier> frameID, WebCore::IntPoint clientPosition, WebCore::IntPoint globalPosition, OptionSet<WebCore::DragOperation> dragOperationMask) -> (struct std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData)
-    DragCancelled(std::optional<WebCore::FrameIdentifier> frameID)
-    DragSourceEnded(WebCore::FrameIdentifier frameID, WebCore::IntPoint clientPositionInMainFrameView, WebCore::IntPoint globalPosition, OptionSet<WebCore::DragOperation> dragOperationMask)
+    DragCancelled()
 #endif
 
 #if ENABLE(MODEL_PROCESS)
     RequestInteractiveModelElementAtPoint(WebCore::IntPoint clientPosition)
-    StageModeSessionDidBegin(WebCore::NodeIdentifier nodeID, WebCore::TransformationMatrix transform)
     StageModeSessionDidUpdate(std::optional<WebCore::NodeIdentifier> nodeID, WebCore::TransformationMatrix transform)
     StageModeSessionDidEnd(std::optional<WebCore::NodeIdentifier> nodeID)
 #endif
 
 #if ENABLE(MODEL_PROCESS) && ENABLE(DRAG_SUPPORT)
     ModelDragEnded(WebCore::NodeIdentifier nodeID)
-#endif
-
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-    [EnabledBy=SpatialPortalEnabled] VolumetricSceneDidClose(WebCore::NodeIdentifier nodeID)
-    [EnabledBy=SpatialPortalEnabled] UpdateVolumetricSceneSize(WebCore::NodeIdentifier nodeID, WebCore::FloatSize volumeSizeInMeters)
 #endif
 
 #if PLATFORM(IOS_FAMILY) && ENABLE(DRAG_SUPPORT)
@@ -537,15 +522,15 @@ messages -> WebPage WantsAsyncDispatchMessage {
 
     DrawPrintingRectToSnapshot(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, WebCore::IntRect rect, WebCore::IntSize imageSize) -> (bool success) ReplyCanDispatchOutOfOrder
     DrawPrintingRectToSnapshotDuringDOMPrintOperation(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, WebCore::IntRect rect, WebCore::IntSize imageSize) -> (bool success) AllowedWhenWaitingForSyncReplyDuringUnboundedIPC
-    DrawPrintingPagesToSnapshot(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, uint32_t first, uint32_t count) -> (bool success) ReplyCanDispatchOutOfOrder
-    DrawPrintingPagesToSnapshotDuringDOMPrintOperation(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, uint32_t first, uint32_t count) -> (bool success) AllowedWhenWaitingForSyncReplyDuringUnboundedIPC
+    DrawPrintingPagesToSnapshot(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, uint32_t first, uint32_t count) -> (std::optional<WebCore::FloatSize> result)
+    DrawPrintingPagesToSnapshotDuringDOMPrintOperation(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, uint32_t first, uint32_t count) -> (std::optional<WebCore::FloatSize> result) AllowedWhenWaitingForSyncReplyDuringUnboundedIPC
 #if PLATFORM(IOS_FAMILY)
     ComputePagesForPrintingiOS(WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo) -> (uint64_t pageCount) Synchronous
     DrawToPDFiOS(WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, uint64_t pageCount) -> (RefPtr<WebCore::SharedBuffer> data) ReplyCanDispatchOutOfOrder
     DrawToImage(WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo) -> (std::optional<WebCore::ShareableBitmapHandle> data) ReplyCanDispatchOutOfOrder
 
-    DrawPrintingPagesToSnapshotiOS(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, uint64_t pageCount) -> (bool success) ReplyCanDispatchOutOfOrder
-    DrawPrintingToSnapshotiOS(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo) -> (bool success) ReplyCanDispatchOutOfOrder
+    DrawPrintingPagesToSnapshotiOS(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo, uint64_t pageCount) -> (std::optional<WebCore::FloatSize> result) ReplyCanDispatchOutOfOrder
+    DrawPrintingToSnapshotiOS(WebKit::RemoteSnapshotIdentifier snapshotIdentifier, WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo) -> (std::optional<WebCore::FloatSize> result) ReplyCanDispatchOutOfOrder
 #endif
     DrawToPDF(std::optional<WebCore::FloatRect> rect, bool allowTransparentBackground) -> (RefPtr<WebCore::SharedBuffer> data)
 #endif
@@ -554,7 +539,8 @@ messages -> WebPage WantsAsyncDispatchMessage {
     DrawPagesForPrintingDuringDOMPrintOperation(WebCore::FrameIdentifier frameID, struct WebKit::PrintInfo printInfo) -> (std::optional<WebCore::SharedMemory::Handle> data, WebCore::ResourceError error) AllowedWhenWaitingForSyncReplyDuringUnboundedIPC
 #endif
 
-    DrawToSnapshot(std::optional<WebCore::FloatRect> rect, bool allowTransparentBackground, WebKit::RemoteSnapshotIdentifier snapshotIdentifier) -> (bool success)
+    DrawToSnapshot(std::optional<WebCore::FloatRect> rect, bool allowTransparentBackground, WebKit::RemoteSnapshotIdentifier snapshotIdentifier) -> (std::optional<WebCore::IntSize> result)
+    DrawFrameToSnapshot(WebCore::FrameIdentifier frameID, WebCore::IntRect rect, WebKit::RemoteSnapshotIdentifier snapshotIdentifier) -> (bool success)
 
     # Media
     SetMediaVolume(float volume)
@@ -609,7 +595,7 @@ messages -> WebPage WantsAsyncDispatchMessage {
     InsertMultiRepresentationHEIC(std::span<const uint8_t> data, String altText)
 #endif
 
-    ShouldDelayWindowOrderingEvent(std::optional<WebCore::FrameIdentifier> frameID, Ref<WebKit::WebMouseEvent> event) -> (Variant<bool, WebCore::RemoteUserInputEventData> result) Synchronous
+    ShouldDelayWindowOrderingEvent(Ref<WebKit::WebMouseEvent> event) -> (bool result) Synchronous
 
     SetTextAsync(String text)
 
@@ -633,7 +619,7 @@ messages -> WebPage WantsAsyncDispatchMessage {
 #endif
 #if PLATFORM(MAC)
     AttributedSubstringForCharacterRangeAsync(struct WebKit::EditingRange range) -> (struct WebCore::AttributedString string, struct WebKit::EditingRange range)
-    RequestAcceptsFirstMouse(std::optional<WebCore::FrameIdentifier> frameID, int eventNumber, Ref<WebKit::WebMouseEvent> event) AllowedWhenWaitingForSyncReplyDuringUnboundedIPC
+    RequestAcceptsFirstMouse(int eventNumber, Ref<WebKit::WebMouseEvent> event) AllowedWhenWaitingForSyncReplyDuringUnboundedIPC
     SetCaretAnimatorType(enum:uint8_t WebCore::CaretAnimatorType caretType)
     SetCaretBlinkingSuspended(bool blinkSuspended)
 #endif
@@ -669,10 +655,10 @@ messages -> WebPage WantsAsyncDispatchMessage {
     GetSamplingProfilerOutput() -> (String string)
     
     TakeSnapshot(WebCore::IntRect snapshotRect, WebCore::IntSize bitmapSize, OptionSet<WebKit::SnapshotOption> options) -> (std::optional<WebKit::ImageBufferBackendHandle> image, struct WebCore::Headroom headroom)
-    TakeRemoteSnapshot(WebCore::IntRect snapshotRect, WebCore::IntSize bitmapSize, OptionSet<WebKit::SnapshotOption> options, WebKit::RemoteSnapshotIdentifier snapshotIdentifier) -> (bool success)
+    TakeRemoteSnapshot(WebCore::IntRect snapshotRect, WebCore::IntSize bitmapSize, OptionSet<WebKit::SnapshotOption> options, WebKit::RemoteSnapshotIdentifier snapshotIdentifier) -> (std::optional<WebCore::IntSize> result)
 
 #if PLATFORM(MAC)
-    PerformImmediateActionHitTestAtLocation(WebCore::FrameIdentifier frameID, WebCore::FloatPoint location) -> (Variant<WebKit::WebHitTestResultData, WebCore::RemoteUserInputEventData> result, bool contentPreventsDefault, WebKit::UserData userData) ReplyCanDispatchOutOfOrder
+    PerformImmediateActionHitTestAtLocation(WebCore::FrameIdentifier frameID, WebCore::FloatPoint location)
     ImmediateActionDidUpdate()
     ImmediateActionDidCancel()
     ImmediateActionDidComplete()
@@ -708,7 +694,7 @@ messages -> WebPage WantsAsyncDispatchMessage {
 
     FlushDeferredDidReceiveMouseEvent()
 
-    PerformHitTestForModifierFlagsChangeOnMouseEvent(WebCore::FrameIdentifier frameID, Ref<WebKit::WebMouseEvent> event) -> (Variant<WebKit::WebHitTestResultData, WebCore::RemoteUserInputEventData> result, OptionSet<WebKit::WebEventModifier> modifiers)
+    PerformHitTestForMouseEvent(Ref<WebKit::WebMouseEvent> event) -> (struct WebKit::WebHitTestResultData hitTestResult, OptionSet<WebKit::WebEventModifier> modifiers)
 
     SetUseColorAppearance(bool useDarkAppearance, bool useElevatedUserInterfaceLevel)
 
@@ -831,7 +817,7 @@ messages -> WebPage WantsAsyncDispatchMessage {
     SetCanUseCredentialStorage(bool canUse)
 
 #if ENABLE(APP_HIGHLIGHTS)
-    CreateAppHighlightInSelectedRange(WebCore::FrameIdentifier frameID, enum:bool WebCore::CreateNewGroupForHighlight createNewGroup, enum:bool WebCore::HighlightRequestOriginatedInApp requestOrigin) -> (struct WebCore::AppHighlight info)
+    CreateAppHighlightInSelectedRange(enum:bool WebCore::CreateNewGroupForHighlight createNewGroup, enum:bool WebCore::HighlightRequestOriginatedInApp requestOrigin) -> (struct WebCore::AppHighlight info)
     RestoreAppHighlightsAndScrollToIndex(Vector<WebCore::SharedMemory::Handle> memoryHandles, std::optional<unsigned> index)
     SetAppHighlightsVisibility(enum:bool WebCore::HighlightVisibility highlightVisibility)
 #endif
@@ -971,8 +957,9 @@ messages -> WebPage WantsAsyncDispatchMessage {
     NumberOfVisibilityAdjustmentRects() -> (uint64_t count)
 
     ContentsToRootViewRect(WebCore::FrameIdentifier frameID, WebCore::FloatRect rect) -> (WebCore::FloatRect rect)
+    ContentsToRootViewRects(WebCore::FrameIdentifier frameID, Vector<WebCore::FloatRect> rects) -> (Vector<WebCore::FloatRect> rects)
     ContentsToRootViewPoint(WebCore::FrameIdentifier frameID, WebCore::FloatPoint point) -> (WebCore::FloatPoint point)
-    ContentsToMainFrameViewRect(WebCore::FrameIdentifier frameID, WebCore::FloatRect rect) -> (WebCore::FloatRect rect)
+    RemoteDictionaryPopupInfoToRootView(WebCore::FrameIdentifier frameID, struct WebCore::DictionaryPopupInfo popupInfo) -> (struct WebCore::DictionaryPopupInfo popupInfo)
     HitTestAtPoint(WebCore::FrameIdentifier frameID, WebCore::FloatPoint point, struct WebKit::ContentWorldData world) -> (struct WebKit::NodeHitTestResult result)
 
 #if HAVE(SPATIAL_TRACKING_LABEL)

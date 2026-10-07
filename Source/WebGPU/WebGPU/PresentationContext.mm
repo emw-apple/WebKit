@@ -33,6 +33,12 @@
 
 namespace WebGPU::Metal {
 
+Ref<PresentationContext> Device::createSwapChain(PresentationContext& presentationContext, const WGPUSwapChainDescriptor& descriptor)
+{
+    presentationContext.configure(*this, descriptor);
+    return presentationContext;
+}
+
 WTF_MAKE_TZONE_ALLOCATED_IMPL(PresentationContext);
 
 Ref<PresentationContext> PresentationContext::create(const WGPUSurfaceDescriptor& descriptor, const Instance& instance)
@@ -44,12 +50,12 @@ PresentationContext::PresentationContext() = default;
 
 PresentationContext::~PresentationContext() = default;
 
-WebGPU::TextureFormat PresentationContext::getPreferredFormat(const Adapter&)
+WGPUTextureFormat PresentationContext::getPreferredFormat(const Adapter&)
 {
-    return WebGPU::TextureFormat::Bgra8unorm;
+    return WGPUTextureFormat_BGRA8Unorm;
 }
 
-void PresentationContext::configure(const WebGPU::CanvasConfiguration&)
+void PresentationContext::configure(Device&, const WGPUSwapChainDescriptor&)
 {
 }
 
@@ -97,17 +103,12 @@ void wgpuSwapChainRelease(WGPUSwapChain swapChain)
 
 WGPUTextureFormat wgpuSurfaceGetPreferredFormat(WGPUSurface surface, WGPUAdapter adapter)
 {
-    return WebGPU::Metal::toAPI(WebGPU::Metal::fromAPI(surface).getPreferredFormat(WebGPU::Metal::fromAPI(adapter)));
+    return WebGPU::Metal::fromAPI(surface).getPreferredFormat(WebGPU::Metal::fromAPI(adapter));
 }
 
 double wgpuSurfaceGetLastFrameGPUCostSeconds(WGPUSurface surface)
 {
     return protect(WebGPU::Metal::fromAPI(surface))->lastFrameGPUCost().seconds();
-}
-
-double wgpuSurfaceGetLastFramePresentStallSeconds(WGPUSurface surface)
-{
-    return protect(WebGPU::Metal::fromAPI(surface))->lastFramePresentStall().seconds();
 }
 
 WGPUTexture wgpuSwapChainGetCurrentTexture(WGPUSwapChain swapChain, uint32_t index)

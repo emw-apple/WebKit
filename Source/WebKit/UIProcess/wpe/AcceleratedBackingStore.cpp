@@ -35,8 +35,6 @@
 #include <WebCore/ShareableBitmap.h>
 #include <wpe/wpe-platform.h>
 #include <wtf/TZoneMallocInlines.h>
-#include <wtf/glib/GLibExtras.h>
-#include <wtf/glib/GSpanExtras.h>
 #include <wtf/glib/GUniquePtr.h>
 
 #if OS(ANDROID)
@@ -241,7 +239,9 @@ static std::expected<Ref<ViewSnapshot>, String> saveBufferSnapshot(const GRefPtr
         return makeUnexpected("Failed to read current WPEBuffer for snapshot"_s);
     }
 
-    GRefPtr bytes = gBytesNew(span(pixels));
+    gsize pixelsDataSize;
+    const auto* pixelsData = g_bytes_get_data(pixels, &pixelsDataSize);
+    GRefPtr<GBytes> bytes = adoptGRef(g_bytes_new(pixelsData, pixelsDataSize));
 
     auto info = getImageInfoFromBuffer(buffer);
     if (!info)

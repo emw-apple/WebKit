@@ -25,7 +25,6 @@
 #include <WebCore/DigitalCredentialsRequestData.h>
 #include <WebCore/DisabledAdaptations.h>
 #include <WebCore/FocusDirection.h>
-#include <WebCore/FrameIdentifier.h>
 #include <WebCore/HostWindow.h>
 #include <WebCore/ImageBufferFormat.h>
 #include <wtf/CompletionHandler.h>
@@ -74,12 +73,10 @@ class FloatRect;
 class Frame;
 class Element;
 class Geolocation;
-class GraphicsContext;
 class HitTestResult;
 class IntPoint;
 class IntRect;
 class LocalFrame;
-class NativeImage;
 class NavigationAction;
 class Page;
 class PopupMenu;
@@ -136,11 +133,6 @@ public:
     RefPtr<ImageBuffer> createImageBuffer(const FloatSize&, RenderingMode, RenderingPurpose, float resolutionScale, const ColorSpace&, ImageBufferFormat) const override;
     RefPtr<WebCore::ImageBuffer> sinkIntoImageBuffer(std::unique_ptr<WebCore::SerializedImageBuffer>) override;
     RefPtr<WebCore::ImageBuffer> createImageBufferFromTransferHandle(const ImageBufferTransferHandle&) override;
-    WEBCORE_EXPORT RefPtr<NativePromise<Ref<NativeImage>, void>> createDisplayOnlyImage(FrameIdentifier, const FloatSize&, float scale, const ColorSpace&, NOESCAPE const Function<void(GraphicsContext&)>& paint);
-
-#if ENABLE(OFFSCREEN_CANVAS)
-    RefPtr<PlaceholderRenderingContextSource> createPlaceholderRenderingContextSource(const RemotePlaceholderRenderingContextIdentifier&) override;
-#endif
 
 #if ENABLE(WEBGL)
     RefPtr<GraphicsContextGL> createGraphicsContextGL(const GraphicsContextGLAttributes&) const override;

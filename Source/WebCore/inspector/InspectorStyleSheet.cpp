@@ -29,7 +29,6 @@
 #include "CSSContainerRule.h"
 #include "CSSGroupingRule.h"
 #include "CSSImportRule.h"
-#include "CSSKeyframeRule.h"
 #include "CSSKeyframesRule.h"
 #include "CSSLayerBlockRule.h"
 #include "CSSLayerStatementRule.h"
@@ -104,7 +103,6 @@ static RuleFlatteningStrategy NODELETE flatteningStrategyForStyleRuleType(StyleR
     case StyleRuleType::Container:
     case StyleRuleType::Scope:
     case StyleRuleType::StartingStyle:
-    case StyleRuleType::Keyframes:
         // These rules MUST be handled by the following methods in order to provide functionality in
         // and avoid mismatched lists of source data and CSSOM wrappers:
         // - `isValidRuleHeaderText`
@@ -114,7 +112,6 @@ static RuleFlatteningStrategy NODELETE flatteningStrategyForStyleRuleType(StyleR
         return RuleFlatteningStrategy::CommitSelfThenChildren;
 
     case StyleRuleType::NestedDeclarations:
-    case StyleRuleType::Keyframe:
         return RuleFlatteningStrategy::CommitSelfOnly;
 
     // FIXME (webkit.org/b/284176): support @position-try in Web Inspector.
@@ -124,6 +121,8 @@ static RuleFlatteningStrategy NODELETE flatteningStrategyForStyleRuleType(StyleR
     case StyleRuleType::Import:
     case StyleRuleType::FontFace:
     case StyleRuleType::Page:
+    case StyleRuleType::Keyframes:
+    case StyleRuleType::Keyframe:
     case StyleRuleType::Margin:
     case StyleRuleType::Namespace:
     case StyleRuleType::CounterStyle:
@@ -164,8 +163,6 @@ static ASCIILiteral atRuleIdentifierForType(StyleRuleType styleRuleType)
         return "@scope"_s;
     case StyleRuleType::StartingStyle:
         return "@starting-style"_s;
-    case StyleRuleType::Keyframes:
-        return "@keyframes"_s;
     default:
         ASSERT_NOT_REACHED();
         return ""_s;
@@ -174,14 +171,17 @@ static ASCIILiteral atRuleIdentifierForType(StyleRuleType styleRuleType)
 
 static bool isValidRuleHeaderText(const String& headerText, StyleRuleType styleRuleType, Document* document, CSSParserEnum::NestedContext nestedContext = { })
 {
-    auto expectedStyleRuleType = styleRuleType;
+    auto isValidAtRuleHeaderText = [&](const String& atRuleIdentifier) {
+        if (headerText.isEmpty())
+            return false;
 
-    auto isValidAtRuleHeaderText = [&](const String& atRuleHeaderText) {
+        auto parseText = makeString(atRuleIdentifier, ' ', headerText, " {}"_s);
+
         // Make sure the engine can parse the provided `@` rule, even if it only uses unsupported features. As long as
         // the rule text is entirely consumed and it creates a rule of the expected type, we consider it valid because
         // we will be able to continue to edit the rule in the future.
         CSSParserContext context(parserContextForDocument(document)); // CSSParser holds a reference to this.
-        CSSParser parser(context, atRuleHeaderText);
+        CSSParser parser(context, parseText);
         if (!parser.tokenizer())
             return false;
 
@@ -191,7 +191,7 @@ static bool isValidRuleHeaderText(const String& headerText, StyleRuleType styleR
         if (!rule)
             return false;
 
-        if (rule->type() != expectedStyleRuleType)
+        if (rule->type() != styleRuleType)
             return false;
 
         // The new header text may cause a valid rule to be created without us parsing the entire range. For example new
@@ -212,11 +212,7 @@ static bool isValidRuleHeaderText(const String& headerText, StyleRuleType styleR
     case StyleRuleType::Container:
     case StyleRuleType::Scope:
     case StyleRuleType::StartingStyle:
-    case StyleRuleType::Keyframes:
-        return !headerText.isEmpty() && isValidAtRuleHeaderText(makeString(atRuleIdentifierForType(styleRuleType), ' ', headerText, " {}"_s));
-    case StyleRuleType::Keyframe:
-        expectedStyleRuleType = StyleRuleType::Keyframes;
-        return !headerText.isEmpty() && isValidAtRuleHeaderText(makeString("@keyframes test { "_s, headerText, " {} }"_s));
+        return isValidAtRuleHeaderText(atRuleIdentifierForType(styleRuleType));
     default:
         return false;
     }
@@ -239,8 +235,6 @@ static std::optional<Inspector::Protocol::CSS::Grouping::Type> NODELETE protocol
         return Inspector::Protocol::CSS::Grouping::Type::ScopeRule;
     case StyleRuleType::StartingStyle:
         return Inspector::Protocol::CSS::Grouping::Type::StartingStyleRule;
-    case StyleRuleType::Keyframes:
-        return Inspector::Protocol::CSS::Grouping::Type::KeyframesRule;
     default:
         return std::nullopt;
     }
@@ -1204,12 +1198,6 @@ ExceptionOr<String> InspectorStyleSheet::ruleHeaderText(const InspectorCSSId& id
     if (RefPtr cssStyleRule = dynamicDowncast<CSSStyleRule>(rule.get()))
         return cssStyleRule->selectorText();
 
-    if (RefPtr cssKeyframesRule = dynamicDowncast<CSSKeyframesRule>(rule.get()))
-        return String(cssKeyframesRule->name());
-
-    if (RefPtr cssKeyframeRule = dynamicDowncast<CSSKeyframeRule>(rule.get()))
-        return cssKeyframeRule->keyText();
-
     auto sourceData = ruleSourceDataFor(rule.get());
     if (!sourceData)
         return Exception { ExceptionCode::NotFoundError };
@@ -1236,18 +1224,10 @@ ExceptionOr<void> InspectorStyleSheet::setRuleHeaderText(const InspectorCSSId& i
 
     auto correctedHeaderText = newHeaderText;
 
-    // Fast-path editing by using its built-in CSSOM support instead of reparsing the entire style sheet.
-    bool useCSSOMFastPath = false;
-    if (RefPtr cssStyleRule = dynamicDowncast<CSSStyleRule>(rule.get())) {
-        useCSSOMFastPath = true;
+    // Fast-path the editing of `CSSStyleRules` by using its built-in CSSOM support for editing instead of reparsing the entire style sheet.
+    RefPtr cssStyleRule = dynamicDowncast<CSSStyleRule>(rule.get());
+    if (cssStyleRule)
         cssStyleRule->setSelectorText(correctedHeaderText);
-    } else if (RefPtr cssKeyframesRule = dynamicDowncast<CSSKeyframesRule>(rule.get())) {
-        useCSSOMFastPath = true;
-        cssKeyframesRule->setName(AtomString { correctedHeaderText });
-    } else if (RefPtr cssKeyframeRule = dynamicDowncast<CSSKeyframeRule>(rule.get())) {
-        useCSSOMFastPath = true;
-        cssKeyframeRule->setKeyText(correctedHeaderText);
-    }
 
     auto sourceData = ruleSourceDataFor(rule.get());
     if (!sourceData)
@@ -1255,7 +1235,7 @@ ExceptionOr<void> InspectorStyleSheet::setRuleHeaderText(const InspectorCSSId& i
 
     String sheetText = m_parsedStyleSheet->text();
 
-    if (!useCSSOMFastPath
+    if (!cssStyleRule
         && sourceData->ruleHeaderRange.start
         && sheetText.codeUnitAt(sourceData->ruleHeaderRange.start - 1) != ' '
         && !correctedHeaderText.startsWith('(')) {
@@ -1268,8 +1248,9 @@ ExceptionOr<void> InspectorStyleSheet::setRuleHeaderText(const InspectorCSSId& i
 
     sheetText = makeStringByReplacing(sheetText, sourceData->ruleHeaderRange.start, sourceData->ruleHeaderRange.length(), correctedHeaderText);
 
-    if (useCSSOMFastPath) {
-        // Set the style sheet text directly so we don't rebuild our flat rule set. The rule has been directly updated already.
+    if (cssStyleRule) {
+        // Set the style sheet text directly so we don't rebuild our flat rule set. The CSSStyleRule has been directly
+        // updated already.
         m_parsedStyleSheet->setText(sheetText);
         fireStyleSheetChanged();
     } else {
@@ -1507,61 +1488,32 @@ Ref<Inspector::Protocol::CSS::CSSSelector> InspectorStyleSheet::buildObjectForSe
     return buildObjectForSelectorHelper(selector->selectorText(), *selector);
 }
 
-RefPtr<Inspector::Protocol::CSS::SelectorList> InspectorStyleSheet::buildObjectForSelectorList(CSSRule* rule, int& endingLine)
+Ref<Inspector::Protocol::CSS::SelectorList> InspectorStyleSheet::buildObjectForSelectorList(CSSStyleRule* rule, int& endingLine)
 {
     RefPtr<CSSRuleSourceData> sourceData;
     if (ensureParsedDataReady())
         sourceData = ruleSourceDataFor(rule);
-
     RefPtr<JSON::ArrayOf<Inspector::Protocol::CSS::CSSSelector>> selectors;
-    String text;
 
-    if (RefPtr styleRule = dynamicDowncast<CSSStyleRule>(rule)) {
-        // This intentionally does not rely on the source data to avoid catching anything before the '{'.
-        text = styleRule->selectorText();
+    // This intentionally does not rely on the source data to avoid catching the trailing comments (before the declaration starting '{').
+    String selectorText = rule->selectorText();
 
-        if (sourceData)
-            selectors = selectorsFromSource(sourceData.get(), m_parsedStyleSheet->text(), selectorsForCSSStyleRule(*styleRule));
-        else {
-            selectors = JSON::ArrayOf<Inspector::Protocol::CSS::CSSSelector>::create();
-            for (const CSSSelector* selector : selectorsForCSSStyleRule(*styleRule))
-                selectors->addItem(buildObjectForSelector(selector));
-        }
-    } else if (RefPtr keyframeRule = dynamicDowncast<CSSKeyframeRule>(rule)) {
-        // This intentionally does not rely on the source data to avoid catching anything before the '{'.
-        text = keyframeRule->keyText();
-
+    if (sourceData)
+        selectors = selectorsFromSource(sourceData.get(), m_parsedStyleSheet->text(), selectorsForCSSStyleRule(*rule));
+    else {
         selectors = JSON::ArrayOf<Inspector::Protocol::CSS::CSSSelector>::create();
-    } else if (is<CSSNestedDeclarations>(*rule)) {
-        text = emptyString();
-
-        selectors = JSON::ArrayOf<Inspector::Protocol::CSS::CSSSelector>::create();
+        for (const CSSSelector* selector : selectorsForCSSStyleRule(*rule))
+            selectors->addItem(buildObjectForSelector(selector));
     }
-
-    if (!selectors || text.isNull())
-        return nullptr;
-
     auto result = Inspector::Protocol::CSS::SelectorList::create()
         .setSelectors(selectors.releaseNonNull())
-        .setText(text)
+        .setText(selectorText)
         .release();
     if (sourceData) {
         if (auto range = buildSourceRangeObject(sourceData->ruleHeaderRange, lineEndings(), &endingLine))
             result->setRange(range.releaseNonNull());
     }
     return result;
-}
-
-
-static CSSStyleDeclaration* styleForRule(CSSRule* rule)
-{
-    if (RefPtr styleRule = dynamicDowncast<CSSStyleRule>(rule))
-        return &styleRule->style();
-    if (RefPtr nestedDeclarations = dynamicDowncast<CSSNestedDeclarations>(rule))
-        return &nestedDeclarations->style();
-    if (RefPtr keyframeRule = dynamicDowncast<CSSKeyframeRule>(rule))
-        return &keyframeRule->style();
-    return nullptr;
 }
 
 RefPtr<Inspector::Protocol::CSS::CSSRule> InspectorStyleSheet::buildObjectForRule(CSSRule* rule)
@@ -1573,20 +1525,39 @@ RefPtr<Inspector::Protocol::CSS::CSSRule> InspectorStyleSheet::buildObjectForRul
     if (!styleSheet)
         return nullptr;
 
-    RefPtr style = styleForRule(rule);
-    if (!style)
+    RefPtr cssStyleRule = dynamicDowncast<CSSStyleRule>(rule);
+    RefPtr nestedDeclaration = dynamicDowncast<CSSNestedDeclarations>(rule);
+    if (!cssStyleRule && !nestedDeclaration)
         return nullptr;
 
+    // Build the selector list. A CSSStyleRule has a real selector, but a nested declarations rule has none.
+    // Interleaved declarations are no longer wrapped in an implicit `& { }`. See https://www.w3.org/TR/css-nesting-1/#nested-declarations
     int endingLine = 0;
-    auto selectorList = buildObjectForSelectorList(rule, endingLine);
-    if (!selectorList)
-        return nullptr;
+    Ref<Inspector::Protocol::CSS::SelectorList> selectorList = [&] {
+        if (cssStyleRule)
+            return buildObjectForSelectorList(cssStyleRule.get(), endingLine);
+
+        auto selectors = JSON::ArrayOf<Inspector::Protocol::CSS::CSSSelector>::create();
+        auto list = Inspector::Protocol::CSS::SelectorList::create()
+            .setSelectors(WTF::move(selectors))
+            .setText(emptyString())
+            .release();
+        if (ensureParsedDataReady()) {
+            if (auto sourceData = ruleSourceDataFor(rule)) {
+                if (auto range = buildSourceRangeObject(sourceData->ruleHeaderRange, lineEndings(), &endingLine))
+                    list->setRange(range.releaseNonNull());
+            }
+        }
+        return list;
+    }();
+
+    Ref style = cssStyleRule ? protect(cssStyleRule->style()) : protect(nestedDeclaration->style());
 
     auto result = Inspector::Protocol::CSS::CSSRule::create()
-        .setSelectorList(selectorList.releaseNonNull())
+        .setSelectorList(WTF::move(selectorList))
         .setSourceLine(endingLine)
         .setOrigin(m_origin)
-        .setStyle(buildObjectForStyle(protect(style)))
+        .setStyle(buildObjectForStyle(style.ptr()))
         .release();
 
     if (m_origin == Inspector::Protocol::CSS::StyleSheetOrigin::Author || m_origin == Inspector::Protocol::CSS::StyleSheetOrigin::User)
@@ -1601,7 +1572,7 @@ RefPtr<Inspector::Protocol::CSS::CSSRule> InspectorStyleSheet::buildObjectForRul
     if (groupingsPayload->length())
         result->setGroupings(WTF::move(groupingsPayload));
 
-    if (is<CSSNestedDeclarations>(*rule))
+    if (nestedDeclaration)
         result->setIsImplicitlyNested(true);
     else if (auto sourceData = ruleSourceDataFor(rule))
         result->setIsImplicitlyNested(sourceData->isImplicitlyNested);
@@ -1727,7 +1698,16 @@ ExceptionOr<String> InspectorStyleSheet::text()
 CSSStyleDeclaration* InspectorStyleSheet::styleForId(const InspectorCSSId& id) const
 {
     RefPtr rule = ruleForId(id);
-    return styleForRule(rule);
+    if (!rule)
+        return nullptr;
+
+    if (RefPtr cssStyleRule = dynamicDowncast<CSSStyleRule>(rule.get()))
+        return &cssStyleRule->style();
+
+    if (RefPtr nestedDecl = dynamicDowncast<CSSNestedDeclarations>(rule.get()))
+        return &nestedDecl->style();
+
+    return nullptr;
 }
 
 void InspectorStyleSheet::fireStyleSheetChanged()
@@ -1792,8 +1772,7 @@ unsigned InspectorStyleSheet::ruleIndexByStyle(StyleDeclarationOrCSSRule ruleOrD
                     return true;
                 if (nestedDecl && &nestedDecl->style() == styleDeclaration)
                     return true;
-                RefPtr keyframeRule = dynamicDowncast<CSSKeyframeRule>(rule.get());
-                return keyframeRule && &keyframeRule->style() == styleDeclaration;
+                return false;
             },
             [&] (const CSSRule* cssRule) { return rule.get() == cssRule; }
         );

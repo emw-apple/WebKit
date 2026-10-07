@@ -36,8 +36,8 @@
 
 namespace JSC::Bindings {
 
-ClassStructPtr webScriptObjectClassSingleton();
-ClassStructPtr webUndefinedClassSingleton();
+ClassStructPtr webScriptObjectClass();
+ClassStructPtr webUndefinedClass();
 
 class ObjcInstance;
 

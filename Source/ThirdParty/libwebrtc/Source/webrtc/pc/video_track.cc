@@ -13,7 +13,6 @@
 #include <string>
 #include <utility>
 
-#include "absl/algorithm/container.h"
 #include "absl/strings/string_view.h"
 #include "api/make_ref_counted.h"
 #include "api/media_stream_interface.h"
@@ -24,8 +23,8 @@
 #include "api/video/video_frame.h"
 #include "api/video/video_sink_interface.h"
 #include "api/video/video_source_interface.h"
+#include "media/base/video_source_base.h"
 #include "pc/video_track_source_proxy.h"
-#include "rtc_base/checks.h"
 #include "rtc_base/thread.h"
 
 namespace webrtc {
@@ -40,6 +39,10 @@ VideoTrack::VideoTrack(
       video_source_(std::move(source)),
       content_hint_(ContentHint::kNone) {
   RTC_DCHECK_RUN_ON(&signaling_thread_);
+  // Detach the thread checker for VideoSourceBaseGuarded since we'll make calls
+  // to VideoSourceBaseGuarded on the worker thread, but we're currently on the
+  // signaling thread.
+  source_sequence_.Detach();
   video_source_->RegisterObserver(this);
 }
 
@@ -57,13 +60,7 @@ std::string VideoTrack::kind() const {
 void VideoTrack::AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
                                  const VideoSinkWants& wants) {
   RTC_DCHECK_RUN_ON(worker_thread_);
-  RTC_DCHECK(sink != nullptr);
-  SinkPair* sink_pair = FindSinkPair(sink);
-  if (!sink_pair) {
-    sinks_.push_back(SinkPair(sink, wants));
-  } else {
-    sink_pair->wants = wants;
-  }
+  VideoSourceBaseGuarded::AddOrUpdateSink(sink, wants);
   VideoSinkWants modified_wants = wants;
   modified_wants.black_frames = !enabled_w_;
   video_source_->internal()->AddOrUpdateSink(sink, modified_wants);
@@ -71,11 +68,7 @@ void VideoTrack::AddOrUpdateSink(VideoSinkInterface<VideoFrame>* sink,
 
 void VideoTrack::RemoveSink(VideoSinkInterface<VideoFrame>* sink) {
   RTC_DCHECK_RUN_ON(worker_thread_);
-  RTC_DCHECK(sink != nullptr);
-  RTC_DCHECK(FindSinkPair(sink));
-  std::erase_if(sinks_, [sink](const SinkPair& sink_pair) {
-    return sink_pair.sink == sink;
-  });
+  VideoSourceBaseGuarded::RemoveSink(sink);
   video_source_->internal()->RemoveSink(sink);
 }
 
@@ -114,7 +107,7 @@ bool VideoTrack::set_enabled(bool enable) {
   worker_thread_->BlockingCall([&]() {
     RTC_DCHECK_RUN_ON(worker_thread_);
     enabled_w_ = enable;
-    for (auto& sink_pair : sinks_) {
+    for (auto& sink_pair : sink_pairs()) {
       VideoSinkWants modified_wants = sink_pair.wants;
       modified_wants.black_frames = !enable;
       video_source_->AddOrUpdateSink(sink_pair.sink, modified_wants);
@@ -155,18 +148,6 @@ scoped_refptr<VideoTrack> VideoTrack::Create(
 
   return make_ref_counted<VideoTrack>(id, std::move(source_proxy),
                                       worker_thread);
-}
-
-VideoTrack::SinkPair* VideoTrack::FindSinkPair(
-    const VideoSinkInterface<VideoFrame>* sink) {
-  RTC_DCHECK_RUN_ON(worker_thread_);
-  auto sink_pair_it = absl::c_find_if(
-      sinks_,
-      [sink](const SinkPair& sink_pair) { return sink_pair.sink == sink; });
-  if (sink_pair_it != sinks_.end()) {
-    return &*sink_pair_it;
-  }
-  return nullptr;
 }
 
 }  // namespace webrtc

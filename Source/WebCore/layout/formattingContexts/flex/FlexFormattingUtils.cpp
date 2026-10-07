@@ -603,7 +603,7 @@ LayoutUnit FlexFormattingUtils::marginBoxAscentForFlexItem(const FlexLayoutItem&
 {
     CheckedRef flexItem = flexLayoutItem.renderer;
     auto isHorizontalFlow = this->isHorizontalFlow(flexBox());
-    auto direction = isHorizontalFlow ? BoxAxis::Horizontal : BoxAxis::Vertical;
+    auto direction = isHorizontalFlow ? LineDirection::Horizontal : LineDirection::Vertical;
     auto flexboxWritingMode = flexBox().style().writingMode();
 
     if (!mainAxisIsFlexItemInlineAxis(flexItem)) {
@@ -663,8 +663,7 @@ size_t FlexFormattingUtils::minimumLineCount(const RenderFlexibleBox& flexBox)
 Style::FlexBasis FlexFormattingUtils::flexBasisForFlexItem(const RenderBox& flexItem)
 {
     auto flexBasis = flexItem.style().flexBasis();
-
-    if (flexBasis.isAuto() && !flexBasis.isCalcSize())
+    if (flexBasis.isAuto())
         flexBasis = preferredMainSizeLengthForFlexItem(flexItem).asFlexBasis();
     return flexBasis;
 }

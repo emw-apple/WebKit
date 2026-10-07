@@ -233,24 +233,14 @@ void RemoteRenderingBackend::moveSerializedBufferToTransferHeap(RemoteSerialized
     completionHandler(result);
 }
 
-static bool transferHandleDescribes(const ImageBufferTransferHandle& handle, const ImageBuffer& imageBuffer)
-{
-    if (handle.parameters != imageBuffer.parameters())
-        return false;
-    if (handle.renderingMode == imageBuffer.renderingMode())
-        return true;
-    return handle.renderingMode == RenderingMode::Accelerated && imageBuffer.renderingMode() == RenderingMode::Unaccelerated;
-}
-
-void RemoteRenderingBackend::takeTransferredBuffer(const ImageBufferTransferHandle& handle, RenderingResourceIdentifier imageBufferIdentifier, RemoteGraphicsContextIdentifier contextIdentifier)
+void RemoteRenderingBackend::takeTransferredBuffer(WebCore::ImageBufferTransferIdentifier transferIdentifier, RenderingResourceIdentifier imageBufferIdentifier, RemoteGraphicsContextIdentifier contextIdentifier)
 {
     assertIsCurrent(workQueue());
-    RefPtr imageBuffer = GPUProcess::singleton().takeTransferredImageBuffer(handle.identifier);
-    if (imageBuffer && !transferHandleDescribes(handle, *imageBuffer))
-        imageBuffer = nullptr;
+    RefPtr imageBuffer = GPUProcess::singleton().takeTransferredImageBuffer(transferIdentifier);
     if (!imageBuffer) {
-        // Discarded along with the process that owned it, claimed already by a process that was
-        // given the same identifier, or misdescribed by the sender.
+        // Discarded along with the process that owned it, or claimed already by a process that
+        // was given the same identifier. Neither is this process's doing, so it is left with a
+        // buffer that failed to be created rather than terminated.
         RELEASE_LOG(RemoteLayerBuffers, "[renderingBackend=%" PRIu64 "] RemoteRenderingBackend::takeTransferredBuffer - no buffer to take for image buffer %" PRIu64, m_renderingBackendIdentifier.toUInt64(), imageBufferIdentifier.toUInt64());
         imageBuffer = ImageBuffer::create<NullImageBufferBackend>({ 0, 0 }, 1, ColorSpace::SRGB(), { PixelFormat::BGRA8 }, RenderingPurpose::Unspecified, { });
         RELEASE_ASSERT(imageBuffer);
@@ -262,27 +252,16 @@ void RemoteRenderingBackend::takeTransferredBuffer(const ImageBufferTransferHand
 
     ImageBufferCreationContext creationContext;
     adjustImageBufferCreationContext(m_sharedResourceCache, creationContext);
-#if HAVE(IOSURFACE)
-    // The sender may have kept a send right to the surface, and could then alias it in a buffer of its own
-    // with CreateMappableImageBuffer.
-    creationContext.surfacePool = nullptr;
-#endif
     imageBuffer->transferToNewContext(creationContext);
     auto result = m_remoteImageBuffers.add(imageBufferIdentifier, RemoteImageBuffer::create(imageBuffer.releaseNonNull(), imageBufferIdentifier, contextIdentifier, *this));
     MESSAGE_CHECK(result.isNewEntry, "Duplicate ImageBuffer");
 }
 
-void RemoteRenderingBackend::createSnapshot(RemoteSnapshotIdentifier snapshotIdentifier, FrameIdentifier rootFrameIdentifier, const FloatSize& size, CompletionHandler<void()>&& completionHandler)
-{
-    assertIsCurrent(workQueue());
-    GPUProcess::singleton().createSnapshot(snapshotIdentifier, rootFrameIdentifier, size, m_gpuConnectionToWebProcess->webProcessIdentifier());
-    completionHandler();
-}
-
 void RemoteRenderingBackend::createSnapshotRecorder(RemoteSnapshotRecorderIdentifier identifier, RemoteSnapshotIdentifier snapshotIdentifier)
 {
     assertIsCurrent(workQueue());
-    Ref snapshot = GPUProcess::singleton().snapshotForRecorder(snapshotIdentifier);
+    // FIXME: using global identifiers (snapshotIdentifier) is not secure. Do not follow this pattern.
+    Ref snapshot = GPUProcess::singleton().getOrCreateSnapshot(snapshotIdentifier);
     auto result = m_remoteSnapshotRecorders.add(identifier, RemoteSnapshotRecorder::create(identifier, snapshot, *this));
     MESSAGE_CHECK(result.isNewEntry, "Recorder already created");
 }
@@ -294,7 +273,12 @@ void RemoteRenderingBackend::sinkSnapshotRecorderIntoSnapshotFrame(RemoteSnapsho
     MESSAGE_CHECK(recorder, "Recorder sunk into snapshot before being cached");
     Ref snapshot = recorder->snapshot();
     // FIXME: using global identifiers (frameIdentifier) is not secure. Do not follow this pattern.
-    snapshot->setFrame(frameIdentifier, recorder->takeDisplayList(), workQueue());
+    bool success = snapshot->setFrame(frameIdentifier, recorder->takeDisplayList(), workQueue());
+    MESSAGE_CHECK(success, "Frame already present");
+
+    // Note:
+    // Success completion handlers are used to ensure that getOrCreateSnapshot does not vivify already released snapshot identifier into a leaked object. Caller is expected to wait
+    // until completion of *all* handlers, failing or not, before consuming the snapshot, otherwise leaks occur.
     completionHandler(true);
 }
 

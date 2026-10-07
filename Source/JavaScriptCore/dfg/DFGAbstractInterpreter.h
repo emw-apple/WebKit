@@ -235,7 +235,7 @@ private:
     bool handleConstantBinaryBitwiseOp(Node*);
 
     template<typename Functor>
-    void forAllValues(unsigned indexInBlock, NOESCAPE Functor&);
+    void forAllValues(unsigned indexInBlock, Functor&);
     
     void clobberStructures();
     void didFoldClobberStructures();
@@ -270,7 +270,7 @@ private:
 
     void verifyEdge(Node*, Edge);
     void verifyEdges(Node*);
-    void executeDoubleUnaryOpEffects(Node*, NOESCAPE const auto& functor);
+    void executeDoubleUnaryOpEffects(Node*, const auto& functor);
     
     bool handleConstantDivOp(Node*);
 

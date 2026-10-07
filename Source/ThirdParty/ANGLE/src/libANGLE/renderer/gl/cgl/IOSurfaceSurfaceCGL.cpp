@@ -292,8 +292,8 @@ bool IOSurfaceSurfaceCGL::hasEmulatedAlphaChannel() const
     return format.internalFormat == GL_RGB;
 }
 
-void IOSurfaceSurfaceCGL::attachToFramebuffer(const gl::Context *context,
-                                              gl::Framebuffer *framebuffer)
+egl::Error IOSurfaceSurfaceCGL::attachToFramebuffer(const gl::Context *context,
+                                                    gl::Framebuffer *framebuffer)
 {
     FramebufferGL *framebufferGL = GetImplAs<FramebufferGL>(framebuffer);
     ASSERT(framebufferGL->getFramebufferID() == 0);
@@ -310,18 +310,14 @@ void IOSurfaceSurfaceCGL::attachToFramebuffer(const gl::Context *context,
         {
             std::ostringstream err;
             err << "CGLTexImageIOSurface2D failed: " << CGLErrorString(error);
-            context->getMutableErrorSetForValidation()->validationError(
-                angle::EntryPoint::Invalid, GL_CONTEXT_LOST, err.str().c_str());
-            return;
+            return egl::Error(EGL_CONTEXT_LOST, err.str());
         }
         ASSERT(error == kCGLNoError);
 
+        // TODO: pass context
         if (IsError(initializeAlphaChannel(context, textureID)))
         {
-            context->getMutableErrorSetForValidation()->validationError(
-                angle::EntryPoint::Invalid, GL_CONTEXT_LOST,
-                "Failed to initialize IOSurface alpha channel.");
-            return;
+            return egl::Error(EGL_CONTEXT_LOST, "Failed to initialize IOSurface alpha channel.");
         }
 
         GLuint framebufferID = 0;
@@ -335,14 +331,17 @@ void IOSurfaceSurfaceCGL::attachToFramebuffer(const gl::Context *context,
     }
 
     framebufferGL->setFramebufferID(mFramebufferID);
+    return egl::NoError();
 }
 
-void IOSurfaceSurfaceCGL::detachFromFramebuffer(gl::Framebuffer *framebuffer)
+egl::Error IOSurfaceSurfaceCGL::detachFromFramebuffer(const gl::Context *context,
+                                                      gl::Framebuffer *framebuffer)
 {
     FramebufferGL *framebufferGL = GetImplAs<FramebufferGL>(framebuffer);
     ASSERT(framebufferGL->getFramebufferID() == mFramebufferID);
 
     framebufferGL->setFramebufferID(0);
+    return egl::NoError();
 }
 
 }  // namespace rx

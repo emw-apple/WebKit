@@ -83,12 +83,7 @@ bool RenderHTMLCanvas::requiresLayer() const
 
 bool RenderHTMLCanvas::canHaveChildren() const
 {
-    return settings().htmlInCanvasEnabled() && (protect(canvasElement())->canvasContent() == CanvasContent::Drawable || firstChild());
-}
-
-bool RenderHTMLCanvas::hasDrawableContent() const
-{
-    return settings().htmlInCanvasEnabled() && protect(canvasElement())->canvasContent() == CanvasContent::Drawable;
+    return settings().htmlInCanvasEnabled() && (protect(canvasElement())->layoutSubtree() || firstChild());
 }
 
 void RenderHTMLCanvas::layout()
@@ -153,12 +148,12 @@ void RenderHTMLCanvas::paintReplaced(PaintInfo& paintInfo, const LayoutPoint& pa
             auto initialState = context.state().clone(GraphicsContextState::Purpose::Initial);
             auto boundingRect = child->absoluteBoundingBoxRect();
             auto initialTransform = context.getCTM(GraphicsContext::DefinitelyIncludeDeviceScale);
-            Ref snapshotRecorder = DisplayList::RecorderImpl::create(initialState, boundingRect, initialTransform, context.colorSpace());
+            auto snapshotRecorder =  makeUniqueRef<DisplayList::RecorderImpl>(initialState, boundingRect, initialTransform, context.colorSpace());
             snapshotRecorder->translate(-boundingRect.x(), -boundingRect.y());
             return snapshotRecorder;
         });
 
-        Ref snapshotRecorder = addResult.iterator->value;
+        auto& snapshotRecorder = addResult.iterator->value.get();
         childPaintInfo.setContext(snapshotRecorder);
         child->paint(childPaintInfo, paintOffset);
     }
@@ -166,7 +161,7 @@ void RenderHTMLCanvas::paintReplaced(PaintInfo& paintInfo, const LayoutPoint& pa
 
 std::optional<CanvasElementSnapshot> RenderHTMLCanvas::drawableRendererSnapshot(RenderElement& drawableRenderer) const
 {
-    if (RefPtr snapshotRecorder = m_drawableRendererSnapshotRecorderMap.get(drawableRenderer))
+    if (auto* snapshotRecorder = m_drawableRendererSnapshotRecorderMap.get(drawableRenderer))
         return { { snapshotRecorder->copyDisplayList(), snapshotRecorder->initialClip().size() } };
     return std::nullopt;
 }

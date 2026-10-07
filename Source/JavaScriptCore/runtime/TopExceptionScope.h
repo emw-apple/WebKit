@@ -77,10 +77,12 @@ ALWAYS_INLINE void TopExceptionScope::clearException()
 
 ALWAYS_INLINE bool TopExceptionScope::clearExceptionExceptTermination()
 {
-    if (!exception())
-        return true;
-    if (m_vm.hasPendingTerminationException()) [[unlikely]]
+    if (m_vm.hasPendingTerminationException()) [[unlikely]] {
+#if ENABLE(EXCEPTION_SCOPE_VERIFICATION)
+        m_vm.exception();
+#endif
         return false;
+    }
     m_vm.clearException();
     return true;
 }

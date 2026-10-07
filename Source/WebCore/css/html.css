@@ -1115,7 +1115,7 @@ select:not(:-internal-uses-menulist):enabled {
     color: CanvasText;
 }
 
-select:-internal-uses-menulist > button:first-child {
+select:not([multiple]):-internal-uses-menulist > button:first-child {
     all: unset;
     display: contents;
     text-overflow: inherit;
@@ -1167,34 +1167,34 @@ select::picker-icon {
 }
 
 select:-internal-uses-menulist option {
-    min-inline-size: -internal-auto-base(revert-rule, 24px);
-    min-block-size: -internal-auto-base(revert-rule, max(24px, 1lh));
-    padding-block: -internal-auto-base(revert-rule, 0.4lh);
-    padding-inline: -internal-auto-base(revert-rule, 0.75em 1.1em);
-    display: -internal-auto-base(revert-rule, flex);
+    min-inline-size: 24px;
+    min-block-size: max(24px, 1lh);
+    padding-block: 0.4lh;
+    padding-inline: 0.75em 1.1em;
+    display: flex;
     align-items: center;
-    gap: -internal-auto-base(revert-rule, 0.5em);
+    gap: 0.5em;
 }
 
 select option {
     white-space: nowrap;
     box-sizing: border-box;
-    outline-offset: -internal-auto-base(revert-rule, inset);
+    outline-offset: inset;
 }
 
 select option:hover,
 select option:focus-visible {
-    background-color: -internal-auto-base(revert-rule, color-mix(currentColor 10%));
+    background-color: color-mix(currentColor 10%);
 }
 
 select option:active {
-    background-color: -internal-auto-base(revert-rule, color-mix(currentColor 15%));
+    background-color: color-mix(currentColor 15%);
 }
 
 select option:disabled {
-    color: -internal-auto-base(revert-rule, color-mix(currentColor 55%));
-    background: -internal-auto-base(revert-rule, transparent);
-    cursor: -internal-auto-base(revert-rule, not-allowed);
+    color: color-mix(currentColor 55%);
+    background: transparent;
+    cursor: not-allowed;
 }
 
 select option::checkmark {
@@ -1212,9 +1212,8 @@ optgroup {
     box-sizing: border-box;
 }
 
-select:-internal-uses-menulist :is(optgroup, option) + optgroup,
-select:-internal-uses-menulist optgroup + option {
-    border-block-start: -internal-auto-base(revert-rule, 1px solid color-mix(currentColor 12%));
+select:-internal-uses-menulist optgroup:not(:first-child) {
+    border-block-start: 1px solid color-mix(currentColor 12%);
 }
 
 option {

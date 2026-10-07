@@ -225,7 +225,7 @@ void TiledCoreAnimationDrawingAreaProxy::adjustTransientZoom(double scale, Float
     send(Messages::DrawingArea::AdjustTransientZoom(scale, originInLayerForPageScale));
 }
 
-void TiledCoreAnimationDrawingAreaProxy::commitTransientZoom(double scale, FloatPoint origin, std::optional<FloatPoint>)
+void TiledCoreAnimationDrawingAreaProxy::commitTransientZoom(double scale, FloatPoint origin)
 {
     sendWithAsyncReply(Messages::DrawingArea::CommitTransientZoom(scale, origin), [] { });
 }

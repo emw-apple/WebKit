@@ -634,10 +634,7 @@ public:
         if (m_proc.optLevel() >= 2) {
             if (result) {
                 m_changed = false;
-                m_changedCFG = false;
-                simplifyCFG();
-                handleChangedCFGIfNecessary();
-                m_changedCFG = false;
+                simplifyCFGToFixpoint();
                 simplifySSA();
 
                 // A second value walk is only worthwhile when the CFG/SSA cleanup above exposed
@@ -646,10 +643,7 @@ public:
                 if (m_changed) {
                     m_valueForConstant.clear();
                     reduceAllBlocksStrength();
-                    m_changedCFG = false;
-                    simplifyCFG();
-                    handleChangedCFGIfNecessary();
-                    m_changedCFG = false;
+                    simplifyCFGToFixpoint();
                 }
 
                 eliminateDeadCodeImpl(m_proc);
@@ -672,7 +666,8 @@ public:
         simplifyCFG();
 
         handleChangedCFGIfNecessary();
-        // handleChangedCFGIfNecessary() can't reset m_changedCFG.
+        // handleChangedCFGIfNecessary() can't reset m_changedCFG otherwise simplifyCFGToFixpoint()
+        // would never iterate.
         m_changedCFG = false;
 
         // We definitely want to do DCE before we do CSE so that we don't hoist things. For
@@ -2055,25 +2050,6 @@ private:
 
                 if (m_value->opcode() != SShr)
                     break;
-            }
-
-            // Turn this: SShr(Mul(value, constant << amount), amount)
-            // Into this: Mul(value, constant)
-            // This is exact when the Mul cannot overflow.
-            if (m_value->child(1)->hasInt32()
-                && m_value->child(0)->opcode() == Mul
-                && m_value->child(0)->child(1)->hasInt()) {
-                int32_t amount = m_value->child(1)->asInt32();
-                Value* multiply = m_value->child(0);
-                int64_t multiplier = multiply->child(1)->asInt();
-                if (amount > 0
-                    && static_cast<size_t>(amount) < sizeofType(m_value->type()) * 8
-                    && !(multiplier & ((static_cast<int64_t>(1) << amount) - 1))
-                    && !rangeFor(multiply->child(0)).couldOverflowMul(rangeFor(multiply->child(1)), m_value->type())) {
-                    replaceWithNew<Value>(Mul, m_value->origin(), multiply->child(0),
-                        m_insertionSet.insertIntConstant(m_index, m_value, multiplier >> amount));
-                    break;
-                }
             }
 
             handleShiftAmount();
@@ -5099,6 +5075,17 @@ private:
         m_wasmGCArraySpan = HeapRange(begin, end);
     }
 
+    // simplifyCFG's rules chain: redirecting past a jump can expose a single-predecessor merge,
+    // and merging a block can redirect more successors. Iterate until the CFG stops changing.
+    void simplifyCFGToFixpoint()
+    {
+        do {
+            m_changedCFG = false;
+            simplifyCFG();
+            handleChangedCFGIfNecessary();
+        } while (m_changedCFG);
+    }
+
     void simplifyCFG()
     {
         if (B3ReduceStrengthInternal::verbose) {
@@ -5137,49 +5124,23 @@ private:
 
             // First check if any of the successors of this block can be forwarded over.
             for (BasicBlock*& successor : block->successorBlocks()) {
-                auto isForwardable = [&](BasicBlock* candidate) {
-                    return candidate != block
-                        && candidate->size() == 1
-                        && candidate->last()->opcode() == Jump
-                        && candidate->successorBlock(0) != candidate;
-                };
-
-                // Trace the chain of jump-only blocks with a Floyd tortoise/hare walk. The hare
-                // (fast) moves two hops at a time, so it reaches the end of the chain first. When it
-                // lands on a non-forwardable block, that block is the chain end and there is no cycle.
-                // Orphan basic blocks can instead form a cycle with no end, in which case the hare
-                // laps the tortoise (slow) and we bail. Cycles are extremely rare.
-                bool sawCycle = false;
-                BasicBlock* slow = successor;
-                BasicBlock* fast = successor;
-                while (true) {
-                    if (!isForwardable(fast))
-                        break;
-                    fast = fast->successorBlock(0);
-                    if (!isForwardable(fast))
-                        break;
-                    fast = fast->successorBlock(0);
-
-                    slow = slow->successorBlock(0);
-                    if (slow == fast) {
-                        sawCycle = true;
-                        break;
+                if (successor != block
+                    && successor->size() == 1
+                    && successor->last()->opcode() == Jump) {
+                    BasicBlock* newSuccessor = successor->successorBlock(0);
+                    if (newSuccessor != successor) {
+                        if (B3ReduceStrengthInternal::verbose) {
+                            dataLog(
+                                "Replacing ", pointerDump(block), "->", pointerDump(successor),
+                                " with ", pointerDump(block), "->", pointerDump(newSuccessor),
+                                "\n");
+                        }
+                        // Note that we do not do replacePredecessor() because the block we're
+                        // skipping will still have newSuccessor as its successor.
+                        newSuccessor->addPredecessor(block);
+                        successor = newSuccessor;
+                        m_changedCFG = true;
                     }
-                }
-
-                // When there is no cycle, fast is the end of the chain.
-                if (!sawCycle && fast != successor) {
-                    BasicBlock* newSuccessor = fast;
-                    dataLogLnIf(B3ReduceStrengthInternal::verbose, "Replacing ", pointerDump(block), "->", pointerDump(successor), " with ", pointerDump(block), "->", pointerDump(newSuccessor));
-                    for (BasicBlock* current = successor; current != newSuccessor;) {
-                        BasicBlock* next = current->successorBlock(0);
-                        current->successorBlock(0) = newSuccessor;
-                        newSuccessor->addPredecessor(current);
-                        current = next;
-                    }
-                    newSuccessor->addPredecessor(block);
-                    successor = newSuccessor;
-                    m_changedCFG = true;
                 }
             }
 
@@ -5199,7 +5160,10 @@ private:
                         }
                     }
                     if (allSame) {
-                        dataLogLnIf(B3ReduceStrengthInternal::verbose, "Changing ", pointerDump(block), "'s terminal to a Jump.");
+                        if (B3ReduceStrengthInternal::verbose) {
+                            dataLog(
+                                "Changing ", pointerDump(block), "'s terminal to a Jump.\n");
+                        }
                         block->last()->replaceWithJump(block, FrequentedBlock(firstSuccessor));
                         m_changedCFG = true;
                     }
@@ -5211,16 +5175,16 @@ private:
                 BasicBlock* successor = block->successorBlock(0);
                 if (successor != block && successor->numPredecessors() == 1) {
                     RELEASE_ASSERT(successor->predecessor(0) == block);
-
+                    
                     // We can merge the two blocks, because the predecessor only jumps to the successor
                     // and the successor is only reachable from the predecessor.
-
+                    
                     // Remove the terminal.
                     Value* value = block->values().takeLast();
                     Origin jumpOrigin = value->origin();
                     RELEASE_ASSERT(value->effects().terminal);
                     m_proc.deleteValue(value);
-
+                    
                     // Append the full contents of the successor to the predecessor.
                     block->values().appendVector(successor->values());
                     block->successors() = successor->successors();
@@ -5235,7 +5199,11 @@ private:
                     for (BasicBlock* newSuccessor : block->successorBlocks())
                         newSuccessor->replacePredecessor(successor, block);
 
-                    dataLogLnIf(B3ReduceStrengthInternal::verbose, "Merged ", pointerDump(block), "->", pointerDump(successor));
+                    if (B3ReduceStrengthInternal::verbose) {
+                        dataLog(
+                            "Merged ", pointerDump(block), "->", pointerDump(successor), "\n");
+                    }
+
                     m_changedCFG = true;
                 }
             }

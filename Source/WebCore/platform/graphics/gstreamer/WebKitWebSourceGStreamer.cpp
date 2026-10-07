@@ -41,7 +41,6 @@
 #include <wtf/RunLoop.h>
 #include <wtf/Scope.h>
 #include <wtf/TZoneMallocInlines.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GMallocString.h>
 #include <wtf/glib/GThreadSafeWeakPtr.h>
 #include <wtf/glib/WTFGType.h>
@@ -346,11 +345,11 @@ static void webKitWebSrcGetProperty(GObject* object, guint propID, GValue* value
 
     switch (propID) {
     case WEBKIT_WEBSRC_PROP_LOCATION:
-        gValueSetString(value, priv->originalURI);
+        g_value_set_string(value, priv->originalURI.legacyCStringPointer());
         break;
     case WEBKIT_WEBSRC_PROP_RESOLVED_LOCATION: {
         DataMutexLocker members { priv->dataMutex };
-        gValueSetString(value, members->redirectedURI.isNull() ? priv->originalURI : members->redirectedURI);
+        g_value_set_string(value, members->redirectedURI.isNull() ? priv->originalURI.legacyCStringPointer() : members->redirectedURI.legacyCStringPointer());
         break;
     }
     case WEBKIT_WEBSRC_PROP_KEEP_ALIVE:
@@ -363,7 +362,7 @@ static void webKitWebSrcGetProperty(GObject* object, guint propID, GValue* value
         g_value_set_boolean(value, priv->compress);
         break;
     case WEBKIT_WEBSRC_PROP_METHOD:
-        gValueSetString(value, priv->httpMethod);
+        g_value_set_string(value, priv->httpMethod.utf8());
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, propID, pspec);
@@ -895,7 +894,7 @@ static URL convertPlaybinURI(String&& uriString)
 static gchar* webKitWebSrcGetUri(GstURIHandler* handler)
 {
     WebKitWebSrc* src = WEBKIT_WEB_SRC(handler);
-    gchar* ret = gStrdup(src->priv->originalURI);
+    gchar* ret = g_strdup(src->priv->originalURI.legacyCStringPointer());
     return ret;
 }
 
@@ -1047,15 +1046,15 @@ void CachedResourceStreamingClient::responseReceived(PlatformMediaResource&, con
 
     GUniquePtr<GstStructure> httpHeaders(gst_structure_new_empty("http-headers"));
 
-    gstStructureSet(httpHeaders.get(), "uri", G_TYPE_STRING, priv->originalURI,
-        "http-status-code", G_TYPE_UINT, response.httpStatusCode());
+    gst_structure_set(httpHeaders.get(), "uri", G_TYPE_STRING, priv->originalURI.legacyCStringPointer(),
+        "http-status-code", G_TYPE_UINT, response.httpStatusCode(), nullptr);
     if (!members->redirectedURI.isNull())
-        gstStructureSet(httpHeaders.get(), "redirection-uri", G_TYPE_STRING, members->redirectedURI);
+        gst_structure_set(httpHeaders.get(), "redirection-uri", G_TYPE_STRING, members->redirectedURI.legacyCStringPointer(), nullptr);
 
     // Pack request headers in the http-headers structure.
     GUniquePtr<GstStructure> headers(gst_structure_new_empty("request-headers"));
     for (const auto& header : m_request.httpHeaderFields())
-        gstStructureSet(headers.get(), header.key.utf8(), G_TYPE_STRING, header.value.utf8());
+        gst_structure_set(headers.get(), header.key.utf8().legacyCStringPointer(), G_TYPE_STRING, header.value.utf8().legacyCStringPointer(), nullptr);
     GST_DEBUG_OBJECT(src.get(), "R%u: Request headers going downstream: %" GST_PTR_FORMAT, m_requestNumber, headers.get());
     gst_structure_set(httpHeaders.get(), "request-headers", GST_TYPE_STRUCTURE, headers.get(), nullptr);
 
@@ -1063,9 +1062,9 @@ void CachedResourceStreamingClient::responseReceived(PlatformMediaResource&, con
     headers.reset(gst_structure_new_empty("response-headers"));
     for (const auto& header : response.httpHeaderFields()) {
         if (auto convertedValue = parseIntegerAllowingTrailingJunk<uint64_t>(header.value))
-            gstStructureSet(headers.get(), header.key.utf8(), G_TYPE_UINT64, *convertedValue);
+            gst_structure_set(headers.get(), header.key.utf8().legacyCStringPointer(), G_TYPE_UINT64, *convertedValue, nullptr);
         else
-            gstStructureSet(headers.get(), header.key.utf8(), G_TYPE_STRING, header.value.utf8());
+            gst_structure_set(headers.get(), header.key.utf8().legacyCStringPointer(), G_TYPE_STRING, header.value.utf8().legacyCStringPointer(), nullptr);
     }
     GST_DEBUG_OBJECT(src.get(), "R%u: Response headers going downstream: %" GST_PTR_FORMAT, m_requestNumber, headers.get());
     gst_structure_set(httpHeaders.get(), "response-headers", GST_TYPE_STRUCTURE, headers.get(), nullptr);

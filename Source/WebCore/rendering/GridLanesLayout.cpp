@@ -28,8 +28,6 @@
 #include "GridLayoutFunctions.h"
 #include "RenderBoxInlines.h"
 #include "RenderGrid.h"
-#include "RenderLayoutState.h"
-#include "RenderObjectInlines.h"
 #include "StyleComputedStyle+GettersInlines.h"
 #include "StyleGridPositionsResolver.h"
 #include "WritingMode.h"
@@ -87,7 +85,6 @@ GridArea GridLanesLayout::gridAreaForDefiniteGridAxisItem(const RenderBox& gridI
 
 LayoutUnit GridLanesLayout::calculateGridLanesIntrinsicLogicalWidth(RenderBox& gridItem, Phase layoutPhase)
 {
-    auto intrinsicWidthComputationScope = IntrinsicLogicalWidthComputationScope { gridItem.layoutContext(), gridItem };
     switch (layoutPhase) {
     case Phase::MinContent:
         return gridItem.computeSizingKeywordLogicalWidthUsing(CSS::Keyword::MinContent { }, { }, gridItem.borderAndPaddingLogicalWidth());

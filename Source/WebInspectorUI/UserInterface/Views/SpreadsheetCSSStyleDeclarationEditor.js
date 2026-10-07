@@ -716,9 +716,8 @@ WI.SpreadsheetCSSStyleDeclarationEditor = class SpreadsheetCSSStyleDeclarationEd
 
     _updatePropertiesStatus()
     {
-        let duplicateProperties = this._style ? WI.SpreadsheetStyleProperty.calculateDuplicateProperties(this._style.enabledProperties) : null;
         for (let propertyView of this._propertyViews)
-            propertyView.updateStatus({ duplicateProperties });
+            propertyView.updateStatus();
     }
 
     _updateStyleLock()

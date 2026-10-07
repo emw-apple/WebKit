@@ -317,7 +317,7 @@ static bool isGuardContainer(const Element& element)
         return false;
 
     CheckedRef renderer = *element.renderer();
-    return hasTransparentContainerStyle(protect(renderer->style()));
+    return hasTransparentContainerStyle(renderer->style());
 }
 
 static FloatSize boundingSize(const RenderObject& renderer, const std::optional<AffineTransform>& transform)
@@ -357,11 +357,11 @@ static RefPtr<Image> findIconImage(const RenderObject& renderer)
         if (!renderImage->cachedImage() || renderImage->cachedImage()->errorOccurred())
             return nullptr;
 
-        RefPtr image = protect(*renderImage->cachedImage())->image();
+        RefPtr image = protect(*renderImage->cachedImage())->imageForRenderer(renderImage);
         if (!image)
             return nullptr;
 
-        if (image->isSVGImage())
+        if (image->isSVGImageForContainer())
             return image;
 
         RefPtr bitmapImage = dynamicDowncast<BitmapImage>(*image);
@@ -579,8 +579,7 @@ std::optional<InteractionRegion> interactionRegionForRenderedRegion(const Render
         auto size = boundingSize(regionRenderer, transform);
         auto generateAndCachePath = [&] {
             LayoutRect imageRect(FloatPoint(), size);
-            auto iconSize = iconImage ? iconImage->size() : FloatSize { };
-            Ref shape = LayoutShape::createRasterShape(iconImage.get(), 0, imageRect, imageRect, WritingMode(), 0, ConcreteObjectSize::fixed(iconSize), iconSize);
+            Ref shape = LayoutShape::createRasterShape(iconImage.get(), 0, imageRect, imageRect, WritingMode(), 0);
             LayoutShape::DisplayPaths paths;
             shape->buildDisplayPaths(paths);
             auto path = paths.shape;
@@ -621,7 +620,7 @@ std::optional<InteractionRegion> interactionRegionForRenderedRegion(const Render
 
         clipPath = path;
     } else if ((regionRendererBox = dynamicDowncast<RenderBox>(regionRenderer))) {
-        auto borderShape = BorderShape::shapeForBorderRect(protect(regionRendererBox->style()), regionRendererBox->borderBoxRect());
+        auto borderShape = BorderShape::shapeForBorderRect(regionRendererBox->style(), regionRendererBox->borderBoxRect());
         auto borderRadii = borderShape.radii();
         auto minRadius = borderRadii.minimumRadius();
         auto maxRadius = borderRadii.maximumRadius();
@@ -690,7 +689,7 @@ std::optional<InteractionRegion> interactionRegionForRenderedRegion(const Render
                 if (!clipOffset.isZero())
                     adjustedPath.translate(clipOffset);
 
-                RetainPtr intersectingPath = adoptCF(CGPathCreateCopyByIntersectingPath(protect(adjustedPath.platformPath()), protect(clipPath->platformPath()), false));
+                RetainPtr intersectingPath = adoptCF(CGPathCreateCopyByIntersectingPath(adjustedPath.platformPath(), clipPath->platformPath(), false));
                 clipPath = { PathCG::create(adoptCF(CGPathCreateMutableCopy(intersectingPath.get()))) };
 
                 // No need for continuous corners if we're already going to clip.

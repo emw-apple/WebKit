@@ -33,7 +33,6 @@ class CSSParserTokenRange;
 class CSSValue;
 
 namespace CSS {
-struct ImageOrNone;
 struct PropertyParserState;
 }
 
@@ -51,7 +50,6 @@ enum class AllowedImageType : uint8_t {
 
 RefPtr<CSSValue> consumeImage(CSSParserTokenRange&, CSS::PropertyParserState&, OptionSet<AllowedImageType> = { AllowedImageType::URLFunction, AllowedImageType::ImageSet, AllowedImageType::GeneratedImage });
 RefPtr<CSSValue> consumeImageOrNone(CSSParserTokenRange&, CSS::PropertyParserState&, OptionSet<AllowedImageType> = { AllowedImageType::URLFunction, AllowedImageType::ImageSet, AllowedImageType::GeneratedImage });
-std::optional<CSS::ImageOrNone> consumeUnresolvedImageOrNone(CSSParserTokenRange&, CSS::PropertyParserState&, OptionSet<AllowedImageType> = { AllowedImageType::URLFunction, AllowedImageType::ImageSet, AllowedImageType::GeneratedImage });
 
 } // namespace CSSPropertyParserHelpers
 } // namespace WebCore

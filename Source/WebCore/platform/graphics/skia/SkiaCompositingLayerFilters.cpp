@@ -38,7 +38,7 @@ namespace WebCore {
 
 namespace SkiaCompositingLayerFilters {
 
-sk_sp<SkImageFilter> create(const FilterOperation& filterOperation, sk_sp<SkImageFilter> input, SkTileMode blurTileMode, const std::optional<SkRect>& blurTileRect)
+sk_sp<SkImageFilter> create(const FilterOperation& filterOperation, sk_sp<SkImageFilter> input, SkTileMode blurTileMode)
 {
     switch (filterOperation.type()) {
     case FilterOperation::Type::Grayscale: {
@@ -75,7 +75,8 @@ sk_sp<SkImageFilter> create(const FilterOperation& filterOperation, sk_sp<SkImag
     }
     case FilterOperation::Type::Blur: {
         auto sigma = downcast<BlurFilterOperation>(filterOperation).stdDeviation();
-        return SkImageFilters::Blur(sigma, sigma, blurTileMode, input, blurTileRect);
+        // FIXME: do we need to add crop rect?
+        return SkImageFilters::Blur(sigma, sigma, blurTileMode, input);
     }
     case FilterOperation::Type::DropShadow: {
         auto& dropShadow = downcast<DropShadowFilterOperation>(filterOperation);
@@ -90,11 +91,11 @@ sk_sp<SkImageFilter> create(const FilterOperation& filterOperation, sk_sp<SkImag
     return nullptr;
 }
 
-sk_sp<SkImageFilter> create(const FilterOperations& filterOperations, SkTileMode blurTileMode, const std::optional<SkRect>& blurTileRect)
+sk_sp<SkImageFilter> create(const FilterOperations& filterOperations, SkTileMode blurTileMode)
 {
     sk_sp<SkImageFilter> filter;
     for (const auto& filterOperation : filterOperations)
-        filter = create(filterOperation, filter, blurTileMode, blurTileRect);
+        filter = create(filterOperation, filter, blurTileMode);
     return filter;
 }
 

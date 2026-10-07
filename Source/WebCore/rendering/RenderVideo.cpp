@@ -47,7 +47,6 @@
 #include "RenderObjectInlines.h"
 #include "RenderVideoInlines.h"
 #include "RenderView.h"
-#include "ShareableBitmap.h"
 #include "StylePrimitiveNumericTypes+Evaluation.h"
 #include <wtf/StackStats.h>
 #include <wtf/TZoneMallocInlines.h>
@@ -339,7 +338,7 @@ LayoutRect RenderVideo::inlineVideoBox() const
     return LayoutRect(snappedIntRect(result));
 }
 
-IntRect RenderVideo::videoBoxInMainFrameView() const
+IntRect RenderVideo::videoBoxInRootView() const
 {
     RefPtr view = document().view();
     if (!view)
@@ -347,7 +346,7 @@ IntRect RenderVideo::videoBoxInMainFrameView() const
 
     auto videoBox = this->videoBox();
     videoBox.moveBy(absoluteBoundingBoxRect().location());
-    return view->contentsToMainFrameView(videoBox);
+    return view->contentsToRootView(videoBox);
 }
 
 bool RenderVideo::shouldDisplayVideo() const
@@ -469,11 +468,6 @@ void RenderVideo::styleDidChange(Style::Difference difference, const Style::Comp
 HTMLVideoElement& NODELETE RenderVideo::videoElement() const
 {
     return downcast<HTMLVideoElement>(RenderMedia::mediaElement());
-}
-
-RefPtr<ShareableBitmap> RenderVideo::createShareableBitmap(const CreateShareableBitmapFromImageOptions&) const
-{
-    return protect(videoElement())->bitmapImageForCurrentTimeSync();
 }
 
 void RenderVideo::updateFromElement()

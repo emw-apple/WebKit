@@ -41,7 +41,7 @@ static constexpr auto lastSeenBaseURLStateKey = "LastSeenBaseURL"_s;
 static constexpr auto lastSeenDisplayNameStateKey = "LastSeenDisplayName"_s;
 
 // Update this value when any changes are made to the WebExtensionEventListenerType enum.
-static constexpr auto currentBackgroundContentListenerStateVersion = 5;
+static constexpr auto currentBackgroundContentListenerStateVersion = 4;
 
 static gboolean onDecidePolicy(WebKitWebView *webView, WebKitPolicyDecision *decision, WebKitPolicyDecisionType type, WebKit::WebExtensionContext* context)
 {
@@ -194,7 +194,7 @@ void WebExtensionContext::writeStateToStorage() const
         RELEASE_LOG_ERROR(Extensions, "Unable to save extension state: %" PUBLIC_LOG_STRING, error->message);
 }
 
-void WebExtensionContext::enumerateExtensionPages(NOESCAPE const Function<void(WebPageProxy&, bool&)>& action)
+void WebExtensionContext::enumerateExtensionPages(NOESCAPE Function<void(WebPageProxy&, bool&)>&& action)
 {
     if (!isLoaded())
         return;

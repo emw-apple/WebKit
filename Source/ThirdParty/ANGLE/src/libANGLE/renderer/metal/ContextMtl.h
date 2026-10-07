@@ -487,15 +487,12 @@ class ContextMtl : public ContextImpl, public mtl::Context
                                                 GLsizei instances,
                                                 GLuint baseInstance);
 
-    // isNoOpOut, when given, is set to false only if a draw call was issued into the current
-    // render command encoder.
     angle::Result drawArraysImpl(const gl::Context *context,
                                  gl::PrimitiveMode mode,
                                  GLint first,
                                  GLsizei count,
                                  GLsizei instanceCount,
-                                 GLuint baseInstance,
-                                 bool *isNoOpOut = nullptr);
+                                 GLuint baseInstance);
 
     angle::Result drawElementsImpl(const gl::Context *context,
                                    gl::PrimitiveMode mode,
@@ -504,8 +501,7 @@ class ContextMtl : public ContextImpl, public mtl::Context
                                    const void *indices,
                                    GLsizei instanceCount,
                                    GLint baseVertex,
-                                   GLuint baseInstance,
-                                   bool *isNoOpOut = nullptr);
+                                   GLuint baseInstance);
     void flushCommandBufferIfNeeded();
     void updateExtendedState(const gl::State &glState,
                              const gl::state::ExtendedDirtyBits extendedDirtyBits);

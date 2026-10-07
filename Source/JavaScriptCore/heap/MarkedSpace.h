@@ -117,15 +117,16 @@ public:
     void stopAllocating();
     void resumeAllocating(); // If we just stopped allocation but we didn't do a collection, we need to resume allocation.
     
+    void NODELETE prepareForMarking();
     
     void prepareForConservativeScan();
 
     typedef UncheckedKeyHashSet<MarkedBlock*>::iterator BlockIterator;
 
-    template<typename Functor> void forEachLiveCell(HeapIterationScope&, NOESCAPE const Functor&);
-    template<typename Functor> void forEachDeadCell(HeapIterationScope&, NOESCAPE const Functor&);
-    template<typename Functor> void forEachBlock(NOESCAPE const Functor&);
-    template<typename Functor> void forEachSubspace(NOESCAPE const Functor&);
+    template<typename Functor> void forEachLiveCell(HeapIterationScope&, const Functor&);
+    template<typename Functor> void forEachDeadCell(HeapIterationScope&, const Functor&);
+    template<typename Functor> void forEachBlock(const Functor&);
+    template<typename Functor> void forEachSubspace(const Functor&);
 
     void shrink();
     void freeBlock(MarkedBlock::Handle*);
@@ -188,13 +189,13 @@ private:
 
     // Use this version when calling from within the GC where we know that the directories
     // have already been stopped.
-    template<typename Functor> void forEachLiveCell(NOESCAPE const Functor&);
+    template<typename Functor> void forEachLiveCell(const Functor&);
 
     static void initializeSizeClassForStepSize();
     
     void initializeSubspace(Subspace&);
 
-    template<typename Functor> inline void forEachDirectory(NOESCAPE const Functor&);
+    template<typename Functor> inline void forEachDirectory(const Functor&);
     
     void NODELETE addActiveWeakSet(WeakSet*);
 
@@ -227,7 +228,7 @@ private:
     friend class HeapVerifier;
 };
 
-template <typename Functor> inline void MarkedSpace::forEachBlock(NOESCAPE const Functor& functor)
+template <typename Functor> inline void MarkedSpace::forEachBlock(const Functor& functor)
 {
     forEachDirectory(
         [&] (BlockDirectory& directory) -> IterationStatus {
@@ -237,7 +238,7 @@ template <typename Functor> inline void MarkedSpace::forEachBlock(NOESCAPE const
 }
 
 template <typename Functor>
-void MarkedSpace::forEachDirectory(NOESCAPE const Functor& functor)
+void MarkedSpace::forEachDirectory(const Functor& functor)
 {
     for (BlockDirectory* directory = m_directories.first(); directory; directory = directory->nextDirectory()) {
         if (functor(*directory) == IterationStatus::Done)
@@ -246,7 +247,7 @@ void MarkedSpace::forEachDirectory(NOESCAPE const Functor& functor)
 }
 
 template<typename Functor>
-void MarkedSpace::forEachSubspace(NOESCAPE const Functor& functor)
+void MarkedSpace::forEachSubspace(const Functor& functor)
 {
     for (auto subspace : m_subspaces) {
         if (functor(*subspace) == IterationStatus::Done)

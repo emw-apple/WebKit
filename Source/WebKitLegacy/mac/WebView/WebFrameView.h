@@ -38,6 +38,7 @@
 
 @class WebDataSource;
 @class WebFrame;
+@class WebFrameViewPrivate;
 
 @protocol WebDocumentView;
 
@@ -50,6 +51,10 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14)
 #else
 @interface WebFrameView : NSView
 #endif
+{
+@package
+    WebFrameViewPrivate *_private;
+}
 
 /*!
     @property webFrame

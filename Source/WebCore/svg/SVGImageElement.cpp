@@ -36,7 +36,6 @@
 #include "RenderImageResource.h"
 #include "RenderSVGImage.h"
 #include "SVGElementInlines.h"
-#include "SVGElementTypeHelpers.h"
 #include "SVGNames.h"
 #include "SVGParsingError.h"
 #include "Settings.h"
@@ -49,7 +48,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGImageElement);
 
 inline SVGImageElement::SVGImageElement(const QualifiedName& tagName, Document& document)
-    : SVGGraphicsElement(tagName, document, PropertyRegistry::singleton(), TypeFlag::HasDidMoveToNewDocument)
+    : SVGGraphicsElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this), TypeFlag::HasDidMoveToNewDocument)
     , SVGURIReference(this)
     , m_imageLoader(makeUniqueRefWithoutRefCountedCheck<SVGImageLoader>(*this))
 {

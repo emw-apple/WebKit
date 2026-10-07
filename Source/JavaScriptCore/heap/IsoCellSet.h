@@ -60,13 +60,13 @@ public:
     // This will have to do a combined search over whatever Subspace::forEachMarkedCell uses and
     // our m_blocksWithBits.
     template<typename Func>
-    void forEachMarkedCell(NOESCAPE const Func&);
+    void forEachMarkedCell(const Func&);
 
     template<typename Visitor, typename Func>
     Ref<SharedTask<void(Visitor&)>> forEachMarkedCellInParallel(const Func&);
     
     template<typename Func>
-    void forEachLiveCell(NOESCAPE const Func&);
+    void forEachLiveCell(const Func&);
     
 private:
     friend class IsoSubspace;
@@ -76,7 +76,7 @@ private:
     void didResizeBits(unsigned newSize);
     void didRemoveBlock(unsigned blockIndex);
     void sweepToFreeList(MarkedBlock::Handle*);
-    void clearLowerTierPreciseCell(unsigned index) { m_lowerTierPreciseBits.concurrentTestAndClear(index); }
+    void clearLowerTierPreciseCell(unsigned);
     
     WTF::BitSet<MarkedBlock::maxNumberOfLowerTierPreciseCells> m_lowerTierPreciseBits;
 

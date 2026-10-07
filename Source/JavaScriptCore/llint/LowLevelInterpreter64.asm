@@ -534,9 +534,10 @@ macro cagePrimitive(basePtr, mask, ptr, scratch)
     end
 end
 
-macro cagedPrimitive(ptr, scratch)
+macro cagedPrimitive(ptr, length, scratch, scratch2)
+    const source = ptr
     if GIGACAGE_ENABLED
-        cagePrimitive(GigacageConfig + Gigacage::Config::basePtrs + GigacagePrimitiveBasePtrOffset, constexpr Gigacage::primitiveGigacageMask, ptr, scratch)
+        cagePrimitive(GigacageConfig + Gigacage::Config::basePtrs + GigacagePrimitiveBasePtrOffset, constexpr Gigacage::primitiveGigacageMask, source, scratch)
     end
 end
 
@@ -2024,7 +2025,7 @@ llintOpWithMetadata(op_check_private_brand, OpCheckPrivateBrand, macro (size, ge
     dispatch()
 end)
 
-macro putByValOp(opcodeName, opcodeStruct, osrExitPoint, typedArrayPutByVal)
+macro putByValOp(opcodeName, opcodeStruct, osrExitPoint)
     llintOpWithMetadata(op_%opcodeName%, opcodeStruct, macro (size, get, dispatch, metadata, return)
         macro contiguousPutByVal(storeCallback)
             biaeq t3, -sizeof IndexingHeader + IndexingHeader::u.lengths.publicLength[t0], .outOfBounds
@@ -2041,12 +2042,6 @@ macro putByValOp(opcodeName, opcodeStruct, osrExitPoint, typedArrayPutByVal)
             addi 1, t3, t2
             storei t2, -sizeof IndexingHeader + IndexingHeader::u.lengths.publicLength[t0]
             jmp .storeResult
-        end
-
-        macro setLargeTypedArray(scratch)
-            loadi %opcodeStruct%::Metadata::m_arrayProfile.m_arrayProfileFlags[t5], scratch
-            ori constexpr ArrayProfileFlag::MayBeLargeTypedArray, scratch
-            storei scratch, %opcodeStruct%::Metadata::m_arrayProfile.m_arrayProfileFlags[t5]
         end
 
         get(m_base, t0)
@@ -2098,7 +2093,7 @@ macro putByValOp(opcodeName, opcodeStruct, osrExitPoint, typedArrayPutByVal)
             end)
 
     .opPutByValNotContiguous:
-        bineq t2, ArrayStorageShape, .opPutByValNotArrayStorage
+        bineq t2, ArrayStorageShape, .opPutByValSlow
         biaeq t3, -sizeof IndexingHeader + IndexingHeader::u.lengths.vectorLength[t0], .opPutByValOutOfBounds
         btqz ArrayStorage::m_vector[t0, t3, 8], .opPutByValArrayStorageEmpty
     .opPutByValArrayStorageStoreResult:
@@ -2118,9 +2113,6 @@ macro putByValOp(opcodeName, opcodeStruct, osrExitPoint, typedArrayPutByVal)
         storei t1, -sizeof IndexingHeader + IndexingHeader::u.lengths.publicLength[t0]
         jmp .opPutByValArrayStorageStoreResult
 
-    .opPutByValNotArrayStorage:
-        typedArrayPutByVal(size, get, dispatch, setLargeTypedArray, .opPutByValSlow)
-
     .opPutByValOutOfBounds:
         loadi %opcodeStruct%::Metadata::m_arrayProfile.m_arrayProfileFlags[t5], t2
         ori constexpr ArrayProfileFlag::OutOfBounds , t2
@@ -2134,49 +2126,16 @@ macro putByValOp(opcodeName, opcodeStruct, osrExitPoint, typedArrayPutByVal)
     end)
 end
 
-# Stores an int32 into an in-bounds element of an integer typed array. Expects the base cell in t1
-# and the sign-extended index in t3.
-macro putByValIntegerTypedArray(size, get, dispatch, setLargeTypedArray, slowPath)
-    loadTypedArrayVector(t1, t3, Uint32ArrayType - FirstTypedArrayType + 1, setLargeTypedArray, t0, slowPath)
-
-    get(m_value, t1)
-    loadConstantOrVariableInt32(size, t1, t6, slowPath)
-
-    bia t2, Uint8ClampedArrayType - FirstTypedArrayType, .aboveUint8ClampedArray
-    bineq t2, Uint8ClampedArrayType - FirstTypedArrayType, .store8
-    bibeq t6, 255, .store8
-    bilt t6, 0, .clampToZero
-    move 255, t6
-    jmp .store8
-.clampToZero:
-    move 0, t6
-.store8:
-    storeb t6, [t0, t3]
-    dispatch()
-
-.aboveUint8ClampedArray:
-    bia t2, Uint16ArrayType - FirstTypedArrayType, .store32
-    storeh t6, [t0, t3, 2]
-    dispatch()
-
-.store32:
-    storei t6, [t0, t3, 4]
-    dispatch()
-end
-
 putByValOp(put_by_val, OpPutByVal, macro (size, dispatch)
 .osrReturnPoint:
     getterSetterOSRExitReturnPoint(op_put_by_val, size)
     dispatch()
-end, putByValIntegerTypedArray)
+end)
 
-# Defining an indexed property of a typed array has different semantics, so leave it to the slow path.
 putByValOp(put_by_val_direct, OpPutByValDirect, macro (size, dispatch)
 .osrReturnPoint:
     getterSetterOSRExitReturnPoint(op_put_by_val_direct, size)
     dispatch()
-end, macro (size, get, dispatch, setLargeTypedArray, slowPath)
-    jmp slowPath
 end)
 
 macro llintJumpTrueOrFalseOp(opcodeName, opcodeStruct, miscConditionOp, truthyCellConditionOp)
@@ -3390,9 +3349,9 @@ end)
 
 llintOpWithMetadata(op_iterator_next, OpIteratorNext, macro (size, get, dispatch, metadata, return)
 
-    loadVariable(get, m_next, t3)
-    btqnz t3, notCellMask, .iteratorNextForNonCell
-    bbneq JSCell::m_type[t3], constexpr SentinelType, .iteratorNextGeneric
+    loadVariable(get, m_next, t0)
+    btqnz t0, notCellMask, .iteratorNextForNonCell
+    bbneq JSCell::m_type[t0], constexpr SentinelType, .iteratorNextGeneric
     macro fastNarrow()
         callSlowPath(_iterator_next_try_fast_narrow)
     end
@@ -3410,89 +3369,9 @@ llintOpWithMetadata(op_iterator_next, OpIteratorNext, macro (size, get, dispatch
 
 .iteratorNextForNonCell:
     loadVariable(get, m_iterator, t0)
-    loadp CodeBlock[cfr], t1
-    loadp CodeBlock::m_vm[t1], t1
-    bpneq t0, VM::m_fastArraySentinel[t1], .iteratorNextNotFastArray
-
-    bqb t3, numberTag, .iteratorNextFastArraySlow
-    loadVariable(get, m_iterable, t2)
-    btqnz t2, notCellMask, .iteratorNextFastArraySlow
-    loadb JSCell::m_indexingTypeAndMisc[t2], t0
-    andi IndexingTypeMask, t0
-    bieq t0, ArrayWithInt32, .iteratorNextFastArrayIsContiguous
-    bineq t0, ArrayWithContiguous, .iteratorNextFastArraySlow
-
-.iteratorNextFastArrayIsContiguous:
-    loadp JSObjectWithButterfly::m_butterfly[t2], t0
-    biaeq t3, -sizeof IndexingHeader + IndexingHeader::u.lengths.publicLength[t0], .iteratorNextFastArraySlow
-    zxi2q t3, t3
-    loadq [t0, t3, 8], t1
-    btqz t1, .iteratorNextFastArraySlow
-
-    metadata(t5, t0)
-    arrayProfile(OpIteratorNext::Metadata::m_iterableProfile, t2, t5, t0)
-    loadh OpIteratorNext::Metadata::m_iterationMetadata + IterationModeMetadata::seenModes[t5], t0
-    ori constexpr IterationMode::FastArray, t0
-    storeh t0, OpIteratorNext::Metadata::m_iterationMetadata + IterationModeMetadata::seenModes[t5]
-    storeVariable(get, m_value, t1, t0)
-    valueProfile(size, OpIteratorNext, m_valueValueProfile, t1, t0)
-    move ValueFalse, t1
-    storeVariable(get, m_done, t1, t0)
-    addi 1, t3
-    orq numberTag, t3
-    storeVariable(get, m_next, t3, t0)
-    dispatch()
-
-.iteratorNextFastArraySlow:
-    macro fastArrayNarrow()
-        callSlowPath(_iterator_next_fast_array_narrow)
-    end
-    macro fastArrayWide16()
-        callSlowPath(_iterator_next_fast_array_wide16)
-    end
-    macro fastArrayWide32()
-        callSlowPath(_iterator_next_fast_array_wide32)
-    end
-    size(fastArrayNarrow, fastArrayWide16, fastArrayWide32, macro (callOp) callOp() end)
-    dispatch()
-
-.iteratorNextNotFastArray:
-    bpneq t0, VM::m_fastStringSentinel[t1], .iteratorNextGeneric
-
-    loadVariable(get, m_iterable, t0)
-    loadp JSString::m_fiber[t0], t0
-    btpnz t0, isRopeInPointer, .iteratorNextFastStringSlow
-    btiz StringImpl::m_hashAndFlags[t0], HashFlags8BitBuffer, .iteratorNextFastStringSlow
-    biaeq t3, StringImpl::m_length[t0], .iteratorNextFastStringSlow
-    loadp StringImpl::m_data8[t0], t0
-    zxi2q t3, t3
-    loadb [t0, t3], t0
-    loadp VM::smallStrings + SmallStrings::m_singleCharacterStrings[t1, t0, 8], t1
-
-    metadata(t5, t0)
-    loadh OpIteratorNext::Metadata::m_iterationMetadata + IterationModeMetadata::seenModes[t5], t0
-    ori constexpr IterationMode::FastString, t0
-    storeh t0, OpIteratorNext::Metadata::m_iterationMetadata + IterationModeMetadata::seenModes[t5]
-    storeVariable(get, m_value, t1, t0)
-    valueProfile(size, OpIteratorNext, m_valueValueProfile, t1, t0)
-    move ValueFalse, t1
-    storeVariable(get, m_done, t1, t0)
-    addi 1, t3
-    orq numberTag, t3
-    storeVariable(get, m_next, t3, t0)
-    dispatch()
-
-.iteratorNextFastStringSlow:
-    macro fastStringNarrow()
-        callSlowPath(_iterator_next_fast_string_narrow)
-    end
-    macro fastStringWide16()
-        callSlowPath(_iterator_next_fast_string_wide16)
-    end
-    macro fastStringWide32()
-        callSlowPath(_iterator_next_fast_string_wide32)
-    end
-    size(fastStringNarrow, fastStringWide16, fastStringWide32, macro (callOp) callOp() end)
+    btqnz t0, notCellMask, .iteratorNextGeneric
+    bbneq JSCell::m_type[t0], constexpr SentinelType, .iteratorNextGeneric
+    callSlowPath(_slow_path_iterator_next_fast_array)
     dispatch()
 
 .iteratorNextGeneric:
@@ -3567,27 +3446,13 @@ end)
 
 llintOpWithMetadata(op_iterator_close_check, OpIteratorCloseCheck, macro (size, get, dispatch, metadata, return)
     loadVariable(get, m_iterator, t0)
+    btqnz t0, notCellMask, .iteratorCloseCheckFallThrough
+    bbneq JSCell::m_type[t0], constexpr SentinelType, .iteratorCloseCheckFallThrough
+    metadata(t5, t1)
+    storeb 1, OpIteratorCloseCheck::Metadata::m_hasSeenFastArray[t5]
     loadp CodeBlock[cfr], t1
-    loadp CodeBlock::m_vm[t1], t2
-    bpneq t0, VM::m_fastArraySentinel[t2], .iteratorCloseCheckNotFastArray
-    metadata(t5, t3)
-    loadb OpIteratorCloseCheck::Metadata::m_seenModes[t5], t3
-    ori constexpr IterationMode::FastArray, t3
-    storeb t3, OpIteratorCloseCheck::Metadata::m_seenModes[t5]
     loadp CodeBlock::m_globalObject[t1], t1
     branchIfInlineWatchpointSetIsStillValid(JSGlobalObject::m_arrayIteratorProtocolWatchpointSet + InlineWatchpointSet::m_data[t1], t1, .iteratorCloseCheckNothingToClose)
-    jmp .iteratorCloseCheckNeedsIterator
-
-.iteratorCloseCheckNotFastArray:
-    bpneq t0, VM::m_fastStringSentinel[t2], .iteratorCloseCheckFallThrough
-    metadata(t5, t3)
-    loadb OpIteratorCloseCheck::Metadata::m_seenModes[t5], t3
-    ori constexpr IterationMode::FastString, t3
-    storeb t3, OpIteratorCloseCheck::Metadata::m_seenModes[t5]
-    loadp CodeBlock::m_globalObject[t1], t1
-    branchIfInlineWatchpointSetIsStillValid(JSGlobalObject::m_stringIteratorProtocolWatchpointSet + InlineWatchpointSet::m_data[t1], t1, .iteratorCloseCheckNothingToClose)
-
-.iteratorCloseCheckNeedsIterator:
     callSlowPath(_slow_path_iterator_close_check)
 .iteratorCloseCheckFallThrough:
     dispatch()

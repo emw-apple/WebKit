@@ -865,10 +865,8 @@ void ViewGestureController::endMagnificationGesture()
     if (m_frameHandlesMagnificationGesture)
         page->scalePage(newMagnification, roundedIntPoint(m_magnificationOrigin), [] { });
     else {
-        // No target scroll position: this zoom tracked a gesture, so it is anchored about the origin the drawing
-        // area followed through adjustTransientZoom() rather than landing somewhere chosen up front.
         if (RefPtr drawingArea = page->drawingArea())
-            drawingArea->commitTransientZoom(newMagnification, scaledMagnificationOrigin(m_magnificationOrigin, newMagnification), std::nullopt);
+            drawingArea->commitTransientZoom(newMagnification, scaledMagnificationOrigin(m_magnificationOrigin, newMagnification));
     }
 
 #if PLATFORM(MAC)

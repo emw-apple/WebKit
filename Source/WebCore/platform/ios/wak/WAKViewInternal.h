@@ -27,7 +27,6 @@
 
 #import "WAKView.h"
 #import "WKView.h"
-#import <wtf/RetainPtr.h>
 
 @interface WAKView ()
 {
@@ -37,7 +36,7 @@
 
     // This array is only used to keep WAKViews alive.
     // The actual subviews are maintained by the WKView.
-    RetainPtr<NSMutableSet> subviewReferences;
+    NSMutableSet *subviewReferences;
 
     BOOL _isHidden;
     BOOL _drawsOwnDescendants;
@@ -56,8 +55,9 @@ static inline WAKView *WAKViewForWKViewRef(WKViewRef view)
 {
     if (!view)
         return nil;
-    if (view->wrapper)
-        return (WAKView *)view->wrapper;
+    WAKView *wrapper = (WAKView *)view->wrapper;
+    if (wrapper)
+        return wrapper;
     return [WAKView _wrapperForViewRef:view];
 }
 

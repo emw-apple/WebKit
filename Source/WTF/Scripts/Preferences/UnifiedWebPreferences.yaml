@@ -826,14 +826,6 @@ CSSBaselineSourceEnabled:
   humanReadableDescription: "Enable CSS baseline-source"
   defaultValue: false
 
-CSSBorderRadiusSideShorthandsEnabled:
-  type: bool
-  category: css
-  status: stable
-  humanReadableName: "CSS border-*-radius side shorthands"
-  humanReadableDescription: "Enable support for the border-radius side shorthand physical & logical properties"
-  defaultValue: true
-
 CSSCalcMixEnabled:
   type: bool
   category: css
@@ -845,10 +837,10 @@ CSSCalcMixEnabled:
 CSSCalcSizeFunctionEnabled:
   type: bool
   category: css
-  status: stable
+  status: testable
   humanReadableName: "CSS calc-size()"
   humanReadableDescription: "Enable support for CSS calc-size()"
-  defaultValue: true
+  defaultValue: false
 
 CSSClassPrefixSelectorEnabled:
   type: bool
@@ -1053,17 +1045,6 @@ CSSMathDepthEnabled:
   humanReadableName: "CSS math-depth"
   humanReadableDescription: "Enable support for math-depth from MathML Core."
   defaultValue: true
-
-CSSModuleScriptsEnabled:
-  type: bool
-  status: testable
-  category: css
-  humanReadableName: "CSS Module Scripts"
-  humanReadableDescription: "Enable importing CSS into JavaScript using 'import'"
-  jscOptionName: useCSSModuleScripts
-  sharedPreferenceForWebProcess: true
-  defaultValue: false
-
 CSSObjectViewBoxEnabled:
   type: bool
   status: stable
@@ -1381,16 +1362,6 @@ CacheAPIEnabled:
   disableInLockdownMode: true
   richJavaScript: true
 
-CachedAssemblerDataCapacityLimitEnabled:
-  type: bool
-  status: internal
-  humanReadableName: "Limit Cached JIT Assembler Buffer Size"
-  humanReadableDescription: "Do not keep per-thread JIT assembler buffers larger than maximumCachedAssemblerDataCapacity cached for reuse"
-  jscOptionName: useCachedAssemblerDataCapacityLimit
-  sharedPreferenceForWebProcess: true
-  excludeFrom: [ WebKitLegacy, WebCore ]
-  defaultValue: false
-
 CanvasColorSpaceEnabled:
   type: bool
   status: stable
@@ -1630,14 +1601,6 @@ ContentInsetBackgroundFillEnabled:
   defaultValue:
     default: false
     WebKit: WebKit::defaultContentInsetBackgroundFillEnabled()
-
-ContentSecurityPolicyExtensionModeAppliesToAllSchemesForTesting:
-  type: bool
-  status: internal
-  category: security
-  humanReadableName: "Apply Extension CSP Mode To All Schemes (For Testing)"
-  humanReadableDescription: "Apply the extension Content Security Policy mode to documents regardless of their scheme"
-  defaultValue: false
 
 ContextMenuQRCodeDetectionEnabled:
   type: bool
@@ -1935,15 +1898,6 @@ DeviceOrientationPermissionAPIEnabled:
   sharedPreferenceForWebProcess: true
   richJavaScript: true
 
-DevicePostureAPIEnabled:
-  type: bool
-  status: testable
-  category: dom
-  defaultsOverridable: true
-  humanReadableName: "Device Posture API"
-  humanReadableDescription: "Enable the Device Posture API"
-  defaultValue: false
-
 DeviceWidth:
   type: uint32_t
   status: embedder
@@ -2008,14 +1962,6 @@ DisabledAdaptationsMetaTagEnabled:
     WebKit:
       "PLATFORM(WATCHOS)": true
       default: false
-
-DocumentIsolationPolicyEnabled:
-  type: bool
-  status: testable
-  category: security
-  humanReadableName: "Document-Isolation-Policy header"
-  humanReadableDescription: "Support for the Document-Isolation-Policy header"
-  defaultValue: false
 
 # FIXME: This is on by default in WebKit2. Perhaps we should consider turning it on for WebKitLegacy as well.
 DownloadAttributeEnabled:
@@ -2682,27 +2628,10 @@ HTMLEnhancedSelectEnabled:
 
 HTMLEnhancedSelectMultipleAndListBoxEnabled:
   type: bool
-  status: testable
+  status: unstable
   category: dom
   humanReadableName: "Enhanced HTML select element for multiple and list box"
   humanReadableDescription: "Enable enhanced HTML select element for the multiple attribute and for list box rendering"
-  defaultValue: false
-
-HTMLEnhancedSelectMultipleDropdownBoxEnabled:
-  type: bool
-  status: testable
-  category: dom
-  condition: PLATFORM(MAC)
-  humanReadableName: "Enhanced HTML select element for multiple dropdown box"
-  humanReadableDescription: "Render a select element with the multiple attribute and a size of 1 as a dropdown box"
-  defaultValue: false
-
-HTMLEnhancedSelectMultipleSelectedContentEnabled:
-  type: bool
-  status: unstable
-  category: dom
-  humanReadableName: "Enhanced HTML select element selectedcontent for multiple"
-  humanReadableDescription: "Clone every option of a select element with the multiple attribute into its selectedcontent elements"
   defaultValue: false
 
 HTMLEnhancedSelectParsingEnabled:
@@ -3835,14 +3764,6 @@ MathFontFamily:
   webcoreImplementation: custom
   defaultValue: '""_str'
 
-MathMLAnchorElementEnabled:
-  type: bool
-  defaultValue: false
-  status: testable
-  category: dom
-  humanReadableName: "MathML <a> element"
-  humanReadableDescription: "Enable support for the MathML <a> element and IDL interface."
-
 MathMLDisableHrefOnNonAnchorElement:
   type: bool
   status: testable
@@ -4052,16 +3973,6 @@ MediaRecorderEnabledWebM:
       default: false
   sharedPreferenceForWebProcess: true
 
-MediaResourceLoadTimeoutForTesting:
-  type: uint32_t
-  status: internal
-  category: media
-  condition: PLATFORM(COCOA)
-  webcoreDeprecatedGlobalSettings: true
-  humanReadableName: "Media Resource Load Timeout For Testing"
-  humanReadableDescription: "Test override for the timeout applied to each media resource load serviced by WebKit, in milliseconds (0 means use production default)"
-  defaultValue: 0
-
 MediaSessionCaptureToggleAPIEnabled:
   type: bool
   status: stable
@@ -4257,13 +4168,6 @@ MockScrollbarsEnabled:
   status: embedder
   webcoreDeprecatedGlobalSettings: true
   excludeFrom: [ WebCore ]
-  defaultValue: false
-
-MockVolumetricSceneEnabled:
-  type: bool
-  status: embedder
-  condition: ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-  excludeFrom: [ WebKitLegacy, WebCore ]
   defaultValue: false
 
 ModelDocumentEnabled:
@@ -5176,13 +5080,6 @@ RequiresUserGestureToLoadVideo:
       "PLATFORM(IOS_FAMILY)": true
       default: false
 
-RequiresUserGestureToStartAudiblePlaybackWhenHidden:
-  type: bool
-  status: embedder
-  defaultValue:
-    default: false
-    WebKit: defaultRequiresUserGestureToStartAudiblePlaybackWhenHidden()
-
 ResourceLoadSchedulingEnabled:
   type: bool
   status: internal
@@ -5908,7 +5805,7 @@ SpatialPortalEnabled:
   type: bool
   status: testable
   category: css
-  condition: ENABLE(SPATIAL_PORTAL) || ENABLE(CONNECTED_VOLUMETRIC_SCENE)
+  condition: ENABLE(SPATIAL_PORTAL)
   humanReadableName: "Spatial CSS Portals"
   humanReadableDescription: "Enable the spatial: portal CSS property"
   defaultValue: false
@@ -6398,6 +6295,14 @@ TwoUpPDFDisplayModeSupportEnabled:
     default: true
     WebKitLegacy: false
 
+TwoUpPDFTrailingPageLeftAlignmentEnabled:
+  type: bool
+  status: internal
+  humanReadableName: "Two-Up PDF Trailing Page Left Alignment"
+  humanReadableDescription: "In two-up PDF display mode, align the trailing odd page to the same column as the first page instead of centering it"
+  condition: ENABLE(UNIFIED_PDF)
+  defaultValue: false
+
 # FIXME: Is this implemented for WebKitLegacy? If not, this should be excluded from WebKitLegacy entirely.
 UndoManagerAPIEnabled:
   type: bool
@@ -6406,17 +6311,6 @@ UndoManagerAPIEnabled:
   humanReadableName: "UndoManager DOM API"
   humanReadableDescription: "Enable the UndoManager DOM API"
   defaultValue: false
-
-UnifiedMacZoomEnabled:
-  type: bool
-  status: internal
-  category: none
-  humanReadableName: "Unified Dynamic Zoom"
-  humanReadableDescription: "Use the iOS dynamic zoom mechanism on macOS, delegating page scale to the UI process"
-  condition: PLATFORM(MAC)
-  defaultValue:
-    default: true
-    WebKitLegacy: false
 
 UnifiedPDFEnabled:
   type: bool
@@ -6505,11 +6399,11 @@ UseAppKitGesturesForGestureEvents:
     default: false
     WebKit: defaultUseAppKitGestures()
 
-UseAppKitGesturesForPointerEvents:
+UseAppKitGesturesForManipulationSurfaces:
   type: bool
   status: internal
-  humanReadableName: "AppKit gestures for pointer events"
-  humanReadableDescription: "Use AppKit gestures to drive DOM pointer events directly, rather than deriving them from synthesized mouse events"
+  humanReadableName: "AppKit gestures for manipulation surfaces"
+  humanReadableDescription: "Use AppKit gestures to drive manipulation surfaces"
   condition: PLATFORM(MAC)
   defaultValue:
     default: false
@@ -7477,12 +7371,12 @@ WebRTCVP9Profile2CodecEnabled:
 
 WebRTCWebCoreVideoCodecsEnabled:
   type: bool
-  status: stable
+  status: testable
   category: media
   humanReadableName: "WebRTC WebCore Video Codecs"
   humanReadableDescription: "Use WebCore's native video codecs instead of libwebrtc's for WebRTC codecs that support it"
   condition: ENABLE(WEB_RTC)
-  defaultValue: true
+  defaultValue: false
   sharedPreferenceForWebProcess: true
 
 WebSQLEnabled:

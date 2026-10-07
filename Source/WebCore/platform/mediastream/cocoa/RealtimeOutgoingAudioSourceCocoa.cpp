@@ -164,12 +164,11 @@ void RealtimeOutgoingAudioSourceCocoa::pullAudioData()
 
 void RealtimeOutgoingAudioSourceCocoa::sourceUpdated()
 {
-    Ref source = this->source();
-    if (auto* description = protect(source->source())->audioStreamDescription())
+    if (auto* description = protect(source().source())->audioStreamDescription())
         updateSampleConverter(*description);
 
 #if !RELEASE_LOG_DISABLED
-    m_sampleConverter->setLogger(source->logger(), source->logIdentifier());
+    m_sampleConverter->setLogger(source().logger(), source().logIdentifier());
 #endif
 }
 

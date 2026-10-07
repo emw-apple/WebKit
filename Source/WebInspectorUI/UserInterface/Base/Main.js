@@ -2084,7 +2084,7 @@ WI._domStorageWasInspected = function(event)
 
 WI._domNodeWasInspected = function(event)
 {
-    WI.domManager.highlightDOMNodeForTwoSeconds(event.data.node);
+    WI.domManager.highlightDOMNodeForTwoSeconds(event.data.node.id);
 
     InspectorFrontendHost.bringToFront();
 
@@ -2856,18 +2856,10 @@ WI.linkifyElement = function(linkElement, sourceCodeLocation, options = {}) {
         event.stopPropagation();
         event.preventDefault();
 
-        if (event.metaKey) {
+        if (event.metaKey)
             WI.showOriginalUnformattedSourceCodeLocation(sourceCodeLocation, options);
-            return;
-        }
-
-        let stackTrace = options.stackTrace;
-        if (stackTrace?.callFrames.length > 1 || stackTrace?.parentStackTrace || stackTrace?.truncated) {
-            WI.StackTracePopover.present(stackTrace, linkElement);
-            return;
-        }
-
-        WI.showSourceCodeLocation(sourceCodeLocation, options);
+        else
+            WI.showSourceCodeLocation(sourceCodeLocation, options);
     }
 
     linkElement.addEventListener("click", showSourceCodeLocation);

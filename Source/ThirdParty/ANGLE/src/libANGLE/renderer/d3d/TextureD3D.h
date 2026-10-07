@@ -42,6 +42,7 @@ class TextureD3D : public TextureImpl, public angle::ObserverInterface
 
     angle::Result getNativeTexture(const gl::Context *context, TextureStorage **outStorage);
 
+    bool hasDirtyImages() const { return mDirtyImages; }
     void resetDirty() { mDirtyImages = false; }
 
     virtual ImageD3D *getImage(const gl::ImageIndex &index) const = 0;
@@ -210,17 +211,6 @@ class TextureD3D : public TextureImpl, public angle::ObserverInterface
     angle::Result releaseTexStorage(
         const gl::Context *context,
         const gl::CubeFaceArray<gl::TexLevelMask> &copyStorageToImagesMask);
-    angle::Result releaseTexStorageIfMismatched(const gl::Context *context,
-                                                GLint level,
-                                                GLenum internalformat,
-                                                const gl::Extents &size,
-                                                bool forceReleaseStorage);
-    angle::Result releaseTexStorageIfMismatched(const gl::Context *context,
-                                                size_t faceIndex,
-                                                GLint level,
-                                                GLenum internalformat,
-                                                const gl::Extents &size,
-                                                bool forceReleaseStorage);
 
     GLuint getBaseLevel() const { return mBaseLevel; }
 
@@ -242,13 +232,6 @@ class TextureD3D : public TextureImpl, public angle::ObserverInterface
     virtual angle::Result updateStorage(const gl::Context *context) = 0;
 
     bool shouldUseSetData(const gl::ImageIndex &index, const ImageD3D *image) const;
-    bool isImageSubresourceMatchingStorage(const gl::ImageIndex &index,
-                                           const ImageD3D *image,
-                                           int storageWidth0,
-                                           int storageHeight0,
-                                           int storageDepth0,
-                                           GLenum storageFormat,
-                                           size_t storageLevels) const;
 
     angle::Result generateMipmapUsingImages(const gl::Context *context, const GLuint maxLevel);
 

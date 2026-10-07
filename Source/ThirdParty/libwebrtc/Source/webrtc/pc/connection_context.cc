@@ -13,7 +13,6 @@
 #include <memory>
 #include <utility>
 
-#include "absl/base/nullability.h"
 #include "api/audio_options.h"
 #include "api/environment/environment.h"
 #include "api/scoped_refptr.h"
@@ -25,7 +24,6 @@
 #include "pc/media_factory.h"
 #include "rtc_base/checks.h"
 #include "rtc_base/internal/default_socket_server.h"
-#include "rtc_base/logging.h"
 #include "rtc_base/network.h"
 #include "rtc_base/socket_factory.h"
 #include "rtc_base/socket_server.h"
@@ -84,7 +82,7 @@ std::unique_ptr<SctpTransportFactoryInterface> MaybeCreateSctpFactory(
 // Static
 scoped_refptr<ConnectionContext> ConnectionContext::Create(
     const Environment& env,
-    PeerConnectionFactoryDependencies* absl_nonnull dependencies) {
+    PeerConnectionFactoryDependencies* dependencies) {
   return scoped_refptr<ConnectionContext>(
       new ConnectionContext(env, dependencies));
 }
@@ -101,14 +99,18 @@ MediaEngineInterface* ConnectionContext::MediaEngineReference::media_engine()
 
 ConnectionContext::ConnectionContext(
     const Environment& env,
-    PeerConnectionFactoryDependencies* absl_nonnull dependencies)
+    PeerConnectionFactoryDependencies* dependencies)
     : is_configured_for_media_(dependencies->media_factory != nullptr),
       network_thread_(MaybeStartNetworkThread(dependencies->network_thread,
                                               owned_socket_factory_,
                                               owned_network_thread_)),
-      worker_thread_(dependencies->worker_thread != nullptr
-                         ? dependencies->worker_thread
-                         : network_thread_),
+      worker_thread_(dependencies->worker_thread,
+                     []() {
+                       auto thread_holder = Thread::Create();
+                       thread_holder->SetName("pc_worker_thread", nullptr);
+                       thread_holder->Start();
+                       return thread_holder;
+                     }),
       signaling_thread_(MaybeWrapThread(dependencies->signaling_thread,
                                         wraps_current_thread_)),
       media_engine_(
@@ -123,25 +125,11 @@ ConnectionContext::ConnectionContext(
       default_socket_factory_(std::move(dependencies->packet_socket_factory)),
       sctp_factory_(
           MaybeCreateSctpFactory(std::move(dependencies->sctp_factory),
-                                 network_thread())) {
+                                 network_thread())),
+      use_rtx_(true) {
   RTC_DCHECK_RUN_ON(signaling_thread_);
-  RTC_DCHECK(network_thread_ != nullptr);
-  RTC_DCHECK(worker_thread_ != nullptr);
   RTC_DCHECK(!(default_network_manager_ && network_monitor_factory_))
       << "You can't set both network_manager and network_monitor_factory.";
-
-  if (dependencies->worker_thread != nullptr &&
-      dependencies->worker_thread != network_thread_) {
-    RTC_LOG(LS_ERROR)
-        << "\n"
-        << "***************************************************************\n"
-        << "* DEPRECATION: A worker thread distinct from the network      *\n"
-        << "* thread is configured. Support for a separate worker thread  *\n"
-        << "* is being removed. Applications must stop supplying          *\n"
-        << "* PeerConnectionFactoryDependencies::worker_thread.           *\n"
-        << "* PSA: https://groups.google.com/g/discuss-webrtc/c/Fs_Hd5XNJh0\n"
-        << "***************************************************************";
-  }
 
   signaling_thread_->AllowInvokesToThread(worker_thread());
   signaling_thread_->AllowInvokesToThread(network_thread_);
@@ -151,7 +139,7 @@ ConnectionContext::ConnectionContext(
     // network_thread_. In this case, no further action is required as
     // signaling_thread_ can already invoke network_thread_.
     network_thread_->PostTask(
-        [thread = network_thread_, worker_thread = worker_thread_] {
+        [thread = network_thread_, worker_thread = worker_thread_.get()] {
           thread->DisallowBlockingCalls();
           thread->DisallowAllInvokes();
           if (worker_thread == thread) {

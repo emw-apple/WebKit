@@ -53,7 +53,7 @@ public:
 private:
     LibWebRTCVPXVideoDecoder(Type, const Config&, OutputCallback&&);
 
-    Ref<DecodePromise> decode(VideoEncodedData&&) final;
+    Ref<DecodePromise> decode(EncodedFrame&&) final;
     Ref<GenericPromise> flush() final;
     void reset() final;
     void NODELETE close() final;

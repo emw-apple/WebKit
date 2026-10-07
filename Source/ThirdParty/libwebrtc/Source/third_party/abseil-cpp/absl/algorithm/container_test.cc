@@ -36,6 +36,7 @@
 #include "gtest/gtest.h"
 #include "absl/base/casts.h"
 #include "absl/base/config.h"
+#include "absl/base/internal/hardening.h"
 #include "absl/base/macros.h"
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
@@ -110,7 +111,8 @@ TEST_F(NonMutatingTest, Distance) {
             static_cast<size_t>(absl::c_distance(container_)));
   EXPECT_EQ(sequence_.size(), static_cast<size_t>(absl::c_distance(sequence_)));
   EXPECT_EQ(vector_.size(), static_cast<size_t>(absl::c_distance(vector_)));
-  EXPECT_EQ(std::size(array_), static_cast<size_t>(absl::c_distance(array_)));
+  EXPECT_EQ(ABSL_ARRAYSIZE(array_),
+            static_cast<size_t>(absl::c_distance(array_)));
 
   // Works with a temporary argument.
   EXPECT_EQ(vector_.size(),
@@ -872,6 +874,7 @@ TEST(MutatingTest, CopyToCArrayInvalidSize) {
   (void)actual;
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy(input, actual), "");
   }
 #endif
@@ -883,6 +886,7 @@ TEST(MutatingTest, CopyNToCArrayInvalidSize) {
   (void)actual;
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy_n(input, 3, actual), "");
   }
 #endif
@@ -894,6 +898,7 @@ TEST(MutatingTest, CopyNToCArrayNGreaterThanInput) {
   (void)actual;
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy_n(input, 4, actual), "");
   }
 #endif
@@ -904,6 +909,7 @@ TEST(MutatingTest, CopyToContainerInvalidSize) {
   std::list<int> actual = {0, 0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy(input, actual), "");
   }
 #endif
@@ -914,6 +920,7 @@ TEST(MutatingTest, CopyNToContainerNGreaterThanInput) {
   std::vector<int> actual = {0, 0, 0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy_n(input, 4, actual), "");
   }
 #endif
@@ -924,6 +931,7 @@ TEST(MutatingTest, CopyNToContainerNGreaterThanOutput) {
   std::vector<int> actual = {0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy_n(input, 3, actual), "");
   }
 #endif
@@ -934,6 +942,7 @@ TEST(MutatingTest, CopyToForwardListInvalidSize) {
   std::forward_list<int> actual = {0, 0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy(input, actual), "");
   }
 #endif
@@ -944,6 +953,7 @@ TEST(MutatingTest, CopyNToForwardListNGreaterThanInput) {
   std::forward_list<int> actual = {0, 0, 0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy_n(input, 4, actual), "");
   }
 #endif
@@ -954,6 +964,7 @@ TEST(MutatingTest, CopyNToForwardListNGreaterThanOutput) {
   std::forward_list<int> actual = {0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_copy_n(input, 3, actual), "");
   }
 #endif
@@ -1107,6 +1118,7 @@ TEST(MutatingTest, MoveToCArrayInvalidSize) {
   (void)actual;
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_move(input, actual), "");
   }
 #endif
@@ -1117,6 +1129,7 @@ TEST(MutatingTest, MoveToContainerInvalidSize) {
   std::list<int> actual = {0, 0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_move(input, actual), "");
   }
 #endif
@@ -1127,6 +1140,7 @@ TEST(MutatingTest, MoveToForwardListInvalidSize) {
   std::forward_list<int> actual = {0, 0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_move(input, actual), "");
   }
 #endif
@@ -1230,6 +1244,7 @@ TEST(MutatingTest, TransformToCArrayInvalidSize) {
   (void)actual;
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_transform(input, actual, [](int x) { return x * 2; }),
                  "");
   }
@@ -1243,6 +1258,7 @@ TEST(MutatingTest, BinaryTransformToCArrayInvalidSize) {
   (void)actual;
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_transform(input1, input2, actual, std::plus<int>()),
                  "");
   }
@@ -1254,6 +1270,7 @@ TEST(MutatingTest, TransformToContainerInvalidSize) {
   std::list<int> actual = {0, 0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_transform(input, actual, [](int x) { return x * 2; }),
                  "");
   }
@@ -1266,6 +1283,7 @@ TEST(MutatingTest, BinaryTransformToContainerInvalidSize) {
   std::vector<int> actual = {0, 0, 0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_transform(input1, input2, actual, std::plus<int>()),
                  "");
   }
@@ -1278,6 +1296,7 @@ TEST(MutatingTest, BinaryTransformInput2InvalidSize) {
   std::vector<int> actual = {0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_transform(input1, input2, actual, std::plus<int>()),
                  "");
   }
@@ -1290,6 +1309,7 @@ TEST(MutatingTest, BinaryTransformInput1InvalidSize) {
   std::vector<int> actual = {0};
 #if GTEST_HAS_DEATH_TEST
   if (IsHardened()) {
+    absl::base_internal::ScopedSetAbslHardeningForTesting hardener(true);
     EXPECT_DEATH(absl::c_transform(input1, input2, actual, std::plus<int>()),
                  "");
   }

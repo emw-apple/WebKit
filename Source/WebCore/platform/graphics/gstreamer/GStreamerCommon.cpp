@@ -53,7 +53,6 @@
 #include <wtf/URL.h>
 #include <wtf/UUID.h>
 #include <wtf/ZippedRange.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GMallocString.h>
 #include <wtf/glib/GSpanExtras.h>
 #include <wtf/glib/GThreadSafeWeakPtr.h>
@@ -495,9 +494,9 @@ bool ensureGStreamerInitialized()
         int argc = parameters.size() + 1;
         char** argv = g_new0(char*, argc + 1);
         auto argvSpan = unsafeMakeSpan(argv, argc);
-        argvSpan[0] = gStrdup(FileSystem::currentExecutableName());
+        argvSpan[0] = g_strdup(FileSystem::currentExecutableName().legacyCStringPointer());
         for (auto [arg, parameter] : zippedRange(argvSpan.subspan(1), parameters))
-            arg = gStrdup(parameter.utf8());
+            arg = g_strdup(parameter.utf8().legacyCStringPointer());
 
         GUniqueOutPtr<GError> error;
         isGStreamerInitialized = gst_init_check(&argc, &argv, &error.outPtr());
@@ -821,11 +820,13 @@ MediaTime fromGstClockTime(GstClockTime time)
 
 RefPtr<GstMappedOwnedBuffer> GstMappedOwnedBuffer::create(GRefPtr<GstBuffer>&& buffer)
 {
-    Ref mappedBuffer = adoptRef(*new GstMappedOwnedBuffer(WTF::move(buffer)));
-    if (!mappedBuffer->isValid())
+    auto* mappedBuffer = new GstMappedOwnedBuffer(WTF::move(buffer));
+    if (!mappedBuffer->isValid()) {
+        delete mappedBuffer;
         return nullptr;
+    }
 
-    return mappedBuffer;
+    return adoptRef(mappedBuffer);
 }
 
 RefPtr<GstMappedOwnedBuffer> GstMappedOwnedBuffer::create(const GRefPtr<GstBuffer>& buffer)
@@ -1088,7 +1089,7 @@ template<typename T> Vector<std::span<T>> GstMappedAudioBuffer::samples(size_t o
         auto inputSpan = unsafeMakeSpan(reinterpret_cast<T*>(m_buffer.planes[0]), planeSizeTotal * planeCount);
         for (uint32_t s = offset; s < m_buffer.n_samples; s++) {
             for (uint32_t c = 0; c < planeCount; c++)
-                result[c][s - offset] = inputSpan[s * planeCount + c];
+                result[c][s] = inputSpan[s * planeCount + c];
         }
         return result;
     }
@@ -1240,7 +1241,7 @@ GstElement* /* (transfer floating) */ createAutoAudioSink(const String& role)
         auto* role = reinterpret_cast<StringImpl*>(userData);
         auto* objectClass = G_OBJECT_GET_CLASS(object);
         if (role && g_object_class_find_property(objectClass, "stream-properties")) {
-            GUniquePtr<GstStructure> properties(gstStructureNew("stream-properties", "media.role", G_TYPE_STRING, role->utf8()));
+            GUniquePtr<GstStructure> properties(gst_structure_new("stream-properties", "media.role", G_TYPE_STRING, role->utf8().legacyCStringPointer(), nullptr));
             g_object_set(object, "stream-properties", properties.get(), nullptr);
 IGNORE_WARNINGS_BEGIN("cast-align")
             GST_DEBUG("Set media.role as %s on %" GST_PTR_FORMAT, role->utf8(), GST_ELEMENT_CAST(object));
@@ -1275,7 +1276,7 @@ GstElement* /* (transfer floating) */ createPlatformAudioSink(const String& role
     return audioSink;
 }
 
-bool webkitGstSetElementStateSynchronously(GstElement* pipeline, GstState targetState, NOESCAPE const Function<bool(GstMessage*)>& messageHandler)
+bool webkitGstSetElementStateSynchronously(GstElement* pipeline, GstState targetState, Function<bool(GstMessage*)>&& messageHandler)
 {
     GST_DEBUG_OBJECT(pipeline, "Setting state to %s", gst_state_get_name(targetState));
 
@@ -1993,18 +1994,18 @@ std::optional<unsigned> gstGetAutoplugSelectResult(ASCIILiteral nick)
     return enumValue->value;
 }
 
-bool gstStructureForeach(const GstStructure* structure, NOESCAPE const Function<bool(GstId, const GValue*)>& callback)
+bool gstStructureForeach(const GstStructure* structure, Function<bool(GstId, const GValue*)>&& callback)
 {
 #if GST_CHECK_VERSION(1, 26, 0)
     return gst_structure_foreach_id_str(structure, [](GstId id, const GValue* value, gpointer userData) -> gboolean {
-        auto& callback = *reinterpret_cast<const Function<bool(GstId, const GValue*)>*>(userData);
+        auto& callback = *reinterpret_cast<Function<bool(GstId, const GValue*)>*>(userData);
         return callback(id, value);
-    }, const_cast<Function<bool(GstId, const GValue*)>*>(&callback));
+    }, &callback);
 #else
     return gst_structure_foreach(structure, [](GQuark quark, const GValue* value, gpointer userData) -> gboolean {
-        auto& callback = *reinterpret_cast<const Function<bool(GQuark, const GValue*)>*>(userData);
+        auto& callback = *reinterpret_cast<Function<bool(GQuark, const GValue*)>*>(userData);
         return callback(quark, value);
-    }, const_cast<Function<bool(GstId, const GValue*)>*>(&callback));
+    }, &callback);
 #endif
 }
 
@@ -2017,18 +2018,18 @@ void gstStructureIdSetValue(GstStructure* structure, GstId id, const GValue* val
 #endif
 }
 
-bool gstStructureMapInPlace(GstStructure* structure, NOESCAPE const Function<bool(GstId, GValue*)>& callback)
+bool gstStructureMapInPlace(GstStructure* structure, Function<bool(GstId, GValue*)>&& callback)
 {
 #if GST_CHECK_VERSION(1, 26, 0)
     return gst_structure_map_in_place_id_str(structure, [](GstId id, GValue* value, gpointer userData) -> gboolean {
-        auto& callback = *reinterpret_cast<const Function<bool(GstId, GValue*)>*>(userData);
+        auto& callback = *reinterpret_cast<Function<bool(GstId, GValue*)>*>(userData);
         return callback(id, value);
-    }, const_cast<Function<bool(GstId, GValue*)>*>(&callback));
+    }, &callback);
 #else
     return gst_structure_map_in_place(structure, [](GQuark quark, GValue* value, gpointer userData) -> gboolean {
-        auto& callback = *reinterpret_cast<const Function<bool(GQuark, GValue*)>*>(userData);
+        auto& callback = *reinterpret_cast<Function<bool(GQuark, GValue*)>*>(userData);
         return callback(quark, value);
-    }, const_cast<Function<bool(GstId, GValue*)>*>(&callback));
+    }, &callback);
 #endif
 }
 
@@ -2041,18 +2042,18 @@ String gstIdToString(GstId id)
 #endif
 }
 
-void gstStructureFilterAndMapInPlace(GstStructure* structure, NOESCAPE const Function<bool(GstId, GValue*)>& callback)
+void gstStructureFilterAndMapInPlace(GstStructure* structure, Function<bool(GstId, GValue*)>&& callback)
 {
 #if GST_CHECK_VERSION(1, 26, 0)
     gst_structure_filter_and_map_in_place_id_str(structure, [](GstId id, GValue* value, gpointer userData) -> gboolean {
-        auto& callback = *reinterpret_cast<const Function<bool(GstId, GValue*)>*>(userData);
+        auto& callback = *reinterpret_cast<Function<bool(GstId, GValue*)>*>(userData);
         return callback(id, value);
-    }, const_cast<Function<bool(GstId, GValue*)>*>(&callback));
+    }, &callback);
 #else
     gst_structure_filter_and_map_in_place(structure, [](GQuark quark, GValue* value, gpointer userData) -> gboolean {
-        auto& callback = *reinterpret_cast<const Function<bool(GQuark, GValue*)>*>(userData);
+        auto& callback = *reinterpret_cast<Function<bool(GQuark, GValue*)>*>(userData);
         return callback(quark, value);
-    }, const_cast<Function<bool(GstId, GValue*)>*>(&callback));
+    }, &callback);
 #endif
 }
 
@@ -2107,7 +2108,7 @@ GRefPtr<GstCaps> buildDMABufCaps()
         for (auto token : String(formats.span()).split(',')) {
             GValue value = G_VALUE_INIT;
             g_value_init(&value, G_TYPE_STRING);
-            gValueSetString(&value, token.utf8());
+            g_value_set_string(&value, token.utf8().legacyCStringPointer());
             gst_value_list_append_and_take_value(&drmSupportedFormats, &value);
         }
         gst_caps_set_value(caps.get(), "drm-format", &drmSupportedFormats);
@@ -2163,7 +2164,7 @@ static std::optional<GRefPtr<GstContext>> requestGLContext(ASCIILiteral contextT
     if (!gstGLDisplay || !gstGLContext)
         return std::nullopt;
 
-    if (contextType == ASCIILiteral { GST_GL_DISPLAY_CONTEXT_TYPE }) {
+    if (contextType == ASCIILiteral::fromLiteralUnsafe(GST_GL_DISPLAY_CONTEXT_TYPE)) {
         GRefPtr<GstContext> displayContext = adoptGRef(gst_context_new(GST_GL_DISPLAY_CONTEXT_TYPE, FALSE));
         gst_context_set_gl_display(displayContext.get(), gstGLDisplay);
         return displayContext;

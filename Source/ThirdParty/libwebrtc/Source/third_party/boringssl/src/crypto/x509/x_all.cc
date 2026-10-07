@@ -42,13 +42,12 @@ int X509_verify(const X509 *x509, EVP_PKEY *pkey) {
     return 0;
   }
   // This uses the cached TBSCertificate encoding, if any.
-  Array<uint8_t> scratch;
-  CBS tbs;
-  if (!x509_get_or_marshal_tbs_cert(&tbs, &scratch, x509)) {
+  ScopedCBB cbb;
+  if (!CBB_init(cbb.get(), 128) || !x509_marshal_tbs_cert(cbb.get(), x509)) {
     return 0;
   }
-  return x509_verify_signature(impl->sig_alg.get(), impl->signature.get(), tbs,
-                               pkey);
+  return x509_verify_signature(impl->sig_alg.get(), impl->signature.get(),
+                               CBBAsSpan(cbb.get()), pkey);
 }
 
 int X509_REQ_verify(const X509_REQ *req, EVP_PKEY *pkey) {

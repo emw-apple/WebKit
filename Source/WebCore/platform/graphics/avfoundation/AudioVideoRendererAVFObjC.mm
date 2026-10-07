@@ -714,7 +714,7 @@ Ref<MediaTimePromise> AudioVideoRendererAVFObjC::prepareToSeek(const MediaTime& 
         // In cases where the destination seek time matches too closely the synchronizer's existing time
         // no time jumped notification will be issued. In this case, just notify the MediaPlayer that
         // the seek completed successfully.
-        setTimeFloor(seekTime);
+        setTimeFloor(synchronizerTime);
         m_seekState = SeekCompleted;
 
         auto shouldBePlaying = this->shouldBePlaying();
@@ -725,7 +725,7 @@ Ref<MediaTimePromise> AudioVideoRendererAVFObjC::prepareToSeek(const MediaTime& 
         else
             updateSharedTimebase();
 
-        return MediaTimePromise::createAndResolve(seekTime);
+        return MediaTimePromise::createAndResolve(synchronizerTime);
     }
 
     setHasAvailableVideoFrame(false);
@@ -1090,7 +1090,7 @@ RetainPtr<AVSampleBufferAudioRenderer> AudioVideoRendererAVFObjC::audioRendererF
     return itRenderer->value;
 }
 
-void AudioVideoRendererAVFObjC::applyOnAudioRenderers(NOESCAPE const Function<void(AVSampleBufferAudioRenderer *)>& function) const
+void AudioVideoRendererAVFObjC::applyOnAudioRenderers(NOESCAPE Function<void(AVSampleBufferAudioRenderer *)>&& function) const
 {
     for (auto& pair : m_audioRenderers) {
         RetainPtr renderer = pair.value;

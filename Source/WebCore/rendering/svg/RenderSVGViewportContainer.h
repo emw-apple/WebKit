@@ -43,7 +43,6 @@ public:
     FloatSize viewportSize() const { return m_viewport.size(); }
 
     void updateFromStyle() final;
-    LayoutRect overflowClipRect(const LayoutPoint& location, OverlayScrollbarSizeRelevancy = OverlayScrollbarSizeRelevancy::IgnoreOverlayScrollbarSize, PaintPhase = PaintPhase::BlockBackground) const final;
 
 private:
     ASCIILiteral renderName() const final { return "RenderSVGViewportContainer"_s; }
@@ -60,6 +59,7 @@ private:
     FloatSize computeViewportSize() const;
 
     void applyTransform(TransformationMatrix&, const Style::ComputedStyle&, const FloatRect& boundingBox, OptionSet<Style::TransformResolverOption>) const final;
+    LayoutRect overflowClipRect(const LayoutPoint& location, OverlayScrollbarSizeRelevancy = OverlayScrollbarSizeRelevancy::IgnoreOverlayScrollbarSize, PaintPhase = PaintPhase::BlockBackground) const final;
     void updateLayerTransform() final;
     bool needsHasSVGTransformFlags() const final;
 

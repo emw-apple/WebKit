@@ -29,7 +29,6 @@
 #include "WebKitWebsiteDataManagerPrivate.h"
 #include <glib/gi18n-lib.h>
 #include <wtf/TZoneMallocInlines.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/WTFGType.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/MakeString.h>
@@ -223,7 +222,7 @@ static void webkitAutomationSessionGetProperty(GObject* object, guint propID, GV
 
     switch (propID) {
     case PROP_ID:
-        gValueSetString(value, session->priv->id);
+        g_value_set_string(value, session->priv->id.legacyCStringPointer());
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, propID, paramSpec);
@@ -236,7 +235,7 @@ static void webkitAutomationSessionSetProperty(GObject* object, guint propID, co
 
     switch (propID) {
     case PROP_ID:
-        session->priv->id = UTF8CString::unsafeFromUTF8(g_value_get_string(value));
+        session->priv->id = UTF8CString { byteCast<char8_t>(g_value_get_string(value)) };
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, propID, paramSpec);
@@ -380,7 +379,7 @@ static WebKitNetworkProxyMode parseProxyCapabilities(const Inspector::RemoteInsp
 
 WebKitAutomationSession* webkitAutomationSessionCreate(WebKitWebContext* webContext, const String& sessionID, const Inspector::RemoteInspector::Client::SessionCapabilities& capabilities)
 {
-    auto* session = WEBKIT_AUTOMATION_SESSION(gObjectNew(WEBKIT_TYPE_AUTOMATION_SESSION, "id", sessionID.utf8()));
+    auto* session = WEBKIT_AUTOMATION_SESSION(g_object_new(WEBKIT_TYPE_AUTOMATION_SESSION, "id", sessionID.utf8().legacyCStringPointer(), nullptr));
     session->priv->webContext = webContext;
 #if ENABLE(2022_GLIB_API)
     WebKitNetworkSession* networkSession = webkit_web_context_get_network_session_for_automation(webContext);

@@ -251,15 +251,6 @@ macro(WEBKIT_ADD_SOURCE_DEPENDENCIES _source _deps)
     unset(_tmp)
 endmacro()
 
-# Wrapper around enable_language(). Enabling a C-family language resets
-# CMAKE_PCH_PROLOGUE to "#pragma clang system_header", which would hide
-# warnings in prefix headers. A macro, because enable_language() must be
-# called at file scope.
-macro(WEBKIT_ENABLE_LANGUAGE)
-    enable_language(${ARGN})
-    set(CMAKE_PCH_PROLOGUE "")
-endmacro()
-
 # Wrapper around target_precompile_headers().
 #
 # Swift sources are unaffected: with CMP0157 NEW (set in the top-level
@@ -748,10 +739,7 @@ function(_WEBKIT_ADD_CODE_SIGN _target)
     if (_skip_codesign)
         return ()
     endif ()
-    get_target_property(_identity ${_target} CODE_SIGN_IDENTITY)
-    if (NOT _identity)
-        set(_identity ${WEBKIT_CODE_SIGN_IDENTITY})
-    endif ()
+    set(_identity ${WEBKIT_CODE_SIGN_IDENTITY})
     if (NOT _identity)
         set(_identity "-")
     endif ()
@@ -925,7 +913,7 @@ macro(WEBKIT_LIBRARY _target)
         set_target_properties(${_target} PROPERTIES OUTPUT_NAME ${${_target}_OUTPUT_NAME})
     endif ()
 
-    if (APPLE AND ${${_target}_LIBRARY_TYPE} MATCHES "SHARED|MODULE")
+    if (APPLE AND ${${_target}_LIBRARY_TYPE} MATCHES SHARED)
         _WEBKIT_ADD_DSYM(${_target})
         _WEBKIT_ADD_CODE_SIGN(${_target} DEPENDS ${${_target}_CODE_SIGN_INPUTS})
     endif ()
@@ -1186,11 +1174,10 @@ function(_webkit_platform_args_clang_prefix _outvar _depfile _mt_target _wtf_inc
     set(${_outvar} ${_cmd} PARENT_SCOPE)
 endfunction()
 
-# Build-time command deriving WEBKIT_PLATFORM_FEATURE_DEFINES_FILE, the generators'
-# --defines-file (the truthy feature names), by preprocessing wtf/Platform.h, like
-# Xcode's FEATURE_AND_PLATFORM_DEFINES. Generators in any directory may depend on it.
-function(webkit_generate_platform_feature_defines_file)
-    set(_defines_file "${WEBKIT_PLATFORM_FEATURE_DEFINES_FILE}")
+# Build-time command deriving the generators' --defines-file (the truthy feature
+# names) by preprocessing wtf/Platform.h, like Xcode's FEATURE_AND_PLATFORM_DEFINES.
+function(webkit_generate_platform_feature_defines_file _out_path_var)
+    set(_defines_file "${CMAKE_BINARY_DIR}/DerivedSources/platform-feature-defines.txt")
     set(_depfile "${CMAKE_BINARY_DIR}/DerivedSources/platform-feature-defines.d")
     _webkit_platform_args_empty_input(_empty_input)
     _webkit_platform_args_clang_prefix(_clang_cmd
@@ -1235,8 +1222,7 @@ function(webkit_generate_platform_feature_defines_file)
         COMMENT "Deriving generator feature defines from wtf/Platform.h"
         VERBATIM
     )
-    # A custom command's rule only exists if a target in its directory uses it.
-    add_custom_target(PlatformFeatureDefines DEPENDS "${_defines_file}")
+    set(${_out_path_var} "${_defines_file}" PARENT_SCOPE)
 endfunction()
 
 function(_WEBKIT_COMPUTE_SWIFT_SHARED_CLANG_FLAGS _outvar)

@@ -68,7 +68,7 @@
 
 - (int)scrollXOffset
 {
-    CheckedPtr renderer = protect(core(self))->renderer();
+    auto* renderer = protect(core(self))->renderer();
     if (!renderer)
         return 0;
 
@@ -78,10 +78,10 @@
     if (!is<WebCore::RenderBox>(*renderer) || !renderer->hasNonVisibleOverflow())
         return 0;
 
-    CheckedPtr layer = downcast<WebCore::RenderBox>(*renderer).layer();
+    auto* layer = downcast<WebCore::RenderBox>(*renderer).layer();
     if (!layer)
         return 0;
-    CheckedPtr scrollableArea = layer->scrollableArea();
+    auto* scrollableArea = layer->scrollableArea();
     if (!scrollableArea)
         return 0;
 
@@ -90,7 +90,7 @@
 
 - (int)scrollYOffset
 {
-    CheckedPtr renderer = protect(core(self))->renderer();
+    auto* renderer = protect(core(self))->renderer();
     if (!renderer)
         return 0;
 
@@ -99,10 +99,10 @@
     if (!is<WebCore::RenderBox>(*renderer) || !renderer->hasNonVisibleOverflow())
         return 0;
 
-    CheckedPtr layer = downcast<WebCore::RenderBox>(*renderer).layer();
+    auto* layer = downcast<WebCore::RenderBox>(*renderer).layer();
     if (!layer)
         return 0;
-    CheckedPtr scrollableArea = layer->scrollableArea();
+    auto* scrollableArea = layer->scrollableArea();
     if (!scrollableArea)
         return 0;
 
@@ -116,7 +116,7 @@
 
 - (void)setScrollXOffset:(int)x scrollYOffset:(int)y adjustForIOSCaret:(BOOL)adjustForIOSCaret
 {
-    CheckedPtr renderer = protect(core(self))->renderer();
+    auto* renderer = protect(core(self))->renderer();
     if (!renderer)
         return;
 
@@ -125,10 +125,10 @@
     if (!renderer->hasNonVisibleOverflow() || !is<WebCore::RenderBox>(*renderer))
         return;
 
-    CheckedPtr layer = downcast<WebCore::RenderBox>(*renderer).layer();
+    auto* layer = downcast<WebCore::RenderBox>(*renderer).layer();
     if (!layer)
         return;
-    CheckedPtr scrollableArea = layer->ensureLayerScrollableArea();
+    auto* scrollableArea = layer->ensureLayerScrollableArea();
 
     auto scrollPositionChangeOptions = WebCore::ScrollPositionChangeOptions::createProgrammatic();
     scrollPositionChangeOptions.clamping = WebCore::ScrollClamping::Unclamped;
@@ -137,7 +137,7 @@
 
 - (void)absolutePosition:(int *)x :(int *)y :(int *)w :(int *)h
 {
-    CheckedPtr renderer = protect(core(self))->renderBox();
+    auto* renderer = protect(core(self))->renderBox();
     if (renderer) {
         if (w)
             *w = renderer->borderBoxWidth();
@@ -259,7 +259,8 @@ static WebAutocapitalizeType webAutocapitalizeType(WebCore::AutocapitalizeType t
 
 - (WebAutocapitalizeType)_autocapitalizeType
 {
-    return webAutocapitalizeType(protect(core(self))->autocapitalizeType());
+    WebCore::HTMLInputElement* inputElement = core(self);
+    return webAutocapitalizeType(inputElement->autocapitalizeType());
 }
 
 @end
@@ -268,7 +269,8 @@ static WebAutocapitalizeType webAutocapitalizeType(WebCore::AutocapitalizeType t
 
 - (WebAutocapitalizeType)_autocapitalizeType
 {
-    return webAutocapitalizeType(protect(core(self))->autocapitalizeType());
+    WebCore::HTMLTextAreaElement* textareaElement = core(self);
+    return webAutocapitalizeType(textareaElement->autocapitalizeType());
 }
 
 @end

@@ -25,7 +25,6 @@
 #include <utility>
 #include <vector>
 
-#include "absl/base/config.h"
 #include "absl/container/inlined_vector.h"
 #include "absl/meta/type_traits.h"
 #include "absl/random/internal/seed_material.h"

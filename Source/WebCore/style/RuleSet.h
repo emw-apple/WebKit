@@ -128,9 +128,6 @@ public:
     EnumSet<PseudoElementType> universalHTMLPseudoElementTypes() const { return m_universalHTMLPseudoElementTypes; }
     // Pseudo element types applying to all elements.
     EnumSet<PseudoElementType> universalPseudoElementTypes() const { return m_universalPseudoElementTypes; }
-    // Whether any universal ::before/::after rule may generate a box.
-    PseudoElementBoxGeneration universalHTMLPseudoElementBoxGeneration() const { return m_universalHTMLPseudoElementBoxGeneration; }
-    PseudoElementBoxGeneration universalPseudoElementBoxGeneration() const { return m_universalPseudoElementBoxGeneration; }
 
     const Vector<StyleRulePage*>& pageRules() const LIFETIME_BOUND { return m_pageRules; }
 
@@ -185,8 +182,8 @@ private:
     };
     CollectedMediaQueryChanges evaluateDynamicMediaQueryRules(const MQ::MediaQueryEvaluator&, size_t startIndex);
 
-    template<typename Function> void traverseRuleDatas(NOESCAPE const Function&);
-    template<typename Function> void traverseRuleDatas(NOESCAPE const Function&) const;
+    template<typename Function> void traverseRuleDatas(Function&&);
+    template<typename Function> void traverseRuleDatas(Function&&) const;
 
     struct CascadeLayer {
         CascadeLayerName resolvedName;
@@ -248,8 +245,6 @@ private:
     RuleDataVector m_universalPseudoElementRules;
     EnumSet<PseudoElementType> m_universalHTMLPseudoElementTypes;
     EnumSet<PseudoElementType> m_universalPseudoElementTypes;
-    PseudoElementBoxGeneration m_universalHTMLPseudoElementBoxGeneration { PseudoElementBoxGeneration::NotForBeforeOrAfter };
-    PseudoElementBoxGeneration m_universalPseudoElementBoxGeneration { PseudoElementBoxGeneration::NotForBeforeOrAfter };
     Vector<StyleRulePage*> m_pageRules;
     RefPtr<StyleRuleViewTransition> m_viewTransitionRule;
     RuleFeatureSet m_features;

@@ -552,7 +552,7 @@ void Biquad::setBandpassParams(size_t index, double frequency, double Q)
     }
 }
 
-void Biquad::getFrequencyResponse(std::span<const float> frequencyHz, std::span<float> magResponse, std::span<float> phaseResponse, double nyquist)
+void Biquad::getFrequencyResponse(unsigned nFrequencies, std::span<const float> frequency, std::span<float> magResponse, std::span<float> phaseResponse)
 {
     // Evaluate the Z-transform of the filter at given normalized
     // frequency from 0 to 1. (1 corresponds to the Nyquist
@@ -576,17 +576,14 @@ void Biquad::getFrequencyResponse(std::span<const float> frequencyHz, std::span<
     double b2 = m_b2[0];
     double a1 = m_a1[0];
     double a2 = m_a2[0];
-
-    for (size_t k = 0; k < frequencyHz.size(); ++k) {
-        // Convert from frequency in Hz to normalized frequency (0 -> 1), with 1 equal to the Nyquist frequency.
-        float frequency = static_cast<float>(frequencyHz[k] / nyquist);
-
-        if (frequency < 0 || frequency > 1) {
+    
+    for (unsigned k = 0; k < nFrequencies; ++k) {
+        if (frequency[k] < 0 || frequency[k] > 1) {
             // Out-of-bounds frequencies should return NaN.
             magResponse[k] = std::nanf("");
             phaseResponse[k] = std::nanf("");
         } else {
-            double omega = -std::numbers::pi * frequency;
+            double omega = -std::numbers::pi * frequency[k];
             std::complex<double> z = std::complex<double>(cos(omega), sin(omega));
             std::complex<double> numerator = b0 + (b1 + b2 * z) * z;
             std::complex<double> denominator = std::complex<double>(1, 0) + (a1 + a2 * z) * z;

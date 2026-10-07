@@ -84,7 +84,6 @@
 #include "RenderImage.h"
 #include "RenderLayer.h"
 #include "RenderTheme.h"
-#include "SVGImage.h"
 #include "SVGImageElement.h"
 #include "ScriptDisallowedScope.h"
 #include "ScriptTrackingPrivacyCategory.h"
@@ -490,7 +489,7 @@ auto CanvasRenderingContext2DBase::FontProxy::operator=(const FontProxy& other) 
     if (realized())
         protect(m_font.fontSelector())->unregisterForInvalidationCallbacks(*this);
 
-    m_font = CheckedRef { other.m_font };
+    m_font = other.m_font;
 
     if (realized())
         protect(m_font.fontSelector())->registerForInvalidationCallbacks(*this);
@@ -557,7 +556,7 @@ void CanvasRenderingContext2DBase::realizeSaves()
     if (m_unrealizedSaveCount) {
         static NeverDestroyed<String> consoleMessage(MAKE_STATIC_STRING_IMPL("CanvasRenderingContext2D.save() has been called without a matching restore() too many times. Ignoring save()."));
 
-        protect(protect(canvasBase())->scriptExecutionContext())->addConsoleMessage(MessageSource::Rendering, MessageLevel::Error, consoleMessage);
+        protect(canvasBase())->scriptExecutionContext()->addConsoleMessage(MessageSource::Rendering, MessageLevel::Error, consoleMessage);
     }
 }
 
@@ -1864,10 +1863,6 @@ ExceptionOr<void> CanvasRenderingContext2DBase::drawImage(Document& document, Im
         orientation,
         document.settings().imageSubsamplingEnabled() ? AllowImageSubsampling::Yes : AllowImageSubsampling::No,
         document.settings().showDebugBorders() ? ShowDebugBackground::Yes : ShowDebugBackground::No
-#if ENABLE(AX_CUSTOM_COLOR_MODE)
-        ,
-        InvertContent::No
-#endif
 #if ENABLE(PIXEL_FORMAT_RGBA16F)
         ,
         (isHDR() && image->hasHDRContent()) ? DrawsHDRContent::Yes : DrawsHDRContent::No,
@@ -2092,85 +2087,54 @@ ExceptionOr<void> CanvasRenderingContext2DBase::drawImage(ImageBitmap& imageBitm
     return { };
 }
 
-ExceptionOr<void> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, float dx, float dy, std::optional<CanvasDrawElementImageOptions> options)
+ExceptionOr<Ref<DOMMatrix>> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, float dx, float dy)
 {
     FloatSize sourceSize = size(source);
-    return drawElementImage(
-        WTF::move(source),
-        FloatRect { 0.0f, 0.0f, sourceSize.width(), sourceSize.height() },
-        FloatRect { dx, dy, sourceSize.width(), sourceSize.height() },
-        options);
+    return drawElementImage(WTF::move(source), FloatRect { 0.0f, 0.0f, sourceSize.width(), sourceSize.height() }, FloatRect { dx, dy, sourceSize.width(), sourceSize.height() });
 }
 
-ExceptionOr<void> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, float dx, float dy, float dwidth, float dheight, std::optional<CanvasDrawElementImageOptions> options)
+ExceptionOr<Ref<DOMMatrix>> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, float dx, float dy, float dwidth, float dheight)
 {
     FloatSize sourceSize = size(source);
-    return drawElementImage(
-        WTF::move(source),
-        FloatRect { 0.0f, 0.0f, sourceSize.width(), sourceSize.height() },
-        FloatRect { dx, dy, dwidth, dheight }, options);
+    return drawElementImage(WTF::move(source), FloatRect { 0.0f, 0.0f, sourceSize.width(), sourceSize.height() }, FloatRect { dx, dy, dwidth, dheight });
 }
 
-ExceptionOr<void> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, float sx, float sy, float swidth, float sheight, float dx, float dy, std::optional<CanvasDrawElementImageOptions> options)
+ExceptionOr<Ref<DOMMatrix>> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, float sx, float sy, float dx, float dy, float dwidth, float dheight)
 {
-    return drawElementImage(
-        WTF::move(source),
-        FloatRect { sx, sy, swidth, sheight },
-        FloatRect { dx, dy, swidth, sheight },
-        options);
+    FloatSize sourceSize = size(source);
+    return drawElementImage(WTF::move(source), FloatRect { sx, sy, sourceSize.width(), sourceSize.height() }, FloatRect { dx, dy, dwidth, dheight });
 }
 
-ExceptionOr<void> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, float sx, float sy, float swidth, float sheight, float dx, float dy, float dwidth, float dheight, std::optional<CanvasDrawElementImageOptions> options)
+ExceptionOr<Ref<DOMMatrix>> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, float sx, float sy, float swidth, float sheight, float dx, float dy, float dwidth, float dheight)
 {
-    return drawElementImage(
-        WTF::move(source),
-        FloatRect { sx, sy, swidth, sheight },
-        FloatRect { dx, dy, dwidth, dheight },
-        options);
+    return drawElementImage(WTF::move(source), FloatRect { sx, sy, swidth, sheight }, FloatRect { dx, dy, dwidth, dheight });
 }
 
-ExceptionOr<void> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, const FloatRect& srcRect, const FloatRect& dstRect, std::optional<CanvasDrawElementImageOptions> options)
+ExceptionOr<Ref<DOMMatrix>> CanvasRenderingContext2DBase::drawElementImage(CanvasElementImageSource&& source, const FloatRect& srcRect, const FloatRect& dstRect)
 {
     return WTF::switchOn(source,
-        [&](Ref<Element>& element) -> ExceptionOr<void> {
+        [&](Ref<Element>& element) -> ExceptionOr<Ref<DOMMatrix>> {
             if (RefPtr canvasElement = dynamicDowncast<HTMLCanvasElement>(canvasBase())) {
                 if (auto snapshot = canvasElement->drawableElementSnapshot(element))
-                    return drawSnapshot(*snapshot, srcRect, dstRect, options);
+                    return drawSnapshot(*snapshot, srcRect, dstRect);
             }
-            return Exception { ExceptionCode::InvalidStateError, "CanvasRenderingContext2DBase failed to get a snapshot for a drawableElement."_s };
+            return DOMMatrix::create(TransformationMatrix::identity, DOMMatrix::Is2D::Yes);
         },
-        [&](Ref<CanvasElementImage>& elementImage) -> ExceptionOr<void> {
-            return drawSnapshot(elementImage->snapshot(), srcRect, dstRect, options);
+        [&](Ref<CanvasElementImage>& elementImage) -> ExceptionOr<Ref<DOMMatrix>> {
+            return drawSnapshot(elementImage->snapshot(), srcRect, dstRect);
         }
     );
 }
 
-ExceptionOr<void> CanvasRenderingContext2DBase::drawSnapshot(const CanvasElementSnapshot& snapshot, const FloatRect& srcRect, const FloatRect& dstRect, std::optional<CanvasDrawElementImageOptions>)
+ExceptionOr<Ref<DOMMatrix>> CanvasRenderingContext2DBase::drawSnapshot(const CanvasElementSnapshot& snapshot, const FloatRect& srcRect, const FloatRect& dstRect)
 {
     auto* c = effectiveDrawingContext();
     if (!c)
-        return Exception { ExceptionCode::InvalidStateError, "CanvasRenderingContext2DBase failed to create a drawing context."_s };
-
-    if (!std::isfinite(dstRect.x()) || !std::isfinite(dstRect.y()) || !std::isfinite(dstRect.width()) || !std::isfinite(dstRect.height())
-        || !std::isfinite(srcRect.x()) || !std::isfinite(srcRect.y()) || !std::isfinite(srcRect.width()) || !std::isfinite(srcRect.height()))
-        return { };
-
-    if (!srcRect.width() || !srcRect.height())
-        return { };
-
-    if (!dstRect.width() || !dstRect.height())
-        return { };
+        return Exception { ExceptionCode::NotSupportedError };
 
     auto snapshotRect = FloatRect { { }, snapshot.size };
     auto normalizedSrcRect = normalizeRect(intersection(srcRect, snapshotRect));
     auto normalizedDstRect = normalizeRect(dstRect);
-
-    if (normalizedSrcRect.isEmpty())
-        return { };
-
-    if (normalizedDstRect.isEmpty())
-        return { };
-
     auto scale = normalizedDstRect.size() / normalizedSrcRect.size();
 
     c->save();
@@ -2180,7 +2144,7 @@ ExceptionOr<void> CanvasRenderingContext2DBase::drawSnapshot(const CanvasElement
     c->drawDisplayList(snapshot.displayList);
     c->restore();
 
-    return { };
+    return DOMMatrix::create(TransformationMatrix::identity, DOMMatrix::Is2D::Yes);
 }
 
 void CanvasRenderingContext2DBase::clearCanvas()
@@ -2465,7 +2429,7 @@ ExceptionOr<RefPtr<CanvasPattern>> CanvasRenderingContext2DBase::createPattern(H
     if (!naturalDimensions.width.value_or(0) || !naturalDimensions.height.value_or(0))
         return nullptr;
 
-    bool originClean = isOriginClean(imageElement, *protect(protect(canvasBase())->securityOrigin()));
+    bool originClean = isOriginClean(imageElement, *protect(canvasBase())->securityOrigin());
     return createPattern(*image, concreteObjectSizeForPattern(*image), originClean, repeatX, repeatY);
 }
 
@@ -2488,7 +2452,7 @@ ExceptionOr<RefPtr<CanvasPattern>> CanvasRenderingContext2DBase::createPattern(S
     if (!naturalDimensions.width.value_or(0) || !naturalDimensions.height.value_or(0))
         return nullptr;
 
-    bool originClean = isOriginClean(imageElement, *protect(protect(canvasBase())->securityOrigin()));
+    bool originClean = isOriginClean(imageElement, *protect(canvasBase())->securityOrigin());
     return createPattern(*image, concreteObjectSizeForPattern(*image), originClean, repeatX, repeatY);
 }
 
@@ -2693,7 +2657,7 @@ AffineTransform CanvasRenderingContext2DBase::baseTransform() const
     if (auto* paintContext = dynamicDowncast<PaintRenderingContext2D>(*this)) [[unlikely]]
         return paintContext->baseTransform();
     ASSERT(m_hasCreatedImageBuffer);
-    return protect(buffer())->baseTransform();
+    return buffer()->baseTransform();
 }
 
 void CanvasRenderingContext2DBase::prepareForDisplay()
@@ -3276,16 +3240,6 @@ Ref<TextMetrics> CanvasRenderingContext2DBase::measureTextInternal(const String&
     return measureTextInternal(textRun);
 }
 
-static std::pair<float, float> emHeightAscentAndDescent(const FontCascade& font)
-{
-    auto& fontMetrics = font.metricsOfPrimaryFont();
-    auto ascent = fontMetrics.ascent();
-    auto height = ascent + fontMetrics.descent();
-    auto emHeight = font.fontDescription().computedSize();
-    auto emHeightAscent = height > 0 ? emHeight * ascent / height : emHeight;
-    return { emHeightAscent, emHeight - emHeightAscent };
-}
-
 Ref<TextMetrics> CanvasRenderingContext2DBase::measureTextInternal(const TextRun& textRun)
 {
     Ref<TextMetrics> metrics = TextMetrics::create();
@@ -3303,17 +3257,18 @@ Ref<TextMetrics> CanvasRenderingContext2DBase::measureTextInternal(const TextRun
     metrics->setWidth(fontWidth);
 
     FloatPoint offset = textOffset(fontWidth, textRun.direction());
-    auto [emHeightAscent, emHeightDescent] = emHeightAscentAndDescent(protect(font.fontCascade()));
+    auto ascent = fontMetrics.ascent();
+    auto descent = fontMetrics.descent();
 
     metrics->setActualBoundingBoxAscent(glyphOverflow.top - offset.y());
     metrics->setActualBoundingBoxDescent(glyphOverflow.bottom + offset.y());
     metrics->setFontBoundingBoxAscent(fontMetrics.intAscent() - offset.y());
     metrics->setFontBoundingBoxDescent(fontMetrics.intDescent() + offset.y());
-    metrics->setEmHeightAscent(emHeightAscent - offset.y());
-    metrics->setEmHeightDescent(emHeightDescent + offset.y());
-    metrics->setHangingBaseline(emHeightAscent - offset.y());
+    metrics->setEmHeightAscent(ascent - offset.y());
+    metrics->setEmHeightDescent(descent + offset.y());
+    metrics->setHangingBaseline(ascent - offset.y());
     metrics->setAlphabeticBaseline(-offset.y());
-    metrics->setIdeographicBaseline(-emHeightDescent - offset.y());
+    metrics->setIdeographicBaseline(-descent - offset.y());
 
     metrics->setActualBoundingBoxLeft(glyphOverflow.left - offset.x());
     metrics->setActualBoundingBoxRight(fontWidth + glyphOverflow.right + offset.x());
@@ -3331,20 +3286,20 @@ void CanvasRenderingContext2DBase::updateStateTransform(const AffineTransform& t
 
 FloatPoint CanvasRenderingContext2DBase::textOffset(float width, TextDirection direction)
 {
-    auto [emHeightAscent, emHeightDescent] = emHeightAscentAndDescent(protect(fontProxy()->fontCascade()));
+    auto& fontMetrics = fontProxy()->metricsOfPrimaryFont();
     FloatPoint offset;
 
     switch (state().textBaseline) {
     case TopTextBaseline:
     case HangingTextBaseline:
-        offset.setY(emHeightAscent);
+        offset.setY(fontMetrics.intAscent());
         break;
     case BottomTextBaseline:
     case IdeographicTextBaseline:
-        offset.setY(-emHeightDescent);
+        offset.setY(-fontMetrics.intDescent());
         break;
     case MiddleTextBaseline:
-        offset.setY((emHeightAscent - emHeightDescent) / 2);
+        offset.setY(fontMetrics.intHeight() / 2 - fontMetrics.intDescent());
         break;
     case AlphabeticTextBaseline:
     default:
@@ -3504,7 +3459,7 @@ void CanvasRenderingContext2DBase::setLetterSpacing(const String& letterSpacing)
     tokenRange.consumeWhitespace();
 
     auto parserContext = CSSParserContext { HTMLStandardMode };
-    auto parserState = CSS::PropertyParserState { .context = parserContext, .pool = protect(protect(canvasBase())->scriptExecutionContext())->cssValuePool() };
+    auto parserState = CSS::PropertyParserState { .context = parserContext, .pool = protect(canvasBase())->scriptExecutionContext()->cssValuePool() };
 
     auto parsedValue = CSSPropertyParserHelpers::MetaConsumer<CSS::Length<>>::consume(tokenRange, parserState);
     if (!parsedValue)
@@ -3532,7 +3487,7 @@ void CanvasRenderingContext2DBase::setWordSpacing(const String& wordSpacing)
     tokenRange.consumeWhitespace();
 
     auto parserContext = CSSParserContext { HTMLStandardMode };
-    auto parserState = CSS::PropertyParserState { .context = parserContext, .pool = protect(protect(canvasBase())->scriptExecutionContext())->cssValuePool() };
+    auto parserState = CSS::PropertyParserState { .context = parserContext, .pool = protect(canvasBase())->scriptExecutionContext()->cssValuePool() };
 
     auto parsedValue = CSSPropertyParserHelpers::MetaConsumer<CSS::Length<>>::consume(tokenRange, parserState);
     if (!parsedValue)

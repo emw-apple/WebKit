@@ -45,7 +45,6 @@ enum class AutocapitalizeType : uint8_t;
 enum class EnterKeyHint : uint8_t;
 enum class InputMode : uint8_t;
 enum class PageIsEditable : bool;
-enum class PopoverVisibilityState : bool;
 enum class SelectionRenderingBehavior : bool;
 enum class ToggleState : bool;
 
@@ -99,6 +98,7 @@ public:
     virtual bool isDataListButtonElement() const { return false; }
     virtual bool isSelectFallbackButtonElement() const { return false; }
     virtual bool isSelectPopoverElement() const { return false; }
+    virtual void popoverWasHidden() { }
 
     bool willRespondToMouseMoveEvents() const override;
     bool willRespondToMouseClickEventsWithEditability(Editability) const override;
@@ -197,9 +197,6 @@ protected:
     unsigned parseBorderWidthAttribute(const AtomString&) const;
 
     virtual void effectiveSpellcheckAttributeChanged(bool);
-
-    virtual void setPopoverVisibilityState(PopoverVisibilityState);
-    virtual void popoverWasHidden() { }
 
     using EventHandlerNameMap = HashMap<AtomString, AtomString>;
     static const AtomString& NODELETE eventNameForEventHandlerAttribute(const QualifiedName& attributeName, const EventHandlerNameMap&);

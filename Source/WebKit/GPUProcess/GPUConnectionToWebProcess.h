@@ -35,12 +35,10 @@
 #include "RemoteGPU.h"
 #include "RemoteRemoteCommandListenerIdentifier.h"
 #include "RemoteRenderingBackendIdentifier.h"
-#include "RemoteSnapshotIdentifier.h"
 #include "ScopedActiveMessageReceiveQueue.h"
 #include "SharedPreferencesForWebProcess.h"
 #include "WebGPUIdentifier.h"
 #include <WebCore/ImageBuffer.h>
-#include <WebCore/ImageBufferTransferIdentifier.h>
 #include <WebCore/IntDegrees.h>
 #include <WebCore/NowPlayingManager.h>
 #include <WebCore/PageIdentifier.h>
@@ -325,8 +323,6 @@ private:
     void releaseGPU(WebGPUIdentifier);
 
     void setNowPlayingInfoForPage(WebCore::NowPlayingInfo&&, std::optional<WebCore::PageIdentifier>);
-    void abandonSnapshotFrame(RemoteSnapshotIdentifier, WebCore::FrameIdentifier);
-    void failSnapshot(RemoteSnapshotIdentifier);
     void setNowPlayingCandidateState(WebCore::NowPlayingCandidateState&&);
     void nowPlayingClientDidClose();
     void isActiveNowPlayingSessionForTesting(WebCore::MediaSessionIdentifier, CompletionHandler<void(bool)>&&);
@@ -356,7 +352,6 @@ private:
     void releaseAudioHardwareListener(RemoteAudioHardwareListenerIdentifier);
     void createRemoteCommandListener(RemoteRemoteCommandListenerIdentifier);
     void releaseRemoteCommandListener(RemoteRemoteCommandListenerIdentifier);
-    void releaseTransferredImageBuffer(WebCore::ImageBufferTransferIdentifier);
     void setMediaOverridesForTesting(MediaOverridesForTesting);
     void configureLoggingChannel(const String&, WTFLogChannelState, WTFLogLevel);
 

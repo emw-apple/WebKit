@@ -61,10 +61,6 @@ class RefCounter {
         bool m_inValueDidChange { false };
     };
 
-    struct CountDeleter {
-        void operator()(Count* count) const { count->refCounterWasDeleted(); }
-    };
-
 public:
     using Token = RefPtr<Count>;
     using ValueChangeFunction = WTF::Function<void (RefCounterEvent)>;
@@ -74,7 +70,7 @@ public:
 
     Token count() const
     {
-        return m_count.get();
+        return m_count;
     }
 
     size_t value() const
@@ -84,7 +80,7 @@ public:
 
 private:
     ValueChangeFunction m_valueDidChange;
-    std::unique_ptr<Count, CountDeleter> m_count;
+    Count* m_count;
 };
 
 template<typename T>
@@ -142,7 +138,11 @@ inline RefCounter<T>::RefCounter(ValueChangeFunction&& valueDidChange)
 }
 
 template<typename T>
-inline RefCounter<T>::~RefCounter() = default;
+inline RefCounter<T>::~RefCounter()
+{
+    m_count->refCounterWasDeleted();
+
+}
 
 } // namespace WTF
 

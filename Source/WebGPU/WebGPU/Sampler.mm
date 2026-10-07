@@ -35,7 +35,7 @@
 
 namespace WebGPU::Metal {
 
-static bool NODELETE validateCreateSampler(Device& device, const WebGPU::SamplerDescriptor& descriptor)
+static bool NODELETE validateCreateSampler(Device& device, const WGPUSamplerDescriptor& descriptor)
 {
     // https://gpuweb.github.io/gpuweb/#abstract-opdef-validating-gpusamplerdescriptor
 
@@ -52,74 +52,80 @@ static bool NODELETE validateCreateSampler(Device& device, const WebGPU::Sampler
         return false;
 
     if (descriptor.maxAnisotropy > 1) {
-        if (descriptor.magFilter != WebGPU::FilterMode::Linear
-            || descriptor.minFilter != WebGPU::FilterMode::Linear
-            || descriptor.mipmapFilter != WebGPU::MipmapFilterMode::Linear)
+        if (descriptor.magFilter != WGPUFilterMode_Linear
+            || descriptor.minFilter != WGPUFilterMode_Linear
+            || descriptor.mipmapFilter != WGPUMipmapFilterMode_Linear)
             return false;
     }
 
     return true;
 }
 
-static MTLSamplerAddressMode NODELETE addressMode(WebGPU::AddressMode addressMode)
+static MTLSamplerAddressMode NODELETE addressMode(WGPUAddressMode addressMode)
 {
     switch (addressMode) {
-    case WebGPU::AddressMode::Repeat:
+    case WGPUAddressMode_Repeat:
         return MTLSamplerAddressModeRepeat;
-    case WebGPU::AddressMode::MirrorRepeat:
+    case WGPUAddressMode_MirrorRepeat:
         return MTLSamplerAddressModeMirrorRepeat;
-    case WebGPU::AddressMode::ClampToEdge:
+    case WGPUAddressMode_ClampToEdge:
+        return MTLSamplerAddressModeClampToEdge;
+    case WGPUAddressMode_Force32:
+        ASSERT_NOT_REACHED();
         return MTLSamplerAddressModeClampToEdge;
     }
-    RELEASE_ASSERT_NOT_REACHED();
 }
 
-static MTLSamplerMinMagFilter NODELETE minMagFilter(WebGPU::FilterMode filterMode)
+static MTLSamplerMinMagFilter NODELETE minMagFilter(WGPUFilterMode filterMode)
 {
     switch (filterMode) {
-    case WebGPU::FilterMode::Nearest:
+    case WGPUFilterMode_Nearest:
         return MTLSamplerMinMagFilterNearest;
-    case WebGPU::FilterMode::Linear:
+    case WGPUFilterMode_Linear:
         return MTLSamplerMinMagFilterLinear;
+    case WGPUFilterMode_Force32:
+        ASSERT_NOT_REACHED();
+        return MTLSamplerMinMagFilterNearest;
     }
-    RELEASE_ASSERT_NOT_REACHED();
 }
 
-static MTLSamplerMipFilter NODELETE mipFilter(WebGPU::MipmapFilterMode filterMode)
+static MTLSamplerMipFilter NODELETE mipFilter(WGPUMipmapFilterMode filterMode)
 {
     switch (filterMode) {
-    case WebGPU::MipmapFilterMode::Nearest:
+    case WGPUMipmapFilterMode_Nearest:
         return MTLSamplerMipFilterNearest;
-    case WebGPU::MipmapFilterMode::Linear:
+    case WGPUMipmapFilterMode_Linear:
         return MTLSamplerMipFilterLinear;
+    case WGPUMipmapFilterMode_Force32:
+        ASSERT_NOT_REACHED();
+        return MTLSamplerMipFilterNearest;
     }
-    RELEASE_ASSERT_NOT_REACHED();
 }
 
-static MTLCompareFunction NODELETE compareFunction(std::optional<WebGPU::CompareFunction> compareFunction)
+static MTLCompareFunction NODELETE compareFunction(WGPUCompareFunction compareFunction)
 {
-    if (!compareFunction)
-        return MTLCompareFunctionAlways;
-
-    switch (*compareFunction) {
-    case WebGPU::CompareFunction::Never:
+    switch (compareFunction) {
+    case WGPUCompareFunction_Never:
         return MTLCompareFunctionNever;
-    case WebGPU::CompareFunction::Less:
+    case WGPUCompareFunction_Less:
         return MTLCompareFunctionLess;
-    case WebGPU::CompareFunction::LessEqual:
+    case WGPUCompareFunction_LessEqual:
         return MTLCompareFunctionLessEqual;
-    case WebGPU::CompareFunction::Greater:
+    case WGPUCompareFunction_Greater:
         return MTLCompareFunctionGreater;
-    case WebGPU::CompareFunction::GreaterEqual:
+    case WGPUCompareFunction_GreaterEqual:
         return MTLCompareFunctionGreaterEqual;
-    case WebGPU::CompareFunction::Equal:
+    case WGPUCompareFunction_Equal:
         return MTLCompareFunctionEqual;
-    case WebGPU::CompareFunction::NotEqual:
+    case WGPUCompareFunction_NotEqual:
         return MTLCompareFunctionNotEqual;
-    case WebGPU::CompareFunction::Always:
+    case WGPUCompareFunction_Undefined:
+    case WGPUCompareFunction_Always:
+        return MTLCompareFunctionAlways;
+    case WGPUCompareFunction_Force32:
+        ASSERT_NOT_REACHED();
         return MTLCompareFunctionAlways;
     }
-    RELEASE_ASSERT_NOT_REACHED();
 }
 
 static uint32_t miscHash(MTLSamplerDescriptor* descriptor)
@@ -168,7 +174,7 @@ static Sampler::UniqueSamplerIdentifier computeDescriptorHash(MTLSamplerDescript
     return std::array<uint32_t, 4> { miscHash(descriptor), floatToUint32(descriptor.lodMinClamp), floatToUint32(descriptor.lodMaxClamp), floatToUint32(descriptor.maxAnisotropy) };
 }
 
-static MTLSamplerDescriptor *createMetalDescriptorFromDescriptor(const WebGPU::SamplerDescriptor& descriptor)
+static MTLSamplerDescriptor *createMetalDescriptorFromDescriptor(const WGPUSamplerDescriptor &descriptor)
 {
     MTLSamplerDescriptor *samplerDescriptor = [MTLSamplerDescriptor new];
 
@@ -186,7 +192,7 @@ static MTLSamplerDescriptor *createMetalDescriptorFromDescriptor(const WebGPU::S
     // https://developer.apple.com/documentation/metal/mtlsamplerdescriptor/1516164-maxanisotropy?language=objc
     // "Values must be between 1 and 16, inclusive."
     samplerDescriptor.maxAnisotropy = std::min<uint16_t>(descriptor.maxAnisotropy, 16);
-    samplerDescriptor.label = descriptor.label.createNSString().get();
+    samplerDescriptor.label = fromAPI(descriptor.label).createNSString().get();
 
     return samplerDescriptor;
 }
@@ -215,7 +221,7 @@ static NSUInteger samplerStateHardLimit(id<MTLDevice> device)
 // Most programs allocate one or two Samplers and that's it. But extreme test cases, at least,
 // can churn through more. We want to be robust in the face of the hard limit Metal puts on the
 // number of MTLSamplerStates that can be live at the same time.
-static id<MTLSamplerState> tryCacheSamplerState(const Sampler::UniqueSamplerIdentifier& samplerIdentifier, id<MTLDevice> device, const WebGPU::SamplerDescriptor& descriptor)
+static id<MTLSamplerState> tryCacheSamplerState(const Sampler::UniqueSamplerIdentifier& samplerIdentifier, id<MTLDevice> device, const WGPUSamplerDescriptor& descriptor)
 {
     Locker locker { samplerStatesLock };
     auto& samplerStates = WebGPU::Metal::samplerStates();
@@ -269,7 +275,7 @@ static void uncacheSamplerState(const Sampler::UniqueSamplerIdentifier& samplerI
         samplerStates.remove(it);
 }
 
-Ref<Sampler> Device::createSampler(const WebGPU::SamplerDescriptor& descriptor)
+Ref<Sampler> Device::createSampler(const WGPUSamplerDescriptor& descriptor)
 {
     if (!isValid())
         return Sampler::createInvalid(*this);
@@ -287,9 +293,9 @@ Ref<Sampler> Device::createSampler(const WebGPU::SamplerDescriptor& descriptor)
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(Sampler);
 
-Sampler::Sampler(UniqueSamplerIdentifier&& samplerIdentifier, const WebGPU::SamplerDescriptor& descriptor, Device& device)
+Sampler::Sampler(UniqueSamplerIdentifier&& samplerIdentifier, const WGPUSamplerDescriptor& descriptor, Device& device)
     : m_samplerIdentifier(samplerIdentifier)
-    , m_label(descriptor.label)
+    , m_label(fromAPI(descriptor.label).utf8())
     , m_addressModeU(descriptor.addressModeU)
     , m_addressModeV(descriptor.addressModeV)
     , m_addressModeW(descriptor.addressModeW)
@@ -318,7 +324,7 @@ Sampler::~Sampler()
 
 void Sampler::setLabel(String&& label)
 {
-    m_label = WTF::move(label);
+    m_label = label.utf8();
 }
 
 bool Sampler::isValid() const
@@ -338,8 +344,8 @@ id<MTLSamplerState> Sampler::tryCacheSamplerState() const
     if (!device)
         return nil;
 
-    WebGPU::SamplerDescriptor descriptor {
-        .label = m_label,
+    WGPUSamplerDescriptor descriptor {
+        .label = toAPI(m_label),
         .addressModeU = m_addressModeU,
         .addressModeV = m_addressModeV,
         .addressModeW = m_addressModeW,

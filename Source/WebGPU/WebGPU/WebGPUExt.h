@@ -113,8 +113,7 @@ typedef struct WGPUExternalTextureBindingLayout {
 
 typedef struct WGPUExternalTextureDescriptor {
     WGPUStringView label;
-    // C API struct; cannot hold a RetainPtr.
-    SUPPRESS_UNRETAINED_MEMBER CVPixelBufferRef pixelBuffer;
+    CVPixelBufferRef pixelBuffer;
     WGPUColorSpace colorSpace;
     // The size the source presents the frame at, which the pixel buffer does not carry. Zero when the
     // source could not say, and then the frame's own decoded size stands in for it.
@@ -135,12 +134,11 @@ typedef enum WGPUVideoFrameRotation {
 // planes of a decoded video frame, are wrapped in MTLTextures and rendered into the destination
 // texture. Exactly one of source and pixelBuffer names the source.
 typedef struct WGPUImageCopyExternalImage {
-    // C API struct; cannot hold a RetainPtr.
-    SUPPRESS_UNRETAINED_MEMBER IOSurfaceRef source;
+    IOSurfaceRef source;
     // Set instead of source when the source is a video element or a WebCodecs frame. A frame carries
     // its own extent, crop and primaries, so sourceFormat, sourceWidth and sourceHeight are unused
     // and the frame is treated as opaque, the way an external texture is.
-    SUPPRESS_UNRETAINED_MEMBER CVPixelBufferRef pixelBuffer;
+    CVPixelBufferRef pixelBuffer;
     // The frame's display transform, applied to the pixel buffer to obtain the image script sees:
     // a horizontal mirror if pixelBufferIsMirrored, then a clockwise rotation. Unused without
     // pixelBuffer.
@@ -192,7 +190,6 @@ WGPU_EXPORT void wgpuRenderBundleSetLabel(WGPURenderBundle renderBundle, WGPUStr
 WGPU_EXPORT WGPUTexture wgpuSwapChainGetCurrentTexture(WGPUSwapChain swapChain, uint32_t frameIndex);
 
 WGPU_EXPORT double wgpuSurfaceGetLastFrameGPUCostSeconds(WGPUSurface surface);
-WGPU_EXPORT double wgpuSurfaceGetLastFramePresentStallSeconds(WGPUSurface surface);
 
 WGPU_EXPORT WGPUExternalTexture wgpuDeviceImportExternalTexture(WGPUDevice device, const WGPUExternalTextureDescriptor* descriptor);
 WGPU_EXPORT void wgpuQueueCopyExternalImageToTexture(WGPUQueue queue, const WGPUImageCopyExternalImage* source, const WGPUImageCopyTextureTagged* destination, const WGPUExtent3D* copySize) WGPU_FUNCTION_ATTRIBUTE;

@@ -188,15 +188,6 @@ WI.CanvasManager = class CanvasManager extends WI.Object
         canvas.shaderProgramCollection.clear();
     }
 
-    canvasNameChanged(target, canvasIdentifier, name)
-    {
-        let canvas = this._canvasForIdentifier(target, canvasIdentifier);
-        if (!canvas)
-            return;
-
-        canvas.nameChanged(name);
-    }
-
     canvasSizeChanged(target, canvasIdentifier, sizes)
     {
         let canvas = this._canvasForIdentifier(target, canvasIdentifier);
@@ -316,15 +307,6 @@ WI.CanvasManager = class CanvasManager extends WI.Object
         program.canvas.shaderProgramCollection.remove(program);
     }
 
-    programNameChanged(target, programIdentifier, name)
-    {
-        let program = this._programForIdentifier(target, programIdentifier);
-        if (!program)
-            return;
-
-        program.nameChanged(name);
-    }
-
     // Private
 
     _canvasForIdentifier(target, canvasIdentifier)
@@ -340,21 +322,6 @@ WI.CanvasManager = class CanvasManager extends WI.Object
             return null;
 
         return canvas;
-    }
-
-    _programForIdentifier(target, programIdentifier)
-    {
-        let shaderProgramForIdentifierMap = this._shaderProgramForIdentifierForTargetMap.get(target);
-        console.assert(shaderProgramForIdentifierMap);
-        if (!shaderProgramForIdentifierMap)
-            return;
-
-        let program = shaderProgramForIdentifierMap.get(programIdentifier);
-        console.assert(program);
-        if (!program)
-            return;
-
-        return program;
     }
 
     _saveRecordings(canvas)

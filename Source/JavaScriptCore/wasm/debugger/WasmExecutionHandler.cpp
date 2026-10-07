@@ -928,8 +928,7 @@ void ExecutionHandler::sendReplyImpl(AbstractLocker&, StringView reply) WTF_REQU
 #endif
 
     auto packetData = packet.utf8();
-    auto packetBytes = packetData.span();
-    int sent = static_cast<int>(send(m_debugServer.m_clientSocket, packetBytes.data(), packetBytes.size(), 0));
+    int sent = static_cast<int>(send(m_debugServer.m_clientSocket, packetData.legacyCStringPointer(), packetData.length(), 0));
     if (sent < 0)
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Failed to send packet: ", packetData, " sent: ", sent);
     else {

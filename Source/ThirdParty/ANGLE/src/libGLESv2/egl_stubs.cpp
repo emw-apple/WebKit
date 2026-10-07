@@ -82,7 +82,7 @@ EGLBoolean ChooseConfig(Thread *thread,
 }
 
 EGLint ClientWaitSync(Thread *thread,
-                      ThreadSafeDisplay *display,
+                      Display *display,
                       Sync *syncObject,
                       EGLint flags,
                       EGLTime timeout)
@@ -239,10 +239,7 @@ EGLSurface CreatePlatformWindowSurface(Thread *thread,
     return reinterpret_cast<EGLSurface>(static_cast<uintptr_t>(surface->id().value));
 }
 
-EGLSync CreateSync(Thread *thread,
-                   ThreadSafeDisplay *display,
-                   EGLenum type,
-                   const AttributeMap &attributes)
+EGLSync CreateSync(Thread *thread, Display *display, EGLenum type, const AttributeMap &attributes)
 {
     gl::Context *currentContext = thread->getContext();
 
@@ -329,7 +326,7 @@ EGLBoolean DestroySurface(Thread *thread, Display *display, egl::SurfaceID surfa
     return EGL_TRUE;
 }
 
-EGLBoolean DestroySync(Thread *thread, ThreadSafeDisplay *display, Sync *syncObject)
+EGLBoolean DestroySync(Thread *thread, Display *display, Sync *syncObject)
 {
     display->destroySync(syncObject);
 
@@ -436,7 +433,7 @@ EGLDisplay GetPlatformDisplay(Thread *thread,
 }
 
 EGLBoolean GetSyncAttrib(Thread *thread,
-                         ThreadSafeDisplay *display,
+                         Display *display,
                          Sync *syncObject,
                          EGLint attribute,
                          EGLAttrib *value)
@@ -619,7 +616,7 @@ EGLBoolean ReleaseThread(Thread *thread)
 
     if (previousDisplay != EGL_NO_DISPLAY)
     {
-        ScopedDisplayLockAndRef displayLock = GetDisplayAndLockIfValid(previousDisplay);
+        egl::ScopedDisplayRefAndLock displayLock = GetDisplayAndLockIfValid(previousDisplay);
         // Only call makeCurrent if the context or surfaces have changed.
         if (previousDraw != EGL_NO_SURFACE || previousRead != EGL_NO_SURFACE ||
             previousContext != EGL_NO_CONTEXT)
@@ -743,7 +740,7 @@ EGLBoolean WaitNative(Thread *thread, EGLint engine)
     return EGL_TRUE;
 }
 
-EGLBoolean WaitSync(Thread *thread, ThreadSafeDisplay *display, Sync *syncObject, EGLint flags)
+EGLBoolean WaitSync(Thread *thread, Display *display, Sync *syncObject, EGLint flags)
 {
     gl::Context *currentContext = thread->getContext();
     ANGLE_EGL_TRY_RETURN(thread, syncObject->serverWait(display, currentContext, flags),

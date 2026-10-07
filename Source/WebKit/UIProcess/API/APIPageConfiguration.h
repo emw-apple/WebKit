@@ -476,8 +476,6 @@ public:
 
     WebKit::BrowsingContextGroup* preferredBrowsingContextGroup() const;
 
-    WebCore::CrossOriginMode crossOriginMode() const;
-
 #if PLATFORM(VISION)
 
 #if ENABLE(GAMEPAD)

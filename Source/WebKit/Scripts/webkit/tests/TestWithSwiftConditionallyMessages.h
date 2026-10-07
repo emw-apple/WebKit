@@ -57,7 +57,7 @@ private:
     TestWithSwiftConditionallyMessageForwarder(WebKit::TestWithSwiftConditionallyWeakRef* _Nonnull);
     std::unique_ptr<WebKit::TestWithSwiftConditionally> getMessageTarget();
     std::unique_ptr<WebKit::TestWithSwiftConditionallyWeakRef> m_handler;
-} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(.ref, .deref);
+} SWIFT_SHARED_REFERENCE(.ref, .deref);
 
 }
 

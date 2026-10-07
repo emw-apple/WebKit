@@ -64,18 +64,12 @@ private:
     virtual void attachToFrame();
     virtual void detachFromFrame(WebCore::LoadWillContinueInAnotherProcess);
 
-    bool isWebDocumentLoaderMac() const final { return true; }
-
     void retainDataSource();
     void releaseDataSource();
 
-    __weak WebDataSource *m_dataSource;
+    WebDataSource *m_dataSource;
     bool m_isDataSourceRetained;
     RetainPtr<id> m_resourceLoadDelegate;
     RetainPtr<id> m_downloadDelegate;
     HashSet<WebCore::ResourceLoaderIdentifier> m_loadingResources;
 };
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebDocumentLoaderMac)
-static bool isType(const WebCore::DocumentLoader& loader) { return loader.isWebDocumentLoaderMac(); }
-SPECIALIZE_TYPE_TRAITS_END()

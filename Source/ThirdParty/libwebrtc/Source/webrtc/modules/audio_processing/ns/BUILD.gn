@@ -56,7 +56,9 @@ rtc_static_library("ns") {
 }
 
 if (rtc_include_tests) {
-  rtc_cc_test("noise_suppressor_unittest") {
+  rtc_library("ns_unittests") {
+    testonly = true
+
     configs += [ "..:apm_debug_dump" ]
     sources = [ "noise_suppressor_unittest.cc" ]
 
@@ -66,5 +68,11 @@ if (rtc_include_tests) {
       "../../../rtc_base:stringutils",
       "../../../test:test_support",
     ]
+
+    defines = []
+
+    if (rtc_enable_protobuf) {
+      sources += []
+    }
   }
 }

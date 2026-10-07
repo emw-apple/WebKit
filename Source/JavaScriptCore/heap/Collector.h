@@ -22,9 +22,6 @@
 #pragma once
 
 #include <JavaScriptCore/CollectorPhase.h>
-#include <JavaScriptCore/ConstraintConcurrency.h>
-#include <JavaScriptCore/ConstraintParallelism.h>
-#include <JavaScriptCore/ConstraintVolatility.h>
 #include <JavaScriptCore/GCConductor.h>
 #include <JavaScriptCore/GCRequest.h>
 #include <JavaScriptCore/MachineStackMarker.h>
@@ -47,9 +44,6 @@ namespace JSC {
 
 class Heap;
 class MarkStackArray;
-class MarkingConstraint;
-class MarkingConstraintSet;
-struct MarkingConstraintExecutorPair;
 class MutatorScheduler;
 class SlotVisitor;
 
@@ -61,25 +55,13 @@ public:
     explicit Collector(Heap&);
     ~Collector();
 
-    // FIXME: remove all uses of this. This exists only so multi-heap support can be added incrementally.
-    Heap& heap()
-    {
-        ASSERT(m_heaps.size() == 1);
-        return *m_heaps.first();
-    }
-
-    template<typename Func>
-    void forEachHeap(NOESCAPE const Func& func)
-    {
-        for (Heap* heap : m_heaps)
-            func(*heap);
-    }
+    Heap& heap() { return m_heap; }
 
     SlotVisitor& collectorSlotVisitor() LIFETIME_BOUND { return *m_collectorSlotVisitor; }
 
     // Every marking worker of the cycle: this Collector's own visitors, plus each participant's.
     template<typename Func>
-    inline void forEachSlotVisitor(NOESCAPE const Func&);
+    inline void forEachSlotVisitor(const Func&);
 
     void runTaskInParallel(RefPtr<SharedTask<void(SlotVisitor&)>>);
 
@@ -88,11 +70,6 @@ public:
     {
         runTaskInParallel(createSharedTask<void(SlotVisitor&)>(func));
     }
-
-    // Only while no collection is running, since a collection iterates the constraints.
-    void addMarkingConstraint(std::unique_ptr<MarkingConstraint>);
-    void addMarkingConstraint(ASCIICString abbreviatedName, ASCIICString name, MarkingConstraintExecutorPair&&,
-        ConstraintVolatility, ConstraintConcurrency, ConstraintParallelism);
 
 private:
     class CollectorThread;
@@ -103,31 +80,19 @@ private:
     friend class VerifierSlotVisitor;
 
     GCRequest::Ticket requestCollection(GCRequest);
-    bool isSubsumedByQueuedRequest(const GCRequest&);
 
-    bool hasOutstandingRequest()
-    {
-        Locker locker { *m_threadLock };
-        return hasOutstandingRequestWithLock();
-    }
-    bool hasOutstandingRequestWithLock() const WTF_REQUIRES_LOCK(*m_threadLock)
+    bool hasOutstandingRequest() const
     {
         RELEASE_ASSERT(m_lastServedTicket <= m_lastGrantedTicket);
-        // A request stays queued until it is served.
-        ASSERT(m_requests.size() == m_lastGrantedTicket - m_lastServedTicket);
         return m_lastServedTicket < m_lastGrantedTicket;
     }
-    bool hasServedTicketWithLock(GCRequest::Ticket ticket) const WTF_REQUIRES_LOCK(*m_threadLock) { return m_lastServedTicket >= ticket; }
+    bool hasServedTicket(GCRequest::Ticket ticket) const { return m_lastServedTicket >= ticket; }
 
-    bool shouldCollectInCollectorThread() WTF_REQUIRES_LOCK(*m_threadLock);
-    CollectionScope decideCollectionScope();
+    bool shouldCollectInCollectorThread(const AbstractLocker&);
     void collectInCollectorThread();
-    void collectInMutatorThread(Heap& conductor);
 
     void startCollectingContinuously();
     void stopCollectingContinuously();
-
-    void stopThread();
 
     enum class RunCurrentPhaseResult {
         Finished,
@@ -146,9 +111,8 @@ private:
     bool changePhase(GCConductor, CollectorPhase);
     bool finishChangingPhase(GCConductor);
 
-    // The per-heap part of the Begin and End phases.
-    void beginCollectionInEachHeap(CollectionScope, MonotonicTime startTime);
-    void endCollectionInEachHeap();
+    void endMarking();
+    void didFinishCollection();
 
     void stopThePeriphery();
     void resumeThePeriphery();
@@ -159,10 +123,8 @@ private:
     void assertMarkStacksEmpty();
 
     size_t bytesVisited();
-    size_t bytesVisitedIn(Heap&);
 
-    // The heaps this Collector's collections cover.
-    Vector<Heap*, 1> m_heaps;
+    Heap& m_heap;
 
     // Mutated by the marking threads, grouped so that marking dirties as few cache lines as possible and
     // so that fields the mutator reads are not on those lines.
@@ -194,14 +156,12 @@ private:
     Vector<SlotVisitor*> m_availableParallelSlotVisitors WTF_GUARDED_BY_LOCK(m_parallelSlotVisitorLock);
     ParallelHelperClient m_helperClient;
 
-    std::unique_ptr<MarkingConstraintSet> m_constraintSet;
-
     // The phase machine, stepped once per transition.
     CollectorPhase m_lastPhase { CollectorPhase::NotRunning };
     CollectorPhase m_currentPhase { CollectorPhase::NotRunning };
     CollectorPhase m_nextPhase { CollectorPhase::NotRunning };
-    bool m_threadIsWorking WTF_GUARDED_BY_LOCK(*m_threadLock) { false };
-    bool m_threadShouldStop WTF_GUARDED_BY_LOCK(*m_threadLock) { false };
+    bool m_collectorThreadIsRunning { false };
+    bool m_threadShouldStop { false };
     bool m_isCompilerThreadsSuspended { false };
     uint64_t m_phaseVersion { 0 };
     std::unique_ptr<MutatorScheduler> m_scheduler;
@@ -210,10 +170,10 @@ private:
     Box<Lock> m_threadLock;
     const Ref<AutomaticThreadCondition> m_threadCondition; // The mutator must not wait on this. It would cause a deadlock.
     const RefPtr<AutomaticThread> m_thread;
-    Deque<GCRequest> m_requests WTF_GUARDED_BY_LOCK(*m_threadLock);
+    Deque<GCRequest> m_requests;
     GCRequest m_currentRequest;
-    GCRequest::Ticket m_lastServedTicket WTF_GUARDED_BY_LOCK(*m_threadLock) { 0 };
-    GCRequest::Ticket m_lastGrantedTicket WTF_GUARDED_BY_LOCK(*m_threadLock) { 0 };
+    GCRequest::Ticket m_lastServedTicket { 0 };
+    GCRequest::Ticket m_lastGrantedTicket { 0 };
 
     // Set to either the mutator or collector thread, depending on which is conducting the current phase.
     // These are valid only while that phase runs.
@@ -232,8 +192,6 @@ private:
 
     // Describes the cycle for Instruments. Built at Begin, cleared at End.
     UTF8CString m_signpostMessage;
-    // Numbers the collections in the signpost.
-    uint64_t m_gcVersion { 0 };
 };
 
 } // namespace JSC

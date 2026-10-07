@@ -74,6 +74,9 @@ public:
     void setItemID(BackForwardItemIdentifier itemID) { m_itemID = itemID; }
     std::optional<BackForwardItemIdentifier> itemID() const { return m_itemID; }
 
+    void setDetachedRootFrames(HashSet<WeakRef<LocalFrame>>&& frames) { m_detachedRootFrames = WTF::move(frames); }
+    HashSet<WeakRef<LocalFrame>> takeDetachedRootFrames() { return std::exchange(m_detachedRootFrames, { }); }
+
 private:
     void restoreNavigationAPIHistoryItems(LocalFrame&, BackForwardController*);
 
@@ -81,6 +84,7 @@ private:
     MonotonicTime m_expirationTime;
     std::unique_ptr<CachedFrame> m_cachedMainFrame;
     std::optional<BackForwardItemIdentifier> m_itemID;
+    HashSet<WeakRef<LocalFrame>> m_detachedRootFrames;
 #if ENABLE(VIDEO)
     bool m_needsCaptionPreferencesChanged { false };
 #endif

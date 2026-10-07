@@ -66,7 +66,7 @@ template<typename T> bool CSSMathValue::equalsImpl(const CSSNumericValue& other)
         return false;
 
     for (size_t i = 0 ; i < length; ++i) {
-        if (!protect(thisValues->array()[i])->equals(otherValues->array()[i].get()))
+        if (!thisValues->array()[i]->equals(otherValues->array()[i].get()))
             return false;
     }
 

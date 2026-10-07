@@ -29,7 +29,6 @@
 #include <glib/gi18n-lib.h>
 #include <wtf/FileSystem.h>
 #include <wtf/RunLoop.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GUniquePtr.h>
 #include <wtf/glib/WTFGType.h>
@@ -145,7 +144,7 @@ void webkitFaviconDatabaseGetLoadDecisionForIcon(WebKitFaviconDatabase* database
 
 #if PLATFORM(GTK)
             if (found && changed)
-                gSignalEmit(database.get(), signals[FAVICON_CHANGED], 0, pageURL.utf8(), url.utf8());
+                g_signal_emit(database.get(), signals[FAVICON_CHANGED], 0, pageURL.utf8().legacyCStringPointer(), url.utf8().legacyCStringPointer());
 #else
             UNUSED_PARAM(changed);
 #endif
@@ -166,7 +165,7 @@ void webkitFaviconDatabaseSetIconForPageURL(WebKitFaviconDatabase* database, con
                 return;
 
 #if PLATFORM(GTK)
-            gSignalEmit(database.get(), signals[FAVICON_CHANGED], 0, pageURL.utf8(), url.utf8());
+            g_signal_emit(database.get(), signals[FAVICON_CHANGED], 0, pageURL.utf8().legacyCStringPointer(), url.utf8().legacyCStringPointer());
 #endif
         });
 }
@@ -204,8 +203,8 @@ void webkitFaviconDatabaseGetFaviconInternal(WebKitFaviconDatabase* database, UT
     priv->iconDatabase->loadIconsForPageURL(String::fromUTF8(pageURI.span()), isEphemeral ? IconDatabase::AllowDatabaseWrite::No : IconDatabase::AllowDatabaseWrite::Yes,
         [task = WTF::move(task), pageURI = UTF8CString { pageURI.span() }](Vector<PlatformImagePtr>&& icons) {
             if (icons.isEmpty()) {
-                SAFE_G_TASK_RETURN_NEW_ERROR(task.get(), WEBKIT_FAVICON_DATABASE_ERROR, WEBKIT_FAVICON_DATABASE_ERROR_FAVICON_UNKNOWN,
-                    _("Unknown favicon for page %s"), pageURI);
+                g_task_return_new_error(task.get(), WEBKIT_FAVICON_DATABASE_ERROR, WEBKIT_FAVICON_DATABASE_ERROR_FAVICON_UNKNOWN,
+                    _("Unknown favicon for page %s"), pageURI.legacyCStringPointer());
                 return;
             }
             auto& icon = icons.last();
@@ -261,7 +260,7 @@ gchar* webkit_favicon_database_get_favicon_uri(WebKitFaviconDatabase* database, 
     if (iconURLsForPageURL.isEmpty())
         return nullptr;
 
-    return gStrdup(iconURLsForPageURL.last().utf8());
+    return g_strdup(iconURLsForPageURL.last().utf8().legacyCStringPointer());
 }
 #endif // PLATFORM(GTK)
 

@@ -524,14 +524,11 @@ shouldThrow(() => {
     });
 }, RangeError);
 
-{
-    let reads = 0;
+shouldThrow(() => {
     Function.prototype.__defineGetter__('prototype', function () {
-        reads++;
-        return Object.prototype;
+        this.call(0x1234);
     });
-
+    
     const numberFormat = new Intl.NumberFormat();
-    shouldBe(1 instanceof numberFormat.format, false);
-    shouldBe(reads, 0);
-}
+    1 instanceof numberFormat.format;
+}, TypeError)

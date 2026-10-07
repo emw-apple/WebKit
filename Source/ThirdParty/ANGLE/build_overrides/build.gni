@@ -63,8 +63,3 @@ if (is_win) {
 } else {
   enable_safe_libcxx = false
 }
-
-vpython_spec_files = [
-  "//vpython.toml",
-  "//vpython.toml.uv.lock",
-]

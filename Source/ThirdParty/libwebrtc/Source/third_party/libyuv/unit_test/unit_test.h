@@ -12,7 +12,6 @@
 #define UNIT_TEST_UNIT_TEST_H_
 
 #include <stddef.h>  // For NULL
-#include <stdint.h>
 #ifdef _WIN32
 #include <windows.h>
 #elif !defined(__hexagon__)
@@ -21,6 +20,8 @@
 
 // pragma to disable warning for ASSERT_NE
 #include <gtest/gtest.h>  // IWYU pragma: export
+
+#include "libyuv/basic_types.h"
 
 #ifndef SIMD_ALIGNED
 #if defined(_MSC_VER) && !defined(__CLR_VER)

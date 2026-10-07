@@ -556,11 +556,6 @@ private:
 
     static std::span<Digit> NODELETE divideSingle(std::span<Digit> q, Digit& remainder, std::span<const Digit>, Digit);
     static std::tuple<std::span<Digit>, std::span<Digit>> divideSchoolbook(std::span<Digit> q, std::span<Digit> r, std::span<const Digit>, std::span<const Digit>);
-    static void burnikelZieglerBasecase(std::span<Digit> q, std::span<Digit> r, std::span<const Digit>, std::span<const Digit>);
-    static void burnikelZieglerD3n2n(std::span<Digit> q, std::span<Digit> r, std::span<const Digit> a1a2, std::span<const Digit> a3, std::span<const Digit>, std::span<Digit> scratch);
-    static void burnikelZieglerD2n1n(std::span<Digit> q, std::span<Digit> r, std::span<const Digit>, std::span<const Digit>, std::span<Digit> scratch);
-    static std::tuple<std::span<Digit>, std::span<Digit>> divideBurnikelZiegler(std::span<Digit> q, std::span<Digit> r, std::span<const Digit>, std::span<const Digit>);
-    static std::tuple<std::span<Digit>, std::span<Digit>> divideDigitsInto(std::span<Digit> q, std::span<Digit> r, std::span<const Digit>, std::span<const Digit>);
     static Digit divideSameSize(std::span<const Digit>, std::span<const Digit>);
     static std::span<Digit> remainderSameSize(std::span<Digit> r, std::span<const Digit>, std::span<const Digit>);
 
@@ -593,7 +588,7 @@ private:
     };
 
     template<typename BitwiseOp>
-    static std::span<Digit> absoluteBitwiseOp(std::span<const Digit> x, std::span<const Digit> y, ExtraDigitsHandling, NOESCAPE const BitwiseOp&, std::span<Digit> result);
+    static std::span<Digit> absoluteBitwiseOp(std::span<const Digit> x, std::span<const Digit> y, ExtraDigitsHandling, BitwiseOp&&, std::span<Digit> result);
 
     static size_t andLength(std::span<const Digit> x, std::span<const Digit> y) { return std::min(x.size(), y.size()); }
     static size_t orLength(std::span<const Digit> x, std::span<const Digit> y) { return std::max(x.size(), y.size()); }

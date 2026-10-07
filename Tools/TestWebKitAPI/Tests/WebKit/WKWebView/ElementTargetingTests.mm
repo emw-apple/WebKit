@@ -35,6 +35,7 @@
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/WKWebViewPrivateForTesting.h>
 #import <WebKit/WKWebpagePreferencesPrivate.h>
+#import <WebKit/_WKFrameTreeNode.h>
 #import <WebKit/_WKTargetedElementInfo.h>
 #import <WebKit/_WKTargetedElementRequest.h>
 
@@ -166,6 +167,26 @@
 
 @end
 
+@interface _WKTargetedElementInfo (TestingAdditions)
+@property (nonatomic, readonly) NSArray<_WKFrameTreeNode *> *childFrames;
+@end
+
+@implementation _WKTargetedElementInfo (TestingAdditions)
+
+- (NSArray<_WKFrameTreeNode *> *)childFrames
+{
+    __block RetainPtr<NSArray<_WKFrameTreeNode *>> result;
+    __block bool done = false;
+    [self getChildFrames:^(NSArray<_WKFrameTreeNode *> *frames) {
+        result = frames;
+        done = true;
+    }];
+    TestWebKitAPI::Util::run(&done);
+    return result.autorelease();
+}
+
+@end
+
 namespace TestWebKitAPI {
 
 TEST(ElementTargeting, BasicElementTargeting)
@@ -186,6 +207,22 @@ TEST(ElementTargeting, BasicElementTargeting)
         EXPECT_TRUE([element.renderedText containsString:@"The round pegs"]);
         EXPECT_EQ(element.renderedText.length, 70U);
         EXPECT_EQ(element.offsetEdges, _WKRectEdgeLeft | _WKRectEdgeTop);
+
+        RetainPtr childFrames = [element childFrames];
+        EXPECT_EQ([childFrames count], 1U);
+
+        auto childFrame = [childFrames firstObject];
+        EXPECT_FALSE(childFrame.info.mainFrame);
+        EXPECT_WK_STREQ(childFrame.info.request.URL.lastPathComponent, "nested-frames.html");
+        EXPECT_WK_STREQ(childFrame.info._title, "Outer Subframe");
+        EXPECT_EQ(childFrame.childFrames.count, 1U);
+
+        auto nestedChildFrame = childFrame.childFrames.firstObject;
+        EXPECT_FALSE(nestedChildFrame.info.mainFrame);
+        EXPECT_FALSE(nestedChildFrame.info.mainFrame);
+        EXPECT_WK_STREQ(nestedChildFrame.info.request.URL.scheme, "about");
+        EXPECT_WK_STREQ(nestedChildFrame.info._title, "Inner Subframe");
+        EXPECT_EQ(nestedChildFrame.childFrames.count, 0U);
     }
     {
         auto element = [elements objectAtIndex:1];
@@ -194,6 +231,7 @@ TEST(ElementTargeting, BasicElementTargeting)
         EXPECT_TRUE([element.renderedText containsString:@"the crazy ones"]);
         EXPECT_EQ(element.renderedText.length, 64U);
         EXPECT_EQ(element.offsetEdges, _WKRectEdgeRight | _WKRectEdgeBottom);
+        EXPECT_EQ(element.childFrames.count, 0U);
     }
     {
         auto element = [elements objectAtIndex:2];
@@ -202,6 +240,7 @@ TEST(ElementTargeting, BasicElementTargeting)
         EXPECT_TRUE([element.renderedText containsString:@"Lorem ipsum"]);
         EXPECT_EQ(element.renderedText.length, 896U);
         EXPECT_EQ(element.offsetEdges, _WKRectEdgeNone);
+        EXPECT_EQ(element.childFrames.count, 0U);
     }
 }
 
@@ -706,21 +745,25 @@ TEST(ElementTargeting, RequestAllVisibleElements)
             auto subelement = [subelements objectAtIndex: 0];
             EXPECT_TRUE([subelement.renderedText containsString:@"Top box"]);
             EXPECT_EQ(subelement.renderedText.length, 7U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
         {
             auto subelement = [subelements objectAtIndex: 1];
             EXPECT_TRUE([subelement.renderedText containsString:@"the crazy ones"]);
             EXPECT_EQ(subelement.renderedText.length, 64U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
         {
             auto subelement = [subelements objectAtIndex: 2];
             EXPECT_TRUE([subelement.renderedText containsString:@"Lorem ipsum"]);
             EXPECT_EQ(subelement.renderedText.length, 896U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
         {
             auto subelement = [subelements objectAtIndex: 3];
             EXPECT_TRUE([subelement.renderedText containsString:@"Occluded box"]);
             EXPECT_EQ(subelement.renderedText.length, 12U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
     }
     {
@@ -730,16 +773,19 @@ TEST(ElementTargeting, RequestAllVisibleElements)
             auto subelement = [subelements objectAtIndex: 0];
             EXPECT_TRUE([subelement.renderedText containsString:@"Occluded box"]);
             EXPECT_EQ(subelement.renderedText.length, 12U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
         {
             auto subelement = [subelements objectAtIndex: 1];
             EXPECT_TRUE([subelement.renderedText containsString:@"the crazy ones"]);
             EXPECT_EQ(subelement.renderedText.length, 64U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
         {
             auto subelement = [subelements objectAtIndex: 2];
             EXPECT_TRUE([subelement.renderedText containsString:@"Lorem ipsum"]);
             EXPECT_EQ(subelement.renderedText.length, 896U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
     }
     {
@@ -749,11 +795,13 @@ TEST(ElementTargeting, RequestAllVisibleElements)
             auto subelement = [subelements objectAtIndex: 0];
             EXPECT_TRUE([subelement.renderedText containsString:@"the crazy ones"]);
             EXPECT_EQ(subelement.renderedText.length, 64U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
         {
             auto subelement = [subelements objectAtIndex: 1];
             EXPECT_TRUE([subelement.renderedText containsString:@"Lorem ipsum"]);
             EXPECT_EQ(subelement.renderedText.length, 896U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
     }
     {
@@ -763,6 +811,7 @@ TEST(ElementTargeting, RequestAllVisibleElements)
             auto subelement = [subelements objectAtIndex: 0];
             EXPECT_TRUE([subelement.renderedText containsString:@"Lorem ipsum"]);
             EXPECT_EQ(subelement.renderedText.length, 896U);
+            EXPECT_EQ(subelement.childFrames.count, 0U);
         }
     }
 }

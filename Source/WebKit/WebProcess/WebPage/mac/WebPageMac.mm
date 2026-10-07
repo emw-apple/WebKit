@@ -45,7 +45,6 @@
 #import "UserData.h"
 #import "WKAccessibilityWebPageObjectMac.h"
 #import "WebEventConversion.h"
-#import "WebEventPhase.h"
 #import "WebFrame.h"
 #import "WebHitTestResultData.h"
 #import "WebImage.h"
@@ -83,7 +82,6 @@
 #import <WebCore/HTMLAttachmentElement.h>
 #import <WebCore/HTMLImageElement.h>
 #import <WebCore/HTMLPlugInElement.h>
-#import <WebCore/HandleUserInputEventResult.h>
 #import <WebCore/HitTestResult.h>
 #import <WebCore/ImageOverlay.h>
 #import <WebCore/ImmediateActionStage.h>
@@ -182,10 +180,6 @@ void WebPage::createMockAccessibilityElement(pid_t pid)
 
 void WebPage::platformReinitializeAccessibilityToken()
 {
-    // platformInitializeAccessibility will transfer the token once the mock element is created.
-    if (!m_mockAccessibilityElement)
-        return;
-
     RefPtr frame = m_page->focusController().focusedOrMainFrame();
     if (!frame)
         return;
@@ -420,26 +414,26 @@ void WebPage::attributedSubstringForCharacterRangeAsync(const EditingRange& edit
         return;
     }
 
-    auto attributedString = editingAttributedString(*range, { });
+    auto attributedString = editingAttributedString(*range, { }).nsAttributedString();
 
-    // WebCore::editingAttributedString() insists on inserting a trailing
+    // WebCore::editingAttributedStringFromRange() insists on inserting a trailing
     // whitespace at the end of the string which breaks the ATOK input method.  <rdar://problem/5400551>
     // To work around this we truncate the resultant string to the correct length.
-    if (attributedString.string.length() > editingRange.length) {
-        ASSERT(attributedString.string.length() == editingRange.length + 1);
-        ASSERT(attributedString.string[static_cast<unsigned>(editingRange.length)] == '\n' || attributedString.string[static_cast<unsigned>(editingRange.length)] == ' ');
-        attributedString.truncate(editingRange.length);
+    if ([attributedString length] > editingRange.length) {
+        ASSERT([attributedString length] == editingRange.length + 1);
+        ASSERT([[attributedString string] characterAtIndex:editingRange.length] == '\n' || [[attributedString string] characterAtIndex:editingRange.length] == ' ');
+        attributedString = [attributedString attributedSubstringFromRange:NSMakeRange(0, editingRange.length)];
     }
 
-    EditingRange rangeToSend(editingRange.location, attributedString.string.length());
+    EditingRange rangeToSend(editingRange.location, [attributedString length]);
     ASSERT(rangeToSend.isValid());
     if (!rangeToSend.isValid()) {
         // Send an empty EditingRange as a last resort for <rdar://problem/27078089>.
-        completionHandler(attributedString, EditingRange());
+        completionHandler(WebCore::AttributedString::fromNSAttributedString(WTF::move(attributedString)), EditingRange());
         return;
     }
 
-    completionHandler(attributedString, rangeToSend);
+    completionHandler(WebCore::AttributedString::fromNSAttributedString(WTF::move(attributedString)), rangeToSend);
 }
 
 bool WebPage::performNonEditingBehaviorForSelector(const String& selector, KeyboardEvent* event)
@@ -609,29 +603,10 @@ bool WebPage::platformCanHandleRequest(const WebCore::ResourceRequest& request)
     return url.protocolIs("applewebdata"_s);
 }
 
-static RefPtr<LocalFrame> frameForFirstMouseHitTest(Page& page, std::optional<FrameIdentifier> frameID)
-{
-    if (!frameID)
-        return page.focusController().focusedOrMainFrame();
-    RefPtr webFrame = WebFrame::webFrame(*frameID);
-    return webFrame ? webFrame->coreLocalFrame() : nullptr;
-}
-
-static std::optional<RemoteUserInputEventData> remoteUserInputEventDataForHitInRemoteFrame(const HitTestResult& hitResult, const WebMouseEvent& event)
-{
-    RefPtr remoteFrame = dynamicDowncast<RemoteFrame>(EventHandler::subframeForTargetNode(protect(hitResult.targetNode()).get()));
-    if (!remoteFrame)
-        return std::nullopt;
-    RefPtr remoteFrameView = remoteFrame->view();
-    if (!remoteFrameView)
-        return std::nullopt;
-    return RemoteUserInputEventData { remoteFrame->frameID(), remoteFrameView->convertFromRootView(flooredIntPoint(event.position())) };
-}
-
-void WebPage::shouldDelayWindowOrderingEvent(std::optional<FrameIdentifier> frameID, Ref<WebKit::WebMouseEvent>&& eventRef, CompletionHandler<void(Variant<bool, RemoteUserInputEventData>&&)>&& completionHandler)
+void WebPage::shouldDelayWindowOrderingEvent(Ref<WebKit::WebMouseEvent>&& eventRef, CompletionHandler<void(bool)>&& completionHandler)
 {
     const auto& event = eventRef.get();
-    RefPtr frame = frameForFirstMouseHitTest(*protect(m_page), frameID);
+    RefPtr frame = m_page->focusController().focusedOrMainFrame();
     if (!frame)
         return completionHandler({ });
 
@@ -639,15 +614,13 @@ void WebPage::shouldDelayWindowOrderingEvent(std::optional<FrameIdentifier> fram
 #if ENABLE(DRAG_SUPPORT)
     constexpr OptionSet<HitTestRequest::Type> hitType { HitTestRequest::Type::ReadOnly, HitTestRequest::Type::Active, HitTestRequest::Type::AllowChildFrameContent };
     HitTestResult hitResult = frame->eventHandler().hitTestResultAtPoint(protect(frame->view())->windowToContents(flooredIntPoint(event.position())), hitType);
-    if (auto remoteUserInputEventData = remoteUserInputEventDataForHitInRemoteFrame(hitResult, event))
-        return completionHandler(WTF::move(*remoteUserInputEventData));
     if (hitResult.isSelected())
         result = frame->eventHandler().eventMayStartDrag(platform(event));
 #endif
     completionHandler(result);
 }
 
-void WebPage::requestAcceptsFirstMouse(std::optional<FrameIdentifier> frameID, int eventNumber, Ref<WebKit::WebMouseEvent>&& eventRef)
+void WebPage::requestAcceptsFirstMouse(int eventNumber, Ref<WebKit::WebMouseEvent>&& eventRef)
 {
     const auto& event = eventRef.get();
     if (WebProcess::singleton().parentProcessConnection()->inSendSync()) {
@@ -657,17 +630,13 @@ void WebPage::requestAcceptsFirstMouse(std::optional<FrameIdentifier> frameID, i
         return;
     }
 
-    RefPtr frame = frameForFirstMouseHitTest(*protect(m_page), frameID);
+    RefPtr frame = m_page->focusController().focusedOrMainFrame();
     if (!frame)
         return;
 
     constexpr OptionSet<HitTestRequest::Type> hitType { HitTestRequest::Type::ReadOnly, HitTestRequest::Type::Active, HitTestRequest::Type::AllowChildFrameContent };
     HitTestResult hitResult = frame->eventHandler().hitTestResultAtPoint(protect(frame->view())->windowToContents(flooredIntPoint(event.position())), hitType);
     frame->eventHandler().setActivationEventNumber(eventNumber);
-    if (auto remoteUserInputEventData = remoteUserInputEventDataForHitInRemoteFrame(hitResult, event)) {
-        send(Messages::WebPageProxy::HandleAcceptsFirstMouse(WTF::move(*remoteUserInputEventData)));
-        return;
-    }
     bool result = false;
 #if ENABLE(DRAG_SUPPORT)
     if (hitResult.isSelected())
@@ -768,14 +737,11 @@ void WebPage::handleImageServiceClick(WebCore::FrameIdentifier frameID, const In
     if (!webFrame)
         return;
 
-    auto elementAbsoluteBox = protect(element.renderBox())->absoluteContentQuad().enclosingBoundingBox();
-    auto elementBoxInMainFrameView = protect(protect(webFrame->coreFrame())->virtualView())->contentsToMainFrameView(elementAbsoluteBox);
-
     send(Messages::WebPageProxy::ShowContextMenuFromFrame(webFrame->info(), ContextMenuContextData {
         point,
         image,
         element.isContentEditable(),
-        elementBoxInMainFrameView,
+        protect(element.renderBox())->absoluteContentQuad().enclosingBoundingBox(),
         HTMLAttachmentElement::getAttachmentIdentifier(element),
         contextForElement(element),
         image.mimeType()
@@ -788,13 +754,10 @@ void WebPage::handlePDFServiceClick(WebCore::FrameIdentifier frameID, const IntP
     if (!webFrame)
         return;
 
-    auto elementAbsoluteBox = protect(element.renderBox())->absoluteContentQuad().enclosingBoundingBox();
-    auto elementBoxInMainFrameView = protect(protect(webFrame->coreFrame())->virtualView())->contentsToMainFrameView(elementAbsoluteBox);
-
     send(Messages::WebPageProxy::ShowContextMenuFromFrame(webFrame->info(), ContextMenuContextData {
         point,
         element.isContentEditable(),
-        elementBoxInMainFrameView,
+        protect(element.renderBox())->absoluteContentQuad().enclosingBoundingBox(),
         element.uniqueIdentifier(),
         "application/pdf"_s
     }, { }));
@@ -827,15 +790,22 @@ OptionSet<PointerCharacteristics> WebPage::pointerCharacteristicsOfAllAvailableP
     return PointerCharacteristics::Fine;
 }
 
-void WebPage::performImmediateActionHitTestAtLocation(WebCore::FrameIdentifier frameID, WebCore::FloatPoint locationInViewCoordinates, CompletionHandler<void(Variant<WebHitTestResultData, RemoteUserInputEventData>&&, bool, UserData&&)>&& completionHandler)
+void WebPage::performImmediateActionHitTestAtLocation(WebCore::FrameIdentifier frameID, WebCore::FloatPoint locationInViewCoordinates)
 {
     layoutIfNeeded();
 
     RefPtr currentFrame = WebProcess::singleton().webFrame(frameID);
-    RefPtr localCurrentFrame = currentFrame ? currentFrame->coreLocalFrame() : nullptr;
-    RefPtr currentFrameView = localCurrentFrame ? localCurrentFrame->view() : nullptr;
-    if (!currentFrameView || !currentFrameView->renderView())
-        return completionHandler(WebHitTestResultData(), false, UserData());
+    if (!currentFrame)
+        return;
+    RefPtr localCurrentFrame = currentFrame->coreLocalFrame();
+    if (!localCurrentFrame)
+        return;
+    RefPtr currentFrameView = localCurrentFrame->view();
+
+    if (!currentFrameView || !currentFrameView->renderView()) {
+        send(Messages::WebPageProxy::DidPerformImmediateActionHitTest(WebHitTestResultData(), false, UserData()));
+        return;
+    }
 
     auto locationInContentCoordinates = protect(localCurrentFrame->view())->rootViewToContents(roundedIntPoint(locationInViewCoordinates));
     auto hitTestResult = localCurrentFrame->eventHandler().hitTestResultAtPoint(locationInContentCoordinates, {
@@ -845,19 +815,6 @@ void WebPage::performImmediateActionHitTestAtLocation(WebCore::FrameIdentifier f
         HitTestRequest::Type::AllowChildFrameContent,
     });
 
-    WebHitTestResultData immediateActionResult(hitTestResult, { });
-
-    // The UI process will hit-test again in the remote frame's process, so this one must not act on the hit test.
-    auto subframe = EventHandler::subframeForTargetNode(protect(hitTestResult.targetNode()).get());
-    if (RefPtr remoteFrame = dynamicDowncast<RemoteFrame>(subframe).get()) {
-        if (RefPtr remoteFrameView = remoteFrame->view()) {
-            return completionHandler(RemoteUserInputEventData {
-                remoteFrame->frameID(),
-                remoteFrameView->convertFromRootView(roundedIntPoint(locationInViewCoordinates))
-            }, false, UserData());
-        }
-    }
-
     bool immediateActionHitTestPreventsDefault = false;
 
     RefPtr element = hitTestResult.targetElement();
@@ -865,6 +822,23 @@ void WebPage::performImmediateActionHitTestAtLocation(WebCore::FrameIdentifier f
     localCurrentFrame->eventHandler().setImmediateActionStage(ImmediateActionStage::PerformedHitTest);
     if (element)
         immediateActionHitTestPreventsDefault = element->dispatchMouseForceWillBegin();
+
+    WebHitTestResultData immediateActionResult(hitTestResult, { });
+
+    auto subframe = EventHandler::subframeForTargetNode(protect(hitTestResult.targetNode()).get());
+    if (RefPtr remoteFrame = dynamicDowncast<RemoteFrame>(subframe).get()) {
+        if (RefPtr remoteFrameView = remoteFrame->view()) {
+            immediateActionResult.remoteUserInputEventData = RemoteUserInputEventData {
+                remoteFrame->frameID(),
+                remoteFrameView->convertFromRootView(roundedIntPoint(locationInViewCoordinates))
+            };
+        }
+    }
+
+    RefPtr focusedOrMainFrame = corePage()->focusController().focusedOrMainFrame();
+    if (!focusedOrMainFrame)
+        return;
+    auto selectionRange = focusedOrMainFrame->selection().selection().firstRange();
 
     auto indicatorOptions = [&](const SimpleRange& range) {
         OptionSet<TextIndicatorOption> options { TextIndicatorOption::UseBoundingRectAndPaintAllContentForComplexRanges, TextIndicatorOption::UseUserSelectAllCommonAncestor };
@@ -905,7 +879,7 @@ void WebPage::performImmediateActionHitTestAtLocation(WebCore::FrameIdentifier f
         pageOverlayDidOverrideDataDetectors = true;
         if (RetainPtr detectedContext = actionContext->context.get())
             immediateActionResult.platformData.detectedDataActionContext = { { detectedContext.get() } };
-        immediateActionResult.platformData.detectedDataBoundingBox = view->contentsToMainFrameView(enclosingIntRect(unitedBoundingBoxes(RenderObject::absoluteTextQuads(actionContext->range))));
+        immediateActionResult.platformData.detectedDataBoundingBox = view->contentsToWindow(enclosingIntRect(unitedBoundingBoxes(RenderObject::absoluteTextQuads(actionContext->range))));
         immediateActionResult.platformData.detectedDataTextIndicator = TextIndicator::createWithRange(actionContext->range, indicatorOptions(actionContext->range), TextIndicatorPresentationTransition::FadeIn);
         immediateActionResult.platformData.detectedDataOriginatingPageOverlay = overlay->pageOverlayID();
         break;
@@ -916,7 +890,7 @@ void WebPage::performImmediateActionHitTestAtLocation(WebCore::FrameIdentifier f
         if (auto result = DataDetection::detectItemAroundHitTestResult(hitTestResult)) {
             if (auto detectedContext = WTF::move(result->actionContext))
                 immediateActionResult.platformData.detectedDataActionContext = { { WTF::move(detectedContext) } };
-            immediateActionResult.platformData.detectedDataBoundingBox = currentFrameView->convertToRootViewAcrossIsolatedFrames(result->boundingBox);
+            immediateActionResult.platformData.detectedDataBoundingBox = result->boundingBox;
             immediateActionResult.platformData.detectedDataTextIndicator = TextIndicator::createWithRange(result->range, indicatorOptions(result->range), TextIndicatorPresentationTransition::FadeIn);
         }
     }
@@ -944,7 +918,7 @@ void WebPage::performImmediateActionHitTestAtLocation(WebCore::FrameIdentifier f
     injectedBundleContextMenuClient().prepareForImmediateAction(*this, hitTestResult, userData);
 
     immediateActionResult.elementBoundingBox = immediateActionResult.elementBoundingBox.toRectWithExtentsClippedToNumericLimits();
-    completionHandler(WTF::move(immediateActionResult), immediateActionHitTestPreventsDefault, UserData(WebProcess::singleton().transformObjectsToHandles(userData.get()).get()));
+    send(Messages::WebPageProxy::DidPerformImmediateActionHitTest(immediateActionResult, immediateActionHitTestPreventsDefault, UserData(WebProcess::singleton().transformObjectsToHandles(userData.get()).get())));
 }
 
 std::optional<WebCore::SimpleRange> WebPage::lookupTextAtLocation(FrameIdentifier frameID, FloatPoint locationInViewCoordinates)
@@ -1023,6 +997,10 @@ void WebPage::dataDetectorsDidHideUI(PageOverlay::PageOverlayID overlayID)
             return;
         }
     }
+}
+
+void WebPage::updateVisibleContentRects(const VisibleContentRectUpdateInfo&, MonotonicTime)
+{
 }
 
 #if ENABLE(WIRELESS_PLAYBACK_TARGET) && !PLATFORM(IOS_FAMILY)
@@ -1217,57 +1195,6 @@ void WebPage::updatePDFHUDLocationsAfterRemoteFrameGeometryChange()
 }
 
 #endif // ENABLE(PDF_PLUGIN)
-
-void WebPage::dispatchTrackedPointerEvent(std::optional<FrameIdentifier> frameID, WebEventPhase phase, FloatPoint locationInRootView, OptionSet<WebEventModifier> modifiers, CompletionHandler<void(bool, std::optional<RemoteUserInputEventData>)>&& completionHandler)
-{
-    RefPtr localRootFrame = this->localRootFrame(frameID);
-    if (!localRootFrame)
-        return completionHandler(false, std::nullopt);
-
-    bool isPressed = phase == WebEventPhase::Began || phase == WebEventPhase::Changed;
-    auto previousLocation = std::exchange(m_lastTrackedPointerLocation, isPressed ? std::optional { locationInRootView } : std::nullopt);
-
-    DoublePoint position { locationInRootView.x(), locationInRootView.y() };
-    if (phase == WebEventPhase::Cancelled) {
-        auto result = localRootFrame->eventHandler().cancelTrackedPointer(position, mousePointerID);
-        return completionHandler(false, result.remoteUserInputEventData());
-    }
-
-    auto type = [&] {
-        switch (phase) {
-        case WebEventPhase::Began:
-            return PlatformEvent::Type::MousePressed;
-        case WebEventPhase::Changed:
-            return PlatformEvent::Type::MouseMoved;
-        case WebEventPhase::Ended:
-            return PlatformEvent::Type::MouseReleased;
-        default:
-            return PlatformEvent::Type::NoType;
-        }
-    }();
-
-    if (type == PlatformEvent::Type::NoType)
-        return completionHandler(false, std::nullopt);
-
-    DoublePoint globalPosition = position;
-    if (RefPtr view = localRootFrame->view()) {
-        auto locationAcrossIsolatedFrames = view->convertToRootViewAcrossIsolatedFrames(locationInRootView);
-        globalPosition = { locationAcrossIsolatedFrames.x(), locationAcrossIsolatedFrames.y() };
-    }
-
-    DoublePoint movementDelta;
-    if (type == PlatformEvent::Type::MouseMoved && previousLocation)
-        movementDelta = { locationInRootView.x() - previousLocation->x(), locationInRootView.y() - previousLocation->y() };
-
-    SetForScope userIsInteractingChange { m_userIsInteracting, true };
-
-    PlatformMouseEvent platformEvent { position, globalPosition, MouseButton::Left, type, 1, platform(modifiers), MonotonicTime::now(), isPressed ? ForceAtClick : 0, SyntheticClickType::NoTap, MouseEventInputSource::Automation, mousePointerID, movementDelta };
-    // Pointer events report `buttons`, and a mouse pointer's `pressure`, from this.
-    platformEvent.setButtons(isPressed ? 1 : 0);
-
-    auto result = localRootFrame->eventHandler().dispatchTrackedPointerEvent(platformEvent);
-    completionHandler(result.wasHandled(), result.remoteUserInputEventData());
-}
 
 } // namespace WebKit
 

@@ -26,7 +26,12 @@
 #import <objc/NSObject.h>
 #import <stdbool.h>
 
-@interface WebDeviceOrientation : NSObject
+@class WebDeviceOrientationInternal;
+
+@interface WebDeviceOrientation : NSObject {
+@private
+    WebDeviceOrientationInternal* m_internal;
+}
 
 - (id)initWithCanProvideAlpha:(bool)canProvideAlpha alpha:(double)alpha canProvideBeta:(bool)canProvideBeta beta:(double)beta canProvideGamma:(bool)canProvideGamma gamma:(double)gamma;
 

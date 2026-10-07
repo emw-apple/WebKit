@@ -103,8 +103,6 @@ void RenderSVGModelObject::updateFromStyle()
     updateHasSVGTransformFlags();
     if (!hasLayer())
         updateLocalTransform();
-    else
-        m_localTransform = std::nullopt;
 }
 
 void RenderSVGModelObject::updateLocalTransform()
@@ -112,10 +110,7 @@ void RenderSVGModelObject::updateLocalTransform()
     TransformationMatrix transform;
     auto referenceBoxRect = transformReferenceBoxRect(style());
     applyTransform(transform, style(), referenceBoxRect, Style::TransformResolver::allTransformOperations);
-
-    auto localTransform = transform.toAffineTransform();
-    auto oldTransform = std::exchange(m_localTransform, localTransform);
-    invalidateNonScalingStrokeCachesInSubtreeForSVG(oldTransform, localTransform);
+    m_localTransform = transform.toAffineTransform();
 }
 
 LayoutRect RenderSVGModelObject::overflowClipRect(const LayoutPoint&, OverlayScrollbarSizeRelevancy, PaintPhase) const
@@ -421,7 +416,6 @@ void RenderSVGModelObject::updateLayerTransform()
 {
     // Transform-origin depends on box size, so we need to update the layer transform after layout.
     if (hasLayer()) {
-        m_localTransform = std::nullopt;
         RenderLayerModelObject::updateLayerTransform();
         return;
     }

@@ -171,7 +171,6 @@ struct EditorState {
         WebCore::ScrollOffset enclosingScrollOffset;
         bool enclosingLayerUsesContentsLayer { false };
         bool needsHideSelectionDuringOverflowScrollQuirk { false };
-        bool shouldAllowTouchMoveToChangeSelectionQuirk { false };
 #endif // PLATFORM(IOS_FAMILY)
     };
 

@@ -139,8 +139,6 @@ ExceptionOr<void> MediaList::deleteMedium(const String& value)
     if (!removedCount)
         return Exception { ExceptionCode::NotFoundError };
 
-    queries.shrinkToFit();
-
     setMediaQueries(WTF::move(queries));
     return { };
 }
@@ -168,7 +166,6 @@ void MediaList::appendMedium(const String& value)
     if (alreadyPresent)
         return;
 
-    queries.reserveCapacity(queries.size() + 1);
     queries.append(WTF::move(parsedQueries[0]));
     setMediaQueries(WTF::move(queries));
 }

@@ -907,6 +907,18 @@ EGLint OffscreenSurfaceVk::origin() const
     return EGL_UPPER_LEFT_KHR;
 }
 
+egl::Error OffscreenSurfaceVk::attachToFramebuffer(const gl::Context *context,
+                                                   gl::Framebuffer *framebuffer)
+{
+    return egl::NoError();
+}
+
+egl::Error OffscreenSurfaceVk::detachFromFramebuffer(const gl::Context *context,
+                                                     gl::Framebuffer *framebuffer)
+{
+    return egl::NoError();
+}
+
 namespace impl
 {
 SwapchainCleanupData::SwapchainCleanupData() = default;
@@ -3786,18 +3798,22 @@ EGLint WindowSurfaceVk::origin() const
     return EGL_UPPER_LEFT_KHR;
 }
 
-void WindowSurfaceVk::attachToFramebuffer(const gl::Context *context, gl::Framebuffer *framebuffer)
+egl::Error WindowSurfaceVk::attachToFramebuffer(const gl::Context *context,
+                                                gl::Framebuffer *framebuffer)
 {
     FramebufferVk *framebufferVk = GetImplAs<FramebufferVk>(framebuffer);
     ASSERT(!framebufferVk->getBackbuffer());
     framebufferVk->setBackbuffer(this);
+    return egl::NoError();
 }
 
-void WindowSurfaceVk::detachFromFramebuffer(gl::Framebuffer *framebuffer)
+egl::Error WindowSurfaceVk::detachFromFramebuffer(const gl::Context *context,
+                                                  gl::Framebuffer *framebuffer)
 {
     FramebufferVk *framebufferVk = GetImplAs<FramebufferVk>(framebuffer);
     ASSERT(framebufferVk->getBackbuffer() == this);
     framebufferVk->setBackbuffer(nullptr);
+    return egl::NoError();
 }
 
 egl::Error WindowSurfaceVk::getCompressionRate(const egl::Display *display,

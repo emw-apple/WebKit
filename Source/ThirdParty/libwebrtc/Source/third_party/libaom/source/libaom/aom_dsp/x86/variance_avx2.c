@@ -1131,7 +1131,6 @@ int64_t aom_calc_variance_stat_avx2(const uint8_t *src, int stride, int bw,
   return total_var << 4;
 }
 
-#if CONFIG_AV1_HIGHBITDEPTH
 static inline int64_t yy_hsum_epi64_si64(__m256i v) {
   __m128i v128 =
       _mm_add_epi64(_mm256_castsi256_si128(v), _mm256_extracti128_si256(v, 1));
@@ -1311,7 +1310,6 @@ int64_t aom_highbd_calc_variance_stat_avx2(const uint16_t *src, int stride,
 
   return total_var << 4;
 }
-#endif  // CONFIG_AV1_HIGHBITDEPTH
 
 void aom_get_var_sse_sum_8x8_quad_avx2(const uint8_t *src_ptr,
                                        int source_stride,

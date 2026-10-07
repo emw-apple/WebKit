@@ -60,7 +60,6 @@
 #include "RenderEmbeddedObject.h"
 #include "RenderFragmentedFlow.h"
 #include "RenderGeometryMap.h"
-#include "RenderHTMLCanvas.h"
 #include "RenderIFrame.h"
 #include "RenderImage.h"
 #include "RenderLayerBacking.h"
@@ -806,16 +805,7 @@ FloatRect RenderLayerCompositor::visibleRectForLayerFlushing() const
 #else
 
     // Having a m_scrolledContentsLayer indicates that we're doing scrolling via GraphicsLayers.
-    FloatRect visibleRect;
-    if (m_scrolledContentsLayer) {
-        // The layers below are in unscaled contents coordinates when the page scale is delegated, and nothing
-        // in the tree undoes the zoom on the way down, so unzoom the size here. This is what the iOS path
-        // above gets from exposedContentRect(), and is a no-op when scaling isn't delegated.
-        auto visibleSize = FloatSize { frameView->sizeForVisibleContent(scrollbarInclusionForVisibleRect()) };
-        visibleSize.scale(1 / frameView->visibleContentScaleFactor());
-        visibleRect = FloatRect { { }, visibleSize };
-    } else
-        visibleRect = frameView->visibleContentRect();
+    FloatRect visibleRect = m_scrolledContentsLayer ? FloatRect({ }, frameView->sizeForVisibleContent(scrollbarInclusionForVisibleRect())) : frameView->visibleContentRect();
 
     if (auto exposedRect = frameView->viewExposedRect())
         visibleRect.intersect(*exposedRect);
@@ -982,7 +972,7 @@ void RenderLayerCompositor::cancelCompositingLayerUpdate()
 }
 
 template<typename ApplyFunctionType>
-void RenderLayerCompositor::applyToCompositedLayerIncludingDescendants(RenderLayer& layer, NOESCAPE const ApplyFunctionType& function)
+void RenderLayerCompositor::applyToCompositedLayerIncludingDescendants(RenderLayer& layer, const ApplyFunctionType& function)
 {
     if (layer.isComposited())
         function(layer);
@@ -2381,24 +2371,6 @@ void RenderLayerCompositor::updateRootContentLayerClipping()
     RefPtr { m_rootContentsLayer }->setMasksToBounds(!m_renderView.settings().backgroundShouldExtendBeyondPage());
 }
 
-void RenderLayerCompositor::updateRootContentsLayerAppliesPageScale()
-{
-    if (!m_rootContentsLayer || !m_renderView.frameView().frame().isRootFrame())
-        return;
-
-#if PLATFORM(IOS_FAMILY)
-    // iOS always delegates scaling. Page::delegatesScaling() isn't set until didCommitLoad, so it would read
-    // false for a layer created before then.
-    bool appliesPageScale = true;
-#else
-    // This layer intercepts pageScaleFactor() when scaling is delegated, so tiles rasterize at the zoomed
-    // resolution. The scale is baked into the RenderView layer's geometry otherwise.
-    bool appliesPageScale = page().delegatesScaling();
-#endif
-
-    RefPtr { m_rootContentsLayer }->setAppliesPageScale(appliesPageScale);
-}
-
 bool RenderLayerCompositor::updateExplicitBacking(RenderLayer& layer, RequiresCompositingData& queryData, BackingRequired backingRequired)
 {
     if (backingRequired == BackingRequired::Unknown)
@@ -2669,7 +2641,7 @@ enum class AncestorTraversal { Continue, Stop };
 
 // This is a simplified version of containing block walking that only handles absolute and fixed position.
 template <typename Function>
-static AncestorTraversal traverseAncestorLayers(const RenderLayer& layer, NOESCAPE const Function& function)
+static AncestorTraversal traverseAncestorLayers(const RenderLayer& layer, Function&& function)
 {
     auto positioningBehavior = layer.renderer().style().position();
     CheckedPtr nextPaintOrderParent = layer.paintOrderParent();
@@ -4000,12 +3972,8 @@ bool RenderLayerCompositor::requiresCompositingForCanvas(RenderLayerModelObject&
     if (!(m_compositingTriggers & ChromeClient::CanvasTrigger))
         return false;
 
-    CheckedPtr canvasRenderer = dynamicDowncast<RenderHTMLCanvas>(renderer);
-    if (!canvasRenderer)
+    if (!renderer.isRenderHTMLCanvas())
         return false;
-
-    if (canvasRenderer->hasDrawableContent())
-        return true;
 
     bool isCanvasLargeEnoughOrHDRToForceCompositing = true;
 #if !USE(COMPOSITING_FOR_SMALL_CANVASES)
@@ -4698,11 +4666,6 @@ float RenderLayerCompositor::zoomedOutPageScaleFactor() const
     return page().zoomedOutPageScaleFactor();
 }
 
-bool RenderLayerCompositor::delegatesScaling() const
-{
-    return page().delegatesScaling();
-}
-
 FloatSize RenderLayerCompositor::enclosingFrameViewVisibleSize() const
 {
     const Ref frameView = m_renderView.frameView();
@@ -5232,7 +5195,11 @@ void RenderLayerCompositor::ensureRootLayer()
         RefPtr { m_rootContentsLayer }->setSize(FloatSize(overflowRect.maxX(), overflowRect.maxY()));
         m_rootContentsLayer->setPosition(FloatPoint());
 
-        updateRootContentsLayerAppliesPageScale();
+#if PLATFORM(IOS_FAMILY)
+        // Page scale is applied above this on iOS, so we'll just say that our root layer applies it.
+        if (m_renderView.frameView().frame().isRootFrame())
+            m_rootContentsLayer->setAppliesPageScale();
+#endif
 
         // Need to clip to prevent transformed content showing outside this frame
         updateRootContentLayerClipping();

@@ -42,7 +42,6 @@
 #include "SVGImageElement.h"
 #include "Settings.h"
 #include "ScriptExecutionContextInlines.h"
-#include "VP9Utilities.h"
 #include "WebCodecsControlMessage.h"
 #include "WebCodecsEncodedVideoChunk.h"
 #include "WebCodecsErrorCallback.h"
@@ -73,32 +72,12 @@ WebCodecsVideoDecoder::WebCodecsVideoDecoder(ScriptExecutionContext& context, In
 
 WebCodecsVideoDecoder::~WebCodecsVideoDecoder() = default;
 
-static bool isSupportedVP9DecoderCodec(const String& codec, const SettingsValues& settings)
-{
-#if !ENABLE(WEB_RTC)
-    UNUSED_PARAM(settings);
-#endif
-    auto parameters = parseVPCodecParametersIgnoringColorFields(codec);
-    if (!parameters)
-        return false;
-
-    bool is420 = parameters->chromaSubsampling <= VPConfigurationChromaSubsampling::Subsampling_420_Colocated;
-    switch (parameters->profile) {
-    case 0:
-        return parameters->bitDepth == 8 && is420;
-#if ENABLE(WEB_RTC)
-    case 2:
-        return settings.webRTCVP9Profile2CodecEnabled && parameters->bitDepth == 10 && is420;
-#endif
-    default:
-        return false;
-    }
-}
-
 static bool isSupportedDecoderCodec(const String& codec, const SettingsValues& settings)
 {
-    return codec.startsWith("vp8"_s) || codec.startsWith("avc1."_s)
-        || (codec.startsWith("vp09."_s) && isSupportedVP9DecoderCodec(codec, settings))
+    return codec.startsWith("vp8"_s) || codec.startsWith("vp09.00"_s) || codec.startsWith("avc1."_s)
+#if ENABLE(WEB_RTC)
+        || (codec.startsWith("vp09.02"_s) && settings.webRTCVP9Profile2CodecEnabled)
+#endif
         || (codec.startsWith("hev1."_s) && settings.webCodecsHEVCEnabled)
         || (codec.startsWith("hvc1."_s) && settings.webCodecsHEVCEnabled)
         || (codec.startsWith("av01.0"_s) && settings.webCodecsAV1Enabled);
@@ -238,10 +217,10 @@ ExceptionOr<void> WebCodecsVideoDecoder::decode(Ref<WebCodecsEncodedVideoChunk>&
         m_isKeyChunkRequired = false;
     }
 
-    queueCodecControlMessageAndProcess({ *this, [this, protectedThis = Ref { *this }, data = chunk->encodedData()] mutable {
+    queueCodecControlMessageAndProcess({ *this, [this, protectedThis = Ref { *this }, chunk = WTF::move(chunk)]() mutable {
         incrementCodecOperationCount();
         Ref internalDecoder = *m_internalDecoder;
-        protect(scriptExecutionContext())->enqueueTaskWhenSettled(internalDecoder->decode(WTF::move(data)), TaskSource::MediaElement, [weakThis = ThreadSafeWeakPtr { * this }, pendingActivity = makePendingActivity(*this)] (auto&& result) {
+        protect(scriptExecutionContext())->enqueueTaskWhenSettled(internalDecoder->decode({ chunk->buffer(), chunk->type() == WebCodecsEncodedVideoChunkType::Key, chunk->timestamp(), chunk->duration() }), TaskSource::MediaElement, [weakThis = ThreadSafeWeakPtr { * this }, pendingActivity = makePendingActivity(*this)] (auto&& result) {
             RefPtr protectedThis = weakThis.get();
             if (!protectedThis)
                 return;

@@ -14,7 +14,6 @@
 #include <cstdint>
 #include <cstring>
 #include <iterator>
-#include <tuple>
 #include <vector>
 
 #include "rtc_base/buffer.h"
@@ -24,6 +23,7 @@
 
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
+using ::testing::make_tuple;
 using webrtc::rtcp::Remb;
 
 namespace webrtc {
@@ -48,7 +48,7 @@ TEST(RtcpPacketRembTest, Create) {
 
   Buffer packet = remb.Build();
 
-  EXPECT_THAT(std::make_tuple(packet.data(), packet.size()),
+  EXPECT_THAT(make_tuple(packet.data(), packet.size()),
               ElementsAreArray(kPacket));
 }
 

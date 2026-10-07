@@ -200,16 +200,18 @@ CGRect LocalFrame::renderRectForPoint(CGPoint point, bool* isReplaced, float* fo
     if (!node)
         return CGRectZero;
 
-    CheckedPtr hitRenderer = node->renderer();
-    CheckedPtr renderer = hitRenderer;
+    RenderObject* hitRenderer = node->renderer();
+    RenderObject* renderer = hitRenderer;
 #if RECT_LOGGING
     printf("\n%f %f\n", point.x, point.y);
 #endif
     while (renderer && !renderer->isBody() && !renderer->isDocumentElementRenderer()) {
 #if RECT_LOGGING
         CGRect rect = renderer->absoluteBoundingBoxRect(true);
-        if (renderer->node())
-            SAFE_PRINTF("%s %f %f %f %f\n", renderer->node()->nodeName().utf8(), rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+        if (renderer->node()) {
+            const char *nodeName = renderer->node()->nodeName().ascii().data();
+            printf("%s %f %f %f %f\n", nodeName, rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+        }
 #endif
         if (renderer->isRenderBlock() || renderer->isNonReplacedAtomicInlineLevelBox() || renderer->isBlockLevelReplacedOrAtomicInline()) {
             *isReplaced = renderer->isBlockLevelReplacedOrAtomicInline();
@@ -289,9 +291,9 @@ RefPtr<Node> LocalFrame::approximateNodeAtViewportLocationLegacy(const FloatPoin
                 if (nodeBounds) {
                     // This is a check to see whether this node is an area element. The only way this can happen is if this is the first check.
                     if (node == hitTestResult.innerNode() && node != hitTestResult.innerNonSharedNode() && is<HTMLAreaElement>(*node))
-                        *nodeBounds = snappedIntRect(downcast<HTMLAreaElement>(*node).computeRect(protect(hitTestResult.innerNonSharedNode()->renderer())));
-                    else if (CheckedPtr renderer = node ? node->renderer() : nullptr)
-                        *nodeBounds = renderer->absoluteBoundingBoxRect(true);
+                        *nodeBounds = snappedIntRect(downcast<HTMLAreaElement>(*node).computeRect(hitTestResult.innerNonSharedNode()->renderer()));
+                    else if (node && node->renderer())
+                        *nodeBounds = node->renderer()->absoluteBoundingBoxRect(true);
                 }
 
                 return node;
@@ -312,7 +314,7 @@ RefPtr<Node> LocalFrame::nodeRespondingToScrollWheelEvents(const FloatPoint& vie
 
         Node* scrollingAncestor = nullptr;
         for (RefPtr node = hitTestResult.innerNode(); node && node != terminationNode && !node->hasTagName(HTMLNames::bodyTag); node = node->parentNode()) {
-            CheckedPtr renderer = node->renderer();
+            RenderObject* renderer = node->renderer();
             if (!renderer)
                 continue;
 
@@ -321,11 +323,11 @@ RefPtr<Node> LocalFrame::nodeRespondingToScrollWheelEvents(const FloatPoint& vie
                 continue;
             }
 
-            CheckedRef style = renderer->style();
+            auto& style = renderer->style();
 
             if (renderer->hasNonVisibleOverflow()
-                && (style->overflowY() == Overflow::Auto || style->overflowY() == Overflow::Scroll
-                || style->overflowX() == Overflow::Auto || style->overflowX() == Overflow::Scroll)) {
+                && (style.overflowY() == Overflow::Auto || style.overflowY() == Overflow::Scroll
+                || style.overflowX() == Overflow::Auto || style.overflowX() == Overflow::Scroll)) {
                 scrollingAncestor = node;
             }
         }
@@ -349,7 +351,7 @@ int LocalFrame::preferredHeight() const
     if (!body)
         return 0;
 
-    CheckedPtr block = dynamicDowncast<RenderBlock>(body->renderer());
+    auto* block = dynamicDowncast<RenderBlock>(body->renderer());
     if (!block)
         return 0;
 
@@ -373,7 +375,7 @@ IntRect LocalFrame::caretRect()
     VisibleSelection visibleSelection = selection().selection();
     if (visibleSelection.isNone())
         return { };
-    return visibleSelection.isCaret() ? protect(selection())->absoluteCaretBounds() : VisiblePosition(visibleSelection.end()).absoluteCaretBounds();
+    return visibleSelection.isCaret() ? selection().absoluteCaretBounds() : VisiblePosition(visibleSelection.end()).absoluteCaretBounds();
 }
 
 IntRect LocalFrame::rectForScrollToVisible()
@@ -487,8 +489,7 @@ NSArray *LocalFrame::interpretationsForCurrentRoot() const
     RefPtr root = selection().isNone() ? document()->bodyOrFrameset() : selection().selection().rootEditableElement();
     auto rangeOfRootContents = makeRangeSelectingNodeContents(*root);
 
-    CheckedRef markers = protect(document())->markers();
-    auto markersInRoot = markers->markersInRange(rangeOfRootContents, DocumentMarkerType::DictationPhraseWithAlternatives);
+    auto markersInRoot = protect(document())->markers().markersInRange(rangeOfRootContents, DocumentMarkerType::DictationPhraseWithAlternatives);
 
     // There are no phrases with alternatives, so there is just one interpretation.
     if (markersInRoot.isEmpty())
@@ -508,7 +509,7 @@ NSArray *LocalFrame::interpretationsForCurrentRoot() const
     unsigned combinationsSoFar = 1;
 
     for (Ref node : intersectingNodes(rangeOfRootContents)) {
-        for (auto& marker : markers->markersFor(node, DocumentMarkerType::DictationPhraseWithAlternatives)) {
+        for (auto& marker : protect(document())->markers().markersFor(node, DocumentMarkerType::DictationPhraseWithAlternatives)) {
             auto& alternatives = std::get<Vector<String>>(marker->data());
 
             auto rangeForMarker = makeSimpleRange(node, *marker);
@@ -556,19 +557,19 @@ void LocalFrame::viewportOffsetChanged(ViewportOffsetChangeType changeType)
     LOG_WITH_STREAM(Scrolling, stream << "Frame::viewportOffsetChanged - " << (changeType == IncrementalScrollOffset ? "incremental" : "completed"));
 
     if (changeType == IncrementalScrollOffset) {
-        if (CheckedPtr root = contentRenderer())
-            protect(root->compositor())->didChangeVisibleRect();
+        if (RenderView* root = contentRenderer())
+            root->compositor().didChangeVisibleRect();
     }
 
     if (changeType == CompletedScrollOffset) {
-        if (CheckedPtr root = contentRenderer())
-            protect(root->compositor())->updateCompositingLayers(CompositingUpdateType::OnScroll);
+        if (RenderView* root = contentRenderer())
+            root->compositor().updateCompositingLayers(CompositingUpdateType::OnScroll);
     }
 }
 
 bool LocalFrame::containsTiledBackingLayers() const
 {
-    if (CheckedPtr root = contentRenderer())
+    if (RenderView* root = contentRenderer())
         return root->compositor().hasNonMainLayersWithTiledBacking();
 
     return false;
@@ -578,7 +579,7 @@ void LocalFrame::overflowScrollPositionChangedForNode(const IntPoint& position, 
 {
     LOG_WITH_STREAM(Scrolling, stream << "Frame::overflowScrollPositionChangedForNode " << node << " position " << position);
 
-    CheckedPtr renderer = node->renderer();
+    RenderObject* renderer = node->renderer();
     if (!renderer || !renderer->hasLayer())
         return;
 
@@ -597,8 +598,8 @@ void LocalFrame::overflowScrollPositionChangedForNode(const IntPoint& position, 
 
 void LocalFrame::resetAllGeolocationPermission()
 {
-    if (RefPtr window = document()->window())
-        window->resetAllGeolocationPermission();
+    if (document()->window())
+        protect(document())->window()->resetAllGeolocationPermission();
 
     for (RefPtr child = tree().firstChild(); child; child = child->tree().nextSibling()) {
         auto* localChild = dynamicDowncast<LocalFrame>(child.get());

@@ -116,49 +116,14 @@ function Drawer(controls = [], onCollapseChange) {
         </div>`;
 }
 
-const SEARCH_HOT_KEY = '/';
-
-function isTextEntryFocused() {
-    const element = document.activeElement;
-    if (!element)
-        return false;
-    if (element.isContentEditable)
-        return true;
-    switch (element.tagName) {
-        case 'TEXTAREA':
-        case 'SELECT':
-            return true;
-        case 'INPUT':
-            return !['checkbox', 'range'].includes(element.type);
-        default:
-            return false;
-    }
-}
-
 function CommitSearchBar(onSearchAction = null) {
     const searchInputRef = REF.createRef({
-        onElementMount: () => {
-            window.addEventListener("keydown", searchHotKeyFunction);
-        },
         onElementUnmount: () => {
-            window.removeEventListener("keydown", searchHotKeyFunction);
+            window.removeEventListener("keypress", searchHotKeyFunction);
         }
     });
     const searchHotKeyFunction = (e) => {
-        if (e.key === "Escape") {
-            const element = searchInputRef.element;
-            if (!element || document.activeElement !== element)
-                return;
-
-            e.preventDefault();
-            element.blur();
-            return;
-        }
-
-        // Return early unless it's '/' without Ctrl, Cmd or Alt, so browser shortcuts still work.
-        if (e.key !== SEARCH_HOT_KEY || e.ctrlKey || e.metaKey || e.altKey)
-            return;
-        if (isTextEntryFocused())
+        if (e.key !== "f" || !( e.ctrlKey || e.metaKey ))
             return;
 
         const element = searchInputRef.element;
@@ -191,11 +156,13 @@ function CommitSearchBar(onSearchAction = null) {
             onSearchAction(null);
     });
 
+    window.addEventListener("keypress", searchHotKeyFunction);
+
     return `<div class="input">
         <div class="row">
             <div class="input col-7">
                 <input type="text" ref="${searchInputRef}" autocomplete="off" autocapitalize="none" required/>
-                <label>Find commit (${SEARCH_HOT_KEY})</label>
+                <label>Search commit</label>
             </div>
             <button class="button col-3 primary" ref="${searchButtonRef}">
                 <img src="library/icons/search.svg" style="height: var(--largeSize); filter: invert(1);">

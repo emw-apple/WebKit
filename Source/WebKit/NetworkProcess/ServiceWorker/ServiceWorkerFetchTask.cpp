@@ -88,7 +88,6 @@ Ref<ServiceWorkerFetchTask> ServiceWorkerFetchTask::fromCache(NetworkResourceLoa
     WebCore::RetrieveRecordsOptions options {
         .request { request },
         .crossOriginEmbedderPolicy { loader.parameters().crossOriginEmbedderPolicy },
-        .documentIsolationPolicy = loader.parameters().documentIsolationPolicy,
         .sourceOrigin { WTF::move(clientOrigin) }
     };
 
@@ -304,7 +303,7 @@ void ServiceWorkerFetchTask::processResponse(ResourceResponse&& response, bool n
 
     if (loader->parameters().options.mode == FetchOptions::Mode::Navigate) {
         if (auto parentOrigin = loader->parameters().parentOrigin()) {
-            if (auto error = validateCrossOriginResourcePolicy(loader->parameters().parentCrossOriginEmbedderPolicy.value, DocumentIsolationPolicy::None, *parentOrigin, m_currentRequest.url(), response, ForNavigation::Yes, loader->connectionToWebProcess().originAccessPatterns())) {
+            if (auto error = validateCrossOriginResourcePolicy(loader->parameters().parentCrossOriginEmbedderPolicy.value, *parentOrigin, m_currentRequest.url(), response, ForNavigation::Yes, loader->connectionToWebProcess().originAccessPatterns())) {
                 didFail(*error);
                 return;
             }
@@ -312,15 +311,10 @@ void ServiceWorkerFetchTask::processResponse(ResourceResponse&& response, bool n
     }
     if (loader->parameters().options.mode == FetchOptions::Mode::NoCors) {
         Ref sourceOrigin = *loader->parameters().sourceOrigin;
-        if (auto error = validateCrossOriginResourcePolicy(loader->parameters().crossOriginEmbedderPolicy.value, loader->parameters().documentIsolationPolicy, sourceOrigin, m_currentRequest.url(), response, ForNavigation::No, loader->connectionToWebProcess().originAccessPatterns())) {
+        if (auto error = validateCrossOriginResourcePolicy(loader->parameters().crossOriginEmbedderPolicy.value, sourceOrigin, m_currentRequest.url(), response, ForNavigation::No, loader->connectionToWebProcess().originAccessPatterns())) {
             didFail(*error);
             return;
         }
-    }
-
-    if (auto error = loader->doCrossOriginEmbedderPolicyHandlingOfNavigationResponse(response)) {
-        didFail(*error);
-        return;
     }
 
     if (auto error = loader->doCrossOriginOpenerHandlingOfResponse(response)) {

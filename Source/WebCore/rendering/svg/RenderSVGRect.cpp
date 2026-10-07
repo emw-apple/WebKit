@@ -61,7 +61,6 @@ void RenderSVGRect::updateShapeFromElement()
     m_fillBoundingBox = FloatRect();
     m_strokeBoundingBox = std::nullopt;
     m_approximateStrokeBoundingBox = std::nullopt;
-    m_hitTestStrokeBoundingBox = std::nullopt;
 
     Ref rectElement = this->rectElement();
     SVGLengthContext lengthContext(rectElement.ptr());

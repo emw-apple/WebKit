@@ -33,10 +33,6 @@
 #include <WebCore/Model.h>
 #include <wtf/RefPtr.h>
 
-#if ENABLE(MODEL_ELEMENT_IMMERSIVE) || ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-#include <WebCore/ModelPresentationMode.h>
-#endif
-
 namespace WebCore {
 
 struct ModelPlayerGraphicsLayerConfiguration {
@@ -48,8 +44,8 @@ struct ModelPlayerGraphicsLayerConfiguration {
 #if ENABLE(MODEL_ELEMENT_PORTAL)
     bool hasPortal;
 #endif
-#if ENABLE(MODEL_ELEMENT_IMMERSIVE) || ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-    ModelPresentationMode presentationMode { ModelPresentationMode::Inline };
+#if ENABLE(MODEL_ELEMENT_IMMERSIVE)
+    bool detachedForImmersive;
 #endif
 };
 

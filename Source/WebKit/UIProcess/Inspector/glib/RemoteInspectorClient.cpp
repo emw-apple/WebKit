@@ -37,7 +37,6 @@
 #include <gio/gio.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/TZoneMallocInlines.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GUniquePtr.h>
 #include <wtf/text/Base64.h>
 #include <wtf/text/MakeString.h>
@@ -155,7 +154,7 @@ const SocketConnection::MessageHandlers& RemoteInspectorClient::messageHandlers(
             gboolean hasLocalDebugger;
             while (g_variant_iter_loop(iter.get(), "(t&s&s&sb)", &targetID, &type, &name, &url, &hasLocalDebugger)) {
                 if (!g_strcmp0(type, "JavaScript") || !g_strcmp0(type, "ServiceWorker") || !g_strcmp0(type, "WebPage"))
-                    targetList.append({ targetID, UTF8CString::unsafeFromUTF8(type), UTF8CString::unsafeFromUTF8(name), UTF8CString::unsafeFromUTF8(url) });
+                    targetList.append({ targetID, UTF8CString { byteCast<char8_t>(type) }, UTF8CString { byteCast<char8_t>(name) }, UTF8CString { byteCast<char8_t>(url) } });
             }
             client.setTargetList(connectionID, WTF::move(targetList));
         }}
@@ -254,7 +253,7 @@ void RemoteInspectorClient::inspect(uint64_t connectionID, uint64_t targetID, co
 
 void RemoteInspectorClient::sendMessageToBackend(uint64_t connectionID, uint64_t targetID, const String& message)
 {
-    m_socketConnection->sendMessage("SendMessageToBackend"_s, gVariantNew("(tts)", connectionID, targetID, message.utf8()));
+    m_socketConnection->sendMessage("SendMessageToBackend"_s, g_variant_new("(tts)", connectionID, targetID, message.utf8().legacyCStringPointer()));
 }
 
 void RemoteInspectorClient::closeFromFrontend(uint64_t connectionID, uint64_t targetID)

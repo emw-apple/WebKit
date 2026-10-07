@@ -1,37 +1,23 @@
 <!DOCTYPE html>
 <head>
-  <title>drawElementImage reflects CSS transforms - ref</title>
+  <title>drawElementImage ignores CSS transforms - ref</title>
+  <link rel="author" href="mailto:schenney@chromium.org">
   <style>
-    .canvas {
-      width: 200px;
-      height: 200px;
-      background: #ccc;
-      position: relative;
-      display: inline-block;
-    }
-    .box {
+    #wrapper {
       width: 100px;
       height: 100px;
-      background: green;
+      overflow: clip;
+      background: black;
+    }
+    #rotated {
+      width: 100px;
+      height: 100px;
+      background-color: green;
     }
   </style>
 </head>
 <body>
-  <div class="canvas">
-    <div style="width: 100px; height: 100px; overflow: clip;">
-      <div class="box" style="transform: rotate(45deg);"></div>
-    </div>
-  </div>
-  <div class="canvas">
-    <div style="width: 100px; height: 100px; overflow: clip;">
-      <div class="box" style="transform: translateX(50px);"></div>
-    </div>
-  </div>
-  <br>
-  <div class="canvas">
-    <div class="box" style="transform: translate(50px, 50px);"></div>
-  </div>
-  <div class="canvas">
-    <div class="box" style="transform: translate(50px, 50px) rotate(45deg);"></div>
+  <div id="wrapper">
+    <div id="rotated"></div>
   </div>
 </body>

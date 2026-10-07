@@ -40,7 +40,7 @@ using namespace WebCore;
 
 - (void)drawRect:(NSRect)rect
 {
-    RetainPtr context = WKGetCurrentGraphicsContext();
+    CGContextRef context = WKGetCurrentGraphicsContext();
     CGContextSetFillColorWithColor(context, cachedCGColor(Color::white).get());
     WKRectFill(context, [self bounds]);
 }

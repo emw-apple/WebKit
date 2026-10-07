@@ -35,11 +35,6 @@
 
 namespace WebCore {
 
-static void initializePasteboardString(struct wpe_pasteboard_string* string, std::span<const char8_t> characters)
-{
-    wpe_pasteboard_string_initialize(string, byteCast<char>(characters).data(), characters.size());
-}
-
 PlatformPasteboard::PlatformPasteboard(const String&)
     : m_pasteboard(wpe_pasteboard_get_singleton())
 {
@@ -52,7 +47,7 @@ PlatformPasteboard::PlatformPasteboard()
     ASSERT(m_pasteboard);
 }
 
-void PlatformPasteboard::performAsDataOwner(DataOwnerType, NOESCAPE const Function<void()>& actions)
+void PlatformPasteboard::performAsDataOwner(DataOwnerType, NOESCAPE Function<void()>&& actions)
 {
     actions();
 }
@@ -102,9 +97,9 @@ void PlatformPasteboard::write(const PasteboardWebContent& content)
         { { nullptr, 0 }, { nullptr, 0 } },
     } };
     wpe_pasteboard_string_initialize(&pairs[0].type, plainText, strlen(plainText));
-    initializePasteboardString(&pairs[0].string, textString.span());
+    wpe_pasteboard_string_initialize(&pairs[0].string, textString.legacyCStringPointer(), textString.length());
     wpe_pasteboard_string_initialize(&pairs[1].type, htmlText, strlen(htmlText));
-    initializePasteboardString(&pairs[1].string, markupString.span());
+    wpe_pasteboard_string_initialize(&pairs[1].string, markupString.legacyCStringPointer(), markupString.length());
     struct wpe_pasteboard_string_map map = { pairs.data(), pairs.size() };
     IGNORE_CLANG_WARNINGS_END
 
@@ -125,8 +120,8 @@ void PlatformPasteboard::write(const String& type, const String& string)
 
     auto typeUTF8 = type.utf8();
     auto stringUTF8 = string.utf8();
-    initializePasteboardString(&pairs[0].type, typeUTF8.span());
-    initializePasteboardString(&pairs[0].string, stringUTF8.span());
+    wpe_pasteboard_string_initialize(&pairs[0].type, typeUTF8.legacyCStringPointer(), typeUTF8.length());
+    wpe_pasteboard_string_initialize(&pairs[0].string, stringUTF8.legacyCStringPointer(), stringUTF8.length());
     struct wpe_pasteboard_string_map map = { pairs, 1 };
 
     wpe_pasteboard_write(m_pasteboard, &map);

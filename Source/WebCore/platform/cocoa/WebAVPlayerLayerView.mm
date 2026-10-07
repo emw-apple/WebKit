@@ -33,9 +33,6 @@
 #import <objc/message.h>
 #import <objc/runtime.h>
 #import <wtf/LoggerHelper.h>
-#import <wtf/NeverDestroyed.h>
-#import <wtf/RetainPtr.h>
-#import <wtf/cocoa/TypeCastsCocoa.h>
 
 #import <pal/cf/CoreMediaSoftLink.h>
 #import <pal/cocoa/AVFoundationSoftLink.h>
@@ -66,7 +63,7 @@ static Class WebAVPlayerLayerView_layerClass(id, SEL)
 
 static WebAVPlayerLayer *WebAVPlayerLayerView_webPlayerLayer(WebAVPlayerLayerView *self, SEL)
 {
-    return checked_objc_cast<WebAVPlayerLayer>([self playerLayer]);
+    return (WebAVPlayerLayer *)[self playerLayer];
 }
 
 static void WebAVPlayerLayerView_transferVideoViewTo(WebAVPlayerLayerView *self, SEL, WebAVPlayerLayerView *targetPlayerLayerView)
@@ -105,13 +102,12 @@ static AVPlayerLayer *WebAVPlayerLayerView_playerLayer(WebAVPlayerLayerView *sel
         return superClassMethod(&superClass, sel);
     }
 
-    // The backing layer is a WebAVPlayerLayer (see layerClass), which mimics AVPlayerLayer without subclassing it.
-    SUPPRESS_MEMORY_UNSAFE_CAST return (AVPlayerLayer *)[self layer];
+    return (AVPlayerLayer *)[self layer];
 }
 
 static UIView *WebAVPlayerLayerView_videoView(WebAVPlayerLayerView *self, SEL)
 {
-    WebAVPlayerLayer *webAVPlayerLayer = [self webPlayerLayer];
+    WebAVPlayerLayer *webAVPlayerLayer = (WebAVPlayerLayer *)[self playerLayer];
     CALayer* videoLayer = [webAVPlayerLayer videoSublayer];
     if (!videoLayer || !videoLayer.delegate)
         return nil;
@@ -122,7 +118,7 @@ static UIView *WebAVPlayerLayerView_videoView(WebAVPlayerLayerView *self, SEL)
 static void WebAVPlayerLayerView_setVideoView(WebAVPlayerLayerView *self, SEL, UIView *videoView)
 {
     OBJC_ALWAYS_LOG(C_OBJC_LOGIDENTIFIER, "view: ", (bool)videoView);
-    WebAVPlayerLayer *webAVPlayerLayer = [self webPlayerLayer];
+    WebAVPlayerLayer *webAVPlayerLayer = (WebAVPlayerLayer *)[self playerLayer];
     [webAVPlayerLayer setVideoSublayer:[videoView layer]];
 }
 
@@ -130,10 +126,10 @@ static void WebAVPlayerLayerView_setVideoView(WebAVPlayerLayerView *self, SEL, U
 static void WebAVPlayerLayerView_startRoutingVideoToPictureInPicturePlayerLayerView(WebAVPlayerLayerView *self, SEL)
 {
     OBJC_ALWAYS_LOG(C_OBJC_LOGIDENTIFIER);
-    auto *pipView = [self pictureInPicturePlayerLayerView];
+    auto *pipView = (WebAVPictureInPicturePlayerLayerView *)[self pictureInPicturePlayerLayerView];
 
-    auto *playerLayer = [self webPlayerLayer];
-    auto *pipPlayerLayer = checked_objc_cast<WebAVPlayerLayer>([pipView layer]);
+    auto *playerLayer = (WebAVPlayerLayer *)[self playerLayer];
+    auto *pipPlayerLayer = (WebAVPlayerLayer *)[pipView layer];
     [playerLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
     [pipPlayerLayer setPresentationModel:playerLayer.presentationModel];
     [pipPlayerLayer setVideoSublayer:playerLayer.videoSublayer];
@@ -148,10 +144,10 @@ static void WebAVPlayerLayerView_startRoutingVideoToPictureInPicturePlayerLayerV
 static void WebAVPlayerLayerView_stopRoutingVideoToPictureInPicturePlayerLayerView(WebAVPlayerLayerView *self, SEL)
 {
     OBJC_ALWAYS_LOG(C_OBJC_LOGIDENTIFIER);
-    auto *pipView = [self pictureInPicturePlayerLayerView];
+    auto *pipView = (WebAVPictureInPicturePlayerLayerView *)[self pictureInPicturePlayerLayerView];
 
-    auto *playerLayer = [self webPlayerLayer];
-    auto *pipPlayerLayer = checked_objc_cast<WebAVPlayerLayer>([pipView layer]);
+    auto *playerLayer = (WebAVPlayerLayer *)[self playerLayer];
+    auto *pipPlayerLayer = (WebAVPlayerLayer *)[pipView layer];
     [self addSubview:self.videoView];
     [playerLayer setCaptionsLayer:pipPlayerLayer.captionsLayer];
     [playerLayer layoutSublayers];
@@ -202,11 +198,11 @@ static WTFLogChannel* WebAVPlayerLayerView_logChannel(WebAVPlayerLayerView *self
 
 #pragma mark - Methods
 
-WebAVPlayerLayerView *allocWebAVPlayerLayerViewInstance() NS_RETURNS_RETAINED
+WebAVPlayerLayerView *allocWebAVPlayerLayerViewInstance()
 {
-    static NeverDestroyed<RetainPtr<Class>> theClass = [] {
+    static Class theClass = [] {
         ASSERT(PAL::get__AVPlayerLayerViewClassSingleton());
-        RetainPtr<Class> theClass = objc_allocateClassPair(PAL::get__AVPlayerLayerViewClassSingleton(), "WebAVPlayerLayerView", 0);
+        auto theClass = objc_allocateClassPair(PAL::get__AVPlayerLayerViewClassSingleton(), "WebAVPlayerLayerView", 0);
         class_addMethod(theClass, @selector(dealloc), (IMP)WebAVPlayerLayerView_dealloc, "v@:");
         class_addMethod(theClass, @selector(transferVideoViewTo:), (IMP)WebAVPlayerLayerView_transferVideoViewTo, "v@:@");
         class_addMethod(theClass, @selector(webPlayerLayer), (IMP)WebAVPlayerLayerView_webPlayerLayer, "@@:");
@@ -229,11 +225,11 @@ WebAVPlayerLayerView *allocWebAVPlayerLayerViewInstance() NS_RETURNS_RETAINED
 #endif
 
         objc_registerClassPair(theClass);
-        RetainPtr<Class> metaClass = objc_getMetaClass("WebAVPlayerLayerView");
+        Class metaClass = objc_getMetaClass("WebAVPlayerLayerView");
         class_addMethod(metaClass, @selector(layerClass), (IMP)WebAVPlayerLayerView_layerClass, "@@:");
         return theClass;
     }();
-    return (WebAVPlayerLayerView *)[theClass.get() alloc];
+    return (WebAVPlayerLayerView *)[theClass alloc];
 }
 
 #if HAVE(PICTUREINPICTUREPLAYERLAYERVIEW)
@@ -256,18 +252,18 @@ static void WebAVPictureInPicturePlayerLayerView_dealloc(WebAVPictureInPicturePl
     super_dealloc(&superClass, @selector(dealloc));
 }
 
-WebAVPictureInPicturePlayerLayerView *allocWebAVPictureInPicturePlayerLayerViewInstance() NS_RETURNS_RETAINED
+WebAVPictureInPicturePlayerLayerView *allocWebAVPictureInPicturePlayerLayerViewInstance()
 {
-    static NeverDestroyed<RetainPtr<Class>> theClass = [] {
-        RetainPtr<Class> theClass = objc_allocateClassPair(PAL::getUIViewClassSingleton(), "WebAVPictureInPicturePlayerLayerView", 0);
+    static Class theClass = [] {
+        auto theClass = objc_allocateClassPair(PAL::getUIViewClassSingleton(), "WebAVPictureInPicturePlayerLayerView", 0);
         class_addMethod(theClass, @selector(dealloc), (IMP)WebAVPictureInPicturePlayerLayerView_dealloc, "v@:");
         objc_registerClassPair(theClass);
-        RetainPtr<Class> metaClass = objc_getMetaClass("WebAVPictureInPicturePlayerLayerView");
+        Class metaClass = objc_getMetaClass("WebAVPictureInPicturePlayerLayerView");
         class_addMethod(metaClass, @selector(layerClass), (IMP)WebAVPictureInPicturePlayerLayerView_layerClass, "@@:");
         return theClass;
     }();
 
-    return (WebAVPictureInPicturePlayerLayerView *)[theClass.get() alloc];
+    return (WebAVPictureInPicturePlayerLayerView *)[theClass alloc];
 }
 #endif
 

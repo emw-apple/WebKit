@@ -78,6 +78,9 @@ class PeerConnectionJsepTest : public ::testing::Test {
     network_thread_ = Thread::CreateWithSocketServer();
     network_thread_->SetName("NetworkThread", nullptr);
     EXPECT_TRUE(network_thread_->Start());
+    worker_thread_ = Thread::Create();
+    worker_thread_->SetName("WorkerThread", nullptr);
+    EXPECT_TRUE(worker_thread_->Start());
 #ifdef WEBRTC_ANDROID
     InitializeAndroidObjects();
 #endif
@@ -85,6 +88,7 @@ class PeerConnectionJsepTest : public ::testing::Test {
 
   PeerConnectionFactoryDependencies CreatePeerConnectionFactoryDependencies() {
     PeerConnectionFactoryDependencies dependencies;
+    dependencies.worker_thread = worker_thread_.get();
     dependencies.network_thread = network_thread_.get();
     dependencies.signaling_thread = Thread::Current();
     dependencies.adm = FakeAudioCaptureModule::Create();
@@ -133,6 +137,7 @@ class PeerConnectionJsepTest : public ::testing::Test {
 
   test::RunLoop run_loop_;
   std::unique_ptr<Thread> network_thread_;
+  std::unique_ptr<Thread> worker_thread_;
 };
 
 // Tests for JSEP initial offer generation.

@@ -18,6 +18,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <vector>
 
 #include "absl/base/nullability.h"
 #include "absl/strings/string_view.h"
@@ -31,6 +32,7 @@
 #include "api/rtp_headers.h"
 #include "api/scoped_refptr.h"
 #include "api/sequence_checker.h"
+#include "api/transport/rtp/rtp_source.h"
 #include "api/units/time_delta.h"
 #include "api/units/timestamp.h"
 #include "audio/audio_state.h"
@@ -54,15 +56,16 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
                                      public AudioMixer::Source,
                                      public Syncable {
  public:
-  AudioReceiveStreamImpl(const Environment& env,
-                         PacketRouter* absl_nonnull packet_router,
-                         NetEqFactory* absl_nullable neteq_factory,
-                         webrtc::AudioReceiveStreamInterface::Config config,
-                         const scoped_refptr<webrtc::AudioState>& audio_state);
+  AudioReceiveStreamImpl(
+      const Environment& env,
+      PacketRouter* absl_nonnull packet_router,
+      NetEqFactory* absl_nullable neteq_factory,
+      const webrtc::AudioReceiveStreamInterface::Config& config,
+      const scoped_refptr<webrtc::AudioState>& audio_state);
   // For unit tests, which need to supply a mock channel receive.
   AudioReceiveStreamImpl(
       const Environment& env,
-      webrtc::AudioReceiveStreamInterface::Config config,
+      const webrtc::AudioReceiveStreamInterface::Config& config,
       const scoped_refptr<webrtc::AudioState>& audio_state,
       absl_nonnull std::unique_ptr<voe::ChannelReceiveInterface>
           channel_receive);
@@ -78,13 +81,13 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
   // destruction on the network thread could be made the default.
   ~AudioReceiveStreamImpl() override;
 
-  // TODO(bugs.webrtc.org/11993): Expect to be called on the network thread.
-  // Binds the stream to the transport.
+  // Called on the network thread to register/unregister with the network
+  // transport.
   void RegisterWithTransport(
       RtpStreamReceiverControllerInterface* receiver_controller);
-  // TODO(bugs.webrtc.org/11993): Expect to be called on the network thread.
-  // Unbinds the stream from the transport. Must be called prior to destruction
-  // if RegisterWithTransport was called.
+  // If registration has previously been done (via `RegisterWithTransport`) then
+  // `UnregisterFromTransport` must be called prior to destruction, on the
+  // network thread.
   void UnregisterFromTransport();
 
   // webrtc::AudioReceiveStreamInterface implementation.
@@ -100,6 +103,7 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
   void SetNonSenderRttMeasurement(bool enabled) override;
   void SetFrameDecryptor(
       scoped_refptr<webrtc::FrameDecryptorInterface> frame_decryptor) override;
+
   webrtc::AudioReceiveStreamInterface::Stats GetStats(
       bool get_and_clear_legacy_stats) const override;
   void SetSink(AudioSinkInterface* sink) override;
@@ -108,6 +112,7 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
   void SetJitterBufferFastAccelerate(bool fast_accelerate) override;
   bool SetBaseMinimumPlayoutDelayMs(int delay_ms) override;
   int GetBaseMinimumPlayoutDelayMs() const override;
+  std::vector<webrtc::RtpSource> GetSources() const override;
   AudioMixer::Source* source() override { return this; }
 
   // AudioMixer::Source
@@ -131,16 +136,23 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
   uint32_t remote_ssrc() const override;
 
   // Returns a reference to the currently set sync group of the stream.
-  // Must be called on the worker thread.
+  // Must be called on the packet delivery thread.
   const std::string& sync_group() const;
 
  private:
-  void Initialize();
-
   internal::AudioState* audio_state() const;
 
   const Environment env_;
   RTC_NO_UNIQUE_ADDRESS SequenceChecker worker_thread_checker_;
+  // TODO(bugs.webrtc.org/11993): This checker conceptually represents
+  // operations that belong to the network thread. The Call class is currently
+  // moving towards handling network packets on the network thread and while
+  // that work is ongoing, this checker may in practice represent the worker
+  // thread, but still serves as a mechanism of grouping together concepts
+  // that belong to the network thread. Once the packets are fully delivered
+  // on the network thread, this comment will be deleted.
+  RTC_NO_UNIQUE_ADDRESS SequenceChecker packet_sequence_checker_{
+      SequenceChecker::kDetached};
   webrtc::AudioReceiveStreamInterface::Config config_;
   const scoped_refptr<webrtc::AudioState> audio_state_;
   const std::unique_ptr<voe::ChannelReceiveInterface> channel_receive_;
@@ -148,7 +160,7 @@ class AudioReceiveStreamImpl final : public webrtc::AudioReceiveStreamInterface,
   bool playing_ RTC_GUARDED_BY(worker_thread_checker_) = false;
 
   std::unique_ptr<RtpStreamReceiverInterface> rtp_stream_receiver_
-      RTC_GUARDED_BY(worker_thread_checker_);
+      RTC_GUARDED_BY(packet_sequence_checker_);
 };
 }  // namespace webrtc
 

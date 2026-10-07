@@ -44,7 +44,6 @@ class CachedResource;
 class Document;
 class DocumentLoader;
 class DocumentThreadableLoader;
-class FragmentedSharedBuffer;
 class HTTPHeaderMap;
 class LocalFrame;
 class NetworkLoadMetrics;
@@ -98,13 +97,6 @@ public:
 
     void mainFrameNavigated(WebCore::DocumentLoader&) final;
     void setInitialScriptContent(WebCore::ResourceLoaderIdentifier, const String& sourceString) final;
-
-    // FIXME: Forward interception to ProxyingNetworkAgent. https://bugs.webkit.org/show_bug.cgi?id=324383
-    bool willIntercept(const WebCore::ResourceRequest&) final;
-    bool shouldInterceptRequest(const WebCore::ResourceLoader&) final;
-    bool shouldInterceptResponse(const WebCore::ResourceResponse&) final;
-    void interceptRequest(WebCore::ResourceLoader&, Function<void(const WebCore::ResourceRequest&)>&&) final;
-    void interceptResponse(const WebCore::ResourceResponse&, WebCore::ResourceLoaderIdentifier, CompletionHandler<void(const WebCore::ResourceResponse&, RefPtr<WebCore::FragmentedSharedBuffer>)>&&) final;
 
 private:
     WeakRef<WebPage> m_page;

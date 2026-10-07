@@ -31,7 +31,6 @@
 #import "Logging.h"
 #import <string.h>
 #import <wtf/FileSystem.h>
-#import <wtf/posix/POSIXExtras.h>
 #import <wtf/spi/darwin/SandboxSPI.h>
 #import <wtf/text/CString.h>
 
@@ -117,7 +116,7 @@ UTF8CString SandboxExtensionImpl::sandboxExtensionForType(const UTF8CString& pat
         }
     }();
 
-    return UTF8CString::unsafeFromUTF8(sandboxExtension.get());
+    return UTF8CString { byteCast<char8_t>(sandboxExtension.get()) };
 }
 
 SandboxExtensionImpl::SandboxExtensionImpl(const UTF8CString& path, SandboxExtension::Type type, std::optional<audit_token_t> auditToken, OptionSet<SandboxExtension::Flags> flags)
@@ -154,7 +153,7 @@ RefPtr<SandboxExtension> SandboxExtension::create(Handle&& handle)
 String stringByResolvingSymlinksInPath(StringView path)
 {
     char resolvedPath[PATH_MAX] = { 0 };
-    posixRealpath(path.utf8(), resolvedPath);
+    realpath(path.utf8().legacyCStringPointer(), resolvedPath);
     return String::fromUTF8(resolvedPath);
 }
 
@@ -202,7 +201,7 @@ auto SandboxExtension::createHandle(StringView path, Type type) -> std::optional
     return createHandleWithoutResolvingPath(resolvePathForSandboxExtension(path), type);
 }
 
-template<typename Collection, typename Function> static Vector<SandboxExtension::Handle> createHandlesForResources(const Collection& resources, NOESCAPE const Function& createFunction)
+template<typename Collection, typename Function> static Vector<SandboxExtension::Handle> createHandlesForResources(const Collection& resources, const Function& createFunction)
 {
     return WTF::compactMap(resources, [&](auto& resource) -> std::optional<SandboxExtension::Handle> {
         if (auto handle = createFunction(resource))

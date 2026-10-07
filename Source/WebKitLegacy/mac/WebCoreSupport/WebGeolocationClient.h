@@ -63,5 +63,5 @@ public:
 private:
     explicit WebGeolocationClient(WebView *);
 
-    __weak WebView *m_webView;
+    WebView *m_webView;
 };

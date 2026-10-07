@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2026 Apple Inc. All rights reserved.
+ * Copyright (C) 2006-2024 Apple Inc. All rights reserved.
  * Copyright (C) 2013-2014 Google Inc. All rights reserved.
  * Copyright (C) 2019 Adobe. All rights reserved.
  * Copyright (c) 2020, 2021, 2022, 2026 Igalia S.L.
@@ -1328,7 +1328,11 @@ void RenderLayer::recursiveUpdateLayerPositions(OptionSet<UpdateLayerPositionsFl
     }
 
     if (m_svgData) {
-        ASSERT_IMPLIES(!is<RenderSVGRoot>(renderer()), !renderer().isFixedPositioned());
+        if (!is<RenderSVGRoot>(renderer())) {
+            ASSERT(!renderer().isFixedPositioned());
+            if (mode == Write)
+                m_repaintStatus = RepaintStatus::NeedsFullRepaint;
+        }
 
         // Only the outermost <svg> and / <foreignObject> are potentially scrollable.
         // An SVG renderer reused as the document element (e.g. after replaceChild) can
@@ -1744,7 +1748,7 @@ void RenderLayer::updateTransform()
     bool had3DTransform = has3DTransform();
 
     std::optional<TransformationMatrix> oldTransform;
-    if (m_transform)
+    if (m_transform && hasTransform)
         oldTransform = *m_transform;
     if (hasTransform != !!m_transform) {
         if (hasTransform)
@@ -1773,9 +1777,6 @@ void RenderLayer::updateTransform()
         LOG_WITH_STREAM(Compositing, stream << "Changed transform value for " << this << " from " << *oldTransform << " to " << *m_transform);
         setSelfAndDescendantsNeedPositionUpdate();
     }
-
-    if (renderer().mayHaveNonScalingStrokeInSubtree())
-        renderer().invalidateNonScalingStrokeCachesInSubtreeForSVG(oldTransform ? oldTransform->toAffineTransform() : AffineTransform(), m_transform ? m_transform->toAffineTransform() : AffineTransform());
 }
 
 void RenderLayer::forceStackingContextIfNeeded()
@@ -2995,7 +2996,7 @@ bool RenderLayer::shouldTryToScrollForScrollIntoView(const ScrollRectToVisibleOp
 
     // Don't scroll to reveal an overflow layer that is restricted by the -webkit-line-clamp property.
     // FIXME: Is this still needed? It used to be relevant for Safari RSS.
-    if (renderer().parent() && renderer().parent()->style().hasLegacyLineClamp())
+    if (renderer().parent() && !renderer().parent()->style().lineClamp().isNone())
         return false;
 
     auto& box = *renderBox();
@@ -3296,7 +3297,7 @@ void RenderLayer::clipToRect(GraphicsContext& context, GraphicsContextStateSaver
 
 void RenderLayer::applyAncestorClippingForBorderRadius(GraphicsContext& context, const LayerPaintingInfo& paintingInfo, OptionSet<PaintBehavior> paintBehavior, BorderRadiusClippingRule rule)
 {
-    float snappingScaleFactor = renderer().document().pixelSnappingScaleFactor();
+    float deviceScaleFactor = renderer().document().deviceScaleFactor();
 
     // If the clip rect has been tainted by a border radius, then we have to walk up our layer chain applying the clips from
     // any layers with overflow. The condition for being able to apply these clips is that the overflow object be in our
@@ -3310,9 +3311,9 @@ void RenderLayer::applyAncestorClippingForBorderRadius(GraphicsContext& context,
             adjustedClipRect.move(paintingInfo.subpixelOffset);
             auto borderShape = BorderShape::shapeForBorderRect(layer->renderer().style(), adjustedClipRect);
             if (borderShape.innerShapeContains(paintingInfo.paintDirtyRect))
-                context.clip(snapRectToDevicePixels(intersection(paintingInfo.paintDirtyRect, adjustedClipRect), snappingScaleFactor));
+                context.clip(snapRectToDevicePixels(intersection(paintingInfo.paintDirtyRect, adjustedClipRect), deviceScaleFactor));
             else
-                borderShape.clipToInnerShape(context, snappingScaleFactor);
+                borderShape.clipToInnerShape(context, deviceScaleFactor);
         }
 
         if (layer == paintingInfo.rootLayer)
@@ -3325,14 +3326,17 @@ static void performOverlapTests(OverlapTestRequestMap& overlapTestRequests, cons
     if (overlapTestRequests.isEmpty())
         return;
 
+    Vector<OverlapTestRequestClient*> overlappedRequestClients;
     LayoutRect boundingBox = layer->boundingBox(rootLayer, layer->offsetFromAncestor(rootLayer));
-    overlapTestRequests.removeIf([&](auto& request) {
+    for (auto& request : overlapTestRequests) {
         if (!boundingBox.intersects(request.value))
-            return false;
+            continue;
 
         request.key->setOverlapTestResult(true);
-        return true;
-    });
+        overlappedRequestClients.append(request.key);
+    }
+    for (auto* client : overlappedRequestClients)
+        overlapTestRequests.remove(client);
 }
 
 static inline bool NODELETE shouldDoSoftwarePaint(const RenderLayer* layer, bool paintingReflection)
@@ -3839,11 +3843,11 @@ void RenderLayer::paintLayerContents(GraphicsContext& context, const LayerPainti
         bool rootLayerShiftedFilterBuffer = currentRootLayer && currentRootLayer != this
             && currentRootLayer->hasFilter() && currentRootLayer->renderer().isSVGLayerAwareRenderer()
             && !currentRootLayer->renderer().isRenderSVGRoot();
+        bool appliesFilterChildCorrection = filterContext && filtersInSVGUserSpace
+            && (currentRootLayer == this || rootLayerShiftedFilterBuffer);
 
         // This applies to this layer's immediate child layers only, and a nested filter re-derives its own.
-        LayoutSize svgFilterChildLayerCorrection;
-        if (filterContext && filtersInSVGUserSpace)
-            svgFilterChildLayerCorrection = rootLayerShiftedFilterBuffer ? svgFilterOffset : svgFilterOffset - columnAwareOffsetFromRoot;
+        auto svgFilterChildLayerCorrection = appliesFilterChildCorrection ? svgFilterOffset : LayoutSize();
 
         // Per the SVG spec a referenced but unappliable filter (missing reference, empty filter)
         // produces transparent black, so the element is not rendered. CSS Filter Effects instead
@@ -4031,13 +4035,13 @@ void RenderLayer::paintLayerByApplyingTransform(GraphicsContext& context, const 
     // This involves subtracting out the position of the layer in our current coordinate space, but preserving
     // the accumulated error for sub-pixel layout.
     // Note: The pixel-snapping logic is disabled for the whole SVG render tree, except the outermost <svg>.
-    float snappingScaleFactor = renderer().document().pixelSnappingScaleFactor();
+    float deviceScaleFactor = renderer().document().deviceScaleFactor();
     LayoutSize offsetFromParent = offsetFromAncestor(paintingInfo.rootLayer);
     offsetFromParent += translationOffset;
     TransformationMatrix transform(renderableTransform(paintingInfo.paintBehavior));
     // Add the subpixel accumulation to the current layer's offset so that we can always snap the translateRight value to where the renderer() is supposed to be painting.
     LayoutSize offsetForThisLayer = offsetFromParent + paintingInfo.subpixelOffset;
-    FloatSize alignedOffsetForThisLayer = rendererNeedsPixelSnapping(renderer()) ? toFloatSize(roundPointToDevicePixels(toLayoutPoint(offsetForThisLayer), snappingScaleFactor)) : offsetForThisLayer;
+    FloatSize alignedOffsetForThisLayer = rendererNeedsPixelSnapping(renderer()) ? toFloatSize(roundPointToDevicePixels(toLayoutPoint(offsetForThisLayer), deviceScaleFactor)) : offsetForThisLayer;
     // We handle accumulated subpixels through nested layers here. Since the context gets translated to device pixels,
     // all we need to do is add the delta to the accumulated pixels coming from ancestor layers.
     // Translate the graphics context to the snapping position to avoid off-device-pixel positing.
@@ -4049,7 +4053,7 @@ void RenderLayer::paintLayerByApplyingTransform(GraphicsContext& context, const 
     if (rendererNeedsPixelSnapping(renderer()) && !renderer().isRenderSVGRoot())
         adjustedSubpixelOffset = offsetForThisLayer - LayoutSize(alignedOffsetForThisLayer);
 
-    TransformPaintScope scope(context, paintingInfo, transform, snappingScaleFactor, adjustedSubpixelOffset, this);
+    TransformPaintScope scope(context, paintingInfo, transform, deviceScaleFactor, adjustedSubpixelOffset, this);
 
     paintFlags.remove(PaintLayerFlag::PaintingOverflowContents);
     paintLayerContentsAndReflection(context, scope.transformedPaintingInfo(), paintFlags);
@@ -6659,7 +6663,7 @@ bool RenderLayer::isBitmapOnly() const
         if (auto* cachedImage = imageRenderer->cachedImage()) {
             if (!cachedImage->hasImage())
                 return false;
-            return is<BitmapImage>(cachedImage->image());
+            return is<BitmapImage>(cachedImage->imageForRenderer(imageRenderer.get()));
         }
         return false;
     }

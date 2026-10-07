@@ -35,7 +35,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGSwitchElement);
 
 inline SVGSwitchElement::SVGSwitchElement(const QualifiedName& tagName, Document& document)
-    : SVGGraphicsElement(tagName, document, PropertyRegistry::singleton())
+    : SVGGraphicsElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::switchTag));
 }

@@ -4192,11 +4192,4 @@ bool ValidateTexStorageAttribs3DEXT(const Context *context,
     return true;
 }
 
-bool ValidateTrimMemoryANGLE(const Context *context,
-                             angle::EntryPoint entryPoint,
-                             MemoryTrimLevel trimLevel)
-{
-    return true;
-}
-
 }  // namespace gl

@@ -34,9 +34,6 @@ final class WKDOMDoubleClickGestureRecognizer: NSClickGestureRecognizer {
 
     private var click: ClickEvent? = nil
 
-    // We eagerly determine this before a GR state update.
-    private var completedDoubleClick = false
-
     override var state: NSGestureRecognizer.State {
         get { super.state }
         set {
@@ -45,22 +42,12 @@ final class WKDOMDoubleClickGestureRecognizer: NSClickGestureRecognizer {
                 return
             }
 
-            completedDoubleClick = isDoubleClick()
-            super.state = completedDoubleClick ? newValue : .failed
+            super.state = isDoubleClick() ? newValue : .failed
         }
-    }
-
-    override func reset() {
-        completedDoubleClick = false
-        super.reset()
     }
 
     func resetClick() {
         click = nil
-    }
-
-    func takeCompletedDoubleClick() -> Bool {
-        exchange(&completedDoubleClick, with: false)
     }
 
     private func isDoubleClick() -> Bool {

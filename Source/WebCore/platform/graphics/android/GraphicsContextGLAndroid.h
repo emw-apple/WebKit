@@ -20,12 +20,12 @@
 #pragma once
 
 #if ENABLE(WEBGL) && USE(COORDINATED_GRAPHICS) && OS(ANDROID)
-#include <WebCore/GraphicsContextGLCoordinated.h>
+#include "GraphicsContextGLEGL.h"
 #include <wtf/android/RefPtrAndroid.h>
 
 namespace WebCore {
 
-class GraphicsContextGLAndroid final : public GraphicsContextGLCoordinated {
+class GraphicsContextGLAndroid final : public GraphicsContextGLEGL {
 public:
     static RefPtr<GraphicsContextGLAndroid> create(GraphicsContextGLAttributes&&);
 
@@ -37,7 +37,7 @@ public:
 
 private:
     explicit GraphicsContextGLAndroid(GraphicsContextGLAttributes&& attributes)
-        : GraphicsContextGLCoordinated(WTF::move(attributes))
+        : GraphicsContextGLEGL(WTF::move(attributes))
     {
     }
 #if ENABLE(WEBXR)

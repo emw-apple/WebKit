@@ -29,7 +29,9 @@ rtc_library("pffft_wrapper") {
 }
 
 if (rtc_include_tests) {
-  rtc_cc_test("cascaded_biquad_filter_unittest") {
+  rtc_library("cascaded_biquad_filter_unittest") {
+    testonly = true
+
     sources = [ "cascaded_biquad_filter_unittest.cc" ]
     deps = [
       ":cascaded_biquad_filter",
@@ -39,7 +41,8 @@ if (rtc_include_tests) {
     ]
   }
 
-  rtc_cc_test("pffft_wrapper_unittest") {
+  rtc_library("pffft_wrapper_unittest") {
+    testonly = true
     sources = [ "pffft_wrapper_unittest.cc" ]
     deps = [
       ":pffft_wrapper",

@@ -31,7 +31,6 @@
 #import <WebCore/SQLiteStatement.h>
 #import <WebCore/SecurityOriginData.h>
 #import <wtf/FileSystem.h>
-#import <wtf/posix/POSIXExtras.h>
 
 using namespace WebCore;
 
@@ -200,10 +199,10 @@ TEST(DatabaseTracker, DeleteOriginWhenDeletingADatabaseFails)
     String fullWebDatabasePath = databaseTracker->fullPathForDatabase(origin, webDatabaseName, false);
     createFileAtPath(fullWebDatabasePath);
 
-    posixChmod(fullWebDatabasePath.utf8(), 555);
+    chmod(fullWebDatabasePath.utf8().legacyCStringPointer(), 555);
 
 #if !PLATFORM(IOS_FAMILY)
-    posixChflags(fullWebDatabasePath.utf8(), UF_IMMUTABLE);
+    chflags(fullWebDatabasePath.utf8().legacyCStringPointer(), UF_IMMUTABLE);
 #endif
 
     EXPECT_FALSE(databaseTracker->deleteOrigin(origin));
@@ -214,10 +213,10 @@ TEST(DatabaseTracker, DeleteOriginWhenDeletingADatabaseFails)
     EXPECT_EQ((unsigned)1, databaseTracker->origins().size());
     EXPECT_EQ((unsigned)1, databaseTracker->databaseNames(origin).size());
 
-    posixChmod(fullWebDatabasePath.utf8(), 666);
+    chmod(fullWebDatabasePath.utf8().legacyCStringPointer(), 666);
 
 #if !PLATFORM(IOS_FAMILY)
-    posixChflags(fullWebDatabasePath.utf8(), 0);
+    chflags(fullWebDatabasePath.utf8().legacyCStringPointer(), 0);
 #endif
 
     EXPECT_TRUE(FileSystem::deleteFile(fullWebDatabasePath));

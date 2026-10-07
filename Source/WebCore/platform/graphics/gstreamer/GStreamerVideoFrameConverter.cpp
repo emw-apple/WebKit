@@ -93,7 +93,8 @@ GRefPtr<GstSample> GStreamerVideoFrameConverter::Pipeline::run(const GRefPtr<Gst
 {
 #if USE(GSTREAMER_GL)
     if (m_type == Type::GLMemory || m_type == Type::DMABufMemory) {
-        if (!setGstElementGLContext(m_pipeline.get(), GST_GL_DISPLAY_CONTEXT_TYPE))
+        static ASCIILiteral gstGlDisplayContextyType = ASCIILiteral::fromLiteralUnsafe(GST_GL_DISPLAY_CONTEXT_TYPE);
+        if (!setGstElementGLContext(m_pipeline.get(), gstGlDisplayContextyType))
             return nullptr;
         if (!setGstElementGLContext(m_pipeline.get(), "gst.gl.app_context"_s))
             return nullptr;
@@ -207,10 +208,6 @@ GRefPtr<GstSample> GStreamerVideoFrameConverter::convert(const GRefPtr<GstSample
 IGNORE_WARNINGS_BEGIN("cast-align")
     GRefPtr writableBuffer = adoptGRef(gst_buffer_make_writable(buffer.leakRef()));
 IGNORE_WARNINGS_END
-    if (!writableBuffer) {
-        GST_ERROR("Failed to make buffer writable");
-        return nullptr;
-    }
 
     if (auto meta = gst_buffer_get_video_meta(writableBuffer.get()))
         gst_buffer_remove_meta(writableBuffer.get(), GST_META_CAST(meta));

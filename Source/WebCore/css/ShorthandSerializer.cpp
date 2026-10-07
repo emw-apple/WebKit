@@ -71,7 +71,7 @@ public:
 private:
     struct Longhand {
         CSSPropertyID property;
-        Ref<CSSValue> value;
+        CSSValue& value;
     };
     struct LonghandIteratorBase {
         void NODELETE operator++() { ++index; }
@@ -138,7 +138,6 @@ private:
     String serializeBorderImage() const;
     String serializeMaskBorder() const;
     String serializeBorderRadius() const;
-    String serializeBorderRadiusSide() const;
     String serializeBreakInside() const;
     String serializeColumnBreak() const;
     String serializeFont() const;
@@ -153,7 +152,6 @@ private:
     String serializePageBreak() const;
     String serializePositionTry() const;
     String serializeLineClamp() const;
-    String serializeLegacyLineClamp() const;
     String serializeTextBox() const;
     String serializeTextWrap() const;
     String serializeWhiteSpace() const;
@@ -438,15 +436,6 @@ String ShorthandSerializer::serialize()
     case CSSPropertyBorderRadius:
     case CSSPropertyWebkitBorderRadius:
         return serializeBorderRadius();
-    case CSSPropertyBorderBlockEndRadius:
-    case CSSPropertyBorderBlockStartRadius:
-    case CSSPropertyBorderBottomRadius:
-    case CSSPropertyBorderInlineEndRadius:
-    case CSSPropertyBorderInlineStartRadius:
-    case CSSPropertyBorderLeftRadius:
-    case CSSPropertyBorderRightRadius:
-    case CSSPropertyBorderTopRadius:
-        return serializeBorderRadiusSide();
     case CSSPropertyContainer:
         return serializeLonghandsOmittingTrailingInitialValue(" / "_s);
     case CSSPropertyFlex:
@@ -471,8 +460,6 @@ String ShorthandSerializer::serialize()
         return serializeHyphenateLimitChars();
     case CSSPropertyLineClamp:
         return serializeLineClamp();
-    case CSSPropertyWebkitLineClamp:
-        return serializeLegacyLineClamp();
     case CSSPropertyMarker:
         return serializeCommonValue();
     case CSSPropertyOffset:
@@ -1121,42 +1108,6 @@ String ShorthandSerializer::serializeBorderRadius() const
     return result.toString();
 }
 
-String ShorthandSerializer::serializeBorderRadiusSide() const
-{
-    ASSERT(length() == 2);
-    std::array<RefPtr<const CSSValue>, 2> horizontalRadii;
-    std::array<RefPtr<const CSSValue>, 2> verticalRadii;
-    for (unsigned i = 0; i < 2; ++i) {
-        auto& value = longhandValue(i);
-        horizontalRadii[i] = value.first();
-        verticalRadii[i] = value.second();
-    }
-
-    bool serializeBoth = false;
-    for (unsigned i = 0; i < 2; ++i) {
-        if (!protect(*horizontalRadii[i])->equals(protect(*verticalRadii[i]))) {
-            serializeBoth = true;
-            break;
-        }
-    }
-
-    StringBuilder result;
-    auto serializeRadii = [&](const std::array<RefPtr<const CSSValue>, 2>& r) {
-        Ref r0 = *r[0];
-        Ref r1 = *r[1];
-        if (!r1->equals(r0))
-            result.append(r0->cssText(m_serializationContext), ' ', r1->cssText(m_serializationContext));
-        else
-            result.append(r0->cssText(m_serializationContext));
-    };
-    serializeRadii(horizontalRadii);
-    if (serializeBoth) {
-        result.append(" / "_s);
-        serializeRadii(verticalRadii);
-    }
-    return result.toString();
-}
-
 String ShorthandSerializer::serializeBreakInside() const
 {
     auto keyword = longhandValueID(0);
@@ -1464,11 +1415,11 @@ String ShorthandSerializer::serializeGridArea() const
 {
     ASSERT(length() == 4);
     unsigned longhandsToSerialize = 4;
-    if (canOmitTrailingGridAreaValue(protect(longhandValue(1)), protect(longhandValue(3)))) {
+    if (canOmitTrailingGridAreaValue(longhandValue(1), longhandValue(3))) {
         --longhandsToSerialize;
-        if (canOmitTrailingGridAreaValue(protect(longhandValue(0)), protect(longhandValue(2)))) {
+        if (canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(2))) {
             --longhandsToSerialize;
-            if (canOmitTrailingGridAreaValue(protect(longhandValue(0)), protect(longhandValue(1))))
+            if (canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(1)))
                 --longhandsToSerialize;
         }
     }
@@ -1478,7 +1429,7 @@ String ShorthandSerializer::serializeGridArea() const
 String ShorthandSerializer::serializeGridRowColumn() const
 {
     ASSERT(length() == 2);
-    return serializeLonghands(canOmitTrailingGridAreaValue(protect(longhandValue(0)), protect(longhandValue(1))) ? 1 : 2, " / "_s);
+    return serializeLonghands(canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(1)) ? 1 : 2, " / "_s);
 }
 
 String ShorthandSerializer::serializeGridTemplate() const
@@ -1697,16 +1648,6 @@ String ShorthandSerializer::serializeLineClamp() const
     if (longhandValueID(2) == CSSValueWebkitLegacy)
         result.append(std::exchange(prefix, " "_s), serializeLonghandValue(2));
     return result.toString();
-}
-
-String ShorthandSerializer::serializeLegacyLineClamp() const
-{
-    auto isMaxLinesInitial = isLonghandInitialValue(0);
-    auto isBlockEllipsisInitial = isLonghandInitialValue(1);
-    if (isMaxLinesInitial && isBlockEllipsisInitial)
-        return nameString(CSSValueNone);
-
-    return serializeLonghands(1);
 }
 
 String ShorthandSerializer::serializeTextBox() const

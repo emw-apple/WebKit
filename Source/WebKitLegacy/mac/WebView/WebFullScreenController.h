@@ -43,7 +43,7 @@ template<typename> class ExceptionOr;
 @interface WebFullScreenController : NSWindowController {
 @private
     RefPtr<WebCore::Element> _element;
-    RetainPtr<WebView> _webView;
+    WebView *_webView;
     RetainPtr<NSView> _webViewPlaceholder;
     RetainPtr<WebWindowScaleAnimation> _scaleAnimation;
     RetainPtr<WebWindowFadeAnimation> _fadeAnimation;

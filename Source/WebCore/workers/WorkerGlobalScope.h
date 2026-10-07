@@ -73,7 +73,6 @@ class WorkerSWClientConnection;
 class WorkerStorageConnection;
 class WorkerStorageConnection;
 class WorkerThread;
-struct SecurityPolicyViolationEventInit;
 struct WorkerParameters;
 
 enum class ViolationReportType : uint8_t;
@@ -182,8 +181,6 @@ public:
 
     void reportErrorToWorkerObject(const String&);
 
-    void enqueueSecurityPolicyViolationEvent(SecurityPolicyViolationEventInit&&);
-
 protected:
     WorkerGlobalScope(WorkerThreadType, const WorkerParameters&, Ref<SecurityOrigin>&&, WorkerThread&, Ref<SecurityOrigin>&& topOrigin, IDBClient::IDBConnectionProxy*, SocketProvider*, std::unique_ptr<WorkerClient>&&);
 
@@ -232,7 +229,6 @@ private:
 
     bool m_isOnline;
     bool m_shouldBypassMainWorldContentSecurityPolicy;
-    bool m_isSecureContext;
 
     const Ref<SecurityOrigin> m_topOrigin;
 

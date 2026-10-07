@@ -161,13 +161,12 @@ static void reportPageOverPostLoadResourceThreshold(Page& page, ReportingReason 
     if (registrableDomain.isEmpty())
         return;
 
-    CheckedRef diagnosticLoggingClient = page.diagnosticLoggingClient();
     switch (reason) {
     case ReportingReason::HighCPUUsage:
-        diagnosticLoggingClient->logDiagnosticMessageWithEnhancedPrivacy(DiagnosticLoggingKeys::domainCausingEnergyDrainKey(), registrableDomain.string(), ShouldSample::No);
+        page.diagnosticLoggingClient().logDiagnosticMessageWithEnhancedPrivacy(DiagnosticLoggingKeys::domainCausingEnergyDrainKey(), registrableDomain.string(), ShouldSample::No);
         break;
     case ReportingReason::HighMemoryUsage:
-        diagnosticLoggingClient->logDiagnosticMessageWithEnhancedPrivacy(DiagnosticLoggingKeys::domainCausingJetsamKey(), registrableDomain.string(), ShouldSample::No);
+        page.diagnosticLoggingClient().logDiagnosticMessageWithEnhancedPrivacy(DiagnosticLoggingKeys::domainCausingJetsamKey(), registrableDomain.string(), ShouldSample::No);
         break;
     }
 }
@@ -192,7 +191,7 @@ void PerformanceMonitor::measurePostLoadCPUUsage()
 
     double cpuUsage = cpuTime.value().percentageCPUUsageSince(*m_postLoadCPUTime);
     PERFMONITOR_RELEASE_LOG(PerformanceMonitorMeasurePostLoadCpuUsage, cpuUsage);
-    protect(page->diagnosticLoggingClient())->logDiagnosticMessage(DiagnosticLoggingKeys::postPageLoadCPUUsageKey(), DiagnosticLoggingKeys::foregroundCPUUsageToDiagnosticLoggingKey(cpuUsage), ShouldSample::No);
+    page->diagnosticLoggingClient().logDiagnosticMessage(DiagnosticLoggingKeys::postPageLoadCPUUsageKey(), DiagnosticLoggingKeys::foregroundCPUUsageToDiagnosticLoggingKey(cpuUsage), ShouldSample::No);
 
     if (cpuUsage > postPageLoadCPUUsageDomainReportingThreshold)
         reportPageOverPostLoadResourceThreshold(page, ReportingReason::HighCPUUsage);
@@ -209,7 +208,7 @@ void PerformanceMonitor::measurePostLoadMemoryUsage()
         return;
 
     PERFMONITOR_RELEASE_LOG(PerformanceMonitorMeasurePostLoadMemoryUsage, memoryUsage.value());
-    protect(page->diagnosticLoggingClient())->logDiagnosticMessage(DiagnosticLoggingKeys::postPageLoadMemoryUsageKey(), DiagnosticLoggingKeys::memoryUsageToDiagnosticLoggingKey(memoryUsage.value()), ShouldSample::No);
+    page->diagnosticLoggingClient().logDiagnosticMessage(DiagnosticLoggingKeys::postPageLoadMemoryUsageKey(), DiagnosticLoggingKeys::memoryUsageToDiagnosticLoggingKey(memoryUsage.value()), ShouldSample::No);
 
     // On iOS, we report actual Jetsams instead.
 #if !PLATFORM(IOS_FAMILY)
@@ -229,7 +228,7 @@ void PerformanceMonitor::measurePostBackgroundingMemoryUsage()
         return;
 
     PERFMONITOR_RELEASE_LOG(PerformanceMonitorMeasurePostBackgroundMemoryUsage, memoryUsage.value());
-    protect(page->diagnosticLoggingClient())->logDiagnosticMessage(DiagnosticLoggingKeys::postPageBackgroundingMemoryUsageKey(), DiagnosticLoggingKeys::memoryUsageToDiagnosticLoggingKey(memoryUsage.value()), ShouldSample::No);
+    page->diagnosticLoggingClient().logDiagnosticMessage(DiagnosticLoggingKeys::postPageBackgroundingMemoryUsageKey(), DiagnosticLoggingKeys::memoryUsageToDiagnosticLoggingKey(memoryUsage.value()), ShouldSample::No);
 }
 
 void PerformanceMonitor::measurePostBackgroundingCPUUsage()
@@ -252,7 +251,7 @@ void PerformanceMonitor::measurePostBackgroundingCPUUsage()
 
     double cpuUsage = cpuTime.value().percentageCPUUsageSince(*m_postBackgroundingCPUTime);
     PERFMONITOR_RELEASE_LOG(PerformanceMonitorMeasurePostBackgroundCpuUsage, cpuUsage);
-    protect(page->diagnosticLoggingClient())->logDiagnosticMessage(DiagnosticLoggingKeys::postPageBackgroundingCPUUsageKey(), DiagnosticLoggingKeys::backgroundCPUUsageToDiagnosticLoggingKey(cpuUsage), ShouldSample::No);
+    page->diagnosticLoggingClient().logDiagnosticMessage(DiagnosticLoggingKeys::postPageBackgroundingCPUUsageKey(), DiagnosticLoggingKeys::backgroundCPUUsageToDiagnosticLoggingKey(cpuUsage), ShouldSample::No);
 }
 
 void PerformanceMonitor::measurePerActivityStateCPUUsage()

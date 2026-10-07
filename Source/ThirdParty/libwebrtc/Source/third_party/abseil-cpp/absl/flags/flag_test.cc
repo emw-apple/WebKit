@@ -19,7 +19,6 @@
 #include <stdint.h>
 
 #include <atomic>
-#include <iterator>
 #include <optional>
 #include <string>
 #include <thread>  // NOLINT
@@ -691,10 +690,10 @@ TEST_F(FlagTest, ConcurrentSetAndGet) {
     });
   }
   absl::Time end_time = absl::Now() + absl::Seconds(1);
-  size_t i = 0;
+  int i = 0;
   while (absl::Now() < end_time) {
     absl::SetFlag(&FLAGS_test_flag_12,
-                  kValidDurations[i++ % std::size(kValidDurations)]);
+                  kValidDurations[i++ % ABSL_ARRAYSIZE(kValidDurations)]);
   }
   stop.store(true, std::memory_order_relaxed);
   for (auto& t : threads) t.join();
@@ -937,7 +936,7 @@ ABSL_RETIRED_FLAG(std::string, old_str_flag, "", absl::StrCat("old ", "descr"));
 
 namespace {
 
-bool initialization_order_fiasco_test [[maybe_unused]] = [] {
+bool initialization_order_fiasco_test ABSL_ATTRIBUTE_UNUSED = [] {
   // Iterate over all the flags during static initialization.
   // This should not trigger ASan's initialization-order-fiasco.
   auto* handle1 = absl::FindCommandLineFlag("flag_on_separate_file");

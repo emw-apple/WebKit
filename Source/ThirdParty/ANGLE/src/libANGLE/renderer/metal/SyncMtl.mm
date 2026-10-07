@@ -382,13 +382,13 @@ EGLSyncMtl::EGLSyncMtl() : EGLSyncImpl() {}
 
 EGLSyncMtl::~EGLSyncMtl() {}
 
-void EGLSyncMtl::onDestroy(const egl::ThreadSafeDisplay *display)
+void EGLSyncMtl::onDestroy(const egl::Display *display)
 {
     mSync.reset();
     mSharedEvent = nil;
 }
 
-egl::Error EGLSyncMtl::initialize(const egl::ThreadSafeDisplay *display,
+egl::Error EGLSyncMtl::initialize(const egl::Display *display,
                                   const gl::Context *context,
                                   EGLenum type,
                                   const egl::AttributeMap &attribs)
@@ -468,7 +468,7 @@ egl::Error EGLSyncMtl::initialize(const egl::ThreadSafeDisplay *display,
     return egl::NoError();
 }
 
-egl::Error EGLSyncMtl::clientWait(const egl::ThreadSafeDisplay *display,
+egl::Error EGLSyncMtl::clientWait(const egl::Display *display,
                                   const gl::Context *context,
                                   EGLint flags,
                                   EGLTime timeout,
@@ -510,7 +510,7 @@ egl::Error EGLSyncMtl::clientWait(const egl::ThreadSafeDisplay *display,
     }
 }
 
-egl::Error EGLSyncMtl::serverWait(const egl::ThreadSafeDisplay *display,
+egl::Error EGLSyncMtl::serverWait(const egl::Display *display,
                                   const gl::Context *context,
                                   EGLint flags)
 {
@@ -529,13 +529,9 @@ egl::Error EGLSyncMtl::serverWait(const egl::ThreadSafeDisplay *display,
     return egl::NoError();
 }
 
-egl::Error EGLSyncMtl::getStatus(const egl::ThreadSafeDisplay *display, EGLint *outStatus)
+egl::Error EGLSyncMtl::getStatus(const egl::Display *display, EGLint *outStatus)
 {
-    // mtl::SyncImpl::getStatus() needs the full DisplayMtl for its command queue, and is shared
-    // with the GL-side SyncMtl/FenceNVMtl paths that already hold one.  Only egl::Display carries
-    // that implementation, so recover it here. This downcast is potentially risky and defeats
-    // the purpose of ThreadSafeDisplay. Currently, the Metal backend does not claim thread-safety.
-    DisplayMtl *displayMtl = mtl::GetImpl(static_cast<const egl::Display *>(display));
+    DisplayMtl *displayMtl = mtl::GetImpl(display);
     bool signaled          = false;
     if (IsError(mSync->getStatus(displayMtl, &signaled)))
     {
@@ -546,8 +542,7 @@ egl::Error EGLSyncMtl::getStatus(const egl::ThreadSafeDisplay *display, EGLint *
     return egl::NoError();
 }
 
-egl::Error EGLSyncMtl::copyMetalSharedEventANGLE(const egl::ThreadSafeDisplay *display,
-                                                 void **result) const
+egl::Error EGLSyncMtl::copyMetalSharedEventANGLE(const egl::Display *display, void **result) const
 {
     ASSERT(mSharedEvent != nil);
 
@@ -557,7 +552,7 @@ egl::Error EGLSyncMtl::copyMetalSharedEventANGLE(const egl::ThreadSafeDisplay *d
     return egl::NoError();
 }
 
-egl::Error EGLSyncMtl::dupNativeFenceFD(const egl::ThreadSafeDisplay *display, EGLint *result) const
+egl::Error EGLSyncMtl::dupNativeFenceFD(const egl::Display *display, EGLint *result) const
 {
     UNREACHABLE();
     return egl::Error(EGL_BAD_DISPLAY);

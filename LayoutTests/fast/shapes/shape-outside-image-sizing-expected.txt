@@ -1,5 +1,0 @@
-X
-X
-
-PASS A shape-outside image keeps its natural size in a wider float
-

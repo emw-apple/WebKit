@@ -46,7 +46,7 @@ public:
     Vector<String> dictationAlternatives(WebCore::DictationContext) override;
 
 private:
-    __weak WebView *m_webView;
+    WebView *m_webView;
 
 #if USE(AUTOCORRECTION_PANEL)
     CorrectionPanel m_correctionPanel;

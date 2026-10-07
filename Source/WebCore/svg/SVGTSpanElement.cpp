@@ -32,7 +32,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGTSpanElement);
 
 inline SVGTSpanElement::SVGTSpanElement(const QualifiedName& tagName, Document& document)
-    : SVGTextPositioningElement(tagName, document, PropertyRegistry::singleton())
+    : SVGTextPositioningElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::tspanTag));
 }
@@ -51,6 +51,7 @@ bool SVGTSpanElement::childShouldCreateRenderer(const Node& child) const
 {
     if (child.isTextNode()
         || child.hasTagName(SVGNames::aTag)
+        || child.hasTagName(SVGNames::altGlyphTag)
         || child.hasTagName(SVGNames::trefTag)
         || child.hasTagName(SVGNames::tspanTag))
         return true;
@@ -62,6 +63,7 @@ bool SVGTSpanElement::rendererIsNeeded(const Style::ComputedStyle& style)
 {
     if (parentNode()
         && (parentNode()->hasTagName(SVGNames::aTag)
+            || parentNode()->hasTagName(SVGNames::altGlyphTag)
             || parentNode()->hasTagName(SVGNames::textTag)
             || parentNode()->hasTagName(SVGNames::textPathTag)
             || parentNode()->hasTagName(SVGNames::tspanTag)))

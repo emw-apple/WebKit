@@ -139,6 +139,11 @@ inline bool mightCompileFunctionFor(CodeBlock* codeBlock, CodeSpecializationKind
     return mightCompileFunctionForConstruct(codeBlock);
 }
 
+inline bool mightInlineFunction(JITType jitType, CodeBlock* codeBlock)
+{
+    return mightInlineFunctionFor(jitType, codeBlock, codeBlock->specializationKind());
+}
+
 inline CapabilityLevel inlineFunctionForCapabilityLevel(JITType jitType, CodeBlock* codeBlock, CodeSpecializationKind kind, bool isClosureCall)
 {
     if (isClosureCall) {

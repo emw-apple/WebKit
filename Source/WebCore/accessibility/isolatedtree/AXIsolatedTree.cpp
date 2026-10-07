@@ -886,9 +886,6 @@ void AXIsolatedTree::updateNodeProperties(AccessibilityObject& axObject, const A
         case AXProperty::ScreenRelativePosition:
             properties.append({ AXProperty::ScreenRelativePosition, axObject.screenRelativePosition() });
             break;
-        case AXProperty::SelectedOptionCheckmark:
-            properties.append({ AXProperty::SelectedOptionCheckmark, axObject.selectedOptionCheckmark().isolatedCopy() });
-            break;
         case AXProperty::SelectedTextRange:
             properties.append({ AXProperty::SelectedTextRange, axObject.selectedTextRange() });
             break;
@@ -2041,7 +2038,7 @@ void AXIsolatedTree::sortedNonRootWebAreasDidChange(Vector<AXID> webAreaIDs)
     markDirtyAndGetWorkingChanges().sortedNonRootWebAreaIDs = WTF::move(webAreaIDs);
 }
 
-AXTreePtr findAXTree(NOESCAPE const Function<bool(AXTreePtr)>& match)
+AXTreePtr findAXTree(Function<bool(AXTreePtr)>&& match)
 {
     if (isMainThread()) {
         for (WeakPtr tree : AXTreeStore<AXObjectCache>::liveTreeMap().values()) {
@@ -2720,8 +2717,6 @@ IsolatedObjectData createIsolatedObjectData(const Ref<AccessibilityObject>& axOb
         if (isScrollArea) {
             setObjectProperty(AXProperty::VerticalScrollBar, object.scrollBar(AccessibilityOrientation::Vertical));
             setObjectProperty(AXProperty::HorizontalScrollBar, object.scrollBar(AccessibilityOrientation::Horizontal));
-            setProperty(AXProperty::HasRemoteFrameChild, object.hasRemoteFrameChild());
-        } else if (object.role() == AccessibilityRole::FrameHost) {
             setProperty(AXProperty::HasRemoteFrameChild, object.hasRemoteFrameChild());
         } else if (isWebArea && !tree->isEmptyContentTree()) {
             // We expose DocumentLinks only for the web area objects when the tree is not an empty content tree. This property is expensive and makes no sense in an empty content tree.

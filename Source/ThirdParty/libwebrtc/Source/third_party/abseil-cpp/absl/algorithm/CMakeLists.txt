@@ -37,6 +37,7 @@ absl_cc_test(
   DEPS
     absl::algorithm
     absl::config
+    absl::hardening
     GTest::gmock_main
 )
 
@@ -49,10 +50,10 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::algorithm
-    absl::config
-    absl::core_headers
     absl::hardening
+    absl::config
     absl::iterator_traits_internal
+    absl::core_headers
     absl::meta
   PUBLIC
 )

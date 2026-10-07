@@ -128,9 +128,9 @@ void GPUProcessProxy::postWillTakeSnapshotNotification(CompletionHandler<void()>
     sendWithAsyncReply(Messages::GPUProcess::PostWillTakeSnapshotNotification { }, WTF::move(completionHandler));
 }
 
-std::optional<IPC::Connection::AsyncReplyID> GPUProcessProxy::sinkCompletedSnapshotToPDF(RemoteSnapshotIdentifier identifier, WebCore::FrameIdentifier rootFrameIdentifier, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&& completionHandler)
+void GPUProcessProxy::sinkCompletedSnapshotToPDF(RemoteSnapshotIdentifier identifier, const WebCore::FloatSize& size, WebCore::FrameIdentifier rootFrameIdentifier, CompletionHandler<void(RefPtr<WebCore::SharedBuffer>&&)>&& completionHandler)
 {
-    return sendWithAsyncReply(Messages::GPUProcess::SinkCompletedSnapshotToPDF { identifier, rootFrameIdentifier }, WTF::move(completionHandler));
+    sendWithAsyncReply(Messages::GPUProcess::SinkCompletedSnapshotToPDF { identifier, size, rootFrameIdentifier }, WTF::move(completionHandler));
 }
 
 }

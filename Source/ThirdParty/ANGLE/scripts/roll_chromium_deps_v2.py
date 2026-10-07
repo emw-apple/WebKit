@@ -1,15 +1,4 @@
 #!/usr/bin/env vpython3
-# /// script
-# requires-python = '>=3.11,<3.12'
-# dependencies = [
-#   'requests==2.32.5',
-#   'charset-normalizer==2.0.12',
-#   'idna==3.10',
-#   'urllib3==2.5.0',
-#   'certifi==2025.8.3'
-# ]
-# ///
-
 # Copyright 2026 The ANGLE project authors. All Rights Reserved.
 #
 # Use of this source code is governed by a BSD-style license
@@ -88,7 +77,6 @@ SYNCED_CIPD_DEPS = {
     'buildtools/reclient',
     'buildtools/win',
     'third_party/android_build_tools/aapt2/cipd',
-    'third_party/android_build_tools/bazel_tools/cipd',
     'third_party/android_build_tools/error_prone/cipd',
     'third_party/android_build_tools/error_prone_javac/cipd',
     'third_party/android_build_tools/lint/cipd',
@@ -373,7 +361,7 @@ class GerritUtilHttpConnAdapter:
         self.req_host = host
         self.req_uri = uri
         self.req_headers = {}
-        self.proxy = None
+        self.proxy_info = None
 
     def has_header(self, header: str) -> bool:
         return header in self.req_headers
@@ -429,12 +417,16 @@ def _get_gitiles_session(host: str) -> requests.Session:
     session.headers.update(gerrit_adapter.req_headers)
 
     # Apply proxy if set for SSO.
-    if gerrit_adapter.proxy:
+    if gerrit_adapter.proxy_info:
+        proxy_host = gerrit_adapter.proxy_info.proxy_host
+        if isinstance(proxy_host, bytes):
+            proxy_host = proxy_host.decode('utf-8')
+        proxy_url = f'http://{proxy_host}:{gerrit_adapter.proxy_info.proxy_port}'
         session.proxies = {
-            'http': gerrit_adapter.proxy,
-            'https': gerrit_adapter.proxy,
+            'http': proxy_url,
+            'https': proxy_url,
         }
-        logging.debug('Using SSO proxy: %s', gerrit_adapter.proxy)
+        logging.debug('Using SSO proxy: %s', proxy_url)
 
     # Store the base URL (potentially rewritten by SSO).
     session.gitiles_base_url = gerrit_adapter.req_uri.rstrip('/')

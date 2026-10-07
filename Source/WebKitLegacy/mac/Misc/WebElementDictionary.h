@@ -27,7 +27,6 @@
  */
 
 #import <Foundation/NSDictionary.h>
-#import <wtf/RetainPtr.h>
 
 namespace WebCore { 
     class HitTestResult;
@@ -35,8 +34,8 @@ namespace WebCore {
 
 @interface WebElementDictionary : NSDictionary {
     WebCore::HitTestResult* _result;
-    RetainPtr<NSMutableDictionary> _cache;
-    RetainPtr<NSMutableSet> _nilValues;
+    NSMutableDictionary *_cache;
+    NSMutableSet *_nilValues;
     BOOL _cacheComplete;
 }
 - (id)initWithHitTestResult:(const WebCore::HitTestResult&)result;

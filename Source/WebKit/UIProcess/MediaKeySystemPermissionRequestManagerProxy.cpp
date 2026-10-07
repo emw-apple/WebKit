@@ -96,9 +96,7 @@ void MediaKeySystemPermissionRequestManagerProxy::denyRequest(MediaKeySystemPerm
     ALWAYS_LOG(LOGIDENTIFIER, request.mediaKeySystemID().toUInt64(), ", reason: ", message);
 
 #if ENABLE(ENCRYPTED_MEDIA)
-    if (!WebFrameProxy::webFrame(request.frameID()))
-        return;
-    page->sendToProcessContainingFrame(request.frameID(), Messages::WebPage::MediaKeySystemWasDenied(request.mediaKeySystemID(), message));
+    protect(page->legacyMainFrameProcess())->send(Messages::WebPage::MediaKeySystemWasDenied(request.mediaKeySystemID(), message), page->webPageIDInMainFrameProcess());
 #else
     UNUSED_PARAM(message);
 #endif
@@ -113,9 +111,7 @@ void MediaKeySystemPermissionRequestManagerProxy::grantRequest(MediaKeySystemPer
 #if ENABLE(ENCRYPTED_MEDIA)
     ALWAYS_LOG(LOGIDENTIFIER, request.mediaKeySystemID().toUInt64(), ", keySystem: ", request.keySystem());
 
-    if (!WebFrameProxy::webFrame(request.frameID()))
-        return;
-    page->sendToProcessContainingFrame(request.frameID(), Messages::WebPage::MediaKeySystemWasGranted { request.mediaKeySystemID(), request.mediaKeysHashSalt() });
+    protect(page->legacyMainFrameProcess())->send(Messages::WebPage::MediaKeySystemWasGranted { request.mediaKeySystemID(), request.mediaKeysHashSalt() }, page->webPageIDInMainFrameProcess());
 #else
     UNUSED_PARAM(request);
 #endif

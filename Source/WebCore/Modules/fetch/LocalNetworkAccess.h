@@ -27,15 +27,18 @@
 
 #include <WebCore/PermissionState.h>
 #include <WebCore/ResourceError.h>
-#include <expected>
 #include <optional>
+#include <wtf/CompletionHandler.h>
 #include <wtf/Forward.h>
+#include <wtf/Function.h>
 
 namespace WebCore {
 
 enum class IPAddressSpace : uint8_t;
 class ResourceRequest;
 struct ClientOrigin;
+
+using LocalNetworkAccessPermissionCheckFunction = Function<void(const ClientOrigin&, IPAddressSpace connectionAddressSpace, CompletionHandler<void(PermissionState)>&&)>;
 
 // Where no backend can report the peer's address space it is always Unknown, which is fail-closed and
 // would block nearly every cross-origin subresource, so the check is skipped instead.
@@ -49,19 +52,17 @@ constexpr bool canDetermineConnectionAddressSpace()
 }
 
 // The order these are consulted in is security-critical: an undetermined address space must lose even
-// to a recorded grant.
+// to a recorded grant, and a recorded grant must win over being unable to prompt.
 enum class LocalNetworkAccessPermissionRequestOutcome : uint8_t {
     RefuseAsUndetermined,
     UseRecordedDecision,
+    RefuseAsUnpromptable,
     Prompt,
 };
-WEBCORE_EXPORT LocalNetworkAccessPermissionRequestOutcome localNetworkAccessPermissionRequestOutcome(IPAddressSpace connectionAddressSpace, bool hasRecordedDecision);
-
-enum class LocalNetworkAccessRequirement : bool { None, Permission };
+WEBCORE_EXPORT LocalNetworkAccessPermissionRequestOutcome localNetworkAccessPermissionRequestOutcome(IPAddressSpace connectionAddressSpace, bool hasRecordedDecision, bool canPrompt);
 
 // currentURL is the URL the connection was made to, which after a redirect differs from the request's
 // URL, and is what the same-origin exemption has to be judged against.
-WEBCORE_EXPORT std::expected<LocalNetworkAccessRequirement, ResourceError> checkLocalNetworkAccess(const ResourceRequest&, const URL& currentURL, IPAddressSpace connectionAddressSpace, IPAddressSpace clientPolicyContainerAddressSpace, bool clientIsSecureContext, const ClientOrigin&, bool localNetworkAllowedByPermissionsPolicy, bool loopbackNetworkAllowedByPermissionsPolicy);
-WEBCORE_EXPORT std::optional<ResourceError> localNetworkAccessPermissionError(const URL&, PermissionState);
+WEBCORE_EXPORT void performLocalNetworkAccessCheck(const ResourceRequest&, const URL& currentURL, IPAddressSpace connectionAddressSpace, IPAddressSpace clientPolicyContainerAddressSpace, bool clientIsSecureContext, const ClientOrigin&, bool localNetworkAllowedByPermissionsPolicy, bool loopbackNetworkAllowedByPermissionsPolicy, const LocalNetworkAccessPermissionCheckFunction&, CompletionHandler<void(std::optional<ResourceError>)>&&);
 
 } // namespace WebCore

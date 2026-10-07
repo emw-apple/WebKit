@@ -124,7 +124,7 @@ RefPtr<ImageBuffer> trackMaskImage(GraphicsContext& context, FloatSize trackRect
     if (!maskImage)
         return nullptr;
 
-    RetainPtr cgContext = maskImage->context().platformContext();
+    auto cgContext = maskImage->context().platformContext();
 
     auto coreUIDirection = (__bridge NSString *)(isRTL ? kCUIUserInterfaceLayoutDirectionRightToLeft : kCUIUserInterfaceLayoutDirectionLeftToRight);
 

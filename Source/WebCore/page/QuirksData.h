@@ -26,37 +26,13 @@
 #pragma once
 
 #include <WebCore/QuirkBehaviors.h>
-#include <WebCore/QuirkMatchPattern.h>
+#include <WebCore/URLMatch.h>
 #include <algorithm>
 #include <span>
 #include <wtf/StdLibExtras.h>
 #include <wtf/Vector.h>
-#include <wtf/text/WTFString.h>
 
 namespace WebCore {
-
-struct RuntimeQuirkBehavior {
-    WEBCORE_EXPORT static RuntimeQuirkBehavior from(const QuirkBehavior&);
-
-    bool secondaryURLConditionMatches(const URLMatchContext& context) const
-    {
-        return secondaryURL.isEmpty() || anyPatternMatches(secondaryURL, context);
-    }
-
-    friend bool operator==(const RuntimeQuirkBehavior&, const RuntimeQuirkBehavior&) = default;
-
-    QuirkBehaviorID id;
-
-    String script;
-    String userAgent;
-    String chromeCompatibilityVersion;
-    Vector<String> cookieNames;
-
-    String elementSelector;
-    String documentSelector;
-    Vector<QuirkMatchPattern> secondaryURL;
-};
-
 class QuirksData {
 public:
     inline bool isBehaviorEnabled(const QuirkBehaviorID& id) const
@@ -64,28 +40,26 @@ public:
         return m_behaviorFlags.get(static_cast<size_t>(id));
     }
 
+    inline bool isSite(QuirkSite site) const
+    {
+        return m_sites.get(static_cast<size_t>(site));
+    }
+
     inline bool hasBehaviors() const
     {
         return !m_behaviorFlags.isEmpty();
     }
 
-    inline bool hasSameBehaviorFlags(const QuirksData& other) const
-    {
-        return m_behaviorFlags == other.m_behaviorFlags;
-    }
-
-    inline const Vector<RuntimeQuirkBehavior>& behaviors() const LIFETIME_BOUND
+    inline const Vector<QuirkBehavior>& behaviors() const LIFETIME_BOUND
     {
         return m_behaviors;
     }
 
-    inline Vector<RuntimeQuirkBehavior> behaviorsMatching(QuirkBehaviorID id) const
+    inline const Vector<QuirkBehavior> behaviorsMatching(QuirkBehaviorID id)
     {
-        return WTF::compactMap(m_behaviors, [&](const auto& behavior) -> std::optional<RuntimeQuirkBehavior> {
-            if (behavior.id == id)
-                return behavior;
-            return std::nullopt;
-        });
+        return m_behaviors
+            | std::views::filter([&](const auto& behavior) { return behavior.id == id; })
+            | WTF::rangeTo<decltype(m_behaviors)>();
     }
 
     inline bool behaviorAppliesToURL(QuirkBehaviorID id, const URL& url) const
@@ -99,6 +73,11 @@ public:
         });
     }
 
+    inline void addSite(QuirkSite site)
+    {
+        m_sites.set(static_cast<size_t>(site));
+    }
+
     inline void setEnabled(const QuirkBehavior& behavior, bool state)
     {
         if (state)
@@ -109,14 +88,8 @@ public:
 
     inline void addBehavior(const QuirkBehavior& behavior)
     {
-        addBehavior(RuntimeQuirkBehavior::from(behavior));
-    }
-
-    inline void addBehavior(const RuntimeQuirkBehavior& behavior)
-    {
         m_behaviorFlags.set(static_cast<size_t>(behavior.id), true);
-        if (!m_behaviors.contains(behavior))
-            m_behaviors.append(behavior);
+        m_behaviors.append(behavior);
     }
 
     inline void removeBehaviorsMatching(QuirkBehaviorID id)
@@ -127,13 +100,17 @@ public:
 
     void merge(const QuirksData& other)
     {
-        for (auto& behavior : other.m_behaviors)
-            addBehavior(behavior);
+        auto& [otherBehaviorFlags, otherSites, otherBehaviors] = other;
+        m_behaviorFlags.merge(otherBehaviorFlags);
+        m_sites.merge(otherSites);
+        m_behaviors.appendVector(otherBehaviors);
     }
 
 private:
     QuirkBitSet m_behaviorFlags;
-    Vector<RuntimeQuirkBehavior> m_behaviors;
+    QuirkSiteBitSet m_sites;
+    Vector<QuirkBehavior> m_behaviors;
 };
 
 } // namespace WebCore
+

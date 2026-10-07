@@ -30,15 +30,13 @@
 
 #include "CSSNamedImageValue.h"
 #include "DeprecatedCSSOMValue.h"
-#include "GraphicsContext.h"
-#include "ImageBuffer.h"
-#include "Theme.h"
+#include "NamedImageGeneratedImage.h"
 
 namespace WebCore {
 namespace Style {
 
 NamedImage::NamedImage(CustomIdent&& name)
-    : GeneratedImage { Type::NamedImage }
+    : GeneratedImage { Type::NamedImage, NamedImage::isFixedSize }
     , m_name { WTF::move(name) }
 {
 }
@@ -75,37 +73,25 @@ void NamedImage::load(CachedResourceLoader&, const ResourceLoaderOptions&)
 {
 }
 
-ImageDrawResult NamedImage::draw(GraphicsContext& context, const RenderElement&, ConcreteObjectSize concreteObjectSize, const FloatRect& destination, const FloatRect& source, ImagePaintingOptions options, bool) const
+RefPtr<WebCore::Image> NamedImage::image(const RenderElement* renderer, const FloatSize& size, const GraphicsContext&, bool) const
 {
-    auto size = concreteObjectSize.size() * concreteObjectSize.zoom();
+    if (!renderer)
+        return &WebCore::Image::nullImage();
+
     if (size.isEmpty())
-        return ImageDrawResult::DidNothing;
+        return nullptr;
 
-    return drawIntoDestination(context, destination, source, options, [&](GraphicsContext& context) {
-        Theme::singleton().drawNamedImage(m_name.value, context, destination.size());
-        return ImageDrawResult::DidDraw;
-    });
-}
-
-ImageDrawResult NamedImage::drawAsPattern(GraphicsContext& context, const RenderElement&, ConcreteObjectSize concreteObjectSize, const FloatRect& destination, const FloatRect& tile, const AffineTransform& patternTransform, const FloatPoint& phase, const FloatSize& spacing, ImagePaintingOptions options, bool) const
-{
-    auto size = concreteObjectSize.size() * concreteObjectSize.zoom();
-    if (size.isEmpty() || context.paintingDisabled())
-        return ImageDrawResult::DidNothing;
-
-    RefPtr imageBuffer = context.createAlignedImageBuffer(size);
-    if (!imageBuffer)
-        return ImageDrawResult::DidNothing;
-
-    Theme::singleton().drawNamedImage(m_name.value, imageBuffer->context(), size);
-    context.drawPattern(*imageBuffer, destination, tile, patternTransform, phase, spacing, options);
-
-    return ImageDrawResult::DidDraw;
+    return NamedImageGeneratedImage::create(m_name.value, size);
 }
 
 bool NamedImage::knownToBeOpaque(const RenderElement&) const
 {
     return false;
+}
+
+FloatSize NamedImage::fixedSize(const RenderElement&) const
+{
+    return { };
 }
 
 } // namespace Style

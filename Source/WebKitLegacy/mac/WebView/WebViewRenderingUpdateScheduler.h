@@ -51,7 +51,7 @@ private:
     void schedulePostRenderingUpdate();
     void postRenderingUpdateCallback();
 
-    __weak WebView *m_webView;
+    WebView* m_webView;
 
     const std::unique_ptr<WebCore::RunLoopObserver> m_renderingUpdateRunLoopObserver;
     const std::unique_ptr<WebCore::RunLoopObserver> m_postRenderingUpdateRunLoopObserver;

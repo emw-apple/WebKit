@@ -2119,9 +2119,7 @@ void JSObject::setPrototypeDirect(VM& vm, JSValue prototype)
         asObject(prototype)->didBecomePrototype(vm);
     else if (!prototype.isNull()) [[unlikely]] // Conservative hardening.
         return;
-
-    bool chainAlreadyMayInterceptIndexedAccesses = mayBePrototype() && anyObjectInChainMayInterceptIndexedAccesses();
-
+    
     if (structure()->hasMonoProto()) {
         DeferredStructureTransitionWatchpointFire deferred(vm, structure());
         Structure* newStructure = Structure::changePrototypeTransition(vm, structure(), prototype, deferred);
@@ -2137,8 +2135,7 @@ void JSObject::setPrototypeDirect(VM& vm, JSValue prototype)
 
     // Realm is always non-nullptr since realmless Structure's objects (e.g. WasmGC Struct) cannot call setPrototypeDirect.
     if (mayBePrototype()) {
-        if (!chainAlreadyMayInterceptIndexedAccesses)
-            realm()->haveABadTime(vm);
+        realm()->haveABadTime(vm);
         return;
     }
 
@@ -2665,8 +2662,6 @@ bool JSObject::hasInstance(JSGlobalObject* globalObject, JSValue value, JSValue 
 
     TypeInfo info = structure()->typeInfo();
     if (info.implementsDefaultHasInstance()) {
-        if (!value.isObject())
-            return false;
         JSValue prototype = get(globalObject, vm.propertyNames->prototype);
         RETURN_IF_EXCEPTION(scope, false);
         RELEASE_AND_RETURN(scope, defaultHasInstance(globalObject, value, prototype));
@@ -2983,6 +2978,13 @@ void JSObject::reifyAllStaticProperties(JSGlobalObject* globalObject)
 
 NEVER_INLINE void JSObject::fillGetterPropertySlot(VM&, PropertySlot& slot, JSCell* getterSetter, unsigned attributes, PropertyOffset offset)
 {
+    if (structure()->isUncacheableDictionary()) {
+        slot.setGetterSlot(this, attributes, uncheckedDowncast<GetterSetter>(getterSetter));
+        return;
+    }
+
+    // This access is cacheable because Structure requires an attributeChangedTransition
+    // if this property stops being an accessor.
     slot.setCacheableGetterSlot(this, attributes, uncheckedDowncast<GetterSetter>(getterSetter), offset);
 }
 

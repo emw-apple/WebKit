@@ -28,7 +28,6 @@
 
 #import <WebKitLegacy/WebBasePluginPackage.h>
 #import <WebKitLegacy/WebPluginContainerCheck.h>
-#import <wtf/RetainPtr.h>
 
 @class WebFrame;
 @class WebHTMLView;
@@ -41,11 +40,11 @@
 
 @interface WebPluginController : NSObject <WebPluginManualLoader, WebPluginContainerCheckController>
 {
-    __weak NSView *_documentView;
-    __weak WebDataSource *_dataSource;
-    RetainPtr<NSMutableArray> _views;
+    NSView *_documentView;
+    WebDataSource *_dataSource;
+    NSMutableArray *_views;
     BOOL _started;
-    RetainPtr<CFMutableSetRef> _checksInProgress;
+    NSMutableSet *_checksInProgress;
 }
 
 - (NSView *)plugInViewWithArguments:(NSDictionary *)arguments fromPluginPackage:(WebPluginPackage *)plugin;

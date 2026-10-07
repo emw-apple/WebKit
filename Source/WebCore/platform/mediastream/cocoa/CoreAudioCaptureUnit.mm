@@ -106,7 +106,7 @@ static void setNoopInputMuteStateChangeHandler(AVAudioApplication *audioApplicat
 
 void registerAudioInputMuteChangeListener(WebCoreAudioInputMuteChangeListener *listener)
 {
-    RetainPtr audioApplication = getSharedAVAudioApplication();
+    auto *audioApplication = getSharedAVAudioApplication();
     if (!audioApplication)
         return;
 
@@ -120,7 +120,7 @@ void registerAudioInputMuteChangeListener(WebCoreAudioInputMuteChangeListener *l
 
 void unregisterAudioInputMuteChangeListener(WebCoreAudioInputMuteChangeListener *listener)
 {
-    RetainPtr audioApplication = getSharedAVAudioApplication();
+    auto *audioApplication = getSharedAVAudioApplication();
     if (!audioApplication)
         return;
 
@@ -244,7 +244,7 @@ void CoreAudioCaptureUnit::setMuteStatusChangedCallback(Function<void(bool)>&& c
 void CoreAudioCaptureUnit::setMutedState(bool isMuted)
 {
 #if HAVE(AVAUDIOAPPLICATION)
-    RetainPtr audioApplication = getSharedAVAudioApplication();
+    auto *audioApplication = getSharedAVAudioApplication();
     if (!audioApplication)
         return;
 

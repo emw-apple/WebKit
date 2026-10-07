@@ -855,16 +855,14 @@ TEST_P(TrustTokenProtocolTest, TruncatedRedemptionRequest) {
     uint8_t *client_data;
     size_t client_data_len;
     if (use_message()) {
-      EXPECT_FALSE(TRUST_TOKEN_ISSUER_redeem_over_message(
+      ASSERT_FALSE(TRUST_TOKEN_ISSUER_redeem_over_message(
           issuer.get(), &public_value, &private_value, &rtoken, &client_data,
           &client_data_len, redeem_msg, msg_len, kMessage, sizeof(kMessage)));
     } else {
-      EXPECT_FALSE(TRUST_TOKEN_ISSUER_redeem(
+      ASSERT_FALSE(TRUST_TOKEN_ISSUER_redeem(
           issuer.get(), &public_value, &private_value, &rtoken, &client_data,
           &client_data_len, redeem_msg, msg_len));
     }
-    EXPECT_TRUE(
-        ErrorsAreAndClear({{ERR_LIB_TRUST_TOKEN, TRUST_TOKEN_R_DECODE_ERROR}}));
   }
 }
 

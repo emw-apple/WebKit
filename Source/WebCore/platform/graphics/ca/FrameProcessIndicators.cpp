@@ -52,7 +52,7 @@ WTF_MAKE_TZONE_ALLOCATED_IMPL(FrameProcessIndicators);
 FrameProcessIndicators::FrameProcessIndicators(GraphicsLayerCA& graphicsLayer)
     : m_graphicsLayer(graphicsLayer)
     , m_backgroundColor(borderColor())
-    , m_text(makeString("pid="_s, getCurrentProcessID(), "("_s, Process::identifier(), ") frame=("_s, graphicsLayer.frameID() ? frameIdentifierString(*graphicsLayer.frameID()) : "0"_s, ")"_s))
+    , m_text(makeString("pid="_s, getCurrentProcessID(), "("_s, Process::identifier(), ")"_s))
     , m_borderLayer(graphicsLayer.createPlatformCALayer(PlatformCALayer::LayerType::LayerTypeLayer, nullptr))
     , m_indicatorLayer(graphicsLayer.createPlatformCALayer(PlatformCALayer::LayerType::LayerTypeWebLayer, this))
 {
@@ -65,12 +65,11 @@ FrameProcessIndicators::FrameProcessIndicators(GraphicsLayerCA& graphicsLayer)
     m_indicatorLayer->setName(MAKE_STATIC_STRING_IMPL("frame process indicator"));
     m_indicatorLayer->setAnchorPoint({ });
     m_indicatorLayer->setBounds({ { }, size() });
-    RefPtr layer = graphicsLayer.m_layer;
-    m_indicatorLayer->setContentsScale(layer->contentsScale());
+    m_indicatorLayer->setContentsScale(graphicsLayer.m_layer->contentsScale());
     m_indicatorLayer->setUserInteractionEnabled(false);
     m_indicatorLayer->setNeedsDisplay();
 
-    updateGeometry(layer->bounds());
+    updateGeometry(graphicsLayer.m_layer->bounds());
 }
 
 FrameProcessIndicators::~FrameProcessIndicators()
@@ -132,13 +131,12 @@ FloatSize FrameProcessIndicators::size() const
 {
     auto font = makeFont();
     auto [textTop, textBottom] = textVerticalBounds(font);
-    return { 2 * padding + font.width(m_text), 2 * padding + textBottom - textTop };
+    return { 2 * padding + font.width(TextRun(m_text)), 2 * padding + textBottom - textTop };
 }
 
 std::pair<float, float> FrameProcessIndicators::textVerticalBounds(const FontCascade& font) const
 {
-    TextRun textRun { m_text };
-    return ComplexTextController::enclosingGlyphBoundsForTextRun(font, textRun);
+    return ComplexTextController::enclosingGlyphBoundsForTextRun(font, TextRun(m_text));
 }
 
 void FrameProcessIndicators::platformCALayerPaintContents(PlatformCALayer* layer, GraphicsContext& context, const FloatRect&, OptionSet<GraphicsLayerPaintBehavior>)
@@ -151,13 +149,12 @@ void FrameProcessIndicators::platformCALayerPaintContents(PlatformCALayer* layer
     context.setFillColor(m_backgroundColor);
     context.fillRect(FloatRect { { }, indicatorSize });
     context.setFillColor(textColor);
-    TextRun textRun { m_text };
-    context.drawText(font, textRun, { padding, padding - textTop });
+    context.drawText(font, TextRun(m_text), { padding, padding - textTop });
 }
 
 float FrameProcessIndicators::platformCALayerDeviceScaleFactor() const
 {
-    return m_graphicsLayer ? protect(m_graphicsLayer)->deviceScaleFactor() : 1;
+    return m_graphicsLayer ? m_graphicsLayer->deviceScaleFactor() : 1;
 }
 
 OptionSet<ContentsFormat> FrameProcessIndicators::screenContentsFormats() const

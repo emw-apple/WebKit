@@ -309,13 +309,13 @@
             "issue": "https://crbug.com/705865"
         },
         {
-            "name": "reset_base_level_for_ASTC_image",
+            "name": "reset_base_level_for_ASTC_sub_image",
             "category": "Workarounds",
             "description": [
-                "Reset texture base level before calling glCompressedTexImage2D or glCompressedTexSubImage2D for ASTC textures to ",
+                "Reset texture base level before calling glCompressedTexSubImage2D for ASTC textures to ",
                 "work around PowerVR driver bug."
             ],
-            "issue": "https://crbug.com/551708184"
+            "issue": "https://crbug.com/528131939"
         },
         {
             "name": "recreate_immutable_texture_on_base_level_increase",
@@ -360,15 +360,6 @@
                 "Limit max 3d texture size and max array texture layers to 1024 to avoid system hang"
             ],
             "issue": "http://crbug.com/927470"
-        },
-        {
-            "name": "round_up_3d_texture_size_to_POT_for_limit",
-            "category": "Workarounds",
-            "description": [
-                "Round up 3D texture dimensions to nearest power of two before checking image allocation ",
-                "size limits to prevent mishandling of large 3D textures on older PowerVR drivers."
-            ],
-            "issue": "http://crbug.com/551673541"
         },
         {
             "name": "adjust_src_dst_region_for_BlitFramebuffer",
@@ -940,6 +931,14 @@
             "issue": "http://crbug.com/475877320"
         },
         {
+            "name": "expand_fragment_outputs_to_vec4",
+            "category": "Workarounds",
+            "description": [
+                "Expand fragment shader outputs to 4 components to work around compiler bugs."
+            ],
+            "issue": "http://crbug.com/491732188"
+        },
+        {
             "name": "recreate_mipmap_levels_before_generate",
             "category": "Workarounds",
             "description": [
@@ -978,7 +977,7 @@
             "description": [
                 "Force a flush before calling generateMipmap to work around driver bugs."
             ],
-            "issue": "http://crbug.com/549350408 https://crbug.com/549995090"
+            "issue": "http://crbug.com/549350408"
         },
         {
             "name": "split_level_0_pbo_full_sub_image_2D",

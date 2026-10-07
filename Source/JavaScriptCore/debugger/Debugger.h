@@ -74,7 +74,7 @@ public:
     JS_EXPORT_PRIVATE void detach(JSGlobalObject*, ReasonForDetach);
     JS_EXPORT_PRIVATE bool NODELETE isAttached(JSGlobalObject*);
 
-    void forEachBreakpointLocation(SourceID, SourceProvider*, int startLine, int startColumn, int endLine, int endColumn, NOESCAPE const Function<void(int, int)>&);
+    void forEachBreakpointLocation(SourceID, SourceProvider*, int startLine, int startColumn, int endLine, int endColumn, Function<void(int, int)>&&);
 
     bool resolveBreakpoint(Breakpoint&, SourceProvider*);
     bool setBreakpoint(Breakpoint&);
@@ -279,8 +279,6 @@ protected:
     JS_EXPORT_PRIVATE virtual void handlePause(JSGlobalObject*);
     virtual void didContinue(JSGlobalObject*) { }
     virtual void runEventLoopWhilePaused() { }
-
-    virtual bool isPauseBlockedByAnotherDebugger() const { return false; }
 
     virtual bool isContentScript(JSGlobalObject*) const { return false; }
 

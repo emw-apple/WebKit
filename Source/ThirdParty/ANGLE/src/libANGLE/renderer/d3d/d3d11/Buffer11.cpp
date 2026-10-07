@@ -869,8 +869,7 @@ angle::Result Buffer11::getConstantBufferRangeStorage(const gl::Context *context
     {
         // Keep the cacheEntry in a limited scope because it may be invalidated later in the code if
         // we need to reclaim some space.
-        ConstantBufferKey constantBufferKey(offset, size);
-        BufferCacheEntry *cacheEntry = &mConstantBufferRangeStoragesCache[constantBufferKey];
+        BufferCacheEntry *cacheEntry = &mConstantBufferRangeStoragesCache[offset];
 
         if (!cacheEntry->storage)
         {
@@ -941,7 +940,7 @@ angle::Result Buffer11::getStructuredBufferRangeSRV(const gl::Context *context,
     {
         // Keep the cacheEntry in a limited scope because it may be invalidated later in the code if
         // we need to reclaim some space.
-        StructuredBufferKey structuredBufferKey(offset, size, structureByteStride);
+        StructuredBufferKey structuredBufferKey = StructuredBufferKey(offset, structureByteStride);
         BufferCacheEntry *cacheEntry = &mStructuredBufferRangeStoragesCache[structuredBufferKey];
 
         if (!cacheEntry->storage)

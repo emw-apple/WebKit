@@ -46,7 +46,7 @@ namespace Style {
 struct DeclarationValue {
     Ref<CSSVariableData> value;
 
-    WEBCORE_EXPORT bool operator==(const DeclarationValue&) const;
+    bool operator==(const DeclarationValue&) const;
 };
 
 // MARK: - Conversion

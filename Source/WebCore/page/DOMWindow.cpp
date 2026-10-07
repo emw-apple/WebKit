@@ -679,7 +679,7 @@ ExceptionOr<bool> DOMWindow::find(const String& string, bool caseSensitive, bool
     return localThis->find(string, caseSensitive, backwards, wrap, wholeWord, searchInFrames, showDialog);
 }
 
-ExceptionOr<unsigned> DOMWindow::requestAnimationFrame(Ref<RequestAnimationFrameCallback>&& callback)
+ExceptionOr<int> DOMWindow::requestAnimationFrame(Ref<RequestAnimationFrameCallback>&& callback)
 {
     auto* localThis = dynamicDowncast<LocalDOMWindow>(*this);
     if (!localThis)
@@ -687,7 +687,7 @@ ExceptionOr<unsigned> DOMWindow::requestAnimationFrame(Ref<RequestAnimationFrame
     return localThis->requestAnimationFrame(WTF::move(callback));
 }
 
-ExceptionOr<unsigned> DOMWindow::webkitRequestAnimationFrame(Ref<RequestAnimationFrameCallback>&& callback)
+ExceptionOr<int> DOMWindow::webkitRequestAnimationFrame(Ref<RequestAnimationFrameCallback>&& callback)
 {
     auto* localThis = dynamicDowncast<LocalDOMWindow>(*this);
     if (!localThis)
@@ -695,7 +695,7 @@ ExceptionOr<unsigned> DOMWindow::webkitRequestAnimationFrame(Ref<RequestAnimatio
     return localThis->webkitRequestAnimationFrame(WTF::move(callback));
 }
 
-ExceptionOr<void> DOMWindow::cancelAnimationFrame(unsigned id)
+ExceptionOr<void> DOMWindow::cancelAnimationFrame(int id)
 {
     auto* localThis = dynamicDowncast<LocalDOMWindow>(*this);
     if (!localThis)
@@ -704,7 +704,7 @@ ExceptionOr<void> DOMWindow::cancelAnimationFrame(unsigned id)
     return { };
 }
 
-ExceptionOr<unsigned> DOMWindow::requestIdleCallback(Ref<IdleRequestCallback>&& callback, const IdleRequestOptions& options)
+ExceptionOr<int> DOMWindow::requestIdleCallback(Ref<IdleRequestCallback>&& callback, const IdleRequestOptions& options)
 {
     auto* localThis = dynamicDowncast<LocalDOMWindow>(*this);
     if (!localThis)
@@ -712,7 +712,7 @@ ExceptionOr<unsigned> DOMWindow::requestIdleCallback(Ref<IdleRequestCallback>&& 
     return localThis->requestIdleCallback(WTF::move(callback), options);
 }
 
-ExceptionOr<void> DOMWindow::cancelIdleCallback(unsigned id)
+ExceptionOr<void> DOMWindow::cancelIdleCallback(int id)
 {
     auto* localThis = dynamicDowncast<LocalDOMWindow>(*this);
     if (!localThis)

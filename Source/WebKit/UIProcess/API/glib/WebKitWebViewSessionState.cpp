@@ -22,7 +22,6 @@
 
 #include "WebKitWebViewSessionStatePrivate.h"
 #include <WebCore/BackForwardItemIdentifier.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GUniquePtr.h>
 
@@ -130,7 +129,7 @@ static inline unsigned toHTMLBodyElementType(size_t index)
 static inline void encodeHTTPBody(GVariantBuilder* sessionBuilder, const HTTPBody& httpBody)
 {
     g_variant_builder_open(sessionBuilder, G_VARIANT_TYPE("(sa" HTTP_BODY_ELEMENT_TYPE_STRING_V1 ")"));
-    gVariantBuilderAdd(sessionBuilder, "s", httpBody.contentType.utf8());
+    g_variant_builder_add(sessionBuilder, "s", httpBody.contentType.utf8().legacyCStringPointer());
     g_variant_builder_open(sessionBuilder, G_VARIANT_TYPE("a" HTTP_BODY_ELEMENT_TYPE_STRING_V1));
     for (const auto& element : httpBody.elements) {
         g_variant_builder_open(sessionBuilder, G_VARIANT_TYPE(HTTP_BODY_ELEMENT_TYPE_STRING_V1));
@@ -144,7 +143,7 @@ static inline void encodeHTTPBody(GVariantBuilder* sessionBuilder, const HTTPBod
         g_variant_builder_close(sessionBuilder);
 
         if (auto* fileData = std::get_if<HTTPBody::Element::FileData>(&element.data)) {
-            gVariantBuilderAdd(sessionBuilder, "s", fileData->filePath.utf8());
+            g_variant_builder_add(sessionBuilder, "s", fileData->filePath.utf8().legacyCStringPointer());
             g_variant_builder_add(sessionBuilder, "x", fileData->fileStart);
             if (fileData->fileLength)
                 g_variant_builder_add(sessionBuilder, "mx", TRUE, fileData->fileLength.value());
@@ -163,7 +162,7 @@ static inline void encodeHTTPBody(GVariantBuilder* sessionBuilder, const HTTPBod
         }
 
         if (auto* blobURLString = std::get_if<String>(&element.data))
-            gVariantBuilderAdd(sessionBuilder, "s", blobURLString->utf8());
+            g_variant_builder_add(sessionBuilder, "s", blobURLString->utf8().legacyCStringPointer());
         else
             g_variant_builder_add(sessionBuilder, "s", "");
 
@@ -175,14 +174,14 @@ static inline void encodeHTTPBody(GVariantBuilder* sessionBuilder, const HTTPBod
 
 static inline void encodeFrameState(GVariantBuilder* sessionBuilder, const FrameState& frameState)
 {
-    gVariantBuilderAdd(sessionBuilder, "s", frameState.urlString.utf8());
-    gVariantBuilderAdd(sessionBuilder, "s", frameState.originalURLString.utf8());
-    gVariantBuilderAdd(sessionBuilder, "s", frameState.referrer.utf8());
+    g_variant_builder_add(sessionBuilder, "s", frameState.urlString.utf8().legacyCStringPointer());
+    g_variant_builder_add(sessionBuilder, "s", frameState.originalURLString.utf8().legacyCStringPointer());
+    g_variant_builder_add(sessionBuilder, "s", frameState.referrer.utf8().legacyCStringPointer());
     const auto frameStateTarget = frameState.target.string();
-    gVariantBuilderAdd(sessionBuilder, "s", (frameStateTarget.length() < maximumFrameStateTargetLength) ? UTF8CStringView { frameStateTarget.utf8() } : ""_s);
+    g_variant_builder_add(sessionBuilder, "s", (frameStateTarget.length() < maximumFrameStateTargetLength) ? frameStateTarget.utf8().legacyCStringPointer() : "");
     g_variant_builder_open(sessionBuilder, G_VARIANT_TYPE("as"));
     for (const auto& state : frameState.documentState())
-        gVariantBuilderAdd(sessionBuilder, "s", state.string().utf8());
+        g_variant_builder_add(sessionBuilder, "s", state.string().utf8().legacyCStringPointer());
     g_variant_builder_close(sessionBuilder);
     if (!frameState.stateObjectData)
         g_variant_builder_add(sessionBuilder, "may", FALSE);
@@ -217,7 +216,7 @@ static inline void encodeFrameState(GVariantBuilder* sessionBuilder, const Frame
 
 static inline void encodeMainFrameState(GVariantBuilder* sessionBuilder, const BackForwardListItemState& state)
 {
-    gVariantBuilderAdd(sessionBuilder, "s", state.frameState->title.utf8());
+    g_variant_builder_add(sessionBuilder, "s", state.frameState->title.utf8().legacyCStringPointer());
     g_variant_builder_open(sessionBuilder, G_VARIANT_TYPE(FRAME_STATE_TYPE_STRING_V1));
     encodeFrameState(sessionBuilder, state.frameState);
     g_variant_builder_close(sessionBuilder);

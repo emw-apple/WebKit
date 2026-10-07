@@ -65,6 +65,11 @@ class OffscreenSurfaceWgpu : public SurfaceWgpu
                                      GLenum binding,
                                      const gl::ImageIndex &imageIndex) override;
 
+    egl::Error attachToFramebuffer(const gl::Context *context,
+                                   gl::Framebuffer *framebuffer) override;
+    egl::Error detachFromFramebuffer(const gl::Context *context,
+                                     gl::Framebuffer *framebuffer) override;
+
     angle::Result getAttachmentRenderTarget(const gl::Context *context,
                                             GLenum binding,
                                             const gl::ImageIndex &imageIndex,
@@ -108,8 +113,10 @@ class WindowSurfaceWgpu : public SurfaceWgpu
                                      GLenum binding,
                                      const gl::ImageIndex &imageIndex) override;
 
-    void attachToFramebuffer(const gl::Context *context, gl::Framebuffer *framebuffer) override;
-    void detachFromFramebuffer(gl::Framebuffer *framebuffer) override;
+    egl::Error attachToFramebuffer(const gl::Context *context,
+                                   gl::Framebuffer *framebuffer) override;
+    egl::Error detachFromFramebuffer(const gl::Context *context,
+                                     gl::Framebuffer *framebuffer) override;
 
     angle::Result getAttachmentRenderTarget(const gl::Context *context,
                                             GLenum binding,

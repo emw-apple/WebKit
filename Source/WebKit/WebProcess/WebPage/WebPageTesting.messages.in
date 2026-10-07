@@ -31,10 +31,6 @@ messages -> WebPageTesting {
     SetPermissionLevel(String origin, bool allowed)
     IsEditingCommandEnabled(String commandName) -> (bool result) Synchronous
 
-#if PLATFORM(IOS_FAMILY)
-    ScreenIsBeingCaptured() -> (bool captured)
-#endif
-
 #if ENABLE(NOTIFICATIONS)
     ClearNotificationPermissionState()
 #endif

@@ -103,7 +103,6 @@ using MutationObserverOptions = OptionSet<MutationObserverOptionType>;
 using MutationRecordDeliveryOptions = OptionSet<MutationObserverOptionType>;
 
 enum class IsMutationBySetInnerHTML : uint8_t { No, Yes };
-enum class CloneSubtree : bool { No, Yes };
 
 using NodeOrString = Variant<Ref<Node>, String>;
 
@@ -181,8 +180,8 @@ public:
     };
     virtual Ref<Node> cloneNodeInternal(Document&, CloningOperation, CustomElementRegistry*) const = 0;
     virtual SerializedNode serializeNode(CloningOperation) const = 0;
-    Ref<Node> cloneNode(CloneSubtree) const;
-    WEBCORE_EXPORT ExceptionOr<Ref<Node>> cloneNodeForBindings(bool subtree) const;
+    Ref<Node> cloneNode(bool deep) const;
+    WEBCORE_EXPORT ExceptionOr<Ref<Node>> cloneNodeForBindings(bool deep) const;
 
     virtual const AtomString& NODELETE localName() const;
     virtual const AtomString& NODELETE namespaceURI() const;
@@ -509,13 +508,12 @@ public:
     // https://dom.spec.whatwg.org/#concept-node-remove-ext
     virtual void removingSteps(RemovalType, ContainerNode& oldParentOfRemovedTree);
 
-    struct MovingType {
-        bool isSubtreeRoot { false };
-        bool didRemoveFromOldTreeScope { false };
-        bool didInsertIntoNewTreeScope { false };
+    enum class IsSubtreeRoot {
+        Yes,
+        No
     };
     // https://dom.spec.whatwg.org/#concept-node-move-ext
-    virtual void movingSteps(MovingType, ContainerNode& oldParent);
+    virtual void movingSteps(IsSubtreeRoot, ContainerNode&);
 
     void updateShadowIncludingRootForSubtree();
 
@@ -792,7 +790,7 @@ private:
     void derefEventTarget() final;
 
 #if ASSERT_ENABLED
-    WEBCORE_EXPORT bool checkIsInUserAgentShadowTree(bool) const;
+    bool checkIsInUserAgentShadowTree(bool) const;
 #else
     bool checkIsInUserAgentShadowTree(bool value) const { return value; }
 #endif

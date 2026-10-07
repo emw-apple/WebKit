@@ -48,9 +48,7 @@ static WorldMap& NODELETE allWorlds()
     return map;
 }
 
-@implementation WebScriptWorld {
-    RetainPtr<WebScriptWorldPrivate> _private;
-}
+@implementation WebScriptWorld
 
 - (id)initWithWorld:(Ref<WebCore::DOMWrapperWorld>&&)world
 {
@@ -58,7 +56,7 @@ static WorldMap& NODELETE allWorlds()
     if (!self)
         return nil;
 
-    _private = adoptNS([[WebScriptWorldPrivate alloc] init]);
+    _private = [[WebScriptWorldPrivate alloc] init];
     _private->world = WTF::move(world);
 
     ASSERT_ARG(world, !allWorlds().contains(*_private->world));
@@ -81,6 +79,10 @@ static WorldMap& NODELETE allWorlds()
 {
     ASSERT(allWorlds().contains(*_private->world));
     allWorlds().remove(protect(*_private->world));
+
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_private release];
+    _private = nil;
     [super dealloc];
 }
 

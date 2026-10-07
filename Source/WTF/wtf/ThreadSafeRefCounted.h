@@ -102,17 +102,10 @@ public:
             STATIC_ASSERT_NOT_REACHED_FOR_VALUE(destructionThread, "Unexpected destructionThread enumerator value");
     }
 
-#if defined(__swift__) && ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
-    void swiftRef() const
-    {
-        ref();
-    }
-#endif
-
 protected:
     ThreadSafeRefCounted() = default;
     ~ThreadSafeRefCounted() = default;
-} SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT BASE_CLASS_SWIFT_SHARED_REFERENCE(.swiftRef, .deref);
+} SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
 } // namespace WTF
 

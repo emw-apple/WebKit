@@ -182,10 +182,6 @@ bool RemoteFrameView::scrollContentsFastPath(const IntSize&, const IntRect&, con
     return false;
 }
 
-void RemoteFrameView::scrollContentsSlowPath(const IntRect&)
-{
-}
-
 bool RemoteFrameView::isVerticalDocument() const
 {
     return false;

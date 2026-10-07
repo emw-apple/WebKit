@@ -115,6 +115,23 @@ private func simulateHostApplicationEnteredBackground(_ webView: TestWKWebView) 
     #endif
 }
 
+@MainActor
+private func waitForCondition(
+    _ description: String,
+    timeout: Duration = .seconds(5),
+    _ condition: () async throws -> Bool
+) async throws {
+    let deadline = ContinuousClock.now + timeout
+
+    while !(try await condition()) {
+        guard ContinuousClock.now < deadline else {
+            Issue.record("Timed out waiting for condition: \(description)")
+            return
+        }
+        try await Task.sleep(for: .milliseconds(10))
+    }
+}
+
 extension WKWebView {
     @MainActor
     fileprivate func debugText(_ configuration: _WKTextExtractionConfiguration? = nil) async throws -> String {
@@ -444,7 +461,7 @@ struct TextExtractionTests {
         let selectID = extractNodeIdentifier(debugText, "select")
 
         #if ENABLE_TEXT_EXTRACTION_FILTER
-        #expect(debugText.contains("crazy ones") == false)
+        #expect(!debugText.contains("crazy ones"))
         #endif
 
         do {
@@ -1046,7 +1063,7 @@ struct TextExtractionTests {
 
         try await webView.load(html: enterCodeMarkup, baseURL: verificationURL)
         let latestDebugText = try await webView.debugText(extractionConfigurationWithFilteringDisabled())
-        #expect(latestDebugText.contains("Email verification") == false)
+        #expect(!latestDebugText.contains("Email verification"))
 
         let interaction = _WKTextExtractionInteraction(action: .click)
         interaction.nodeIdentifier = staleIdentifier
@@ -1057,7 +1074,7 @@ struct TextExtractionTests {
             (result.error as NSError?)?.userInfo[NSDebugDescriptionErrorKey] as? String
         )
         #expect(errorDescription.contains("re-extract the page"))
-        #expect(errorDescription.contains("re-resolved") == false)
+        #expect(!errorDescription.contains("re-resolved"))
     }
 
     @Test
@@ -1083,9 +1100,9 @@ struct TextExtractionTests {
         #expect(debugText.contains("label=Heading extra-data-1=123 extra-data-2=xyz"))
         #expect(debugText.contains("Subject"))
         #expect(debugText.contains("The quick brown fox jumped over the lazy dog"))
-        #expect(debugText.contains("select,") == false)
-        #expect(debugText.contains("Click Me") == false)
-        #expect(debugText.contains("Recipient address") == false)
+        #expect(!debugText.contains("select,"))
+        #expect(!debugText.contains("Click Me"))
+        #expect(!debugText.contains("Recipient address"))
     }
 
     @Test
@@ -1117,7 +1134,7 @@ struct TextExtractionTests {
         #expect(debugText.contains("p 'Bravo'"))
         #expect(debugText.contains("h2 'Charlie'"))
 
-        #expect(debugText.contains("div") == false)
+        #expect(!debugText.contains("div"))
     }
 
     @Test
@@ -1141,8 +1158,8 @@ struct TextExtractionTests {
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("'Alpha'"))
         #expect(debugText.contains("'Bravo'"))
-        #expect(debugText.contains("h1 '") == false)
-        #expect(debugText.contains("p '") == false)
+        #expect(!debugText.contains("h1 '"))
+        #expect(!debugText.contains("p '"))
     }
 
     @Test
@@ -1156,7 +1173,7 @@ struct TextExtractionTests {
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("h2 'Charlie'"))
         #expect(debugText.contains("'lead text'"))
-        #expect(debugText.contains("div") == false)
+        #expect(!debugText.contains("div"))
     }
 
     @Test
@@ -1169,7 +1186,7 @@ struct TextExtractionTests {
 
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("p 'Alpha'"))
-        #expect(debugText.contains("div") == false)
+        #expect(!debugText.contains("div"))
     }
 
     @Test
@@ -1182,7 +1199,7 @@ struct TextExtractionTests {
 
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("block-quote 'Quote text.'"))
-        #expect(debugText.contains("blockquote") == false)
+        #expect(!debugText.contains("blockquote"))
     }
 
     @Test
@@ -1195,8 +1212,8 @@ struct TextExtractionTests {
 
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("p 'First bold and emphasized text.'"))
-        #expect(debugText.contains("b '") == false)
-        #expect(debugText.contains("span") == false)
+        #expect(!debugText.contains("b '"))
+        #expect(!debugText.contains("span"))
     }
 
     @Test
@@ -1224,7 +1241,7 @@ struct TextExtractionTests {
         let menu = try line(containing: "select")
 
         #expect(gatedButton.contains("disabled"))
-        #expect(enabledButton.contains("disabled") == false)
+        #expect(!enabledButton.contains("disabled"))
         #expect(nestedInput.contains("disabled"))
         #expect(menu.contains("disabled"))
     }
@@ -1252,9 +1269,9 @@ struct TextExtractionTests {
         ]
 
         let debugTextWithReplacements = try await webView.debugText(configuration)
-        #expect(debugTextWithReplacements.contains("fox") == false)
-        #expect(debugTextWithReplacements.contains("dog") == false)
-        #expect(debugTextWithReplacements.contains("lazy") == false)
+        #expect(!debugTextWithReplacements.contains("fox"))
+        #expect(!debugTextWithReplacements.contains("dog"))
+        #expect(!debugTextWithReplacements.contains("lazy"))
         #expect(debugTextWithReplacements.contains("The quick brown cat jumped over the  mouse"))
     }
 
@@ -1270,7 +1287,7 @@ struct TextExtractionTests {
 
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("<redacted-full-name> met <redacted-name>."))
-        #expect(debugText.contains("<redacted-name> Appleseed") == false)
+        #expect(!debugText.contains("<redacted-name> Appleseed"))
     }
 
     @Test
@@ -1286,8 +1303,8 @@ struct TextExtractionTests {
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("<greeting>"))
         #expect(debugText.contains("<contraction>"))
-        #expect(debugText.contains("Hello WORLD") == false)
-        #expect(debugText.contains("It’s") == false)
+        #expect(!debugText.contains("Hello WORLD"))
+        #expect(!debugText.contains("It’s"))
     }
 
     @Test
@@ -1299,8 +1316,8 @@ struct TextExtractionTests {
 
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("Visited <spot> in Zürich."))
-        #expect(debugText.contains("café") == false)
-        #expect(debugText.contains("Zurich") == false)
+        #expect(!debugText.contains("café"))
+        #expect(!debugText.contains("Zurich"))
     }
 
     @Test
@@ -1320,8 +1337,8 @@ struct TextExtractionTests {
             #expect(text.contains("Two-factor authentication"))
             #expect(text.contains("Location customization"))
             #expect(text.contains("Jane pictures"))
-            #expect(text.contains("authentiJaneion") == false)
-            #expect(text.contains("LoJaneion") == false)
+            #expect(!text.contains("authentiJaneion"))
+            #expect(!text.contains("LoJaneion"))
         }
         do {
             let text = try await textAfterReplacing(
@@ -1331,8 +1348,8 @@ struct TextExtractionTests {
             #expect(text.contains("At least 8 characters"))
             #expect(text.contains("Cancel"))
             #expect(text.contains("Marie is an initial"))
-            #expect(text.contains("Marieeast") == false)
-            #expect(text.contains("CanceMarie") == false)
+            #expect(!text.contains("Marieeast"))
+            #expect(!text.contains("CanceMarie"))
         }
         do {
             let text = try await textAfterReplacing(
@@ -1343,7 +1360,7 @@ struct TextExtractionTests {
             #expect(text.contains("jane.hsieh@me.com"))
             #expect(text.contains("jane-hsieh"))
             #expect(text.contains("wensonhsieh"))
-            #expect(text.contains("janehsieh") == false)
+            #expect(!text.contains("janehsieh"))
         }
         do {
             let text = try await textAfterReplacing(
@@ -1392,7 +1409,7 @@ struct TextExtractionTests {
                 customizeConfiguration
             )
             #expect(redactedText.contains("jane.doe@example.com"), format, sourceLocation: sourceLocation)
-            #expect(redactedText.contains("wenson@me.com") == false, format, sourceLocation: sourceLocation)
+            #expect(!redactedText.contains("wenson@me.com"), format, sourceLocation: sourceLocation)
         }
 
         do {
@@ -1403,7 +1420,7 @@ struct TextExtractionTests {
             )
             #expect(text.contains("Send a codejane.doe@example.com"))
             #expect(text.contains("codejane.doe@example.comnow"))
-            #expect(text.contains("wenson@me.com") == false)
+            #expect(!text.contains("wenson@me.com"))
         }
 
         for format in [_WKTextExtractionOutputFormat.textTree, .HTML, .JSON] {
@@ -1460,8 +1477,8 @@ struct TextExtractionTests {
 
         #expect(description.contains("[redacted subject]"))
         #expect(description.contains("brown cat jumped over the lazy dog"))
-        #expect(description.contains("Compose a new message") == false)
-        #expect(description.contains("fox") == false)
+        #expect(!description.contains("Compose a new message"))
+        #expect(!description.contains("fox"))
 
         let result = try #require(await webView._performInteraction(interaction))
         #expect(result.error == nil)
@@ -1469,8 +1486,8 @@ struct TextExtractionTests {
         let summary = try #require(result.summary)
         #expect(summary.contains("[redacted subject]"))
         #expect(summary.contains("brown cat jumped over the lazy dog"))
-        #expect(summary.contains("Compose a new message") == false)
-        #expect(summary.contains("fox") == false)
+        #expect(!summary.contains("Compose a new message"))
+        #expect(!summary.contains("fox"))
 
         try await webView.load(
             html: """
@@ -1490,7 +1507,7 @@ struct TextExtractionTests {
 
         let scrollSummary = try #require(scrollResult.summary)
         #expect(scrollSummary.contains("[redacted container]"))
-        #expect(scrollSummary.contains("Secret Project Alpha") == false)
+        #expect(!scrollSummary.contains("Secret Project Alpha"))
     }
 
     @Test
@@ -1507,12 +1524,12 @@ struct TextExtractionTests {
         #expect(debugText.contains("“The quick brown fox jumped over the lazy dog”"))
         #expect(debugText.contains("0"))
         #if ENABLE_TEXT_EXTRACTION_FILTER
-        #expect(debugText.contains("Here’s to the crazy ones") == false)
-        #expect(debugText.contains("The round pegs in the square holes") == false)
-        #expect(debugText.contains("The ones who see things differently") == false)
-        #expect(debugText.contains("And they have no respect for the status quo") == false)
-        #expect(debugText.contains("They push the human race forward") == false)
-        #expect(debugText.contains("Because the people who are crazy") == false)
+        #expect(!debugText.contains("Here’s to the crazy ones"))
+        #expect(!debugText.contains("The round pegs in the square holes"))
+        #expect(!debugText.contains("The ones who see things differently"))
+        #expect(!debugText.contains("And they have no respect for the status quo"))
+        #expect(!debugText.contains("They push the human race forward"))
+        #expect(!debugText.contains("Because the people who are crazy"))
         #endif // ENABLE_TEXT_EXTRACTION_FILTER
     }
 
@@ -1546,9 +1563,9 @@ struct TextExtractionTests {
 
         let defaultText = try await webView.debugText(extractionConfigurationWithFilteringDisabled())
         #expect(defaultText.contains("visible container text"))
-        #expect(defaultText.contains("transparent container text") == false)
+        #expect(!defaultText.contains("transparent container text"))
         #expect(defaultText.contains("labeled transparent field"))
-        #expect(defaultText.contains("unlabeled transparent field") == false)
+        #expect(!defaultText.contains("unlabeled transparent field"))
     }
 
     @Test
@@ -1579,8 +1596,8 @@ struct TextExtractionTests {
         #expect(defaultText.contains("Select photos"))
         #expect(defaultText.contains("checkbox"))
         #expect(defaultText.contains("checked"))
-        #expect(defaultText.contains("Genuinely invisible") == false)
-        #expect(defaultText.contains("image") == false)
+        #expect(!defaultText.contains("Genuinely invisible"))
+        #expect(!defaultText.contains("image"))
     }
 
     @Test
@@ -1614,7 +1631,7 @@ struct TextExtractionTests {
 
         let defaultText = try await webView.debugText(extractionConfigurationWithFilteringDisabled())
         #expect(defaultText.contains("Security code"))
-        #expect(defaultText.contains("Genuinely invisible code") == false)
+        #expect(!defaultText.contains("Genuinely invisible code"))
     }
 
     @Test
@@ -1640,10 +1657,10 @@ struct TextExtractionTests {
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("Hello world"))
         #expect(debugText.contains("This text is editable"))
-        #expect(debugText.contains("data-name") == false)
-        #expect(debugText.contains("form") == false)
-        #expect(debugText.contains("target") == false)
-        #expect(debugText.contains("asdf") == false)
+        #expect(!debugText.contains("data-name"))
+        #expect(!debugText.contains("form"))
+        #expect(!debugText.contains("target"))
+        #expect(!debugText.contains("asdf"))
     }
 
     @Test
@@ -1673,7 +1690,7 @@ struct TextExtractionTests {
             let result = try await extractText(filterOptions: .textRecognition)
             #expect(result.textContent.contains("“The quick brown fox jumped over the lazy dog”"))
             #if ENABLE_TEXT_EXTRACTION_FILTER
-            #expect(result.textContent.contains("Here’s to the crazy ones") == false)
+            #expect(!result.textContent.contains("Here’s to the crazy ones"))
             #expect(result.filteredOutAnyText)
             #endif
         }
@@ -1845,7 +1862,7 @@ struct TextExtractionTests {
         #expect(debugText1 == debugText2)
         #expect(debugText1.contains("Sale - 20% Off"))
         #expect(debugText1.contains("In Stock - Ships within 24 hours"))
-        #expect(debugText1.contains("Customers Also Bought") == false)
+        #expect(!debugText1.contains("Customers Also Bought"))
 
         var handle = await extractionResult.requestContainerJSHandle(forNodeIdentifier: priceID, searchText: "text that does not exist")
         #expect(handle != nil)
@@ -1879,8 +1896,8 @@ struct TextExtractionTests {
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("Premium Wireless Headphones"))
         #expect(debugText.contains("Ships within 24 hours"))
-        #expect(debugText.contains("Customers Also Bought") == false)
-        #expect(debugText.contains("The noise cancellation is incredible") == false)
+        #expect(!debugText.contains("Customers Also Bought"))
+        #expect(!debugText.contains("The noise cancellation is incredible"))
     }
 
     @Test
@@ -1910,7 +1927,7 @@ struct TextExtractionTests {
         let debugText = try await webView.debugText(configuration)
         #expect(debugText.contains("Premium Wireless Headphones"))
         #expect(debugText.contains("Ships within 24 hours"))
-        #expect(debugText.contains("Customer Reviews") == false)
+        #expect(!debugText.contains("Customer Reviews"))
     }
 
     @Test
@@ -2151,7 +2168,7 @@ struct TextExtractionTests {
             #expect(debugText.contains("Image with spaces"))
             #expect(debugText.contains("Image with newline"))
 
-            #expect(debugText.contains("not a valid") == false)
+            #expect(!debugText.contains("not a valid"))
         }
     }
 
@@ -2383,8 +2400,8 @@ struct TextExtractionTests {
 
             let debugText = try await webView.debugText(configuration)
             #expect(debugText.contains("origin=localhost:\(serverConfiguration.port)"))
-            #expect(debugText.contains("origin=http://localhost") == false)
-            #expect(debugText.contains("origin=127.0.0.1") == false)
+            #expect(!debugText.contains("origin=http://localhost"))
+            #expect(!debugText.contains("origin=127.0.0.1"))
         }
     }
 
@@ -2850,8 +2867,8 @@ struct TextExtractionTests {
 
                 let debugText = try await webView.debugText(plainHTMLConfiguration())
                 #expect(debugText.contains("&lt;dom:empty&gt;|&lt;net:blocked&gt;"))
-                #expect(debugText.contains("&lt;dom:leaked:") == false)
-                #expect(debugText.contains("&lt;net:loaded:") == false)
+                #expect(!debugText.contains("&lt;dom:leaked:"))
+                #expect(!debugText.contains("&lt;net:loaded:"))
             }
         }
 

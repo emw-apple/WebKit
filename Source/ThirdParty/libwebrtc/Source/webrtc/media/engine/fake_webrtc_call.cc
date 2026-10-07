@@ -110,8 +110,8 @@ AudioSendStream::Stats FakeAudioSendStream::GetStats(
 
 FakeAudioReceiveStream::FakeAudioReceiveStream(
     int id,
-    AudioReceiveStreamInterface::Config config)
-    : id_(id), config_(std::move(config)) {}
+    const AudioReceiveStreamInterface::Config& config)
+    : id_(id), config_(config) {}
 
 const AudioReceiveStreamInterface::Config& FakeAudioReceiveStream::GetConfig()
     const {
@@ -568,9 +568,9 @@ void FakeCall::DestroyAudioSendStream(AudioSendStream* send_stream) {
 }
 
 AudioReceiveStreamInterface* FakeCall::CreateAudioReceiveStream(
-    AudioReceiveStreamInterface::Config config) {
+    const AudioReceiveStreamInterface::Config& config) {
   audio_receive_streams_.push_back(
-      new FakeAudioReceiveStream(next_stream_id_++, std::move(config)));
+      new FakeAudioReceiveStream(next_stream_id_++, config));
   ++num_created_receive_streams_;
   return audio_receive_streams_.back();
 }

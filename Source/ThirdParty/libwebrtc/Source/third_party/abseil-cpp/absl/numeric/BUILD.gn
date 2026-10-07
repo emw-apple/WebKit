@@ -22,7 +22,6 @@ absl_test("bits_test") {
   sources = [ "bits_test.cc" ]
   deps = [
     ":bits",
-    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/random",
   ]
 }

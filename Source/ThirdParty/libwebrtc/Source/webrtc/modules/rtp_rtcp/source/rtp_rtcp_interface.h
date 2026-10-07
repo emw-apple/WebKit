@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/base/macros.h"
 #include "absl/strings/string_view.h"
 #include "api/frame_transformer_interface.h"
 #include "api/rtp_header_extension_id.h"
@@ -46,6 +47,7 @@ class FrameEncryptorInterface;
 class RateLimiter;
 class RTPSender;
 class Transport;
+class VideoBitrateAllocationObserver;
 
 class RtpRtcpInterface : public RtcpFeedbackSenderInterface {
  public:
@@ -73,6 +75,7 @@ class RtpRtcpInterface : public RtcpFeedbackSenderInterface {
 
     NetworkStateEstimateObserver* network_state_estimate_observer = nullptr;
 
+    VideoBitrateAllocationObserver* bitrate_allocation_observer = nullptr;
     RtcpRttStats* rtt_stats = nullptr;
     RtcpPacketTypeCounterObserver* rtcp_packet_type_counter_observer = nullptr;
     // Called on receipt of RTCP report block from remote side.
@@ -213,6 +216,13 @@ class RtpRtcpInterface : public RtcpFeedbackSenderInterface {
   // Register extension by uri, triggers CHECK on falure.
   virtual void RegisterRtpHeaderExtension(absl::string_view uri,
                                           RtpHeaderExtensionId id) = 0;
+  // Backwards compatibility overload.
+  // TODO: bugs.webrtc.org/514817938 - Remove when downstream is updated.
+  [[deprecated]] ABSL_REFACTOR_INLINE void RegisterRtpHeaderExtension(
+      absl::string_view uri,
+      int id) {
+    RegisterRtpHeaderExtension(uri, RtpHeaderExtensionId(id));
+  }
 
   virtual void DeregisterSendRtpHeaderExtension(absl::string_view uri) = 0;
 

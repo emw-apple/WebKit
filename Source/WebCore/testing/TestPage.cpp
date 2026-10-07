@@ -38,7 +38,6 @@
 #include "PageConfiguration.h"
 #include "ProcessWarming.h"
 #include "Settings.h"
-#include "WebCoreJITOperations.h"
 #include <pal/SessionID.h>
 #include <wtf/StdLibExtras.h>
 
@@ -47,7 +46,6 @@ namespace WebCore {
 Ref<Page> createTestPage(const TestPageOptions& options)
 {
     static bool prewarmed = [] {
-        populateJITOperations();
         ProcessWarming::prewarmGlobally();
         return true;
     }();

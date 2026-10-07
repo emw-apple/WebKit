@@ -32,7 +32,6 @@
 #include "HTMLInputElement.h"
 #include "HTMLNames.h"
 #include "HTMLParserIdioms.h"
-#include "ImageInputTypeSizing.h"
 #include "InputTypeNames.h"
 #include "MouseEvent.h"
 #include "RenderBoxInlines.h"
@@ -187,10 +186,8 @@ unsigned ImageInputType::height() const
 
     // If the image is available, use its height.
     RefPtr imageLoader = element->imageLoader();
-    if (imageLoader && imageLoader->image()) {
-        if (RefPtr image = protect(imageLoader->image())->image())
-            return LayoutUnit(ImageInputTypeSizing { }.resolve(image->naturalDimensions()).size().height()).toUnsigned();
-    }
+    if (imageLoader && imageLoader->image())
+        return protect(imageLoader->image())->imageSizeForRenderer(renderer.get(), 1).height().toUnsigned();
 
     return 0;
 }
@@ -212,10 +209,8 @@ unsigned ImageInputType::width() const
 
     // If the image is available, use its width.
     RefPtr imageLoader = element->imageLoader();
-    if (imageLoader && imageLoader->image()) {
-        if (RefPtr image = protect(imageLoader->image())->image())
-            return LayoutUnit(ImageInputTypeSizing { }.resolve(image->naturalDimensions()).size().width()).toUnsigned();
-    }
+    if (imageLoader && imageLoader->image())
+        return protect(imageLoader->image())->imageSizeForRenderer(renderer.get(), 1).width().toUnsigned();
 
     return 0;
 }

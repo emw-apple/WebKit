@@ -29,20 +29,13 @@
 #include "RenderImageResource.h"
 
 #include "CachedImage.h"
-#include "Font.h"
-#include "FontCascadeInlines.h"
-#include "RenderElementInlines.h"
-#include "RenderImage.h"
+#include "NullGraphicsContext.h"
+#include "RenderElement.h"
 #include "RenderObjectDocument.h"
-#include "ReplacedElementIntrinsicSizing.h"
 #include "StyleCachedImage.h"
 #include "StyleComputedStyle+GettersInlines.h"
 #include "StyleInvalidImage.h"
 #include <wtf/TZoneMallocInlines.h>
-
-#if ENABLE(MULTI_REPRESENTATION_HEIC)
-#include "MultiRepresentationHEICMetrics.h"
-#endif
 
 namespace WebCore {
 
@@ -69,11 +62,11 @@ void RenderImageResource::initialize(RenderElement& renderer)
 void RenderImageResource::willBeDestroyed()
 {
     RefPtr cachedImage = this->cachedImage();
-    RefPtr styleImage = m_styleImage;
-    if (styleImage && m_renderer)
-        styleImage->removeClient(*m_renderer);
-    if (styleImage && styleImage->isAnimated() && cachedImage && !cachedImage->hasRendererClients())
-        styleImage->stopAnimation();
+    Ref image = this->image();
+    if (m_styleImage && m_renderer)
+        protect(m_styleImage)->removeClient(*m_renderer);
+    if (image->isAnimated() && cachedImage && !cachedImage->hasRendererClients())
+        image->stopAnimation();
 }
 
 void RenderImageResource::clearCachedImage()
@@ -107,10 +100,7 @@ void RenderImageResource::setCachedImage(CachedImage* newImage)
     if (!newImage)
         m_styleImage = nullptr;
     else {
-        WTF::URL authoredURL;
-        if (RefPtr element = m_renderer->element())
-            authoredURL = protect(m_renderer->document())->encodingParseURL(element->imageSourceURL());
-        m_styleImage = Style::CachedImage::create(*newImage, WTF::move(authoredURL), { Style::SVGReferencingMode::AnimatedImageDocument });
+        m_styleImage = Style::CachedImage::create(*newImage);
 
         RefPtr styleImage = m_styleImage;
         styleImage->addClient(*m_renderer);
@@ -125,10 +115,27 @@ void RenderImageResource::resetAnimation()
     if (!m_styleImage)
         return;
 
-    protect(m_styleImage)->resetAnimation();
+    image()->resetAnimation();
 
     if (m_renderer && !m_renderer->needsLayout())
         m_renderer->repaint();
+}
+
+Ref<Image> RenderImageResource::image(const IntSize& size) const
+{
+    // Generated content may trigger calls to image() while we're still pending, don't assert but gracefully exit.
+    if (!m_styleImage)
+        return Image::nullImage();
+
+    Ref styleImage = *m_styleImage;
+    if (styleImage->isPending())
+        return Image::nullImage();
+
+    RefPtr image = styleImage->image(m_renderer.get(), size, NullGraphicsContext());
+    if (!image)
+        return Image::nullImage();
+
+    return image.releaseNonNull();
 }
 
 bool RenderImageResource::currentFrameIsComplete() const
@@ -138,58 +145,18 @@ bool RenderImageResource::currentFrameIsComplete() const
     return protect(m_styleImage)->currentFrameIsComplete(m_renderer.get());
 }
 
-bool RenderImageResource::hasDecodedImage() const
+void RenderImageResource::setContainerContext(const IntSize& imageContainerSize, const URL& url)
 {
-    return m_styleImage && protect(m_styleImage)->hasDecodedImage();
+    if (!m_styleImage || !m_renderer)
+        return;
+    protect(m_styleImage)->setContainerContextForRenderer(*m_renderer, imageContainerSize, m_renderer->style().usedZoom(), url);
 }
 
-NaturalDimensions RenderImageResource::naturalDimensions() const
+LayoutSize RenderImageResource::imageSize(float multiplier, CachedImage::SizeType type) const
 {
-    if (!m_renderer)
-        return NaturalDimensions::none();
-
-#if ENABLE(MULTI_REPRESENTATION_HEIC)
-    if (CheckedPtr renderImage = dynamicDowncast<RenderImage>(m_renderer); renderImage && renderImage->isMultiRepresentationHEIC())
-        return NaturalDimensions::fixed(renderImage->style().fontCascade().primaryFont().metricsForMultiRepresentationHEIC().size());
-#endif
-
     if (!m_styleImage)
-        return NaturalDimensions::none();
-    return protect(m_styleImage)->naturalDimensions(*m_renderer, ReplacedElementIntrinsicSizing { });
-}
-
-std::optional<FloatSize> RenderImageResource::usedImageSize(FloatSize containerSize) const
-{
-    if (!hasDecodedImage() || !m_renderer)
-        return std::nullopt;
-
-    auto naturalDimensions = this->naturalDimensions();
-    if (naturalDimensions.width && naturalDimensions.height)
-        return FloatSize { *naturalDimensions.width, *naturalDimensions.height };
-
-    if (containerSize.isEmpty())
-        return std::nullopt;
-
-    if (auto usedZoom = m_renderer->style().usedZoom(); usedZoom != 1)
-        containerSize.scale(1 / usedZoom);
-    return containerSize;
-}
-
-float RenderImageResource::density() const
-{
-    if (CheckedPtr renderImage = dynamicDowncast<RenderImage>(m_renderer))
-        return renderImage->imageDevicePixelRatio();
-    return 1;
-}
-
-LayoutSize RenderImageResource::intrinsicSize(float multiplier) const
-{
-    if (!hasDecodedImage())
         return { };
-
-    auto size = ReplacedElementIntrinsicSizing { density() }.resolve(naturalDimensions()).size();
-    size.scale(multiplier);
-    return LayoutSize(size / protect(m_styleImage)->imageScaleFactor());
+    return LayoutSize(protect(m_styleImage)->imageSize(m_renderer.get(), multiplier, type));
 }
 
 } // namespace WebCore

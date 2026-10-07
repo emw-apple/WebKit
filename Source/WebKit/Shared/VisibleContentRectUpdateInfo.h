@@ -31,7 +31,6 @@
 #include <WebCore/BoxExtents.h>
 #include <WebCore/FloatRect.h>
 #include <WebCore/VelocityData.h>
-#include <wtf/MathExtras.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/OptionSet.h>
 #include <wtf/text/WTFString.h>
@@ -46,12 +45,6 @@ class TextStream;
 }
 
 namespace WebKit {
-
-inline bool scalesAreEssentiallyEqual(float a, float b)
-{
-    constexpr auto scaleFactorEpsilon = 0.01f;
-    return WTF::areEssentiallyEqual(a, b, scaleFactorEpsilon);
-}
 
 enum class ViewStabilityFlag : uint8_t {
     ScrollViewInteracting               = 1 << 0, // Dragging, zooming, interrupting deceleration

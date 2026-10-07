@@ -190,9 +190,10 @@ class RtpVideoSenderTestFixture {
             .env = env_,
             .bitrate_config = bitrate_config_,
             .worker_thread = time_controller_.GetMainThread()}),
-        stats_proxy_(env_,
+        stats_proxy_(time_controller_.GetClock(),
                      config_,
-                     VideoEncoderConfig::ContentType::kRealtimeVideo),
+                     VideoEncoderConfig::ContentType::kRealtimeVideo,
+                     env_.field_trials()),
         retransmission_rate_limiter_(time_controller_.GetClock(),
                                      kRetransmitWindowSizeMs) {
     transport_controller_.EnsureStarted();
@@ -1624,7 +1625,8 @@ TEST(RtpVideoSenderTest, PostTaskRaceDoesNotLeadToDanglingPointer) {
   config.rtp.ssrcs = {kSsrc1};
 
   SendStatisticsProxy stats_proxy(
-      env, config, VideoEncoderConfig::ContentType::kRealtimeVideo);
+      time_controller.GetClock(), config,
+      VideoEncoderConfig::ContentType::kRealtimeVideo, env.field_trials());
 
   BitrateConstraints bitrate_config = GetBitrateConfig();
   RtpTransportConfig transport_config{

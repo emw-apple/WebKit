@@ -11,8 +11,6 @@
 #ifndef INCLUDE_LIBYUV_SCALE_H_
 #define INCLUDE_LIBYUV_SCALE_H_
 
-#include <stdint.h>
-
 #include "libyuv/basic_types.h"
 
 #ifdef __cplusplus
@@ -323,11 +321,11 @@ int Scale(const uint8_t* src_y,
           int dst_stride_v,
           int dst_width,
           int dst_height,
-          int interpolate);
+          LIBYUV_BOOL interpolate);
 
 // For testing, allow disabling of specialized scalers.
 LIBYUV_API
-void SetUseReferenceImpl(int use);
+void SetUseReferenceImpl(LIBYUV_BOOL use);
 #endif  // __cplusplus
 
 #ifdef __cplusplus

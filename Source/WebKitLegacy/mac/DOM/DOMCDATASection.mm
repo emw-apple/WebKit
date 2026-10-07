@@ -33,7 +33,7 @@
 #import <WebCore/WebScriptObjectPrivate.h>
 #import <wtf/GetPtr.h>
 
-#define IMPL downcast<WebCore::CDATASection>(reinterpret_cast<WebCore::Node*>(_internal))
+#define IMPL static_cast<WebCore::CDATASection*>(reinterpret_cast<WebCore::Node*>(_internal))
 
 @implementation DOMCDATASection
 

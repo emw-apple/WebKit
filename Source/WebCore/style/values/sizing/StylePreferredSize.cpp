@@ -33,9 +33,6 @@ namespace Style {
 
 MinimumSize PreferredSize::asMinimumSize() const
 {
-    if (isCalcSize())
-        return MinimumSize { calcSize() };
-
     return WTF::switchOn(*this,
         [&](const auto& value) {
             return MinimumSize { value };
@@ -45,9 +42,6 @@ MinimumSize PreferredSize::asMinimumSize() const
 
 FlexBasis PreferredSize::asFlexBasis() const
 {
-    if (isCalcSize())
-        return FlexBasis { calcSize() };
-
     return WTF::switchOn(*this,
         [&](const auto& value) {
             return FlexBasis { value };

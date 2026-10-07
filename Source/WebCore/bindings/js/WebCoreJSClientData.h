@@ -52,6 +52,8 @@ class JSHeapData {
 public:
     JSHeapData(JSC::Heap&);
 
+    static JSHeapData* ensureHeapData(JSC::Heap&);
+
     Lock& lock() LIFETIME_BOUND { return m_lock; }
     ExtendedDOMIsoSubspaces& subspaces() LIFETIME_BOUND { return m_subspaces; }
 
@@ -65,7 +67,7 @@ public:
     void reconcileWeakReferencesAtGCEnd(JSC::VM&, JSC::CollectionScope);
 
     template<typename Func>
-    void forEachOutputConstraintSpace(NOESCAPE const Func& func)
+    void forEachOutputConstraintSpace(const Func& func)
     {
         for (auto* space : m_outputConstraintSpaces)
             func(*space);
@@ -166,7 +168,7 @@ public:
 
     virtual String overrideSourceURL(const JSC::StackFrame&, const String& originalSourceURL) const;
 
-    JSHeapData& heapData() { return m_heapData.get(); }
+    JSHeapData& heapData() { return *m_heapData; }
 
     WebCoreBuiltinNames& builtinNames() LIFETIME_BOUND { return m_builtinNames; }
     JSBuiltinFunctions& builtinFunctions() LIFETIME_BOUND { return m_builtinFunctions; }
@@ -205,8 +207,7 @@ private:
     JSBuiltinFunctions m_builtinFunctions;
     WebCoreBuiltinNames m_builtinNames;
 
-    // Declared before the client subspaces, which point into its subspaces, so that it outlives them.
-    const UniqueRef<JSHeapData> m_heapData;
+    JSHeapData* m_heapData;
     JSC::GCClient::IsoSubspace m_domBuiltinConstructorSpace;
     JSC::GCClient::IsoSubspace m_domConstructorSpace;
     JSC::GCClient::IsoSubspace m_domNamespaceObjectSpace;

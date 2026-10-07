@@ -34,7 +34,7 @@ namespace WebCore {
 class FormData;
 
 struct CSPInfo {
-    String url;
+    String documentURI;
     String sourceFile;
     String sample;
     int lineNumber { 0 };

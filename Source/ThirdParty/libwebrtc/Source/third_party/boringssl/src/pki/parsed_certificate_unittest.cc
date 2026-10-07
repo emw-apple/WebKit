@@ -497,11 +497,16 @@ TEST(ParsedCertificateTest, SerialNumberZeroPadded) {
 
 // Tests a serial number where the MSB is >= 0x80, causing the encoded
 // length to be 21 bytes long. This is an error, as RFC 5280 specifies a
-// maximum of 20 bytes. We do not constrain the serial number length because too
-// many certificates get it wrong.
+// maximum of 20 bytes.
 TEST(ParsedCertificateTest, SerialNumberZeroPadded21BytesLong) {
   std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_zero_padded_21_bytes.pem", {});
+  ASSERT_FALSE(cert);
+
+  // Try again with allow_invalid_serial_numbers=true. Parsing should succeed.
+  ParseCertificateOptions options;
+  options.allow_invalid_serial_numbers = true;
+  cert = ParseCertificateFromFile("serial_zero_padded_21_bytes.pem", options);
   ASSERT_TRUE(cert);
 
   static const uint8_t expected_serial[21] = {
@@ -523,11 +528,16 @@ TEST(ParsedCertificateTest, SerialNumberNegative) {
 }
 
 // Tests a serial number which is very long. RFC 5280 specifies a maximum of 20
-// bytes. We do not constrain the serial number length because too many
-// certificates get it wrong.
+// bytes.
 TEST(ParsedCertificateTest, SerialNumber37BytesLong) {
   std::shared_ptr<const ParsedCertificate> cert =
-        ParseCertificateFromFile("serial_37_bytes.pem", {});
+      ParseCertificateFromFile("serial_37_bytes.pem", {});
+  ASSERT_FALSE(cert);
+
+  // Try again with allow_invalid_serial_numbers=true. Parsing should succeed.
+  ParseCertificateOptions options;
+  options.allow_invalid_serial_numbers = true;
+  cert = ParseCertificateFromFile("serial_37_bytes.pem", options);
   ASSERT_TRUE(cert);
 
   static const uint8_t expected_serial[37] = {
@@ -562,16 +572,6 @@ TEST(ParsedCertificateTest, SerialNotMinimal) {
   std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_not_minimal.pem", {});
   ASSERT_FALSE(cert);
-
-  // Try again with allow_invalid_serial_numbers=true. Parsing should succeed.
-  // TODO(crbug.com/533048005): Remove this option.
-  ParseCertificateOptions options;
-  options.allow_invalid_serial_numbers = true;
-  cert = ParseCertificateFromFile("serial_not_minimal.pem", options);
-  ASSERT_TRUE(cert);
-
-  static const uint8_t expected_serial[] = {0x00, 0x01};
-  EXPECT_EQ(der::Input(expected_serial), cert->tbs().serial_number);
 }
 
 // Tests parsing a certificate that has an inhibitAnyPolicy extension.

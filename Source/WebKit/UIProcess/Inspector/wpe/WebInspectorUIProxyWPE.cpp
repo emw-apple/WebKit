@@ -120,8 +120,6 @@ RefPtr<WebPageProxy> WebInspectorUIProxy::platformCreateFrontendPage()
     preferences->setDeveloperExtrasEnabled(true);
     preferences->setLogsPageMessagesToSystemConsoleEnabled(true);
 #endif
-    // The Find banner and Search sidebar use the legacy results=N attribute for recent searches.
-    preferences->setSearchInputResultsAttributeEnabled(true);
     preferences->setAllowTopNavigationToDataURLs(true);
     preferences->setJavaScriptRuntimeFlags({ });
     preferences->setAcceleratedCompositingEnabled(true);
@@ -244,8 +242,7 @@ static String computeContentHash(const String& content, bool base64Encoded)
             digest = GMallocString::unsafeAdoptFromUTF8(g_compute_checksum_for_data(G_CHECKSUM_SHA256, decoded->span().data(), decoded->size()));
     } else {
         auto utf8 = content.utf8();
-        auto characters = byteCast<char>(utf8.span());
-        digest = GMallocString::unsafeAdoptFromUTF8(g_compute_checksum_for_string(G_CHECKSUM_SHA256, characters.data(), characters.size()));
+        digest = GMallocString::unsafeAdoptFromUTF8(g_compute_checksum_for_string(G_CHECKSUM_SHA256, utf8.legacyCStringPointer(), utf8.length()));
     }
 
     return String::fromUTF8(digest.span());

@@ -33,6 +33,12 @@
 #include <TargetConditionals.h>
 #include <wtf/Platform.h>
 
+#ifdef __cplusplus
+#define NULL __null
+#else
+#define NULL ((void *)0)
+#endif
+
 #import <CoreGraphics/CoreGraphics.h>
 #import <errno.h>
 #import <fcntl.h>

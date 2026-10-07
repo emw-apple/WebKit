@@ -414,7 +414,7 @@ BalancedDegradationSettings::BalancedDegradationSettings(
 
 BalancedDegradationSettings::~BalancedDegradationSettings() {}
 
-const std::vector<BalancedDegradationSettings::Config>&
+std::vector<BalancedDegradationSettings::Config>
 BalancedDegradationSettings::GetConfigs() const {
   return configs_;
 }

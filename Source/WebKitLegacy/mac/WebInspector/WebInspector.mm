@@ -37,14 +37,10 @@
 #import <WebCore/Page.h>
 #import <WebCore/PageInspectorController.h>
 
-NSString * const WebInspectorDidStartSearchingForNode = @"WebInspectorDidStartSearchingForNode";
-NSString * const WebInspectorDidStopSearchingForNode = @"WebInspectorDidStopSearchingForNode";
+NSString *WebInspectorDidStartSearchingForNode = @"WebInspectorDidStartSearchingForNode";
+NSString *WebInspectorDidStopSearchingForNode = @"WebInspectorDidStopSearchingForNode";
 
-@implementation WebInspector {
-    __weak WebView *_inspectedWebView;
-    RetainPtr<WebInspectorFrontend> _frontend;
-}
-
+@implementation WebInspector
 - (id)initWithInspectedWebView:(WebView *)inspectedWebView
 {
     if (!(self = [super init]))
@@ -52,6 +48,13 @@ NSString * const WebInspectorDidStopSearchingForNode = @"WebInspectorDidStopSear
     _inspectedWebView = inspectedWebView; // not retained to prevent a cycle
 
     return self;
+}
+
+- (void)dealloc
+{
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_frontend release];
+    [super dealloc];
 }
 
 - (void)inspectedWebViewClosed
@@ -176,11 +179,12 @@ NSString * const WebInspectorDidStopSearchingForNode = @"WebInspectorDidStopSear
 
 - (void)setFrontend:(WebInspectorFrontend *)frontend
 {
-    _frontend = frontend;
+    _frontend = [frontend retain];
 }
 
 - (void)releaseFrontend
 {
+    SUPPRESS_UNRETAINED_ARG [_frontend release];
     _frontend = nil;
 }
 @end

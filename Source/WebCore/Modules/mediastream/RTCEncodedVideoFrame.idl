@@ -63,7 +63,6 @@ enum RTCEncodedVideoFrameType { "empty", "key", "delta" };
     Conditional=WEB_RTC,
     EnabledBySetting=WebRTCEncodedTransformEnabled,
     Exposed=(Window,DedicatedWorker),
-    Serializable,
 ] interface RTCEncodedVideoFrame {
     constructor(RTCEncodedVideoFrame originalFrame, optional RTCEncodedVideoFrameOptions options = {});
 

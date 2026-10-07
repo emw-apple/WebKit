@@ -11,9 +11,6 @@
 #ifndef INCLUDE_LIBYUV_CONVERT_ARGB_H_
 #define INCLUDE_LIBYUV_CONVERT_ARGB_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "libyuv/basic_types.h"
 
 #include "libyuv/rotate.h"  // For enum RotationMode.

@@ -35,12 +35,12 @@ https://codepen.io/
 https://www.codepen.io/
     (none)
 https://www.bankofamerica.com/
-    ShouldBypassBackForwardCacheWhenUnloadListenerAndElementMatchesQuirk
+    MaybeBypassBackForwardCache
 https://www.bestbuy.com/
     NeedsScriptToEvaluateBeforeRunningScriptFromURLQuirk
 https://www.bing.com/
+    MaybeBypassBackForwardCache
     NeedsMediaRewriteRangeRequestQuirk
-    ShouldBypassBackForwardCacheWhenRenderedElementMatchesQuirk
 https://bungalow.com/
     ShouldBypassAsyncScriptDeferring
 https://www.capitalgroup.com/
@@ -60,7 +60,6 @@ https://www.crunchyroll.com/
 https://digits.t-mobile.com/
     NeedsCustomUserAgentData
     NeedsNavigatorUserAgentDataQuirk
-    NeedsUserAgentStringOverrideQuirk
 https://www.t-mobile.com/
     (none)
 https://www.descript.com/
@@ -89,53 +88,39 @@ https://gizmodo.com/
 https://play.geforcenow.com/
     NeedsGeforcenowWarningDisplayNoneQuirk
 https://www.google.com/
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
+    MaybeBypassBackForwardCache
 https://www.google.com/search
+    MaybeBypassBackForwardCache
     NeedsAnchorToBeMouseFocusableQuirk
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
 https://www.google.com/search/howsearchworks
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
+    MaybeBypassBackForwardCache
 https://www.google.co.jp/search
+    MaybeBypassBackForwardCache
     NeedsAnchorToBeMouseFocusableQuirk
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
-https://www.google.com/maps
-    MayNeedToIgnoreContentObservation
-    NeedsGoogleMapsMagnificationWheelDeltaScalingQuirk
-    ShouldAvoidResizingWhenInputViewBoundsChangeQuirk
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
 https://www.google.com/maps/
     MayNeedToIgnoreContentObservation
-    NeedsGoogleMapsMagnificationWheelDeltaScalingQuirk
+    MaybeBypassBackForwardCache
     ShouldAvoidResizingWhenInputViewBoundsChangeQuirk
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
-https://www.google.com/maps/@37.33,-122.01,15z
-    MayNeedToIgnoreContentObservation
-    NeedsGoogleMapsMagnificationWheelDeltaScalingQuirk
-    ShouldAvoidResizingWhenInputViewBoundsChangeQuirk
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
-https://www.google.com/mapsearch
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
 https://maps.google.com/maps/
     MayNeedToIgnoreContentObservation
-    NeedsGoogleMapsMagnificationWheelDeltaScalingQuirk
+    MaybeBypassBackForwardCache
     ShouldAvoidResizingWhenInputViewBoundsChangeQuirk
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
 https://docs.google.com/
     InputMethodMustUseCompositionEvents
     InputMethodUsesCorrectKeyEventOrder
     IsTouchBarUpdateSuppressedForHiddenContentEditableQuirk
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
+    MaybeBypassBackForwardCache
 https://translate.google.com/
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
+    MaybeBypassBackForwardCache
 https://mail.google.com/
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
+    MaybeBypassBackForwardCache
 https://sites.google.com/
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
+    MaybeBypassBackForwardCache
 https://meet.google.com/
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
+    MaybeBypassBackForwardCache
     ShouldEnableCameraBackgroundPlayback
 https://www.google.co.uk/
-    ShouldBypassBackForwardCacheWhenElementMatchesQuirk
+    MaybeBypassBackForwardCache
 https://www.hbomax.com/
     ShouldEnableFontLoadingAPIQuirk
 https://play.hbomax.com/
@@ -177,7 +162,6 @@ https://www.hulu.com/
     NeedsVideoShouldMaintainAspectRatioQuirk
 https://www.icloud.com/
     MayNeedToIgnoreContentObservation
-    ShouldTreatLongClickAsSecondaryClickQuirk
 https://www.iheart.com/
     NeedsScriptToEvaluateBeforeRunningScriptFromURLQuirk
 https://www.imdb.com/
@@ -187,7 +171,6 @@ https://www.instagram.com/
     NeedsInstagramResizingReelsQuirk
 https://invideo.io/
     NeedsScriptToEvaluateBeforeRunningScriptFromURLQuirk
-    NeedsUserAgentStringOverrideQuirk
 https://www.linkedin.com/
     (none)
 https://outlook.live.com/
@@ -195,13 +178,6 @@ https://outlook.live.com/
     NeedsMozillaFileTypeForDataTransferQuirk
     NeedsUserAgentStringOverrideQuirk
     ShouldAvoidResizingWhenInputViewBoundsChangeQuirk
-    ShouldTreatLongClickAsSecondaryClickQuirk
-https://outlook.office.com/
-    ShouldTreatLongClickAsSecondaryClickQuirk
-https://outlook.office365.com/
-    ShouldTreatLongClickAsSecondaryClickQuirk
-https://outlook.cloud.microsoft/
-    ShouldTreatLongClickAsSecondaryClickQuirk
 https://live.com/
     ShouldAvoidResizingWhenInputViewBoundsChangeQuirk
 https://onedrive.live.com/
@@ -261,6 +237,7 @@ https://my.playstation.com/
 https://www.premierleague.com/
     ShouldAvoidStartingSelectionOnMouseDownOverPointerCursor
     ShouldDispatchPlayPauseEventsOnResume
+    ShouldIgnorePlaysInlineRequirementQuirk
 https://www.ralphlauren.com/
     (none)
 https://www.reddit.com/
@@ -304,7 +281,6 @@ https://www.tiktok.com/
     NeedsChromeCompatibilityUserAgentQuirk
     NeedsTikTokCommentsOverflowingContentQuirk
     NeedsTikTokVideoOverflowingContentQuirk
-    NeedsUserAgentStringOverrideQuirk
     ShouldDispatchSimulatedMouseEventsAssumeDefaultPreventedQuirk
 https://trix-editor.org/
     IsNeverRichlyEditableForTouchBarQuirk
@@ -317,7 +293,7 @@ https://www.victoriassecret.com/
 https://vimeo.com/
     BlocksEnteringStandardFullscreenFromPictureInPictureQuirk
     BlocksReturnToFullscreenFromPictureInPictureQuirk
-    ShouldBypassBackForwardCacheForNoStoreQuirk
+    MaybeBypassBackForwardCache
     ShouldDisableEndFullscreenEventWhenEnteringPictureInPictureFromFullscreenQuirk
 https://www.walmart.com/
     MayNeedToIgnoreContentObservation
@@ -351,7 +327,6 @@ https://www.youtube.com/
     NeedsScrollbarWidthThinDisabledQuirk
     NeedsYouTubeCaptionQuirk
     NeedsYouTubeMouseOutQuirk
-    ShouldDisableThreadedAnimationsQuirk
 https://www.youtube-nocookie.com/
     (none)
 https://www.zillow.com/

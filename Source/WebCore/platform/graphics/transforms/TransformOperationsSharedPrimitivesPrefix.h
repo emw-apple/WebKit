@@ -58,7 +58,7 @@ void TransformOperationsSharedPrimitivesPrefix<PrimitiveType>::update(const auto
         maxIteration = std::min(*m_indexOfFirstMismatch, maxIteration);
 
     for (size_t i = 0; i < maxIteration; ++i) {
-        RefPtr operation = operations[i].operator->();
+        auto operation = operations[i];
 
         // If we haven't seen an operation at this index before, we can simply use our primitive type.
         if (i >= m_primitives.size()) {

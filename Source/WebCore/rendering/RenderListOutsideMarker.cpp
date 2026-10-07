@@ -53,7 +53,6 @@
 #include "StyleComputedStyle+GettersInlines.h"
 #include "StyleComputedStyle+SettersInlines.h"
 #include "StyleContent.h"
-#include "StyleListStyleImageSizing.h"
 #include "StyleListStyleType.h"
 #include "StyleScope.h"
 #include "TextUtil.h"
@@ -253,7 +252,7 @@ void RenderListOutsideMarker::imageChanged(WrappedImagePtr o, const IntRect* rec
                 if (element)
                     element->invalidateStyleAndRenderersForSubtree();
                 setNeedsLayoutAndInvalidateContentLogicalWidths();
-            } else if (borderBoxSize() != markerImageSize(*image)) {
+            } else if (borderBoxSize() != LayoutSize(image->imageSize(this, style().usedZoom()))) {
                 updateInlineMarginsAndContent();
                 setNeedsLayoutAndInvalidateContentLogicalWidths();
             } else
@@ -269,13 +268,6 @@ void RenderListOutsideMarker::updateInlineMarginsAndContent()
     updateInlineMargins();
 }
 
-LayoutSize RenderListOutsideMarker::markerImageSize(const Style::Image& image) const
-{
-    // FIXME: The spec says this should be 1em - https://drafts.csswg.org/css-lists-3/#valdef-list-style-image-image
-    LayoutUnit bulletWidth = style().metricsOfPrimaryFont().intAscent() / 2_lu;
-    return calculateImageIntrinsicDimensions(image, Style::ListStyleImageSizing { bulletWidth }, ScaleByUsedZoom::Yes);
-}
-
 void RenderListOutsideMarker::updateContent()
 {
     if (hasContentProperty()) {
@@ -284,8 +276,11 @@ void RenderListOutsideMarker::updateContent()
         return;
     }
 
-    if (RefPtr image = listMarkerImage(style())) {
-        setContentContainerImageSize(markerImageSize(*image));
+    if (isImage()) {
+        // FIXME: This is a somewhat arbitrary width.
+        LayoutUnit bulletWidth = style().metricsOfPrimaryFont().intAscent() / 2_lu;
+        LayoutSize defaultBulletSize(bulletWidth, bulletWidth);
+        setContentContainerImageSize(calculateImageIntrinsicDimensions(listMarkerImage(style()).get(), defaultBulletSize, ScaleByUsedZoom::Yes));
         return;
     }
 

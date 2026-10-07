@@ -866,7 +866,7 @@ void Framebuffer::onDestroy(const Context *context)
 {
     if (isDefault())
     {
-        unsetSurfaces(context);
+        std::ignore = unsetSurfaces(context);
     }
 
     for (auto &attachment : mState.mColorAttachments)
@@ -901,9 +901,9 @@ void Framebuffer::onDestroy(const Context *context)
     mImpl->destroy(context);
 }
 
-void Framebuffer::setSurfaces(const Context *context,
-                              egl::Surface *surface,
-                              egl::Surface *readSurface)
+egl::Error Framebuffer::setSurfaces(const Context *context,
+                                    egl::Surface *surface,
+                                    egl::Surface *readSurface)
 {
     // This has to be a default framebuffer.
     ASSERT(isDefault());
@@ -960,8 +960,10 @@ void Framebuffer::setSurfaces(const Context *context,
     if (surface)
     {
         mCachedStatus = FramebufferStatus::Complete();
-        surface->getImplementation()->attachToFramebuffer(context, this);
+        ANGLE_TRY(surface->getImplementation()->attachToFramebuffer(context, this));
     }
+
+    return egl::NoError();
 }
 
 void Framebuffer::setReadSurface(const Context *context, egl::Surface *readSurface)
@@ -986,7 +988,7 @@ void Framebuffer::setReadSurface(const Context *context, egl::Surface *readSurfa
     }
 }
 
-void Framebuffer::unsetSurfaces(const Context *context)
+egl::Error Framebuffer::unsetSurfaces(const Context *context)
 {
     // This has to be a default framebuffer.
     ASSERT(isDefault());
@@ -1011,7 +1013,7 @@ void Framebuffer::unsetSurfaces(const Context *context)
             mDirtyBits.set(DIRTY_BIT_STENCIL_ATTACHMENT);
         }
 
-        surface->getImplementation()->detachFromFramebuffer(this);
+        ANGLE_TRY(surface->getImplementation()->detachFromFramebuffer(context, this));
 
         ASSERT(mCachedStatus.value().status == GL_FRAMEBUFFER_COMPLETE);
         mCachedStatus = FramebufferStatus::Incomplete(GL_FRAMEBUFFER_UNDEFINED_OES,
@@ -1027,6 +1029,7 @@ void Framebuffer::unsetSurfaces(const Context *context)
 
     mState.mDefaultFramebufferReadAttachment.detach(context, mState.mFramebufferSerial);
     mState.mDefaultFramebufferReadAttachmentInitialized = false;
+    return egl::NoError();
 }
 
 angle::Result Framebuffer::setLabel(const Context *context, const std::string &label)

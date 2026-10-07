@@ -116,7 +116,7 @@ public:
     void notifyLoadedSheet(const CachedCSSStyleSheet*);
     
     StyleSheetContents* NODELETE parentStyleSheet() const;
-    StyleRuleImport* NODELETE ownerRule() const;
+    StyleRuleImport* ownerRule() const { return m_ownerRule; }
     void clearOwnerRule() { m_ownerRule = nullptr; }
     
     // Note that href is the URL that started the redirect chain that led to
@@ -171,7 +171,7 @@ private:
 
     void clearCharsetRule();
 
-    WeakPtr<StyleRuleImport> m_ownerRule;
+    StyleRuleImport* m_ownerRule { nullptr };
 
     String m_originalURL;
 

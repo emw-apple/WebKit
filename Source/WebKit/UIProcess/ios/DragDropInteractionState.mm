@@ -193,20 +193,6 @@ std::optional<DragSourceState> DragDropInteractionState::activeDragSourceForItem
     return std::nullopt;
 }
 
-std::optional<FrameIdentifier> DragDropInteractionState::initialDragSourceFrameID() const
-{
-    if (m_activeDragSources.isEmpty())
-        return std::nullopt;
-    return m_activeDragSources.first().frameID;
-}
-
-std::optional<FrameIdentifier> DragDropInteractionState::dragSourceFrameIDForItem(UIDragItem *item) const
-{
-    if (auto source = activeDragSourceForItem(item))
-        return source->frameID;
-    return std::nullopt;
-}
-
 bool DragDropInteractionState::anyActiveDragSourceContainsSelection() const
 {
     for (auto& source : m_activeDragSources) {
@@ -375,7 +361,7 @@ void DragDropInteractionState::dropSessionDidEnterOrUpdate(id <UIDropSession> se
     m_lastGlobalPosition = dragData.globalPosition();
 }
 
-void DragDropInteractionState::stageDragItem(const DragItem& item, DragSourceState::DragPreviewContentType dragPreviewContent, const std::optional<FrameIdentifier>& frameID)
+void DragDropInteractionState::stageDragItem(const DragItem& item, DragSourceState::DragPreviewContentType dragPreviewContent)
 {
     static NSInteger currentDragSourceItemIdentifier = 0;
 
@@ -390,8 +376,7 @@ void DragDropInteractionState::stageDragItem(const DragItem& item, DragSourceSta
         item.url.isEmpty() ? nil : item.url.createNSURL().get(),
         true, // We assume here that drag previews need to be updated until proven otherwise in updatePreviewsForActiveDragSources().
         item.containsSelection,
-        ++currentDragSourceItemIdentifier,
-        frameID
+        ++currentDragSourceItemIdentifier
     }};
 }
 

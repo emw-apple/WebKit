@@ -65,7 +65,6 @@ public:
 
     void setSize(const IntSize& size) { m_size = size; }
     IntSize size() const { return m_size; }
-    IntSize naturalSize() const { return m_naturalSize; }
 
     size_t sizeInBytes() const;
 
@@ -163,7 +162,6 @@ private:
     DecodingStatus m_decodingStatus { DecodingStatus::Invalid };
 
     IntSize m_size;
-    IntSize m_naturalSize;
     FloatSize m_density;
     std::optional<IntSize> m_densityCorrectedSize;
 

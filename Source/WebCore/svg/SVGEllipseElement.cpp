@@ -26,7 +26,6 @@
 #include "LegacyRenderSVGResource.h"
 #include "NodeName.h"
 #include "RenderSVGEllipse.h"
-#include "SVGElementTypeHelpers.h"
 #include "Settings.h"
 #include "SVGElementInlines.h"
 #include "SVGParsingError.h"
@@ -38,7 +37,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGEllipseElement);
 
 inline SVGEllipseElement::SVGEllipseElement(const QualifiedName& tagName, Document& document)
-    : SVGGeometryElement(tagName, document, PropertyRegistry::singleton())
+    : SVGGeometryElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::ellipseTag));
 

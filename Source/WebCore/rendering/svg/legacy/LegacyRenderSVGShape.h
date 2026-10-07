@@ -42,7 +42,7 @@ class LegacyRenderSVGShape : public LegacyRenderSVGModelObject {
     WTF_MAKE_TZONE_ALLOCATED(LegacyRenderSVGShape);
     WTF_OVERRIDE_DELETE_FOR_CHECKED_PTR(LegacyRenderSVGShape);
 public:
-    friend FloatRect SVGRenderSupport::calculateApproximateStrokeBoundingBox(const RenderElement&, StrokeBoundingBoxPurpose);
+    friend FloatRect SVGRenderSupport::calculateApproximateStrokeBoundingBox(const RenderElement&);
 
     enum class ShapeType : uint8_t {
         Empty,
@@ -113,7 +113,6 @@ private:
     // Hit-detection separated for the fill and the stroke
     bool fillContains(const FloatPoint&, bool requiresFill = true, const WindRule fillRule = WindRule::NonZero);
     bool strokeContains(const FloatPoint&, bool requiresStroke = true);
-    FloatRect hitTestStrokeBoundingBox() const;
 
     FloatRect repaintRectInLocalCoordinates(RepaintRectCalculation = RepaintRectCalculation::Fast) const final;
     FloatRect decoratedBoundingBox() const final;
@@ -150,7 +149,6 @@ protected:
     FloatRect m_fillBoundingBox;
     mutable Markable<FloatRect> m_strokeBoundingBox;
     mutable Markable<FloatRect> m_approximateStrokeBoundingBox;
-    mutable Markable<FloatRect> m_hitTestStrokeBoundingBox;
 private:
     FloatRect m_repaintBoundingBox;
 

@@ -39,7 +39,11 @@ static const uint16_t kSessionTag = 1;
 // certificates.
 static const uint16_t kRequestClientCert = 2;
 
-// 3 and 4 used to be kHandoffTag and kHandbackTag.
+// kHandoffTag is followed by the output of `SSL_serialize_handoff`.
+static const uint16_t kHandoffTag = 3;
+
+// kHandbackTag is followed by the output of `SSL_serialize_handback`.
+static const uint16_t kHandbackTag = 4;
 
 // kHintsTag is followed by the output of `SSL_serialize_handshake_hints`.
 static const uint16_t kHintsTag = 5;

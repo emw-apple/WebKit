@@ -63,7 +63,6 @@ using DevicePtr       = RefPointer<Device>;
 using EventPtr        = RefPointer<Event>;
 using KernelPtr       = RefPointer<Kernel>;
 using MemoryPtr       = RefPointer<Memory>;
-using ConstMemoryPtr  = RefPointer<const Memory>;
 using PlatformPtr     = RefPointer<Platform>;
 using ProgramPtr      = RefPointer<Program>;
 using SamplerPtr      = RefPointer<Sampler>;
@@ -73,7 +72,6 @@ using DevicePtrs   = std::vector<DevicePtr>;
 using EventPtrs    = std::vector<EventPtr>;
 using KernelPtrs   = std::vector<KernelPtr>;
 using MemoryPtrs   = std::vector<MemoryPtr>;
-using ConstMemoryPtrs = std::vector<ConstMemoryPtr>;
 using PlatformPtrs = std::vector<PlatformPtr>;
 using ProgramPtrs  = std::vector<ProgramPtr>;
 using SamplerPtrs  = std::vector<SamplerPtr>;
@@ -194,7 +192,6 @@ struct BufferRect
         return getRowOffset(mSize.depth - 1, mSize.height - 1) + mSize.width * mElementSize;
     }
     const Extents &getExtents() const { return mSize; }
-    const Offset &getOrigin() const { return mOrigin; }
     Offset mOrigin;
     Extents mSize;
     size_t mRowPitch;

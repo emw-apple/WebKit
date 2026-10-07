@@ -33,7 +33,6 @@
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/ThreadSafeWeakPtr.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/text/UTF8CStringView.h>
 
 // Same as gstinfo.h, but with the arguments converted by WTF_LOG_PRINTF_ARGS() so that call sites can pass a CString directly.
@@ -313,7 +312,7 @@ bool gstElementFactoryEquals(GstElement*, ASCIILiteral name);
 GstElement* createAutoAudioSink(const String& role);
 GstElement* createPlatformAudioSink(const String& role, const String& deviceId = { }, const GRefPtr<GstDevice>& = { });
 
-bool webkitGstSetElementStateSynchronously(GstElement*, GstState, NOESCAPE const Function<bool(GstMessage*)>& = [](GstMessage*) -> bool {
+bool webkitGstSetElementStateSynchronously(GstElement*, GstState, Function<bool(GstMessage*)>&& = [](GstMessage*) -> bool {
     return true;
 });
 
@@ -336,21 +335,6 @@ template<typename T>
 Vector<T> gstStructureGetList(const GstStructure*, UTF8CStringView key);
 
 String gstStructureToJSONString(const GstStructure*);
-
-// Converts each field name and value with glibVariadicType(), so typed strings can be passed as they are.
-// Supplies the terminating nullptr itself.
-template<typename... Arguments>
-void gstStructureSet(GstStructure* structure, Arguments&&... arguments)
-{
-    gst_structure_set(structure, WTF::glibVariadicType(std::forward<Arguments>(arguments))..., nullptr);
-}
-
-// Supplies the terminating nullptr itself.
-template<typename... Arguments>
-[[nodiscard]] GstStructure* gstStructureNew(const char* name, Arguments&&... arguments)
-{
-    return gst_structure_new(name, WTF::glibVariadicType(std::forward<Arguments>(arguments))..., nullptr);
-}
 
 GstClockTime webkitGstInitTime();
 
@@ -405,11 +389,11 @@ using GstId = const GstIdStr*;
 using GstId = GQuark;
 #endif
 
-bool gstStructureForeach(const GstStructure*, NOESCAPE const Function<bool(GstId, const GValue*)>&);
+bool gstStructureForeach(const GstStructure*, Function<bool(GstId, const GValue*)>&&);
 void gstStructureIdSetValue(GstStructure*, GstId, const GValue*);
-bool gstStructureMapInPlace(GstStructure*, NOESCAPE const Function<bool(GstId, GValue*)>&);
+bool gstStructureMapInPlace(GstStructure*, Function<bool(GstId, GValue*)>&&);
 String gstIdToString(GstId);
-void gstStructureFilterAndMapInPlace(GstStructure*, NOESCAPE const Function<bool(GstId, GValue*)>&);
+void gstStructureFilterAndMapInPlace(GstStructure*, Function<bool(GstId, GValue*)>&&);
 
 #if USE(GBM)
 [[nodiscard]] GRefPtr<GstCaps> buildDMABufCaps();

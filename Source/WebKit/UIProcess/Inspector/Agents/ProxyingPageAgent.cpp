@@ -28,7 +28,6 @@
 
 #include "HandleMessage.h"
 #include "ProxyingPageAgentMessages.h"
-#include "ValidationProcedures.h"
 #include "WebFrameProxy.h"
 #include "WebInspectorBackendMessages.h"
 #include "WebPageProxy.h"
@@ -41,9 +40,6 @@
 #include <wtf/Function.h>
 #include <wtf/JSONValues.h>
 #include <wtf/TZoneMallocInlines.h>
-
-#define EXTRACT_WITH_MESSAGE_CHECK(name, untrusted, ...) \
-    EXTRACT_WITH_MESSAGE_CHECK_BASE(connection, name, untrusted, (void)0, __VA_ARGS__)
 
 namespace Inspector {
 
@@ -98,9 +94,9 @@ static String protocolFrameIdForFrameID(FrameIdentifier frameID)
     return IdentifierRegistry::protocolFrameId(frameID);
 }
 
-void ProxyingPageAgent::frameNavigated(IPC::Connection& connection, FrameIdentifier frameID, const URL& url, const String& mimeType, IPC::Untrusted<WebCore::SecurityOriginData>&& untrustedSecurityOrigin, std::optional<FrameIdentifier> parentFrameID, const String& name, const String& loaderId)
+void ProxyingPageAgent::frameNavigated(FrameIdentifier frameID, const URL& url, const String& mimeType, IPC::Untrusted<WebCore::SecurityOriginData>&& untrustedSecurityOrigin, std::optional<FrameIdentifier> parentFrameID, const String& name, const String& loaderId)
 {
-    EXTRACT_WITH_MESSAGE_CHECK(securityOrigin, untrustedSecurityOrigin, ProcessSpeaksForDomain { connection });
+    auto securityOrigin = WTF::move(untrustedSecurityOrigin).unsafeExtractWithoutValidation(IPC::UnvalidatedReason::NeedsReview);
 
     // Cache the committing frame's real document info so getResourceTree()/buildFrameTree()
     // can report it for cross-origin children, whose commit the inspectedPage's WebFrameProxy
@@ -732,5 +728,3 @@ CommandResult<void> ProxyingPageAgent::setScreenSizeOverride(std::optional<int>&
 #endif
 
 } // namespace Inspector
-
-#undef EXTRACT_WITH_MESSAGE_CHECK

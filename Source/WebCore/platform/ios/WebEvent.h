@@ -115,9 +115,12 @@ WEBCORE_EXPORT @interface WebEvent : NSObject {
 
     CGPoint _locationInWindow;
 
+    NSString *_characters;
+    NSString *_charactersIgnoringModifiers;
     WebEventFlags _modifierFlags;
     BOOL _keyRepeating;
     WebKeyboardInputFlags _keyboardFlags;
+    NSString *_inputManagerHint;
     uint16_t _keyCode;
     BOOL _tabKey;
 
@@ -125,6 +128,9 @@ WEBCORE_EXPORT @interface WebEvent : NSObject {
     float _deltaY;
 
     unsigned _touchCount;
+    NSArray *_touchLocations;
+    NSArray *_touchIdentifiers;
+    NSArray *_touchPhases;
 
     BOOL _isGesture;
     float _gestureScale;

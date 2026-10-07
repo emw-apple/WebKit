@@ -138,6 +138,11 @@
 
 - (void)getChildFrames:(void(^)(NSArray<_WKFrameTreeNode *> *))completion
 {
+    return protect(*_info)->childFrames([completion = makeBlockPtr(completion)](auto&& nodes) {
+        completion(createNSArray(WTF::move(nodes), [](API::FrameTreeNode& node) {
+            return wrapper(node);
+        }).autorelease());
+    });
 }
 
 - (BOOL)isSameElement:(_WKTargetedElementInfo *)other

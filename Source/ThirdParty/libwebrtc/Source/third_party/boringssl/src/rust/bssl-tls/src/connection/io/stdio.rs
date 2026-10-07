@@ -14,16 +14,23 @@
 
 use std::io;
 
-use super::Error;
+use super::{
+    Error,
+    TlsMode, //
+};
 use crate::{
     ReceiveBuffer,
     connection::TlsConnection,
-    context::TlsMode,
+    context::DtlsMode,
     errors::{
         IoError,
         TlsRetryReason, //
     },
-    io::IoStatus, //
+    io::{
+        AbstractSocketResult,
+        IoStatus,
+        stdio::DatagramSocket, //
+    }, //
 };
 
 fn translate_res_for_stdio(res: Result<IoStatus, Error>) -> Result<usize, io::Error> {
@@ -69,6 +76,32 @@ impl<R> io::Write for TlsConnection<R, TlsMode> {
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        translate_res_for_stdio(self.flush()).map(|_| ())
+        Ok(())
+    }
+}
+
+fn translate_result_for_datagram(res: Result<IoStatus, Error>) -> AbstractSocketResult {
+    match res {
+        Ok(IoStatus::Ok(bytes)) => AbstractSocketResult::Ok(bytes),
+        Ok(IoStatus::EndOfStream) | Err(Error::Io(IoError::EndOfStream)) => {
+            AbstractSocketResult::EndOfStream
+        }
+        Ok(IoStatus::Retry(_)) => AbstractSocketResult::Retry,
+        Ok(IoStatus::Empty | IoStatus::Err) => AbstractSocketResult::Err(Box::new(io::Error::new(
+            io::ErrorKind::Other,
+            "transport failed or empty",
+        ))),
+        Err(e) => AbstractSocketResult::Err(Box::new(io::Error::new(io::ErrorKind::Other, e))),
+    }
+}
+
+impl<R> DatagramSocket for TlsConnection<R, DtlsMode> {
+    fn send(&mut self, datagram: &[u8]) -> AbstractSocketResult {
+        translate_result_for_datagram(self.sync_write(datagram))
+    }
+
+    fn recv(&mut self, datagram: &mut [u8]) -> AbstractSocketResult {
+        let mut datagram = ReceiveBuffer::new(datagram);
+        translate_result_for_datagram(self.sync_read(&mut datagram))
     }
 }

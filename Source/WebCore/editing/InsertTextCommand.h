@@ -95,7 +95,3 @@ private:
 };
 
 } // namespace WebCore
-
-SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::InsertTextCommand)
-    static bool isType(const WebCore::EditCommand& command) { return command.isInsertTextCommand(); }
-SPECIALIZE_TYPE_TRAITS_END()

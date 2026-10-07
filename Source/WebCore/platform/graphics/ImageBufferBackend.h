@@ -196,7 +196,6 @@ protected:
     const RenderingPurpose m_purpose;
 };
 
-WEBCORE_EXPORT TextStream& operator<<(TextStream&, SetNonVolatileResult);
 WEBCORE_EXPORT TextStream& operator<<(TextStream&, VolatilityState);
 WEBCORE_EXPORT TextStream& operator<<(TextStream&, const ImageBufferBackend&);
 

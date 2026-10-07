@@ -534,10 +534,6 @@ std::optional<ElementUpdate> TreeResolver::resolvePseudoElement(Element& element
     if (!elementUpdate.style->hasPseudoStyle(pseudoElementIdentifier.type))
         return resolveAncestorPseudoElement(element, pseudoElementIdentifier, elementUpdate);
 
-    // No matching rule can generate a box. Animations still might (e.g. animating 'content'), and running ones need updating.
-    if ((pseudoElementIdentifier.type == PseudoElementType::Before || pseudoElementIdentifier.type == PseudoElementType::After) && elementUpdate.style->pseudoElementBoxGeneration() == PseudoElementBoxGeneration::NotForBeforeOrAfter && !element.hasKeyframeEffects(pseudoElementIdentifier))
-        return { };
-
     if ((pseudoElementIdentifier.type == PseudoElementType::FirstLine || pseudoElementIdentifier.type == PseudoElementType::FirstLetter) && !supportsFirstLineAndLetterPseudoElement(*elementUpdate.style))
         return { };
 
@@ -1347,7 +1343,7 @@ void TreeResolver::resolveComposedTree()
             auto inheritedDisplayContentsStyle = isDisplayContentsParent ? createInheritedDisplayContentsStyleIfNeeded(parent.style, parentBoxStyle()) : nullptr;
 
             auto needsTextUpdate = [&] {
-                if ((text->hasInvalidRenderer() && !parent.changes.contains(Change::Renderer)) || inheritedDisplayContentsStyle)
+                if ((text->hasInvalidRenderer() && parent.changes != Change::Renderer) || inheritedDisplayContentsStyle)
                     return true;
 
                 auto* textRenderer = text->renderer();

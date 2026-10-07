@@ -361,20 +361,17 @@ void WebProcessPool::platformInitialize(NeedsGlobalStaticInitialization needsGlo
         installMemoryPressureHandler();
 
 #if ENABLE(UIPROCESS_PERIODIC_MEMORY_MONITOR)
-        auto& memoryMeasurementMonitor = MemoryFootprintMonitor::singleton();
-        auto pollInterval = m_configuration->memoryFootprintPollIntervalForTesting();
-        auto memoryLimit = m_configuration->memoryLimitForTesting();
-        if (pollInterval || memoryLimit) {
-            auto monitorConfiguration = MemoryFootprintMonitor::defaultConfiguration();
-            if (pollInterval)
-                monitorConfiguration.pollInterval = pollInterval;
-            if (memoryLimit) {
-                monitorConfiguration.foregroundPageMemoryLimit = memoryLimit;
-                monitorConfiguration.backgroundPageMemoryLimit = memoryLimit;
-                monitorConfiguration.webProcessMemoryLimit = memoryLimit;
-            }
-            memoryMeasurementMonitor.setConfigurationForTesting(WTF::move(monitorConfiguration));
+        auto monitorConfiguration = MemoryFootprintMonitor::defaultConfiguration();
+        if (auto pollInterval = m_configuration->memoryFootprintPollIntervalForTesting())
+            monitorConfiguration.pollInterval = pollInterval;
+        if (auto memoryLimit = m_configuration->memoryLimitForTesting()) {
+            monitorConfiguration.foregroundPageMemoryLimit = memoryLimit;
+            monitorConfiguration.backgroundPageMemoryLimit = memoryLimit;
+            monitorConfiguration.webProcessMemoryLimit = memoryLimit;
         }
+
+        auto& memoryMeasurementMonitor = MemoryFootprintMonitor::singleton();
+        memoryMeasurementMonitor.setConfiguration(WTF::move(monitorConfiguration));
         memoryMeasurementMonitor.start();
 #endif
     }
@@ -754,7 +751,7 @@ void WebProcessPool::hardwareKeyboardAvailabilityChangedCallback(CFNotificationC
 void WebProcessPool::hardwareKeyboardAvailabilityChanged()
 {
     for (Ref process : borrow(this->processes()).get()) {
-        auto pages = process->mainPages();
+        auto pages = process->pages();
         for (auto& page : pages)
             page->hardwareKeyboardAvailabilityChanged(cachedHardwareKeyboardState());
     }
@@ -1623,7 +1620,6 @@ String WebProcessPool::platformResourceMonitorRuleListSourceForTesting()
 }
 #endif
 
-#if PLATFORM(MAC)
 template <typename Collection>
 static Vector<SandboxExtension::Handle> sandboxExtensionsForFonts(const Collection& fontPathURLs, std::optional<audit_token_t> auditToken)
 {
@@ -1640,6 +1636,7 @@ static Vector<SandboxExtension::Handle> sandboxExtensionsForFonts(const Collecti
     return handles;
 }
 
+#if PLATFORM(MAC)
 void WebProcessPool::registerUserInstalledFonts(WebProcessProxy& process)
 {
     if (m_userInstalledFontURLs) {

@@ -106,8 +106,8 @@ static bool NODELETE indicatorWantsFadeIn(const WebCore::TextIndicator& indicato
     if (RefPtr contentImage = _textIndicator->contentImage()) {
         contentsImageLogicalSize = contentImage->size();
         contentsImageLogicalSize.scale(1 / _textIndicator->contentImageScaleFactor());
-        if (RefPtr contentImageWithHighlight = _textIndicator->contentImageWithHighlight(); contentImageWithHighlight && indicatorWantsContentCrossfade(*protect(_textIndicator)))
-            contentsImage = contentImageWithHighlight->nativeImage();
+        if (indicatorWantsContentCrossfade(*_textIndicator) && protect(_textIndicator)->contentImageWithHighlight())
+            contentsImage = protect(_textIndicator)->contentImageWithHighlight()->nativeImage();
         else
             contentsImage = contentImage->nativeImage();
     }
@@ -135,7 +135,6 @@ static bool NODELETE indicatorWantsFadeIn(const WebCore::TextIndicator& indicato
         WebCore::AffineTransform transform;
         transform.translate(-pathBoundingRect.location());
         translatedPath.addPath(path, transform);
-        RetainPtr translatedPlatformPath = translatedPath.platformPath();
 
         WebCore::FloatRect offsetTextRect = pathBoundingRect;
         offsetTextRect.move(offset.x, offset.y);
@@ -158,7 +157,7 @@ static bool NODELETE indicatorWantsFadeIn(const WebCore::TextIndicator& indicato
         [dropShadowLayer setShadowColor:dropShadowColor.get()];
         [dropShadowLayer setShadowRadius:WebCore::dropShadowBlurRadius];
         [dropShadowLayer setShadowOffset:CGSizeMake(dropShadowOffsetX, dropShadowOffsetY)];
-        [dropShadowLayer setShadowPath:translatedPlatformPath];
+        [dropShadowLayer setShadowPath:translatedPath.platformPath()];
         [dropShadowLayer setShadowOpacity:1];
         [dropShadowLayer setFrame:yellowHighlightRect];
         [bounceLayer addSublayer:dropShadowLayer.get()];
@@ -169,7 +168,7 @@ static bool NODELETE indicatorWantsFadeIn(const WebCore::TextIndicator& indicato
         [rimShadowLayer setFrame:yellowHighlightRect];
         [rimShadowLayer setShadowColor:rimShadowColor.get()];
         [rimShadowLayer setShadowRadius:WebCore::rimShadowBlurRadius];
-        [rimShadowLayer setShadowPath:translatedPlatformPath];
+        [rimShadowLayer setShadowPath:translatedPath.platformPath()];
         [rimShadowLayer setShadowOffset:CGSizeZero];
         [rimShadowLayer setShadowOpacity:1];
         [rimShadowLayer setFrame:yellowHighlightRect];
@@ -187,7 +186,7 @@ static bool NODELETE indicatorWantsFadeIn(const WebCore::TextIndicator& indicato
 
         RetainPtr<CAShapeLayer> maskLayer = adoptNS([[CAShapeLayer alloc] init]);
         [maskLayer setDelegate:[WebActionDisablingCALayerDelegate shared]];
-        [maskLayer setPath:translatedPlatformPath];
+        [maskLayer setPath:translatedPath.platformPath()];
         [textLayer setMask:maskLayer.get()];
 
         WebCore::FloatRect imageRect = pathBoundingRect;

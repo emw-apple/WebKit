@@ -88,10 +88,10 @@ namespace WebCore {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGElement);
 
-SVGElement::SVGElement(const QualifiedName& tagName, Document& document, const SVGPropertyRegistry& propertyRegistry, OptionSet<TypeFlag> typeFlags)
+SVGElement::SVGElement(const QualifiedName& tagName, Document& document, UniqueRef<SVGPropertyRegistry>&& propertyRegistry, OptionSet<TypeFlag> typeFlags)
     : StyledElement(tagName, document, typeFlags | TypeFlag::IsSVGElement | TypeFlag::HasCustomStyleResolveCallbacks)
     , m_propertyAnimatorFactory(makeUniqueRef<SVGPropertyAnimatorFactory>())
-    , m_propertyRegistry(propertyRegistry)
+    , m_propertyRegistry(WTF::move(propertyRegistry))
     , m_className(SVGAnimatedString::create(this))
 {
     static bool didRegistration = false;
@@ -338,7 +338,7 @@ Vector<WeakPtr<SVGResourceElementClient>> SVGElement::referencingCSSClients() co
 void SVGElement::addReferencingCSSClient(SVGResourceElementClient& client)
 {
     if (CheckedPtr container = dynamicDowncast<RenderSVGResourceContainer>(this->renderer()))
-        container->addReferencingCSSClient(protect(client.renderer()));
+        container->addReferencingCSSClient(client.renderer());
     ensureSVGRareData().addReferencingCSSClient(client);
 }
 
@@ -347,7 +347,7 @@ void SVGElement::removeReferencingCSSClient(SVGResourceElementClient& client)
     if (!m_svgRareData)
         return;
     if (CheckedPtr container = dynamicDowncast<RenderSVGResourceContainer>(this->renderer()))
-        container->removeReferencingCSSClient(protect(client.renderer()));
+        container->removeReferencingCSSClient(client.renderer());
     ensureSVGRareData().removeReferencingCSSClient(client);
 }
 
@@ -491,6 +491,7 @@ static inline bool NODELETE isSVGLayerAwareElement(const SVGElement& element)
 
     switch (element.elementName()) {
     case SVG::a:
+    case SVG::altGlyph:
     case SVG::circle:
     case SVG::clipPath:
     case SVG::defs:
@@ -538,6 +539,7 @@ bool SVGElement::childShouldCreateRenderer(const Node& child) const
         return false;
 
     switch (svgChild->elementName()) {
+    case ElementNames::SVG::altGlyph:
     case ElementNames::SVG::textPath:
     case ElementNames::SVG::tref:
     case ElementNames::SVG::tspan:
@@ -582,7 +584,7 @@ void SVGElement::attributeChanged(const QualifiedName& name, const AtomString& o
 void SVGElement::synchronizeAttribute(const QualifiedName& name)
 {
     // If the value of the property has changed, serialize the new value to the attribute.
-    if (auto value = propertyRegistry().synchronize(*this, name)) {
+    if (auto value = propertyRegistry().synchronize(name)) {
         // If the serialized value is empty and the attribute doesn't exist,
         // don't recreate it. This handles the case where the attribute was
         // explicitly removed after the list was emptied.
@@ -597,7 +599,7 @@ void SVGElement::synchronizeAllAttributes()
 {
     // SVGPropertyRegistry::synchronizeAllAttributes() returns the new values of
     // the properties which have changed but not committed yet.
-    auto map = propertyRegistry().synchronizeAllAttributes(*this);
+    auto map = propertyRegistry().synchronizeAllAttributes();
     for (const auto& entry : map)
         setSynchronizedLazyAttribute(entry.key, AtomString { entry.value });
 }
@@ -610,18 +612,18 @@ void SVGElement::commitPropertyChange(SVGProperty* property)
     property->setDirty();
 
     setAnimatedSVGAttributesAreDirty();
-    svgAttributeChanged(propertyRegistry().propertyAttributeName(*this, *property));
+    svgAttributeChanged(propertyRegistry().propertyAttributeName(*property));
 }
 
 void SVGElement::commitPropertyChange(SVGAnimatedPropertyBase& animatedProperty)
 {
-    QualifiedName attributeName = propertyRegistry().animatedPropertyAttributeName(*this, animatedProperty);
+    QualifiedName attributeName = propertyRegistry().animatedPropertyAttributeName(animatedProperty);
     ASSERT(attributeName != nullQName());
 
     // A change in a style property, e.g SVGRectElement::x should be serialized to
     // the attribute immediately. Otherwise it is okay to be lazy in this regard.
     if (!propertyRegistry().isAnimatedStylePropertyAttribute(attributeName))
-        propertyRegistry().setAnimatedPropertyDirty(*this, attributeName, animatedProperty);
+        propertyRegistry().setAnimatedPropertyDirty(attributeName, animatedProperty);
     else
         setSynchronizedLazyAttribute(attributeName, AtomString { animatedProperty.baseValAsString() });
 
@@ -631,7 +633,7 @@ void SVGElement::commitPropertyChange(SVGAnimatedPropertyBase& animatedProperty)
 
 bool SVGElement::isAnimatedPropertyAttribute(const QualifiedName& attributeName) const
 {
-    return propertyRegistry().isAnimatedPropertyAttribute(*this, attributeName);
+    return propertyRegistry().isAnimatedPropertyAttribute(attributeName);
 }
 
 bool SVGElement::isAnimatedAttribute(const QualifiedName& attributeName) const
@@ -651,11 +653,11 @@ RefPtr<SVGAttributeAnimator> SVGElement::createAnimator(const QualifiedName& att
         return animator;
 
     // Animated property animator.
-    RefPtr animator = propertyRegistry().createAnimator(*this, attributeName, animationMode, calcMode, isAccumulated, isAdditive);
+    RefPtr animator = propertyRegistry().createAnimator(attributeName, animationMode, calcMode, isAccumulated, isAdditive);
     if (!animator)
         return animator;
     for (auto& instance : copyToVectorOf<Ref<SVGElement>>(instances()))
-        instance->propertyRegistry().appendAnimatedInstance(instance, attributeName, *animator);
+        instance->propertyRegistry().appendAnimatedInstance(attributeName, *animator);
     return animator;
 }
 

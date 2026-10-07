@@ -109,8 +109,9 @@ private:
     CacheHashSet m_cache WTF_GUARDED_BY_LOCK(m_lock);
     RunLoop::Timer m_timer WTF_GUARDED_BY_LOCK(m_lock);
 
-    static CGSubimageCacheWithTimer& subimageCacheSingleton();
-    static bool subimageCacheExists();
+    static CGSubimageCacheWithTimer& subimageCache();
+    static bool NODELETE subimageCacheExists();
+    static CGSubimageCacheWithTimer* s_cache;
 };
 
 #endif // CACHE_SUBIMAGES

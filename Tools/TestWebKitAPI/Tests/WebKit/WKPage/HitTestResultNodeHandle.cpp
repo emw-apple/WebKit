@@ -36,6 +36,7 @@
 namespace TestWebKitAPI {
 
 static bool done;
+static bool messageReceived;
 static bool didFinishLoad;
 
 static void didFinishNavigation(WKPageRef, WKNavigationRef, WKTypeRef, const void*)
@@ -45,6 +46,7 @@ static void didFinishNavigation(WKPageRef, WKNavigationRef, WKTypeRef, const voi
 
 static void didReceiveMessageFromInjectedBundle(WKContextRef context, WKStringRef messageName, WKTypeRef messageBody, const void* clientInfo)
 {
+    messageReceived = true;
     if (WKStringIsEqualToUTF8CString(messageName, "HitTestResultNodeHandleTestDoneMessageName"))
         done = true;
 }

@@ -49,15 +49,9 @@ bool PpsParser::ParsePpsIds(std::span<const uint8_t> data,
   // section 7.3.1 of the H.264 standard.
   std::vector<uint8_t> unpacked_buffer = H264::ParseRbsp(data);
   BitstreamReader reader(unpacked_buffer);
-  uint32_t parsed_pps_id = reader.ReadExponentialGolomb();
-  uint32_t parsed_sps_id = reader.ReadExponentialGolomb();
-  if (!reader.Ok() || parsed_pps_id > H264::kMaxPpsId ||
-      parsed_sps_id > H264::kMaxSpsId) {
-    return false;
-  }
-  *pps_id = parsed_pps_id;
-  *sps_id = parsed_sps_id;
-  return true;
+  *pps_id = reader.ReadExponentialGolomb();
+  *sps_id = reader.ReadExponentialGolomb();
+  return reader.Ok();
 }
 
 std::optional<PpsParser::SliceHeader> PpsParser::ParseSliceHeader(
@@ -75,8 +69,7 @@ std::optional<PpsParser::SliceHeader> PpsParser::ParseSliceHeader(
 
   // The rest of the slice header requires information from the SPS to parse.
 
-  if (!slice_reader.Ok() ||
-      slice_header.pic_parameter_set_id > H264::kMaxPpsId) {
+  if (!slice_reader.Ok()) {
     return std::nullopt;
   }
   return slice_header;
@@ -88,10 +81,6 @@ std::optional<PpsParser::PpsState> PpsParser::ParseInternal(
   PpsState pps;
   pps.id = reader.ReadExponentialGolomb();
   pps.sps_id = reader.ReadExponentialGolomb();
-  if (!reader.Ok() || pps.id > H264::kMaxPpsId ||
-      pps.sps_id > H264::kMaxSpsId) {
-    return std::nullopt;
-  }
 
   // entropy_coding_mode_flag: u(1)
   pps.entropy_coding_mode_flag = reader.Read<bool>();

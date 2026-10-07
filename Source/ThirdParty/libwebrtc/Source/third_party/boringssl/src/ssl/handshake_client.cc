@@ -83,6 +83,14 @@ static void ssl_get_client_disabled(const SSL_HANDSHAKE *hs,
   }
 }
 
+static bool ssl_add_tls13_cipher(CBB *cbb, uint16_t cipher_id,
+                                 ssl_compliance_policy_t policy) {
+  if (ssl_tls13_cipher_meets_policy(cipher_id, policy)) {
+    return CBB_add_u16(cbb, cipher_id);
+  }
+  return true;
+}
+
 static bool ssl_write_client_cipher_list(const SSL_HANDSHAKE *hs, CBB *out,
                                          ssl_client_hello_type_t type) {
   const SSLImpl *const ssl = hs->ssl;
@@ -100,10 +108,37 @@ static bool ssl_write_client_cipher_list(const SSL_HANDSHAKE *hs, CBB *out,
     return false;
   }
 
-  // Add TLS 1.3 ciphers in configured preference order.
+  // Add TLS 1.3 ciphers. Order ChaCha20-Poly1305 relative to AES-GCM based on
+  // hardware support.
   if (hs->max_version >= TLS1_3_VERSION) {
-    for (const SSL_CIPHER *cipher : hs->config->tls13_cipher_list.ciphers()) {
-      if (!CBB_add_u16(&child, SSL_CIPHER_get_protocol_id(cipher))) {
+    static const uint16_t kCiphersNoAESHardware[] = {
+        SSL_CIPHER_CHACHA20_POLY1305_SHA256,
+        SSL_CIPHER_AES_128_GCM_SHA256,
+        SSL_CIPHER_AES_256_GCM_SHA384,
+    };
+    static const uint16_t kCiphersAESHardware[] = {
+        SSL_CIPHER_AES_128_GCM_SHA256,
+        SSL_CIPHER_AES_256_GCM_SHA384,
+        SSL_CIPHER_CHACHA20_POLY1305_SHA256,
+    };
+    static const uint16_t kCiphersCNSA[] = {
+        SSL_CIPHER_AES_256_GCM_SHA384,
+        SSL_CIPHER_AES_128_GCM_SHA256,
+        SSL_CIPHER_CHACHA20_POLY1305_SHA256,
+    };
+
+    const bool has_aes_hw = ssl->config->aes_hw_override
+                                ? ssl->config->aes_hw_override_value
+                                : EVP_has_aes_hardware();
+    const bssl::Span<const uint16_t> ciphers =
+        ssl->config->compliance_policy == ssl_compliance_policy_cnsa_202407
+            ? bssl::Span<const uint16_t>(kCiphersCNSA)
+            : (has_aes_hw ? bssl::Span<const uint16_t>(kCiphersAESHardware)
+                          : bssl::Span<const uint16_t>(kCiphersNoAESHardware));
+
+    for (auto cipher : ciphers) {
+      if (!ssl_add_tls13_cipher(&child, cipher,
+                                ssl->config->compliance_policy)) {
         return false;
       }
     }
@@ -1283,13 +1318,11 @@ static enum ssl_hs_wait_t do_send_client_certificate(SSL_HANDSHAKE *hs) {
     // Do not send client certificates on ECH reject. We have not authenticated
     // the server for the name that can learn the certificate.
     SSL_certs_clear(ssl);
-  } else if (hs->config->cert->cert_cb) {
-    uint8_t alert = SSL_AD_INTERNAL_ERROR;
+  } else if (hs->config->cert->cert_cb != nullptr) {
     // Call cert_cb to update the certificate.
-    int rv =
-        hs->config->cert->cert_cb(ssl, hs->config->cert->cert_cb_arg, &alert);
+    int rv = hs->config->cert->cert_cb(ssl, hs->config->cert->cert_cb_arg);
     if (rv == 0) {
-      ssl_send_alert(ssl, SSL3_AL_FATAL, alert);
+      ssl_send_alert(ssl, SSL3_AL_FATAL, SSL_AD_INTERNAL_ERROR);
       OPENSSL_PUT_ERROR(SSL, SSL_R_CERT_CB_ERROR);
       return ssl_hs_error;
     }

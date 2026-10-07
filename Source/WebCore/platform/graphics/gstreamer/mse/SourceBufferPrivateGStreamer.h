@@ -60,7 +60,7 @@ class SourceBufferPrivateGStreamer final : public SourceBufferPrivate, public Ca
 {
 public:
     static bool isContentTypeSupported(const ContentType&);
-    static Ref<SourceBufferPrivateGStreamer> create(MediaSourcePrivateGStreamer&, const ContentType&, bool textTracksEnabled);
+    static Ref<SourceBufferPrivateGStreamer> create(MediaSourcePrivateGStreamer&, const ContentType&);
     ~SourceBufferPrivateGStreamer();
 
     constexpr MediaPlatformType platformType() const final { return MediaPlatformType::GStreamer; }
@@ -102,12 +102,10 @@ public:
     size_t platformMaximumBufferSize() const override;
     size_t platformEvictionThreshold() const final;
 
-    bool textTracksEnabled() const { return m_textTracksEnabled; }
-
 private:
     friend class AppendPipeline;
 
-    SourceBufferPrivateGStreamer(MediaSourcePrivateGStreamer&, const ContentType&, bool textTracksEnabled);
+    SourceBufferPrivateGStreamer(MediaSourcePrivateGStreamer&, const ContentType&);
     RefPtr<MediaPlayerPrivateGStreamerMSE> player() const;
 
     void notifyClientWhenReadyForMoreSamples(TrackID) override;
@@ -116,7 +114,6 @@ private:
 
     bool m_hasBeenRemovedFromMediaSource { false };
     ContentType m_type;
-    bool m_textTracksEnabled { false };
     std::unique_ptr<AppendPipeline> m_appendPipeline;
     StdUnorderedMap<TrackID, RefPtr<MediaSourceTrackGStreamer>> m_tracks;
     std::optional<MediaPromise::Producer> m_appendPromise;

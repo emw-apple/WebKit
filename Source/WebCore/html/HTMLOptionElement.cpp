@@ -45,9 +45,10 @@
 #include "NodeName.h"
 #include "NodeRenderStyle.h"
 #include "PseudoClassChangeInvalidation.h"
+#include "RenderTheme.h"
 #include "ScriptDisallowedScope.h"
 #include "SelectPopoverElement.h"
-#include "Settings.h"
+#include "StyleComputedStyle+GettersInlines.h"
 #include "StyleResolver.h"
 #include "Text.h"
 #include <wtf/Ref.h>
@@ -171,7 +172,7 @@ auto HTMLOptionElement::insertionSteps(InsertionType insertionType, ContainerNod
             // instead of selected() which triggers O(n) recalcListItems().
             // Only do this during parsing — for API insertions, the existing
             // childrenChanged → optionToSelectFromChildChangeScope path handles it.
-            if (!select->isFinishedParsingChildren() && !selectedWithoutUpdate() && !isDisabledFormControl())
+            if (!select->isFinishedParsingChildren() && !selectedWithoutUpdate() && !m_disabled)
                 select->selectDefaultOptionIfNeeded(*this);
         }
     }
@@ -181,29 +182,9 @@ auto HTMLOptionElement::insertionSteps(InsertionType insertionType, ContainerNod
             select->invalidateButtonText();
         if (m_shadowTreeNeedsUpdate)
             protect(document())->addElementWithPendingUserAgentShadowTreeUpdate(*this);
-        if (m_ownerSelect)
-            result = NeedsPostConnectionSteps::Yes;
     }
 
     return result;
-}
-
-void HTMLOptionElement::postConnectionSteps()
-{
-    RefPtr select = m_ownerSelect;
-    if (!select || !select->hasSelectedContentDescendants())
-        return;
-
-    if (select->multiple()) {
-        // The select clones its options once it finishes parsing them.
-        if (select->isFinishedParsingChildren())
-            select->queueSelectedContentUpdate();
-        return;
-    }
-
-    bool isSelected = select->isFinishedParsingChildren() ? selected() : selectedWithoutUpdate();
-    if (isSelected)
-        select->updateSelectedContent(this);
 }
 
 void HTMLOptionElement::removingSteps(RemovalType removalType, ContainerNode& oldParentOfRemovedTree)
@@ -224,15 +205,16 @@ void HTMLOptionElement::removingSteps(RemovalType removalType, ContainerNode& ol
     if (RefPtr select = std::exchange(m_ownerSelect, nullptr).get()) {
         select->setRecalcListItems();
         select->invalidateButtonText();
-        if (m_isSelected || select->multiple())
-            select->queueSelectedContentUpdate();
         invalidateShadowTree();
     }
 }
 
-void HTMLOptionElement::movingSteps(MovingType movingType, ContainerNode& oldParent)
+void HTMLOptionElement::movingSteps(IsSubtreeRoot isSubtreeRoot, ContainerNode& oldParent)
 {
-    HTMLElement::movingSteps(movingType, oldParent);
+    HTMLElement::movingSteps(isSubtreeRoot, oldParent);
+
+    if (isSubtreeRoot == IsSubtreeRoot::No)
+        return;
 
     if (!document().settings().htmlEnhancedSelectParsingEnabled())
         return;
@@ -243,8 +225,6 @@ void HTMLOptionElement::movingSteps(MovingType movingType, ContainerNode& oldPar
         if (newSelect) {
             newSelect->setRecalcListItems();
             newSelect->invalidateButtonText();
-            if (newSelect->multiple() && oldParent.isInclusiveDescendantOf(*newSelect))
-                newSelect->queueSelectedContentUpdate();
         }
         return;
     }
@@ -254,15 +234,11 @@ void HTMLOptionElement::movingSteps(MovingType movingType, ContainerNode& oldPar
     if (oldSelect) {
         oldSelect->setRecalcListItems();
         oldSelect->invalidateButtonText();
-        if (m_isSelected || oldSelect->multiple())
-            oldSelect->queueSelectedContentUpdate();
     }
 
     if (newSelect) {
         newSelect->setRecalcListItems();
         newSelect->invalidateButtonText();
-        if (m_isSelected || newSelect->multiple())
-            newSelect->queueSelectedContentUpdate();
     }
 
     invalidateShadowTree();
@@ -282,7 +258,7 @@ void HTMLOptionElement::finishParsingChildren()
         return;
 
     RefPtr select = m_ownerSelect;
-    if (!select || select->multiple())
+    if (!select)
         return;
 
     // When the owning <select> is still being parsed, use selectedWithoutUpdate()
@@ -450,9 +426,16 @@ int HTMLOptionElement::index() const
 void HTMLOptionElement::attributeChanged(const QualifiedName& name, const AtomString& oldValue, const AtomString& newValue, AttributeModificationReason attributeModificationReason)
 {
     switch (name.nodeName()) {
-    case AttributeNames::disabledAttr:
-        parseDisabledAttribute(newValue);
+    case AttributeNames::disabledAttr: {
+        bool newDisabled = !newValue.isNull();
+        if (m_disabled != newDisabled) {
+            Style::PseudoClassChangeInvalidation disabledInvalidation(*this, { { CSSSelector::PseudoClass::Disabled, newDisabled },  { CSSSelector::PseudoClass::Enabled, !newDisabled } });
+            m_disabled = newDisabled;
+            if (CheckedPtr renderer = this->renderer(); renderer && renderer->style().hasUsedAppearance())
+                renderer->repaint();
+        }
         break;
+    }
     case AttributeNames::selectedAttr: {
         // FIXME: Use PseudoClassChangeInvalidation in other elements that implement matchesDefaultPseudoClass().
         Style::PseudoClassChangeInvalidation defaultInvalidation(*this, CSSSelector::PseudoClass::Default, !newValue.isNull());
@@ -477,23 +460,6 @@ void HTMLOptionElement::attributeChanged(const QualifiedName& name, const AtomSt
         HTMLElement::attributeChanged(name, oldValue, newValue, attributeModificationReason);
         break;
     }
-}
-
-void HTMLOptionElement::parseDisabledAttribute(const AtomString& value)
-{
-    bool newDisabled = !value.isNull();
-    if (m_disabled == newDisabled)
-        return;
-
-    RefPtr select = ownerSelectElement();
-    RefPtr oldSelectedOption = select ? select->selectedOptionForSelectedContent() : nullptr;
-    {
-        Style::PseudoClassChangeInvalidation disabledInvalidation(*this, { { CSSSelector::PseudoClass::Disabled, newDisabled }, { CSSSelector::PseudoClass::Enabled, !newDisabled } });
-        m_disabled = newDisabled;
-    }
-
-    if (select)
-        select->resetSelectedness(oldSelectedOption.get());
 }
 
 String HTMLOptionElement::value() const
@@ -677,18 +643,8 @@ void HTMLOptionElement::cloneIntoSelectedContent(HTMLSelectedContentElement& sel
 
     NodeVector newChildren;
     for (RefPtr child = firstChild(); child; child = child->nextSibling())
-        newChildren.append(child->cloneNode(CloneSubtree::Yes));
+        newChildren.append(child->cloneNode(true));
     selectedContent.replaceChildrenWithoutValidityCheck(WTF::move(newChildren));
-}
-
-Ref<HTMLOptionElement> HTMLOptionElement::cloneForSelectedContent()
-{
-    ASSERT(document().settings().htmlEnhancedSelectMultipleSelectedContentEnabled());
-
-    Ref clone = downcast<HTMLOptionElement>(cloneNode(CloneSubtree::Yes));
-    clone->m_selectedContentSource = *this;
-    clone->m_isSelected = selected();
-    return clone;
 }
 
 } // namespace

@@ -1,3 +1,0 @@
-
-PASS The volumetric scene API is not exposed while the setting is off
-

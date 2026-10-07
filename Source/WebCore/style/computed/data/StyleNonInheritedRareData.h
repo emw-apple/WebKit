@@ -83,6 +83,7 @@
 #include <WebCore/StyleViewTransitionName.h>
 #include <WebCore/StyleWebKitBoxReflect.h>
 #include <WebCore/StyleWebKitInitialLetter.h>
+#include <WebCore/StyleWebKitLineClamp.h>
 #include <WebCore/StyleWhiteSpaceTrim.h>
 #include <WebCore/StyleWillChange.h>
 #include <WebCore/StyleZoom.h>
@@ -128,6 +129,7 @@ public:
     Zoom zoom;
 
     WebkitInitialLetter initialLetter;
+    WebkitLineClamp lineClamp;
     MaximumLines maxLines;
 
     DataRef<MarqueeData> marquee;
@@ -236,7 +238,7 @@ public:
     PREFERRED_TYPE(bool) unsigned transformStyleForcedToFlat : 1; // The used value for transform-style is forced to flat by a grouping property.
     PREFERRED_TYPE(BackfaceVisibility) unsigned backfaceVisibility : 1;
 
-    PREFERRED_TYPE(BlendMode) unsigned blendMode: 5;
+    PREFERRED_TYPE(BlendMode) unsigned effectiveBlendMode: 5;
 
     PREFERRED_TYPE(TextDecorationStyle) unsigned textDecorationStyle : 3;
     PREFERRED_TYPE(TextGroupAlign) unsigned textGroupAlign : 3;

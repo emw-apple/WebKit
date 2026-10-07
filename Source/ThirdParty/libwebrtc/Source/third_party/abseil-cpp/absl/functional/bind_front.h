@@ -30,9 +30,10 @@
 #ifndef ABSL_FUNCTIONAL_BIND_FRONT_H_
 #define ABSL_FUNCTIONAL_BIND_FRONT_H_
 
-#include "absl/base/config.h"
+#ifdef __has_include
 #if __has_include(<version>)
 #include <version>
+#endif
 #endif
 
 #if defined(__cpp_lib_bind_front) && __cpp_lib_bind_front >= 201907L

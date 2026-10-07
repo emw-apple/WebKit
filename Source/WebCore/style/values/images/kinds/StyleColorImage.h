@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2026 Apple Inc. All rights reserved.
- * Copyright (C) 2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -43,6 +42,8 @@ public:
     bool operator==(const Image&) const final;
     bool equals(const ColorImage&) const;
 
+    static constexpr bool isFixedSize = false;
+
 private:
     explicit ColorImage(Color&&);
 
@@ -50,13 +51,11 @@ private:
     Ref<DeprecatedCSSOMValue> computedStyleDeprecatedCSSOMValue(CSSValuePool&, const Style::ComputedStyle&, CSSStyleDeclaration&) const final;
     bool isPending() const final;
     void load(CachedResourceLoader&, const ResourceLoaderOptions&) final;
-    ImageDrawResult draw(GraphicsContext&, const RenderElement&, ConcreteObjectSize, const FloatRect& destination, const FloatRect& source, ImagePaintingOptions, bool isForFirstLine) const final;
-    ImageDrawResult drawAsPattern(GraphicsContext&, const RenderElement&, ConcreteObjectSize, const FloatRect& destination, const FloatRect& tile, const AffineTransform&, const FloatPoint& phase, const FloatSize& spacing, ImagePaintingOptions, bool isForFirstLine) const final;
+    RefPtr<WebCore::Image> image(const RenderElement*, const FloatSize&, const GraphicsContext&, bool isForFirstLine) const final;
     bool knownToBeOpaque(const RenderElement&) const final;
+    FloatSize fixedSize(const RenderElement&) const final;
     void didAddClient(RenderElement&) final { }
     void didRemoveClient(RenderElement&) final { }
-
-    WebCore::Color resolvedColor(const RenderElement&) const;
 
     Color m_color;
 };

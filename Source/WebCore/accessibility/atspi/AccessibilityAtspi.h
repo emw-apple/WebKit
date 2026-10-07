@@ -107,7 +107,6 @@ private:
         CompletionHandler<void(const String&)> completionHandler;
     };
 
-    bool isConnected() const { return m_connection && !m_isConnecting; }
     void didConnect(GRefPtr<GDBusConnection>&&);
     void didOwnName();
     void didLoseName(const char*);

@@ -141,10 +141,6 @@ enum class WebCore::UserInterfaceLayoutDirection : bool;
     bool canShowWhileLocked;
     bool isCapturingScreen;
     WebCore::Color insertionPointColor;
-    String contentSizeCategory;
-#endif
-#if PLATFORM(IOS_FAMILY) && ENABLE(UNIFIED_PDF)
-    WebKit::PDFPluginDisplayMode initialPDFDisplayMode;
 #endif
 #if PLATFORM(COCOA)
     bool smartInsertDeleteEnabled;

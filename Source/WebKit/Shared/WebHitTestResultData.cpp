@@ -21,6 +21,7 @@
 #include "config.h"
 #include "WebHitTestResultData.h"
 
+#include "ShareableBitmapUtilities.h"
 #include "WebFrame.h"
 #include <WebCore/DocumentView.h>
 #include <WebCore/ElementInlines.h>
@@ -99,7 +100,7 @@ WebHitTestResultData::WebHitTestResultData(const HitTestResult& hitTestResult, c
     , linkSuggestedFilename(hitTestResult.linkSuggestedFilename())
     , imageSuggestedFilename(imageSuggestedFilenameFromHitTestResult(hitTestResult))
     , isContentEditable(hitTestResult.isContentEditable())
-    , elementBoundingBox(elementBoundingBoxInMainFrameViewCoordinates(hitTestResult))
+    , elementBoundingBox(elementBoundingBoxInWindowCoordinates(hitTestResult))
     , isScrollbar(IsScrollbar::No)
     , isSelected(hitTestResult.isSelected())
     , isTextNode(is<Text>(hitTestResult.innerNode()))
@@ -129,7 +130,7 @@ WebHitTestResultData::WebHitTestResultData(const HitTestResult& hitTestResult, c
 
     if (RefPtr target = hitTestResult.innerNonSharedNode()) {
         if (CheckedPtr renderer = dynamicDowncast<RenderImage>(target->renderer())) {
-            imageBitmap = renderer->createShareableBitmap();
+            imageBitmap = createShareableBitmap(*renderer);
             if (RefPtr cachedImage = renderer->cachedImage()) {
                 if (RefPtr image = cachedImage->image())
                     sourceImageMIMEType = image->mimeType();
@@ -154,7 +155,7 @@ WebHitTestResultData::WebHitTestResultData(const HitTestResult& hitTestResult, c
 WebHitTestResultData::WebHitTestResultData(const HitTestResult& hitTestResult, bool includeImage)
     : WebHitTestResultData(hitTestResult, String(), includeImage) { }
 
-WebHitTestResultData::WebHitTestResultData(const String& absoluteImageURL, const String& absolutePDFURL, const String& absoluteLinkURL, const String& absoluteMediaURL, const String& absoluteModelURL, const String& linkLabel, const String& linkTitle, const String& linkSuggestedFilename, const String& imageSuggestedFilename, bool isContentEditable, const WebCore::IntRect& elementBoundingBox, const WebKit::WebHitTestResultData::IsScrollbar& isScrollbar, bool isSelected, bool isTextNode, bool isOverTextInsideFormControlElement, bool isDownloadableMedia, bool mediaIsInFullscreen, bool isActivePDFAnnotation, const WebHitTestResultData::ElementType& elementType, std::optional<FrameInfoData>&& frameInfo, std::optional<WebCore::FrameIdentifier> targetFrame, const String& lookupText, const String& tooltipText, const String& imageText, std::optional<WebCore::SharedMemory::Handle>&& imageHandle, const RefPtr<WebCore::ShareableBitmap>& imageBitmap, const String& sourceImageMIMEType, bool hasEntireImage, bool allowsFollowingLink, bool allowsFollowingImageURL, std::optional<WebCore::ResourceResponse>&& linkLocalResourceResponse,
+WebHitTestResultData::WebHitTestResultData(const String& absoluteImageURL, const String& absolutePDFURL, const String& absoluteLinkURL, const String& absoluteMediaURL, const String& absoluteModelURL, const String& linkLabel, const String& linkTitle, const String& linkSuggestedFilename, const String& imageSuggestedFilename, bool isContentEditable, const WebCore::IntRect& elementBoundingBox, const WebKit::WebHitTestResultData::IsScrollbar& isScrollbar, bool isSelected, bool isTextNode, bool isOverTextInsideFormControlElement, bool isDownloadableMedia, bool mediaIsInFullscreen, bool isActivePDFAnnotation, const WebHitTestResultData::ElementType& elementType, std::optional<FrameInfoData>&& frameInfo, std::optional<WebCore::FrameIdentifier> targetFrame, std::optional<WebCore::RemoteUserInputEventData> remoteUserInputEventData, const String& lookupText, const String& tooltipText, const String& imageText, std::optional<WebCore::SharedMemory::Handle>&& imageHandle, const RefPtr<WebCore::ShareableBitmap>& imageBitmap, const String& sourceImageMIMEType, bool hasEntireImage, bool allowsFollowingLink, bool allowsFollowingImageURL, std::optional<WebCore::ResourceResponse>&& linkLocalResourceResponse,
 #if PLATFORM(MAC)
     const WebHitTestResultPlatformData& platformData,
 #endif
@@ -180,6 +181,7 @@ WebHitTestResultData::WebHitTestResultData(const String& absoluteImageURL, const
         , elementType(elementType)
         , frameInfo(WTF::move(frameInfo))
         , targetFrame(targetFrame)
+        , remoteUserInputEventData(remoteUserInputEventData)
         , lookupText(lookupText)
         , tooltipText(tooltipText)
         , imageText(imageText)
@@ -201,7 +203,7 @@ WebHitTestResultData::WebHitTestResultData(const String& absoluteImageURL, const
 
 WebHitTestResultData::~WebHitTestResultData() = default;
 
-IntRect WebHitTestResultData::elementBoundingBoxInMainFrameViewCoordinates(const WebCore::HitTestResult& hitTestResult)
+IntRect WebHitTestResultData::elementBoundingBoxInWindowCoordinates(const WebCore::HitTestResult& hitTestResult)
 {
     RefPtr node = hitTestResult.innerNonSharedNode();
     if (!node)
@@ -219,7 +221,7 @@ IntRect WebHitTestResultData::elementBoundingBoxInMainFrameViewCoordinates(const
     if (!renderer)
         return IntRect();
 
-    return view->contentsToMainFrameView(renderer->absoluteBoundingBoxRect());
+    return view->contentsToWindow(renderer->absoluteBoundingBoxRect());
 }
 
 std::optional<WebCore::SharedMemory::Handle> WebHitTestResultData::getImageSharedMemoryHandle() const

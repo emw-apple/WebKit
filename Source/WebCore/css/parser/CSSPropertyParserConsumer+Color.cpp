@@ -77,6 +77,11 @@ template<typename T> static CSS::Color makeCSSColor(T&& unresolvedColorKind)
     return CSS::Color { std::forward<T>(unresolvedColorKind) };
 }
 
+template<typename T> static std::optional<CSS::Color> makeCSSColor(std::optional<T>&& unresolvedColorKind)
+{
+    return unresolvedColorKind ? std::make_optional(makeCSSColor(std::forward<T>(*unresolvedColorKind))) : std::nullopt;
+}
+
 // State passed to internal color consumer functions. Used to pass information
 // down the stack and levels of color parsing nesting.
 struct ColorParserState {
@@ -443,7 +448,7 @@ static std::optional<CSS::Color> consumeHSLFunction(CSSParserTokenRange& range, 
 // MARK: - color()
 
 template<typename Functor>
-static auto callWithColorFunction(CSSValueID id, NOESCAPE const Functor& functor) -> decltype(functor.template operator()<ColorRGBFunction<ExtendedSRGBA<float>>>())
+static auto callWithColorFunction(CSSValueID id, Functor&& functor) -> decltype(functor.template operator()<ColorRGBFunction<ExtendedSRGBA<float>>>())
 {
     switch (id) {
     case CSSValueA98Rgb:
@@ -474,7 +479,7 @@ static auto callWithColorFunction(CSSValueID id, NOESCAPE const Functor& functor
 }
 
 template<typename Functor>
-static auto consumeColorSpace(CSSParserTokenRange& args, NOESCAPE const Functor& functor) -> decltype(functor.template operator()<ColorRGBFunction<ExtendedSRGBA<float>>>())
+static auto consumeColorSpace(CSSParserTokenRange& args, Functor&& functor) -> decltype(functor.template operator()<ColorRGBFunction<ExtendedSRGBA<float>>>())
 {
     return callWithColorFunction(args.peek().id(), [&]<typename Descriptor>() {
         consumeIdentRaw(args);
@@ -847,6 +852,14 @@ std::optional<CSS::Color> consumeColor(CSSParserTokenRange& range, ColorParserSt
     ColorParserStateNester nester { state };
 
     auto keyword = range.peek().id();
+
+    if (keyword == CSSValueInternalCurrentBackgroundColor) {
+        if (state.propertyParserState.context.mode != UASheetMode)
+            return { };
+        consumeIdentRaw(range);
+        return CSS::Color { CSS::KeywordColor { keyword } };
+    }
+
     if (CSS::isColorKeyword(keyword, state.allowedColorTypes)) {
         if (!isColorKeywordAllowed(keyword, state.propertyParserState.context))
             return { };

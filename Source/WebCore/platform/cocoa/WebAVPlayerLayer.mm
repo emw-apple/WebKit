@@ -54,7 +54,7 @@ public:
         : m_playerLayer(playerLayer)
     {
     }
-
+private:
     // CheckedPtr interface
     uint32_t checkedPtrCount() const final { return CanMakeCheckedPtr::checkedPtrCount(); }
     uint32_t checkedPtrCountWithoutThreadCheck() const final { return CanMakeCheckedPtr::checkedPtrCountWithoutThreadCheck(); }
@@ -62,7 +62,6 @@ public:
     void decrementCheckedPtrCount() const final { CanMakeCheckedPtr::decrementCheckedPtrCount(); }
     void setDidBeginCheckedPtrDeletion() final { CanMakeCheckedPtr::setDidBeginCheckedPtrDeletion(); }
 
-private:
     void videoDimensionsChanged(const FloatSize& videoDimensions)
     {
         [m_playerLayer.get() setVideoDimensions:videoDimensions];
@@ -81,7 +80,6 @@ private:
     CGSize _videoDimensions;
     RetainPtr<NSString> _videoGravity;
     RetainPtr<NSString> _previousVideoGravity;
-    RetainPtr<NSDictionary> _pixelBufferAttributes;
     std::unique_ptr<WebCore::WebAVPlayerLayerPresentationModelClient> _presentationModelClient;
     NSEdgeInsets _legibleContentInsets;
     BOOL _showingCaptionPreview;
@@ -108,8 +106,9 @@ private:
 - (void)dealloc
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(resolveBounds) object:nil];
+    [_pixelBufferAttributes release];
     if (auto model = _presentationModel.get())
-        model->removeClient(protect(*_presentationModelClient));
+        model->removeClient(*_presentationModelClient);
     [super dealloc];
 }
 
@@ -125,7 +124,7 @@ private:
         return;
 
     if (model)
-        model->removeClient(protect(*_presentationModelClient));
+        model->removeClient(*_presentationModelClient);
 
     _presentationModel = presentationModel;
 #if !RELEASE_LOG_DISABLED
@@ -133,7 +132,7 @@ private:
 #endif
 
     if (presentationModel)
-        presentationModel->addClient(protect(*_presentationModelClient));
+        presentationModel->addClient(*_presentationModelClient);
 
     self.videoDimensions = presentationModel ? presentationModel->videoDimensions() : CGSizeZero;
 }
@@ -175,16 +174,6 @@ private:
 - (CALayer*)captionsLayer
 {
     return _captionsLayer.get();
-}
-
-- (NSDictionary *)pixelBufferAttributes
-{
-    return _pixelBufferAttributes.get();
-}
-
-- (void)setPixelBufferAttributes:(NSDictionary *)pixelBufferAttributes
-{
-    _pixelBufferAttributes = adoptNS([pixelBufferAttributes copy]);
 }
 
 - (CGSize)videoDimensions

@@ -69,9 +69,3 @@ enum class Inspector::InitiatorType : uint8_t {
     std::optional<int> parserLineNumber;
     std::optional<int> nodeId;
 };
-
-[CustomHeader] struct Inspector::RequestExtras {
-    String postData;
-    std::optional<WebCore::ReferrerPolicy> referrerPolicy;
-    String integrity;
-};

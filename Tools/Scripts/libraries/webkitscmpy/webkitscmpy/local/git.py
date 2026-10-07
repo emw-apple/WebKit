@@ -128,46 +128,49 @@ class Git(Scm):
                 return identifier.endswith(default_branch) or identifier.endswith(branch)
 
             intersected = False
-            self._last_populated[branch] = time.time()
-            with subprocess.Popen(
-                [self.repo.executable(), '--no-replace-objects', 'log', '{}/{}'.format(remote, branch) if remote else branch, '--no-decorate', '--date=unix', '--'],
-                cwd=self.repo.root_path,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                encoding='utf-8',
-            ) as log:
-                try:
-                    if log.poll():
-                        raise self.repo.Exception("Failed to construct branch history for '{}'".format(branch))
+            log = None
+            try:
+                self._last_populated[branch] = time.time()
+                log = subprocess.Popen(
+                    [self.repo.executable(), '--no-replace-objects', 'log', '{}/{}'.format(remote, branch) if remote else branch, '--no-decorate', '--date=unix', '--'],
+                    cwd=self.repo.root_path,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    encoding='utf-8',
+                )
+                if log.poll():
+                    raise self.repo.Exception("Failed to construct branch history for '{}'".format(branch))
 
-                    hash = None
-                    revision = None
+                hash = None
+                revision = None
 
-                    line = log.stdout.readline()
-                    while line:
-                        if line.startswith('    git-svn-id: '):
-                            match = self.repo.GIT_SVN_REVISION.match(line.lstrip())
-                            if match:
-                                revision = int(match.group('revision'))
-                        if not line.startswith('commit '):
-                            line = log.stdout.readline()
-                            continue
-
-                        if hash and _append(branch, hash, revision=revision):
-                            hash = None
-                            intersected = True
-                            break
-
-                        hash = line.split(' ')[1].rstrip()
-                        revision = None
+                line = log.stdout.readline()
+                while line:
+                    if line.startswith('    git-svn-id: '):
+                        match = self.repo.GIT_SVN_REVISION.match(line.lstrip())
+                        if match:
+                            revision = int(match.group('revision'))
+                    if not line.startswith('commit '):
                         line = log.stdout.readline()
+                        continue
 
-                    if hash:
-                        intersected = _append(branch, hash, revision=revision)
+                    if hash and _append(branch, hash, revision=revision):
+                        hash = None
+                        intersected = True
+                        break
 
-                    if log.poll():
-                        return
-                finally:
+                    hash = line.split(' ')[1].rstrip()
+                    revision = None
+                    line = log.stdout.readline()
+
+                if hash:
+                    intersected = _append(branch, hash, revision=revision)
+
+                if log and log.poll():
+                    return
+
+            finally:
+                if log and log.poll() is None:
                     log.kill()
 
             if not hashes or intersected and len(hashes) <= 1:
@@ -1053,76 +1056,78 @@ class Git(Scm):
                 for line in ran.stdout.splitlines():
                     in_scope.add(line)
 
-        with subprocess.Popen(
-            [self.executable(), 'log', '--format=fuller', '--no-decorate', '--date=unix',
-             '{}..{}'.format(begin.hash, end.hash), '--'],
-            cwd=self.root_path,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            encoding='utf-8',
-        ) as log:
-            try:
-                if log.poll():
-                    raise self.Exception("Failed to construct history for '{}'".format(end.branch))
+        try:
+            log = None
+            log = subprocess.Popen(
+                [self.executable(), 'log', '--format=fuller', '--no-decorate', '--date=unix',
+                 '{}..{}'.format(begin.hash, end.hash), '--'],
+                cwd=self.root_path,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                encoding='utf-8',
+            )
+            if log.poll():
+                raise self.Exception("Failed to construct history for '{}'".format(end.branch))
 
+            line = log.stdout.readline()
+            previous = [end]
+            saw_output = False
+            while line:
+                saw_output = True
+                if not line.startswith('commit '):
+                    raise OSError('Failed to parse `git log` format')
+                branch_point = previous[-1].branch_point
+                identifier = previous[-1].identifier
+                hash = line.split(' ')[-1].rstrip()
+                if identifier and hash != previous[-1].hash:
+                    identifier -= 1
+
+                if not identifier:
+                    identifier = branch_point
+                    branch_point = None
+
+                content = ''
                 line = log.stdout.readline()
-                previous = [end]
-                saw_output = False
-                while line:
-                    saw_output = True
-                    if not line.startswith('commit '):
-                        raise OSError('Failed to parse `git log` format')
-                    branch_point = previous[-1].branch_point
-                    identifier = previous[-1].identifier
-                    hash = line.split(' ')[-1].rstrip()
-                    if identifier and hash != previous[-1].hash:
-                        identifier -= 1
-
-                    if not identifier:
-                        identifier = branch_point
-                        branch_point = None
-
-                    content = ''
+                while line and not line.startswith('commit '):
+                    content += line
                     line = log.stdout.readline()
-                    while line and not line.startswith('commit '):
-                        content += line
-                        line = log.stdout.readline()
 
-                    commit = Commit(
-                        repository_id=self.id,
-                        hash=hash,
-                        branch=end.branch if not include_identifier or (identifier and branch_point) else self.default_branch,
-                        identifier=identifier if include_identifier else None,
-                        branch_point=branch_point if include_identifier else None,
-                        order=0,
-                        **self._args_from_content(content, include_log=include_log)
-                    )
+                commit = Commit(
+                    repository_id=self.id,
+                    hash=hash,
+                    branch=end.branch if not include_identifier or (identifier and branch_point) else self.default_branch,
+                    identifier=identifier if include_identifier else None,
+                    branch_point=branch_point if include_identifier else None,
+                    order=0,
+                    **self._args_from_content(content, include_log=include_log)
+                )
 
-                    # Ensure that we don't duplicate the first and last commits
-                    if commit.hash == previous[-1].hash:
-                        previous[-1] = commit
+                # Ensure that we don't duplicate the first and last commits
+                if commit.hash == previous[-1].hash:
+                    previous[-1] = commit
 
-                    # If we share a timestamp with the previous commit, that means that this commit has an order
-                    # less than the set of commits cached in previous
-                    elif commit.timestamp == previous[-1].timestamp:
-                        for cached in previous:
-                            cached.order += 1
-                        previous.append(commit)
-
-                    # If we don't share a timestamp with the previous set of commits, we should return all commits
-                    # cached in previous.
-                    else:
-                        for cached in previous:
-                            if scopes is None or cached.hash in in_scope:
-                                yield cached
-                        previous = [commit]
-
-                if saw_output:
+                # If we share a timestamp with the previous commit, that means that this commit has an order
+                # less than the set of commits cached in previous
+                elif commit.timestamp == previous[-1].timestamp:
                     for cached in previous:
-                        cached.order += begin.order
+                        cached.order += 1
+                    previous.append(commit)
+
+                # If we don't share a timestamp with the previous set of commits, we should return all commits
+                # cached in previous.
+                else:
+                    for cached in previous:
                         if scopes is None or cached.hash in in_scope:
                             yield cached
-            finally:
+                    previous = [commit]
+
+            if saw_output:
+                for cached in previous:
+                    cached.order += begin.order
+                    if scopes is None or cached.hash in in_scope:
+                        yield cached
+        finally:
+            if log and log.poll() is None:
                 log.kill()
 
     def last_commits_on(self, path, count=5):
@@ -1476,24 +1481,22 @@ class Git(Scm):
             command = [self.executable(), 'diff', '{}..{}'.format(base, head)]
 
         target = '{}..{}'.format(base, head) if head else base
-        with subprocess.Popen(
+        proc = subprocess.Popen(
             command,
             cwd=self.root_path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding='utf-8',
-        ) as proc:
-            try:
-                if proc.poll():
-                    sys.stderr.write("Failed to generate diff for '{}'\n".format(target))
-                    return
+        )
 
-                line = proc.stdout.readline()
-                while line:
-                    yield line.rstrip()
-                    line = proc.stdout.readline()
-            finally:
-                proc.kill()
+        if proc.poll():
+            sys.stderr.write("Failed to generate diff for '{}'\n".format(target))
+            return
+
+        line = proc.stdout.readline()
+        while line:
+            yield line.rstrip()
+            line = proc.stdout.readline()
 
     def files_changed(self, argument=None):
         if not argument:

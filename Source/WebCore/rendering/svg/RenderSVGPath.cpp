@@ -62,7 +62,6 @@ void RenderSVGPath::updateShapeFromElement()
     m_fillBoundingBox = ensurePath().boundingRect();
     m_strokeBoundingBox = std::nullopt;
     m_approximateStrokeBoundingBox = std::nullopt;
-    m_hitTestStrokeBoundingBox = std::nullopt;
     updateMarkerPositions();
     updateZeroLengthSubpaths();
 

@@ -20,7 +20,6 @@
 #include "config.h"
 
 #include "TestMain.h"
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GUniquePtr.h>
 
@@ -93,7 +92,7 @@ public:
 
     WebKitUserContentFilter* saveFilter(const char* filterId, const char* source)
     {
-        GRefPtr sourceBytes = gBytesNewStatic(unsafeSpan(source));
+        GRefPtr<GBytes> sourceBytes = adoptGRef(g_bytes_new_static(source, strlen(source)));
         webkit_user_content_filter_store_save(m_filterStore.get(), filterId, sourceBytes.get(), nullptr, [](GObject* sourceObject, GAsyncResult* result, void* userData) {
             auto* test = static_cast<UserContentFilterStoreTest*>(userData);
             test->m_filter = adoptGRef(webkit_user_content_filter_store_save_finish(WEBKIT_USER_CONTENT_FILTER_STORE(sourceObject), result, &test->m_error.outPtr()));

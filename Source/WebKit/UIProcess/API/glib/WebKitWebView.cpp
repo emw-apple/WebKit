@@ -92,7 +92,6 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/URL.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GRefPtr.h>
 #include <wtf/glib/GSpanExtras.h>
 #include <wtf/glib/GUniquePtr.h>
@@ -813,10 +812,10 @@ static void webkitWebViewUpdateFaviconURI(WebKitWebView* webView, UTF8CString&& 
 
 static void faviconChangedCallback(WebKitFaviconDatabase*, const char* pageURI, const char* faviconURI, WebKitWebView* webView)
 {
-    if (webView->priv->activeURI != UTF8CString::unsafeFromUTF8(pageURI))
+    if (webView->priv->activeURI != UTF8CString { byteCast<char8_t>(pageURI) })
         return;
 
-    webkitWebViewUpdateFaviconURI(webView, UTF8CString::unsafeFromUTF8(faviconURI));
+    webkitWebViewUpdateFaviconURI(webView, UTF8CString { byteCast<char8_t>(faviconURI) });
 }
 #endif // PLATFORM(GTK)
 
@@ -1193,7 +1192,7 @@ static void webkitWebViewSetProperty(GObject* object, guint propId, const GValue
         webView->priv->webExtensionMode = static_cast<WebKitWebExtensionMode>(g_value_get_enum(value));
         break;
     case PROP_DEFAULT_CONTENT_SECURITY_POLICY:
-        webView->priv->defaultContentSecurityPolicy = UTF8CString::unsafeFromUTF8(g_value_get_string(value));
+        webView->priv->defaultContentSecurityPolicy = UTF8CString { byteCast<char8_t>(g_value_get_string(value)) };
         break;
 #if ENABLE(WK_WEB_EXTENSIONS)
     case PROP_WEB_EXTENSION_CONTEXT:
@@ -1237,7 +1236,7 @@ static void webkitWebViewGetProperty(GObject* object, guint propId, GValue* valu
         break;
 #endif
     case PROP_TITLE:
-        gValueSetString(value, webView->priv->title);
+        g_value_set_string(value, webView->priv->title.legacyCStringPointer());
         break;
     case PROP_ESTIMATED_LOAD_PROGRESS:
         g_value_set_double(value, webkit_web_view_get_estimated_load_progress(webView));
@@ -2792,7 +2791,7 @@ void webkitWebViewLoadChanged(WebKitWebView* webView, WebKitLoadEvent loadEvent)
 #if PLATFORM(GTK)
         if (auto* database = webkitWebViewGetFaviconDatabase(webView)) {
             GUniquePtr<char> faviconURI(webkit_favicon_database_get_favicon_uri(database, priv->activeURI.legacyCStringPointer()));
-            webkitWebViewUpdateFaviconURI(webView, UTF8CString::unsafeFromUTF8(faviconURI.get()));
+            webkitWebViewUpdateFaviconURI(webView, UTF8CString { byteCast<char8_t>(faviconURI.get()) });
         }
 #endif
         break;
@@ -2812,7 +2811,7 @@ void webkitWebViewLoadFailed(WebKitWebView* webView, WebKitLoadEvent loadEvent, 
     webkitWebViewCompleteAuthenticationRequest(webView);
 
     gboolean returnValue;
-    gSignalEmit(webView, signals[LOAD_FAILED], 0, loadEvent, failingURI.utf8(), error, &returnValue);
+    g_signal_emit(webView, signals[LOAD_FAILED], 0, loadEvent, failingURI.utf8().legacyCStringPointer(), error, &returnValue);
     g_signal_emit(webView, signals[LOAD_CHANGED], 0, WEBKIT_LOAD_FINISHED);
 }
 
@@ -2829,9 +2828,9 @@ void webkitWebViewLoadFailedWithTLSErrors(WebKitWebView* webView, const String& 
     if (tlsErrorsPolicy == WEBKIT_TLS_ERRORS_POLICY_FAIL) {
         auto failingURIUTF8 = failingURI.utf8();
         gboolean returnValue;
-        gSignalEmit(webView, signals[LOAD_FAILED_WITH_TLS_ERRORS], 0, failingURIUTF8, certificate, tlsErrors, &returnValue);
+        g_signal_emit(webView, signals[LOAD_FAILED_WITH_TLS_ERRORS], 0, failingURIUTF8.legacyCStringPointer(), certificate, tlsErrors, &returnValue);
         if (!returnValue)
-            gSignalEmit(webView, signals[LOAD_FAILED], 0, WEBKIT_LOAD_STARTED, failingURIUTF8, error, &returnValue);
+            g_signal_emit(webView, signals[LOAD_FAILED], 0, WEBKIT_LOAD_STARTED, failingURIUTF8.legacyCStringPointer(), error, &returnValue);
     }
 
     g_signal_emit(webView, signals[LOAD_CHANGED], 0, WEBKIT_LOAD_FINISHED);
@@ -4489,8 +4488,8 @@ static void webkitWebViewRunJavaScriptWithParams(WebKitWebView* webView, WebKit:
                 builder.append(": "_s);
             }
             builder.append(exceptionDetails.message);
-            SAFE_G_TASK_RETURN_NEW_ERROR(task.get(), WEBKIT_JAVASCRIPT_ERROR, WEBKIT_JAVASCRIPT_ERROR_SCRIPT_FAILED,
-                "%s", builder.toString().utf8());
+            g_task_return_new_error(task.get(), WEBKIT_JAVASCRIPT_ERROR, WEBKIT_JAVASCRIPT_ERROR_SCRIPT_FAILED,
+                "%s", builder.toString().utf8().legacyCStringPointer());
         }
     });
 }
@@ -5654,7 +5653,7 @@ void webkit_web_view_send_message_to_page(WebKitWebView* webView, WebKitUserMess
             g_task_return_pointer(task.get(), g_object_ref_sink(webkitUserMessageCreate(WTF::move(replyMessage))), static_cast<GDestroyNotify>(g_object_unref));
             break;
         case UserMessage::Type::Error:
-            SAFE_G_TASK_RETURN_NEW_ERROR(task.get(), WEBKIT_USER_MESSAGE_ERROR, replyMessage.errorCode, _("Message %s was not handled"), replyMessage.name);
+            g_task_return_new_error(task.get(), WEBKIT_USER_MESSAGE_ERROR, replyMessage.errorCode, _("Message %s was not handled"), replyMessage.name.legacyCStringPointer());
             break;
         }
     };

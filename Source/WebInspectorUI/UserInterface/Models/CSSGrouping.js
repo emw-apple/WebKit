@@ -138,9 +138,6 @@ WI.CSSGrouping = class CSSGrouping extends WI.Object
         case WI.CSSGrouping.Type.ContainerRule:
             return "@container";
 
-        case WI.CSSGrouping.Type.KeyframesRule:
-            return "@keyframes";
-
         case WI.CSSGrouping.Type.ScopeRule:
             return "@scope";
 
@@ -165,7 +162,6 @@ WI.CSSGrouping.Type = {
     ScopeRule: "scope-rule",
     StartingStyleRule: "starting-style-rule",
     StyleRule: "style-rule",
-    KeyframesRule: "keyframes-rule",
 };
 
 WI.CSSGrouping.Event = {

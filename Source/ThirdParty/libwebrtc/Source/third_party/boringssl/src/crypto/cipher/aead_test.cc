@@ -1109,25 +1109,19 @@ TEST_P(PerAEADTest, AliasedBuffers) {
   EXPECT_FALSE(EVP_AEAD_CTX_seal(
       ctx.get(), out1 /* in - 1 */, &out_len, sizeof(kPlaintext) + max_overhead,
       nonce.data(), nonce_len, in, sizeof(kPlaintext), nullptr, 0));
-  EXPECT_TRUE(
-      ErrorsAreAndClear({{ERR_LIB_CIPHER, CIPHER_R_OUTPUT_ALIASES_INPUT}}));
   EXPECT_FALSE(EVP_AEAD_CTX_seal(
       ctx.get(), out2 /* in + 1 */, &out_len, sizeof(kPlaintext) + max_overhead,
       nonce.data(), nonce_len, in, sizeof(kPlaintext), nullptr, 0));
-  EXPECT_TRUE(
-      ErrorsAreAndClear({{ERR_LIB_CIPHER, CIPHER_R_OUTPUT_ALIASES_INPUT}}));
+  ERR_clear_error();
 
   OPENSSL_memcpy(in, valid_encryption.data(), valid_encryption_len);
   EXPECT_FALSE(EVP_AEAD_CTX_open(ctx.get(), out1 /* in - 1 */, &out_len,
                                  valid_encryption_len, nonce.data(), nonce_len,
                                  in, valid_encryption_len, nullptr, 0));
-  EXPECT_TRUE(
-      ErrorsAreAndClear({{ERR_LIB_CIPHER, CIPHER_R_OUTPUT_ALIASES_INPUT}}));
   EXPECT_FALSE(EVP_AEAD_CTX_open(ctx.get(), out2 /* in + 1 */, &out_len,
                                  valid_encryption_len, nonce.data(), nonce_len,
                                  in, valid_encryption_len, nullptr, 0));
-  EXPECT_TRUE(
-      ErrorsAreAndClear({{ERR_LIB_CIPHER, CIPHER_R_OUTPUT_ALIASES_INPUT}}));
+  ERR_clear_error();
 
   // Test with out == in, which we expect to work.
   OPENSSL_memcpy(in, kPlaintext, sizeof(kPlaintext));

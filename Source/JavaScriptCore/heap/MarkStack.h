@@ -33,7 +33,7 @@ class JSCell;
 
 class MarkStackArray : public GCSegmentedArray<const JSCell*> {
 public:
-    JS_EXPORT_PRIVATE MarkStackArray();
+    MarkStackArray();
 
     void transferTo(MarkStackArray&);
     size_t transferTo(MarkStackArray&, size_t limit); // Optimized for when `limit` is small.

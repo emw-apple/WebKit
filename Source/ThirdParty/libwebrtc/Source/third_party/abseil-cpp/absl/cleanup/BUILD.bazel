@@ -39,7 +39,6 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = ["//visibility:public"],  # Should be private, but cleanup is required.
     deps = [
-        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:hardening",
         "//absl/utility",
@@ -71,7 +70,6 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     deps = [
         ":cleanup",
-        ":cleanup_internal",
         "//absl/base:config",
         "//absl/utility",
         "@googletest//:gtest",

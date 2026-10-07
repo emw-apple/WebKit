@@ -4,9 +4,9 @@ fallbackInterfaceName="SVGUnknownElement"
 fallbackJSInterfaceName="SVGElement"
 
 a
-altGlyph interfaceName=SVGUnknownElement, JSInterfaceName=SVGElement, noConstructor
-altGlyphDef interfaceName=SVGUnknownElement, JSInterfaceName=SVGElement, noConstructor
-altGlyphItem interfaceName=SVGUnknownElement, JSInterfaceName=SVGElement, noConstructor
+altGlyph JSInterfaceName=SVGElement
+altGlyphDef JSInterfaceName=SVGElement
+altGlyphItem JSInterfaceName=SVGElement
 animate
 animateColor interfaceName=SVGUnknownElement, JSInterfaceName=SVGElement, noConstructor
 animateMotion
@@ -51,8 +51,8 @@ font-face-src JSInterfaceName=SVGElement
 font-face-uri JSInterfaceName=SVGElement
 foreignObject
 g
-glyph interfaceName=SVGUnknownElement, JSInterfaceName=SVGElement, noConstructor
-glyphRef interfaceName=SVGUnknownElement, JSInterfaceName=SVGElement, noConstructor
+glyph JSInterfaceName=SVGElement
+glyphRef JSInterfaceName=SVGElement
 hkern interfaceName=SVGHKernElement, JSInterfaceName=SVGElement
 image
 line
@@ -60,7 +60,7 @@ linearGradient
 marker
 mask
 metadata
-missing-glyph interfaceName=SVGUnknownElement, JSInterfaceName=SVGElement, noConstructor
+missing-glyph JSInterfaceName=SVGElement
 mpath interfaceName=SVGMPathElement
 path
 pattern

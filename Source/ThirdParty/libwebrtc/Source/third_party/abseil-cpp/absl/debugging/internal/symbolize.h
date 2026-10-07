@@ -22,7 +22,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 #include <memory>
 
 #include "absl/base/config.h"
@@ -36,6 +35,7 @@
 
 #include <elf.h>
 #include <link.h>  // For ElfW() macro.
+#include <functional>
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

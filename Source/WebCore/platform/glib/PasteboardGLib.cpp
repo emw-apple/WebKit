@@ -186,8 +186,10 @@ void Pasteboard::write(const PasteboardImage& pasteboardImage)
         m_selectionData->setImage(pasteboardImage.image.get());
     } else {
         SelectionData data;
-        if (!pasteboardImage.url.markup.isEmpty())
+        if (!pasteboardImage.url.url.isEmpty()) {
+            data.setURL(pasteboardImage.url.url, pasteboardImage.url.title);
             data.setMarkup(pasteboardImage.url.markup);
+        }
         data.setImage(pasteboardImage.image.get());
         platformStrategies()->pasteboardStrategy()->writeToClipboard(m_name, WTF::move(data));
     }

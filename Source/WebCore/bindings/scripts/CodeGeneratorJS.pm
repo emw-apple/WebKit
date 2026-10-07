@@ -1253,7 +1253,7 @@ sub GeneratePut
     if (!$namedSetterOperation && !$indexedSetterOperation) {
        AddToImplIncludes("DocumentQuirks.h");
        push(@$outputArray, "\n    // Temporary quirk for ungap/\@custom-elements polyfill (rdar://problem/111008826), consider removing in 2025.\n");
-       push(@$outputArray, "    if (RefPtr document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {\n");
+       push(@$outputArray, "    if (auto* document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {\n");
        push(@$outputArray, "        if (document->quirks().needsConfigurableIndexedPropertiesQuirk()) [[unlikely]]\n");
        push(@$outputArray, "            return JSObject::put(thisObject, lexicalGlobalObject, propertyName, value, putPropertySlot);\n");
        push(@$outputArray, "    }\n\n");
@@ -1362,7 +1362,7 @@ sub GeneratePutByIndex
     if (!$namedSetterOperation && !$indexedSetterOperation) {
        AddToImplIncludes("DocumentQuirks.h");
        push(@$outputArray, "\n    // Temporary quirk for ungap/\@custom-elements polyfill (rdar://problem/111008826), consider removing in 2025.\n");
-       push(@$outputArray, "    if (RefPtr document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {\n");
+       push(@$outputArray, "    if (auto* document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {\n");
        push(@$outputArray, "        if (document->quirks().needsConfigurableIndexedPropertiesQuirk()) [[unlikely]]\n");
        push(@$outputArray, "            return JSObject::putByIndex(cell, lexicalGlobalObject, index, value, shouldThrow);\n");
        push(@$outputArray, "    }\n\n");
@@ -1652,7 +1652,7 @@ sub GenerateDeleteProperty
     if (!$namedDeleterOperation) {
        AddToImplIncludes("DocumentQuirks.h");
        push(@$outputArray, "\n    // Temporary quirk for ungap/\@custom-elements polyfill (rdar://problem/111008826), consider removing in 2025.\n");
-       push(@$outputArray, "    if (RefPtr document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {\n");
+       push(@$outputArray, "    if (auto* document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {\n");
        push(@$outputArray, "        if (document->quirks().needsConfigurableIndexedPropertiesQuirk()) [[unlikely]]\n");
        push(@$outputArray, "            return JSObject::deleteProperty(cell, lexicalGlobalObject, propertyName, slot);\n");
        push(@$outputArray, "    }\n\n");
@@ -1703,7 +1703,7 @@ sub GenerateDeletePropertyByIndex
     if (!$namedDeleterOperation) {
        AddToImplIncludes("DocumentQuirks.h");
        push(@$outputArray, "\n    // Temporary quirk for ungap/\@custom-elements polyfill (rdar://problem/111008826), consider removing in 2025.\n");
-       push(@$outputArray, "    if (RefPtr document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {\n");
+       push(@$outputArray, "    if (auto* document = dynamicDowncast<Document>(dynamicDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext())) {\n");
        push(@$outputArray, "        if (document->quirks().needsConfigurableIndexedPropertiesQuirk()) [[unlikely]]\n");
        push(@$outputArray, "            return JSObject::deletePropertyByIndex(cell, lexicalGlobalObject, index);\n");
        push(@$outputArray, "    }\n\n");
@@ -2099,12 +2099,6 @@ sub AttributeShouldBeOnInstance
     return 0;
 }
 
-sub IsSerializableOrTransferable
-{
-    my $interface = shift;
-    return $interface->extendedAttributes->{Serializable} || $interface->extendedAttributes->{Transferable};
-}
-
 sub IsAlwaysExposedOnInterface
 {
     my ($interfaceExposures, $contextExposures) = @_;
@@ -2218,38 +2212,6 @@ sub NeedsRuntimeCheck
         || $context->extendedAttributes->{EnabledBySettingOrQuirk}
         || $context->extendedAttributes->{DisabledByQuirk}
         || $context->extendedAttributes->{SecureContext};
-}
-
-# Members marked [QuirksCanChangeAtRuntime] have their runtime-enable condition re-evaluated after the
-# prototype has already been created, because the quirk gating them is not resolved until later in the
-# page's lifetime. Only prototype members are supported; instance and static members are installed
-# elsewhere and have no re-evaluation entry point.
-sub GetQuirkReevaluatableProperties
-{
-    my ($interface) = @_;
-
-    my @properties = ();
-
-    foreach my $attribute (@{$interface->attributes}) {
-        next unless $attribute->extendedAttributes->{QuirksCanChangeAtRuntime};
-        assert("[QuirksCanChangeAtRuntime] is not supported on global interfaces:[" . $interface->type->name . "::" . $attribute->name . "]") if IsGlobalInterface($interface);
-        assert("[QuirksCanChangeAtRuntime] is not supported on static members:[" . $interface->type->name . "::" . $attribute->name . "]") if $attribute->isStatic;
-        assert("[QuirksCanChangeAtRuntime] is not supported on instance members:[" . $interface->type->name . "::" . $attribute->name . "]") if AttributeShouldBeOnInstance($interface, $attribute);
-        assert("[QuirksCanChangeAtRuntime] on '" . $attribute->name . "' requires a runtime-enable condition.") unless NeedsRuntimeCheck($interface, $attribute);
-        push(@properties, $attribute);
-    }
-
-    foreach my $operation (@{$interface->operations}) {
-        next unless $operation->extendedAttributes->{QuirksCanChangeAtRuntime};
-        next if $operation->{overloadIndex} && $operation->{overloadIndex} > 1;
-        next if $operation->extendedAttributes->{PrivateIdentifier} and not $operation->extendedAttributes->{PublicIdentifier};
-        assert("[QuirksCanChangeAtRuntime] is not supported on global interfaces:[" . $interface->type->name . "::" . $operation->name . "]") if IsGlobalInterface($interface);
-        assert("[QuirksCanChangeAtRuntime] is not supported on static members:[" . $interface->type->name . "::" . $operation->name . "]") if $operation->isStatic;
-        assert("[QuirksCanChangeAtRuntime] on '" . $operation->name . "' requires a runtime-enable condition.") unless NeedsRuntimeCheck($interface, $operation);
-        push(@properties, $operation);
-    }
-
-    return @properties;
 }
 
 sub NeedsRuntimeReadWriteCheck
@@ -3467,13 +3429,11 @@ sub GenerateHeader
         push(@headerContent, "    static JSC::JSValue getLegacyFactoryFunction(JSC::VM&, JSC::JSGlobalObject*);\n") if $interface->extendedAttributes->{LegacyFactoryFunction};
     }
 
-    push(@headerContent, "    static bool isExposedInGlobalObject(JSDOMGlobalObject&);\n") if IsSerializableOrTransferable($interface);
-
     if ($interface->extendedAttributes->{GenerateForEachEventHandlerContentAttribute}) {
-        push(@headerContent, "    static void forEachEventHandlerContentAttribute(NOESCAPE const Function<void(const AtomString& attributeName, const AtomString& eventName)>&);\n\n");
+        push(@headerContent, "    static void forEachEventHandlerContentAttribute(const Function<void(const AtomString& attributeName, const AtomString& eventName)>&);\n\n");
     }
     if ($interface->extendedAttributes->{GenerateForEachWindowEventHandlerContentAttribute}) {
-        push(@headerContent, "    static void forEachWindowEventHandlerContentAttribute(NOESCAPE const Function<void(const AtomString& attributeName, const AtomString& eventName)>&);\n\n");
+        push(@headerContent, "    static void forEachWindowEventHandlerContentAttribute(const Function<void(const AtomString& attributeName, const AtomString& eventName)>&);\n\n");
     }
 
     my $numCustomOperations = 0;
@@ -3574,12 +3534,6 @@ sub GenerateHeader
         foreach my $customEnabledByMethod (uniq(@customEnabledByMethods)) {
             push(@headerContent, "    static bool ${customEnabledByMethod}(ScriptExecutionContext*);\n");
         }
-    }
-
-    if (GetQuirkReevaluatableProperties($interface)) {
-        push(@headerContent, "\n    // Re-evaluates the runtime-enable conditions of [QuirksCanChangeAtRuntime] prototype\n");
-        push(@headerContent, "    // members, removing any that are no longer enabled. No-op if the prototype does not exist yet.\n");
-        push(@headerContent, "    static void reevaluateQuirkDependentPrototypeProperties(JSDOMGlobalObject&);\n");
     }
 
 
@@ -4425,7 +4379,7 @@ sub GenerateRuntimeEnableConditionalStringForExposeScope
       $wrapperType = "JSWorkletGlobalScopeBase";
     } elsif ($exposed eq "AudioWorklet") {
       $wrapperType = "JSWorkletGlobalScopeBase";
-      $sideCondition = "global->wrapped().isAudioWorkletGlobalScope()";
+      $sideCondition = "global->scriptExecutionContext()->isAudioWorkletGlobalScope()";
     } else {
       assert("Unrecognized value '" . Dumper($context->extendedAttributes->{Exposed}) . "' for the Exposed extended attribute on '" . ref($context) . "'.");
     }
@@ -4630,10 +4584,10 @@ sub GenerateRuntimeEnableConditionalString
 
     if ($context->extendedAttributes->{EnabledForContext}) {
         assert("Must not specify value for EnabledForContext.") unless $context->extendedAttributes->{EnabledForContext} eq "VALUE_IS_MISSING";
-        assert("EnabledForContext must be an interface or constructor attribute.") unless $context == $interface || $codeGenerator->IsConstructorType($context->type);
+        assert("EnabledForContext must be an interface or constructor attribute.") unless $codeGenerator->IsConstructorType($context->type);
 
         my $contextRef = "*" . $jsDOMGlobalObjectExpr . "->scriptExecutionContext()";
-        my $name = $context == $interface ? $interface->type->name : $context->name;
+        my $name = $context->name;
         # The ${name}::enabledForContext(...) call needs the implementation type
         # complete at the call site. Bring in JS${name}.h, which transitively
         # provides ${name}.h. This used to flow in via the constructor-getter
@@ -5183,39 +5137,6 @@ sub GenerateImplementation
         push(@implContent, "}\n\n");
     }
 
-    my @quirkReevaluatableProperties = GetQuirkReevaluatableProperties($interface);
-    if (@quirkReevaluatableProperties) {
-        AddToImplIncludes("JSDOMBindingFacade.h");
-        AddToImplIncludes("JSDOMWrapperCache.h");
-
-        push(@implContent, "void ${className}::reevaluateQuirkDependentPrototypeProperties(JSDOMGlobalObject& globalObject)\n");
-        push(@implContent, "{\n");
-        push(@implContent, "    auto* structure = getCachedDOMStructure(globalObject, ${className}::info());\n");
-        push(@implContent, "    if (!structure)\n");
-        push(@implContent, "        return;\n");
-        push(@implContent, "    auto* prototype = dynamicDowncast<${className}Prototype>(WebCore::storedPrototypeObject(structure));\n");
-        push(@implContent, "    if (!prototype)\n");
-        push(@implContent, "        return;\n\n");
-        push(@implContent, "    auto& vm = globalObject.vm();\n");
-        push(@implContent, "    bool didRemoveProperties = false;\n");
-
-        foreach my $property (@quirkReevaluatableProperties) {
-            my $conditionalString = $codeGenerator->GenerateConditionalString($property);
-            push(@implContent, "#if ${conditionalString}\n") if $conditionalString;
-            my $runtimeEnableConditionalString = GenerateRuntimeEnableConditionalString($interface, $property, "(&globalObject)", 1);
-            my $name = $property->name;
-            push(@implContent, "    if (${runtimeEnableConditionalString})\n");
-            push(@implContent, "        addRuntimeEnabledProperty(vm, *prototype, ${className}::info(), ${className}PrototypeTableValues, \"$name\"_s);\n");
-            push(@implContent, "    else\n");
-            push(@implContent, "        didRemoveProperties |= removeRuntimeEnabledProperty(vm, *prototype, \"$name\"_s);\n");
-            push(@implContent, "#endif\n") if $conditionalString;
-        }
-
-        push(@implContent, "\n    if (didRemoveProperties && prototype->structure()->isDictionary())\n");
-        push(@implContent, "        prototype->flattenDictionaryObject(vm);\n");
-        push(@implContent, "}\n\n");
-    }
-
     # - Initialize static ClassInfo object
     push(@implContent, "const ClassInfo $className" . "::s_info = { \"${visibleInterfaceName}\"_s, &Base::s_info, ");
 
@@ -5483,19 +5404,6 @@ sub GenerateImplementation
             push(@implContent, "    return getDOMConstructor<${className}LegacyFactoryFunction, DOMConstructorID::${interfaceName}LegacyFactory>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));\n");
             push(@implContent, "}\n\n");
         }
-    }
-
-    if (IsSerializableOrTransferable($interface)) {
-        my $exposedConditionalString = GenerateRuntimeEnableConditionalString($interface, $interface, "(&globalObject)", 1);
-        push(@implContent, "bool ${className}::isExposedInGlobalObject(JSDOMGlobalObject& globalObject)\n");
-        push(@implContent, "{\n");
-        if ($exposedConditionalString) {
-            push(@implContent, "    return ${exposedConditionalString};\n");
-        } else {
-            push(@implContent, "    UNUSED_PARAM(globalObject);\n");
-            push(@implContent, "    return true;\n");
-        }
-        push(@implContent, "}\n\n");
     }
 
     if (!$hasParent || $codeGenerator->InheritsExtendedAttribute($interface, "Exception")) {
@@ -5801,16 +5709,10 @@ sub GenerateImplementation
         my $vtableRefGnu = GetGnuVTableRefForInterface($interface);
         my $vtableRefWin = GetWinVTableRefForInterface($interface);
 
-        my $hasChildInterfaces = 0;
-        unless ($interface->extendedAttributes->{IgnoreSubclassesWhenGeneratingToJSObject}) {
-            $codeGenerator->ForEachChildInterface($interface, sub { $hasChildInterfaces = 1; });
-        }
-
         # We use a templated verifyVTable function here to force the type
         # being checked to be a dependent type so we can rely on `if constexpr`
-        # not causing errors when evaluated. It is only called when there are
-        # no child interfaces, so only emit it in that case.
-        push(@implContent, <<END) if $vtableNameGnu and not $hasChildInterfaces;
+        # not causing errors when evaluated.
+        push(@implContent, <<END) if $vtableNameGnu;
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #if ENABLE(BINDING_INTEGRITY)
 #if PLATFORM(WIN)
@@ -5851,9 +5753,11 @@ END
         } else {
             push(@implContent, "    UNUSED_PARAM(lexicalGlobalObject);\n");
         }
+        my $hasChildInterfaces = 0;
         unless ($interface->extendedAttributes->{IgnoreSubclassesWhenGeneratingToJSObject}) {
             $codeGenerator->ForEachChildInterface($interface, sub {
                 my $childInterface = shift;
+                $hasChildInterfaces = 1;
                 my $childImplType = GetImplClassName($childInterface);
                 my $conditional = $childInterface->extendedAttributes->{Conditional};
                 if ($conditional) {
@@ -5952,7 +5856,7 @@ sub GenerateForEachEventHandlerContentAttribute
 {
     my ($outputArray, $interface, $className, $functionName, $eventHandlerExtendedAttributeName) = @_;
     AddToImplIncludes("HTMLNames.h");
-    push(@$outputArray, "void ${className}::${functionName}(NOESCAPE const Function<void(const AtomString& attributeName, const AtomString& eventName)>& function)\n");
+    push(@$outputArray, "void ${className}::${functionName}(const Function<void(const AtomString& attributeName, const AtomString& eventName)>& function)\n");
     push(@$outputArray, "{\n");
     push(@$outputArray, "    static constexpr std::array table {\n");
     foreach my $attribute (@{$interface->attributes}) {
@@ -7551,18 +7455,8 @@ sub GenerateCallbackImplementationOperationBody
 
         push(@$contentRef, "    auto throwScope = DECLARE_THROW_SCOPE(vm);\n");
         push(@$contentRef, "    auto returnValue = ${nativeValue};\n");
-        if ($codeGenerator->IsPromiseType($operation->type)) {
-            push(@$contentRef, "    if (returnValue.hasException(throwScope)) [[unlikely]] {\n");
-            push(@$contentRef, "        auto exceptionValue = throwScope.exception()->value();\n");
-            push(@$contentRef, "        TRY_CLEAR_EXCEPTION(throwScope, CallbackResultType::ExceptionThrown);\n");
-            push(@$contentRef, "        auto* jsPromise = JSC::JSPromise::create(vm, globalObject.promiseStructure());\n");
-            push(@$contentRef, "        jsPromise->rejectAsHandled(vm, exceptionValue);\n");
-            push(@$contentRef, "        return { DOMPromise::create(globalObject, *jsPromise) };\n");
-            push(@$contentRef, "    }\n");
-        } else {
-            push(@$contentRef, "    if (returnValue.hasException(throwScope)) [[unlikely]]\n");
-            push(@$contentRef, "        return CallbackResultType::ExceptionThrown;\n");
-        }
+        push(@$contentRef, "    if (returnValue.hasException(throwScope)) [[unlikely]]\n");
+        push(@$contentRef, "        return CallbackResultType::ExceptionThrown;\n");
         push(@$contentRef, "    return { returnValue.releaseReturnValue() };\n");
     }
 
@@ -8041,20 +7935,6 @@ sub IsAnnotatedType
     return 1 if $type->extendedAttributes->{AllowShared};
 }
 
-# https://webidl.spec.whatwg.org/#idl-annotated-types
-sub AssertValidTypeExtendedAttributes
-{
-    my ($type) = @_;
-
-    die "[Clamp] and [EnforceRange] cannot both be used on the same type.\n" if $type->extendedAttributes->{Clamp} && $type->extendedAttributes->{EnforceRange};
-
-    foreach my $extendedAttributeName (sort keys %{$type->extendedAttributes}) {
-        next if $codeGenerator->IsTypeAllowedForExtendedAttribute($type, $extendedAttributeName);
-        my $typesAllowed = join(" and ", @{$codeGenerator->GetTypesAllowedForExtendedAttribute($extendedAttributeName)});
-        die "[${extendedAttributeName}] can only be used on ${typesAllowed}, not on '" . GetTypeNameForDisplayInException($type) . ($type->isNullable ? "?" : "") . "'.\n";
-    }
-}
-
 sub GetAnnotatedIDLType
 {
     my ($type) = @_;
@@ -8162,8 +8042,6 @@ sub GetBaseIDLType
 sub GetIDLTypeExcludingNullability
 {
     my ($interface, $type) = @_;
-
-    AssertValidTypeExtendedAttributes($type);
 
     my $baseIDLType = GetBaseIDLType($interface, $type);
     $baseIDLType = GetAnnotatedIDLType($type) . "<" . $baseIDLType . ">" if IsAnnotatedType($type);
@@ -9018,7 +8896,6 @@ sub GenerateConstructorDefinition
             my $implType = GetImplClassName($interface);
 
             AddToImplIncludes("JSDOMConvertInterface.h");
-            AddToImplIncludes("<JavaScriptCore/StructureCreateInlines.h>");
 
             my @constructionConversionArguments = ();
             push(@constructionConversionArguments, "*lexicalGlobalObject");

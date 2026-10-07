@@ -78,8 +78,6 @@ enum class SelectionFlags : uint8_t {
 
 enum class RespectSelectionAnchor : bool { No, Yes };
 
-enum class CompletesDoubleClick : bool { No, Yes };
-
 enum class SelectionExtentAnchor : bool { GestureStart, CurrentSelection };
 
 enum class TextInteractionSource : uint8_t {

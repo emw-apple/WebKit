@@ -29,7 +29,6 @@
 #include "RemoteLayerTreeContext.h"
 #include "RemoteLayerTreeTransaction.h"
 #include <WebCore/HTMLMediaElementIdentifier.h>
-#include <WebCore/PlaceholderFrameIdentifier.h>
 #include <WebCore/PlatformCALayer.h>
 #include <WebCore/PlatformCALayerDelegatedContents.h>
 #include <WebCore/PlatformLayer.h>
@@ -37,6 +36,7 @@
 #include <wtf/WeakPtr.h>
 
 namespace WebCore {
+class LayerPool;
 #if ENABLE(THREADED_ANIMATIONS)
 class AcceleratedEffect;
 struct AcceleratedEffectValues;
@@ -54,7 +54,7 @@ using LayerHostingContextID = uint32_t;
 struct PlatformCALayerRemoteDelegatedContents {
     ImageBufferBackendHandle surface;
     RefPtr<WebCore::PlatformCALayerDelegatedContentsFence> finishedFence;
-    std::optional<WebCore::PlaceholderFrameIdentifier> frameIdentifier;
+    std::optional<WebCore::RenderingResourceIdentifier> surfaceIdentifier;
 };
 
 class PlatformCALayerRemote : public WebCore::PlatformCALayer, public CanMakeWeakPtr<PlatformCALayerRemote> {
@@ -167,7 +167,6 @@ public:
     void setContents(CFTypeRef) override;
     void setDelegatedContents(const WebCore::PlatformCALayerDelegatedContents&) override;
     void setRemoteDelegatedContents(const PlatformCALayerRemoteDelegatedContents&);
-    void setDisplayOnlyImage(RemoteSnapshotIdentifier);
     void setContentsRect(const WebCore::FloatRect&) override;
 
     void setMinificationFilter(WebCore::PlatformCALayer::FilterType) override;
@@ -301,13 +300,15 @@ private:
     void updateBackingStore();
     void removeSublayer(PlatformCALayerRemote*);
 
-    WebCore::ColorSpace displayColorSpace(WebCore::ContentsFormat) const;
+    WebCore::ColorSpace displayColorSpace() const;
 
 #if ENABLE(RE_DYNAMIC_CONTENT_SCALING)
     WebCore::IncludeDynamicContentScalingDisplayList shouldIncludeDisplayListInBackingStore() const;
 #endif
 
     bool NODELETE requiresCustomAppearanceUpdateOnBoundsChange() const;
+
+    WebCore::LayerPool* layerPool() override;
 
     LayerProperties m_properties;
     WebCore::PlatformCALayerList m_children;

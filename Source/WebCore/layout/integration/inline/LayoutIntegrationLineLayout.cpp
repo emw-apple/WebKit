@@ -66,7 +66,6 @@
 #include "RenderListOutsideMarker.h"
 #include "RenderObjectInlines.h"
 #include "RenderView.h"
-#include "SVGTextDisplayContentBuilder.h"
 #include "SVGTextFragment.h"
 #include "Settings.h"
 #include "ShapeOutsideInfo.h"
@@ -631,8 +630,7 @@ std::optional<LayoutRect> LineLayout::layout(RenderBlockFlow::MarginInfo& margin
 
     auto layoutResult = inlineFormattingContext.layout(inlineContentConstraints(), m_lineDamage.get());
 
-    // No layout result with the line-clamp budget used up means all the inline content was discarded.
-    auto didDiscardContent = layoutResult ? layoutResult->lineClamp.didDiscardContent : inlineFormattingContext.formattingUtils().shouldDiscardRemainingContentInBlockDirection();
+    auto didDiscardContent = layoutResult && layoutResult->didDiscardContent;
     auto repaintRect = constructContent(inlineFormattingContext.layoutState(), WTF::move(layoutResult));
 
     setExcludedMarkerPositions(excludedMarkers);
@@ -663,7 +661,6 @@ std::optional<LayoutRect> LineLayout::layout(RenderBlockFlow::MarginInfo& margin
 FloatRect LineLayout::constructContent(const Layout::InlineLayoutState& inlineLayoutState, std::unique_ptr<Layout::InlineLayoutResult>&& layoutResult)
 {
     ensureInlineContent().setContentMayHaveInkOverflow(inlineLayoutState.contentMayHaveInkOverflow());
-    m_inlineContent->setContentFitsWithinMaximumLines(layoutResult && layoutResult->lineClamp.contentFitsWithinMaximumLines);
     auto damagedRect = InlineContentBuilder { flow() }.build(WTF::move(layoutResult), *m_inlineContent, m_lineDamage.get());
 
     m_inlineContent->setClearGapBeforeFirstLine(inlineLayoutState.clearGapBeforeFirstLine());
@@ -743,15 +740,8 @@ void LineLayout::updateRenderTreePositions(const Vector<LineAdjustment>& lineAdj
     }
 
     for (CheckedRef layoutBox : formattingContextBoxes(rootLayoutBox())) {
-        if (didDiscardContent) {
-            CheckedRef renderer = *layoutBox->rendererForIntegration();
-            // Atomic inline-level boxes after the clamp point are not laid out and neither is their content (e.g. inline-block, ruby annotation).
-            if (layoutBox->isAtomicInlineBox()) {
-                for (CheckedRef descendant : descendantsOfType<RenderObject>(downcast<RenderElement>(renderer.get())))
-                    descendant->clearNeedsLayout();
-            }
-            renderer->clearNeedsLayout();
-        }
+        if (didDiscardContent)
+            layoutBox->rendererForIntegration()->clearNeedsLayout();
 
         if (!layoutBox->isFloatingPositioned() && !layoutBox->isOutOfFlowPositioned())
             continue;
@@ -815,35 +805,6 @@ void LineLayout::updateRenderTreePositions(const Vector<LineAdjustment>& lineAdj
             continue;
         }
     }
-}
-
-bool LineLayout::layoutSVGText()
-{
-    ASSERT(flow().isRenderSVGText());
-
-    auto displayContent = Layout::buildSVGTextDisplayContent(rootLayoutBox());
-    if (!displayContent)
-        return false;
-
-    clearInlineContent();
-    auto& inlineContent = ensureInlineContent();
-    inlineContent.displayContent().set(WTF::move(*displayContent));
-    inlineContent.svgTextFragmentsForBoxes().resize(inlineContent.displayContent().boxes.size());
-
-    if (inlineContent.hasContentfulInlineLevelBox())
-        inlineContent.setHasPaintedInlineLevelBoxes();
-
-    for (auto& box : inlineContent.displayContent().boxes) {
-        if (box.isNonRootInlineBox())
-            layoutState().ensureGeometryForBox(box.layoutBox());
-    }
-
-    // The display content does not refer to removed boxes anymore.
-    m_lineDamage = { };
-    // Damage tracking falls back to full layout without inline items.
-    m_inlineContentCache.inlineItems().set({ }, { }, Layout::InlineContentCache::InlineItems::IsPopulatedFromCache::No);
-
-    return true;
 }
 
 FloatRect LineLayout::applySVGTextFragments(SVGTextFragmentMap&& fragmentMap)
@@ -1103,22 +1064,6 @@ size_t LineLayout::lineCount() const
     return lines.last().hasContentfulInFlowBox() ? lines.size() : lines.size() - 1;
 }
 
-std::pair<size_t, bool> LineLayout::lineCountForHeight(LayoutUnit logicalHeight) const
-{
-    if (!m_inlineContent)
-        return { };
-
-    size_t lineCount = 0;
-    for (auto& line : m_inlineContent->displayContent().lines) {
-        if (!line.hasContentfulInlineLevelBox())
-            continue;
-        if (LayoutUnit { line.lineBoxLogicalRect().maxY() } > logicalHeight)
-            return { lineCount, true };
-        ++lineCount;
-    }
-    return { lineCount, false };
-}
-
 bool LineLayout::hasInkOverflow() const
 {
     return m_inlineContent && m_inlineContent->hasInkOverflow();
@@ -1316,12 +1261,12 @@ InlineIterator::InlineBoxIterator LineLayout::firstRootInlineBox() const
     return InlineIterator::inlineBoxFor(*m_inlineContent, m_inlineContent->displayContent().boxes.first());
 }
 
-InlineIterator::BoxIterator LineLayout::lastBox() const
+InlineIterator::InlineBoxIterator LineLayout::lastRootInlineBox() const
 {
     if (!m_inlineContent || !m_inlineContent->hasContentfulInFlowBox())
         return { };
 
-    return { InlineIterator::BoxModernPath { *m_inlineContent, m_inlineContent->displayContent().boxes.size() - 1 } };
+    return InlineIterator::inlineBoxFor(*m_inlineContent, m_inlineContent->displayContent().boxes.last());
 }
 
 InlineIterator::LineBoxIterator LineLayout::firstLineBox() const
@@ -1650,11 +1595,6 @@ bool LineLayout::insertedIntoTree(const RenderElement& parent, RenderObject& chi
     }
 
     CheckedRef childLayoutBox = BoxTreeUpdater { flow() }.insert(parent, child, child.previousSibling());
-    if (flow().isRenderSVGText()) {
-        // SVG text is always fully laid out.
-        Layout::InlineInvalidation::resetInlineDamage(ensureLineDamage());
-        return true;
-    }
     if (CheckedPtr childInlineTextBox = dynamicDowncast<Layout::InlineTextBox>(childLayoutBox.get())) {
         auto invalidation = Layout::InlineInvalidation { ensureLineDamage(), m_inlineContentCache.inlineItems().content(), m_inlineContent->displayContent() };
         return invalidation.textInserted(*childInlineTextBox);
@@ -1685,13 +1625,6 @@ bool LineLayout::removedFromTree(const RenderElement& parent, RenderObject& chil
         return false;
     }
 
-    if (flow().isRenderSVGText()) {
-        // SVG text is always fully laid out.
-        Layout::InlineInvalidation::resetInlineDamage(ensureLineDamage());
-        m_lineDamage->addDetachedBox(BoxTreeUpdater { flow() }.remove(parent, child));
-        return true;
-    }
-
     CheckedRef childLayoutBox = *child.layoutBox();
     CheckedPtr childInlineTextBox = dynamicDowncast<Layout::InlineTextBox>(childLayoutBox.get());
     auto invalidation = Layout::InlineInvalidation { ensureLineDamage(), m_inlineContentCache.inlineItems().content(), m_inlineContent->displayContent() };
@@ -1714,12 +1647,6 @@ bool LineLayout::updateTextContent(const RenderText& textRenderer, std::optional
     }
 
     BoxTreeUpdater::updateContent(textRenderer);
-
-    if (flow().isRenderSVGText()) {
-        // SVG text is always fully laid out.
-        Layout::InlineInvalidation::resetInlineDamage(ensureLineDamage());
-        return true;
-    }
 
     auto invalidation = Layout::InlineInvalidation { ensureLineDamage(), m_inlineContentCache.inlineItems().content(), m_inlineContent->displayContent() };
     CheckedRef inlineTextBox = *textRenderer.layoutBox();

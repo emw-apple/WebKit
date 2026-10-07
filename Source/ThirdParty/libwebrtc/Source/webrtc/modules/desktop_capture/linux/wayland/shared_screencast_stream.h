@@ -73,7 +73,6 @@ class RTC_EXPORT SharedScreenCastStream
   void SetSharedMemoryFactory(
       std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory);
   void StopScreenCastStream();
-  void ClearRenegotiateEventForTest();
 
   // Below functions return the most recent information we get from a
   // PipeWire buffer on each Process() callback. This assumes that we

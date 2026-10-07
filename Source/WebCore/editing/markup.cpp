@@ -365,7 +365,7 @@ UserSelectNoneStateCache::UserSelectNoneStateCache(TreeType treeType)
 ContainerNode* UserSelectNoneStateCache::parentNode(Node& node)
 {
     if (m_useComposedTree)
-        return parentInComposedTreeIgnoringUserAgentShadow(node);
+        return node.parentInComposedTree();
     return node.parentOrShadowHostNode();
 }
 
@@ -492,7 +492,7 @@ public:
     ContainerNode* parentNode(Node& node)
     {
         if (m_useComposedTree) [[unlikely]]
-            return parentInComposedTreeIgnoringUserAgentShadow(node);
+            return node.parentInComposedTree();
         return node.parentOrShadowHostNode();
     }
 

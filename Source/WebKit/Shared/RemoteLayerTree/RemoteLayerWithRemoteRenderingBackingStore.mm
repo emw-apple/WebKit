@@ -61,9 +61,7 @@ RemoteLayerWithRemoteRenderingBackingStore::~RemoteLayerWithRemoteRenderingBacki
 
 bool RemoteLayerWithRemoteRenderingBackingStore::hasFrontBuffer() const
 {
-    if (m_contentsBufferHandle)
-        return true;
-    return !m_cleared && !(m_bufferSet && m_bufferSet->remoteFrontBufferIsMissing());
+    return m_contentsBufferHandle || !m_cleared;
 }
 
 bool RemoteLayerWithRemoteRenderingBackingStore::frontBufferMayBeVolatile() const

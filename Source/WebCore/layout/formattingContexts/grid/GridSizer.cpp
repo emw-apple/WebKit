@@ -46,9 +46,9 @@ GridSizer::GridSizer(const GridFormattingContext& gridFormattingContext, const G
 // If calculating the layout of a grid item in this step depends on the available space in the block axis,
 // assume the available space that it would have if any row with a definite max track sizing function
 // had that size and all other rows were infinite.
-static Vector<LayoutUnit> rowSizesForFirstIterationColumnSizing(const TrackSizingFunctionsList& rowTrackSizingFunctionsList, std::optional<LayoutUnit> gridContainerInnerBlockSize)
+static Vector<LayoutUnit> rowSizesForFirstIterationColumnSizing(const TrackSizingFunctionsList& rowTrackSizingFunctionsList, std::optional<LayoutUnit> gridContainerInnerInlineSize)
 {
-    return rowTrackSizingFunctionsList.map([&gridContainerInnerBlockSize](const TrackSizingFunctions& trackSizingFunctions) {
+    return rowTrackSizingFunctionsList.map([&gridContainerInnerInlineSize](const TrackSizingFunctions& trackSizingFunctions) {
         return WTF::switchOn(trackSizingFunctions.max,
             [&](const Style::GridTrackBreadth& maxTrackSizingFunction) {
                 return WTF::switchOn(maxTrackSizingFunction,
@@ -56,12 +56,12 @@ static Vector<LayoutUnit> rowSizesForFirstIterationColumnSizing(const TrackSizin
                         return Style::evaluate<LayoutUnit>(fixedValue, trackSizingFunctions.zoom);
                     },
                     [&](const Style::GridTrackBreadthLength::Percentage& percentageValue) {
-                        ASSERT_WITH_MESSAGE(gridContainerInnerBlockSize, "The formatting context should have transformed this track size to auto");
-                        return Style::evaluate<LayoutUnit>(percentageValue, *gridContainerInnerBlockSize);
+                        ASSERT_WITH_MESSAGE(gridContainerInnerInlineSize, "The formatting context should have transformed this track size to auto");
+                        return Style::evaluate<LayoutUnit>(percentageValue, *gridContainerInnerInlineSize);
                     },
                     [&](const Style::GridTrackBreadth::Calc calculatedValue) -> LayoutUnit {
-                        ASSERT_WITH_MESSAGE(gridContainerInnerBlockSize, "The formatting context should have transformed this track size to auto");
-                        return Style::evaluate<LayoutUnit>(calculatedValue, *gridContainerInnerBlockSize, trackSizingFunctions.zoom);
+                        ASSERT_WITH_MESSAGE(gridContainerInnerInlineSize, "The formatting context should have transformed this track size to auto");
+                        return Style::evaluate<LayoutUnit>(calculatedValue, *gridContainerInnerInlineSize, trackSizingFunctions.zoom);
                     },
                     [](const CSS::Keyword::MinContent&) -> LayoutUnit {
                         return LayoutUnit::max();
@@ -95,10 +95,11 @@ TrackSizes GridSizer::sizeColumnTracks(const PlacedGridItems& placedGridItems, c
     auto& layoutState = this->layoutState();
     auto& layoutConstraints = layoutState.gridLayoutConstraints;
 
-    std::optional<LayoutUnit> blockAxisAvailableSpace = layoutConstraints.blockAxis.scenario() == AxisConstraint::FreeSpaceScenario::Definite
-        ? std::optional(layoutConstraints.blockAxis.availableSpace())
+    auto columnFreeSpaceScenario = layoutConstraints.inlineAxis.scenario();
+    std::optional<LayoutUnit> inlineAxisAvailableSpace = columnFreeSpaceScenario == AxisConstraint::FreeSpaceScenario::Definite
+        ? std::optional(layoutConstraints.inlineAxis.availableSpace())
         : std::nullopt;
-    auto rowSizesForFirstColumnSizing = rowSizesForFirstIterationColumnSizing(rowTrackSizingFunctionsList, blockAxisAvailableSpace);
+    auto rowSizesForFirstColumnSizing = rowSizesForFirstIterationColumnSizing(rowTrackSizingFunctionsList, inlineAxisAvailableSpace);
 
     auto columnTrackSizingItems = placedGridItems.map([&](const PlacedGridItem& gridItem) -> TrackSizingItem {
         // The inline grid area is indefinite while sizing columns, so the item's cyclic percentage padding resolves against zero.

@@ -29,7 +29,6 @@
 
 #pragma once
 
-#include <WebCore/ConcreteObjectSize.h>
 #include <WebCore/LayoutRect.h>
 #include <WebCore/Path.h>
 #include <WebCore/StyleShapeForward.h>
@@ -39,14 +38,11 @@
 namespace WebCore {
 
 namespace Style {
-class Image;
 struct ZoomFactor;
 }
 
-class GraphicsContext;
 class Image;
 class LayoutRoundedRect;
-class RenderElement;
 
 struct LineSegment {
     LineSegment() = default;
@@ -76,8 +72,7 @@ public:
     };
 
     static Ref<const LayoutShape> createShape(const Style::BasicShape&, const LayoutPoint& borderBoxOffset, const LayoutSize& logicalBoxSize, LayoutUnit borderBoxLogicalWidth, WritingMode, float logicalMargin, Style::ZoomFactor, float deviceScaleFactor);
-    static Ref<const LayoutShape> createRasterShape(Image*, float threshold, const LayoutRect& logicalImageRect, const LayoutRect& logicalMarginRect, WritingMode, float logicalMargin, ConcreteObjectSize, FloatSize sourceSize);
-    static Ref<const LayoutShape> createRasterShape(const Style::Image&, const RenderElement&, float threshold, const LayoutRect& logicalImageRect, const LayoutRect& logicalMarginRect, WritingMode, float logicalMargin, ConcreteObjectSize);
+    static Ref<const LayoutShape> createRasterShape(Image*, float threshold, const LayoutRect& logicalImageRect, const LayoutRect& logicalMarginRect, WritingMode, float logicalMargin);
     static Ref<const LayoutShape> createBoxShape(const LayoutRoundedRect&, Vector<FloatPoint>&& contour, WritingMode, float logicalMargin);
 
     virtual ~LayoutShape() = default;
@@ -96,8 +91,6 @@ protected:
     static bool NODELETE shouldFlipStartAndEndPoints(WritingMode);
 
 private:
-    static Ref<const LayoutShape> createRasterShapeImpl(float threshold, const LayoutRect& logicalImageRect, const LayoutRect& logicalMarginRect, WritingMode, float logicalMargin, NOESCAPE auto&& rasterizeFunctor);
-
     bool lineOverlapsBoundingBox(LayoutUnit lineTop, LayoutUnit lineHeight, const LayoutRect& rect) const
     {
         if (rect.isEmpty())

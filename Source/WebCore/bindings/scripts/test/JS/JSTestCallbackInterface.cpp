@@ -702,13 +702,8 @@ CallbackResult<typename IDLPromise<IDLUndefined>::CallbackReturnType> JSTestCall
 
     auto throwScope = DECLARE_THROW_SCOPE(vm);
     auto returnValue = convert<IDLPromise<IDLUndefined>>(lexicalGlobalObject, jsResult);
-    if (returnValue.hasException(throwScope)) [[unlikely]] {
-        auto exceptionValue = throwScope.exception()->value();
-        TRY_CLEAR_EXCEPTION(throwScope, CallbackResultType::ExceptionThrown);
-        auto* jsPromise = JSC::JSPromise::create(vm, globalObject.promiseStructure());
-        jsPromise->rejectAsHandled(vm, exceptionValue);
-        return { DOMPromise::create(globalObject, *jsPromise) };
-    }
+    if (returnValue.hasException(throwScope)) [[unlikely]]
+        return CallbackResultType::ExceptionThrown;
     return { returnValue.releaseReturnValue() };
 }
 

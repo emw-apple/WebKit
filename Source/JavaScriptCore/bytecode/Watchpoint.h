@@ -133,10 +133,10 @@ public:
         : m_type(type)
     { }
 
-    JS_EXPORT_PRIVATE void operator delete(Watchpoint*, std::destroying_delete_t);
+    void operator delete(Watchpoint*, std::destroying_delete_t);
 
 protected:
-    JS_EXPORT_PRIVATE ~Watchpoint();
+    ~Watchpoint();
 
 private:
     friend class WatchpointSet;
@@ -144,7 +144,7 @@ private:
     friend struct DFG::ArrayBufferViewWatchpointAdaptor;
     void fire(VM&, const FireDetail&);
     template<typename Func>
-    void runWithDowncast(NOESCAPE const Func&);
+    void runWithDowncast(const Func&);
 
     Type m_type;
 };

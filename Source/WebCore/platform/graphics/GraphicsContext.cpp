@@ -341,6 +341,8 @@ ImageDrawResult GraphicsContext::drawImage(Image& image, ConcreteObjectSize conc
 
 ImageDrawResult GraphicsContext::drawImage(Image& image, ConcreteObjectSize concreteObjectSize, const FloatRect& destination, const FloatRect& source, ImagePaintingOptions options, const ImageDrawingExtras* extras)
 {
+    if (!concreteObjectSize.size().isEmpty())
+        image.setContainerSize(concreteObjectSize.size());
     return image.draw(*this, concreteObjectSize, destination, source, options, extras);
 }
 
@@ -358,6 +360,22 @@ ImageDrawResult GraphicsContext::drawBitmapImage(BitmapImage& image, const Float
 ImageDrawResult GraphicsContext::drawBitmapImage(BitmapImage& image, const FloatRect& destination, const FloatRect& source, ImagePaintingOptions imagePaintingOptions)
 {
     return image.draw(*this, ConcreteObjectSize::fixed(image.size()), destination, source, imagePaintingOptions);
+}
+
+ImageDrawResult GraphicsContext::drawTiledImage(Image& image, const FloatRect& destination, const FloatPoint& source, const FloatSize& tileSize, const FloatSize& spacing, ImagePaintingOptions options)
+{
+    return image.drawTiled(*this, destination, source, tileSize, spacing, options);
+}
+
+ImageDrawResult GraphicsContext::drawTiledImage(Image& image, const FloatRect& destination, const FloatRect& source, const FloatSize& tileScaleFactor,
+    Image::TileRule hRule, Image::TileRule vRule, ImagePaintingOptions options)
+{
+    if (hRule == Image::StretchTile && vRule == Image::StretchTile) {
+        // Just do a scale.
+        return drawImage(image, ConcreteObjectSize::fixed(image.size()), destination, source, options);
+    }
+
+    return image.drawTiled(*this, destination, source, tileScaleFactor, hRule, vRule, { options.compositeOperator(), options.interpolationQuality() });
 }
 
 RefPtr<NativeImage> GraphicsContext::nativeImageForDrawing(ImageBuffer& imageBuffer)

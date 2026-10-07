@@ -53,7 +53,7 @@ PerformanceEventTiming::~PerformanceEventTiming() = default;
 
 RefPtr<Node> PerformanceEventTiming::target() const
 {
-    RefPtr node = dynamicDowncast<Node>(m_target);
+    RefPtr node = dynamicDowncast<Node>(m_target.get());
     if (!node || !node->isConnected())
         return nullptr;
 

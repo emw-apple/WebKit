@@ -79,7 +79,6 @@ private:
     WebBackForwardListFrameItem(WebBackForwardListItem&, WebBackForwardListFrameItem* parentItem, Ref<FrameState>&&);
 
     String loggingStringAtIndent(size_t);
-    size_t insertionIndexForChild(std::optional<WebCore::FrameIdentifier>) const;
 
     static HashMap<std::pair<WebCore::BackForwardFrameItemIdentifier, WebCore::BackForwardItemIdentifier>, WeakRef<WebBackForwardListFrameItem>>& NODELETE allItems();
 
@@ -89,11 +88,10 @@ private:
     WeakPtr<WebBackForwardListFrameItem> m_parent;
     Vector<Ref<WebBackForwardListFrameItem>> m_children;
 
-} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(refWebBackForwardListFrameItem, derefWebBackForwardListFrameItem);
+} SWIFT_SHARED_REFERENCE(refWebBackForwardListFrameItem, derefWebBackForwardListFrameItem) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
 
 } // namespace WebKit
 
-#if !ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
 inline void refWebBackForwardListFrameItem(WebKit::WebBackForwardListFrameItem* obj)
 {
     obj->ref();
@@ -103,4 +101,3 @@ inline void derefWebBackForwardListFrameItem(WebKit::WebBackForwardListFrameItem
 {
     obj->deref();
 }
-#endif

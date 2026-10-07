@@ -44,7 +44,7 @@
 #import <wtf/cocoa/VectorCocoa.h>
 
 
-NSString * const WebArchivePboardType = @"Apple Web Archive pasteboard type";
+NSString *WebArchivePboardType = @"Apple Web Archive pasteboard type";
 
 static NSString * const WebMainResourceKey = @"WebMainResource";
 static NSString * const WebSubresourcesKey = @"WebSubresources";
@@ -110,9 +110,7 @@ static NSString * const WebSubframeArchivesKey = @"WebSubframeArchives";
 
 @end
 
-@implementation WebArchive {
-    RetainPtr<WebArchivePrivate> _private;
-}
+@implementation WebArchive
 
 - (instancetype)init
 {
@@ -121,7 +119,7 @@ static NSString * const WebSubframeArchivesKey = @"WebSubframeArchives";
     self = [super init];
     if (!self)
         return nil;
-    _private = adoptNS([[WebArchivePrivate alloc] init]);
+    _private = [[WebArchivePrivate alloc] init];
     return self;
 }
 
@@ -145,7 +143,7 @@ static BOOL isArrayOfClass(id object, Class elementClass)
     if (!self)
         return nil;
 
-    _private = adoptNS([[WebArchivePrivate alloc] init]);
+    _private = [[WebArchivePrivate alloc] init];
 
     _private->cachedMainResource = mainResource;
     if (!_private->cachedMainResource) {
@@ -191,7 +189,7 @@ static BOOL isArrayOfClass(id object, Class elementClass)
     CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
 #endif
 
-    _private = adoptNS([[WebArchivePrivate alloc] init]);
+    _private = [[WebArchivePrivate alloc] init];
     auto coreArchive = WebCore::LegacyWebArchive::create(WebCore::SharedBuffer::create(data));
     if (!coreArchive) {
         [self release];
@@ -238,6 +236,13 @@ static BOOL isArrayOfClass(id object, Class elementClass)
     [encoder encodeObject:[self mainResource] forKey:WebMainResourceKey];
     [encoder encodeObject:[self subresources] forKey:WebSubresourcesKey];
     [encoder encodeObject:[self subframeArchives] forKey:WebSubframeArchivesKey];    
+}
+
+- (void)dealloc
+{
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_private release];
+    [super dealloc];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -339,7 +344,7 @@ static BOOL isArrayOfClass(id object, Class elementClass)
     if (!self)
         return nil;
     
-    _private = adoptNS([[WebArchivePrivate alloc] initWithCoreArchive:WTF::move(coreLegacyWebArchive)]);
+    _private = [[WebArchivePrivate alloc] initWithCoreArchive:WTF::move(coreLegacyWebArchive)];
     if (!_private) {
         [self release];
         return nil;

@@ -43,7 +43,7 @@
 #import <pal/cocoa/AVFoundationSoftLink.h>
 
 @interface WebInterruptionObserverHelper : NSObject {
-    ThreadSafeWeakPtr<WebCore::AudioSessionIOS> _callback;
+    WebCore::AudioSessionIOS* _callback;
 }
 
 - (id)initWithCallback:(WebCore::AudioSessionIOS*)callback;
@@ -76,12 +76,12 @@
 
 - (void)clearCallback
 {
-    _callback = nullptr;
+    _callback = nil;
 }
 
 - (void)interruption:(NSNotification *)notification
 {
-    if (!_callback.get())
+    if (!_callback)
         return;
 
     // FIXME: Migrate to AVAudioSessionDidBecomeInactiveNotification and AVAudioSessionResumptionRecommendationNotification (rdar://168264893).
@@ -104,8 +104,8 @@
 
 - (void)sessionMediaServicesWereReset:(NSNotification *)notification
 {
-    if (RefPtr callback = _callback)
-        callback->sessionMediaServicesWereReset();
+    if (_callback)
+        protect(_callback)->sessionMediaServicesWereReset();
 }
 @end
 
@@ -249,7 +249,7 @@ void AudioSessionIOS::setCategory(CategoryType newCategory, Mode newMode, RouteS
         break;
     }
 
-    RetainPtr<NSString> modeString = [&] {
+    NSString *modeString = [&] {
         switch (newMode) {
         case Mode::MoviePlayback:
             return AVAudioSessionModeMoviePlayback;
@@ -301,8 +301,8 @@ void AudioSessionIOS::setCategory(CategoryType newCategory, Mode newMode, RouteS
         ALWAYS_LOG(identifier, "prefered microphone = ", m_lastSetPreferredMicrophoneID);
     }
 #endif
-    for (Ref observer : audioSessionCategoryChangedObservers())
-        observer.get()(*this, category());
+    for (auto& observer : audioSessionCategoryChangedObservers())
+        observer(*this, category());
 }
 
 AudioSession::CategoryType AudioSessionIOS::category() const

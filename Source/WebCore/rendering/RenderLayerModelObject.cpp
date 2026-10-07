@@ -32,7 +32,6 @@
 #include "LocalFrameView.h"
 #include "MotionPath.h"
 #include "ReferencedSVGResources.h"
-#include "RenderChildIterator.h"
 #include "RenderDescendantIterator.h"
 #include "RenderElementInlines.h"
 #include "RenderElementStyleInlines.h"
@@ -50,7 +49,6 @@
 #include "RenderSVGResourceMarker.h"
 #include "RenderSVGResourceMasker.h"
 #include "RenderSVGResourceRadialGradient.h"
-#include "RenderSVGShape.h"
 #include "RenderSVGText.h"
 #include "RenderView.h"
 #include "SVGClipPathElement.h"
@@ -767,7 +765,7 @@ bool RenderLayerModelObject::pointInSVGClippingArea(const FloatPoint& point) con
         },
         [&](const auto&) {
             if (auto* referencedClipperRenderer = svgClipperResourceFromStyle())
-                return referencedClipperRenderer->hitTestClipContent(objectBoundingBox(), point);
+                return referencedClipperRenderer->hitTestClipContent(objectBoundingBox(), LayoutPoint(point));
             return true;
         }
     );
@@ -866,8 +864,18 @@ void RenderLayerModelObject::updateTransformAndRepaintForSVGAfterAttributeChange
     // recompute them, so when the transform actually
     // changed, invalidate both up the ancestor chain to the SVG root, giving getBBox() and paint or
     // hit-test culling a fresh rect. The scale-change paths above already scheduled a relayout for this.
-    if (previousTransform != currentTransform)
-        invalidateCachedSVGBoundingBoxesOfAncestors();
+    if (previousTransform != currentTransform) {
+        for (CheckedPtr ancestor = parent(); ancestor; ancestor = ancestor->parent()) {
+            if (CheckedPtr svgAncestor = dynamicDowncast<RenderLayerModelObject>(ancestor.get())) {
+                svgAncestor->invalidateCachedSVGTransformDependentBoundingBoxes();
+                svgAncestor->invalidateCachedVisualOverflowRect();
+                if (svgAncestor->hasLayer())
+                    svgAncestor->layer()->setNeedsPositionUpdate();
+            }
+            if (ancestor->isRenderSVGRoot())
+                break;
+        }
+    }
 
     // Scale unchanged, so no relayout is needed - just repaint the move. For a non-layered renderer
     // the batched transform flush repaints the moved region by comparing the renderer's repaint rect
@@ -888,52 +896,6 @@ void RenderLayerModelObject::updateTransformAndRepaintForSVGAfterAttributeChange
     // Renderers inside <clipPath>/<mask>/<pattern>/etc. don't paint directly - a transform
     // change is only visible by repainting the resource's clients.
     repaintClientsOfReferencedSVGResources();
-}
-
-void RenderLayerModelObject::invalidateCachedSVGBoundingBoxesOfAncestors() const
-{
-    for (CheckedPtr ancestor = parent(); ancestor; ancestor = ancestor->parent()) {
-        if (CheckedPtr svgAncestor = dynamicDowncast<RenderLayerModelObject>(ancestor.get())) {
-            svgAncestor->invalidateCachedSVGTransformDependentBoundingBoxes();
-            svgAncestor->invalidateCachedVisualOverflowRect();
-            if (svgAncestor->hasLayer())
-                svgAncestor->layer()->setNeedsPositionUpdate();
-        }
-        if (ancestor->isRenderSVGRoot())
-            break;
-    }
-}
-
-static void invalidateNonScalingStrokeCachesInSubtree(RenderElement& renderer)
-{
-    if (CheckedPtr shape = dynamicDowncast<RenderSVGShape>(renderer)) {
-        shape->invalidateNonScalingStrokeCaches();
-        return;
-    }
-
-    if (CheckedPtr svgRenderer = dynamicDowncast<RenderLayerModelObject>(renderer)) {
-        svgRenderer->invalidateCachedSVGTransformDependentBoundingBoxes();
-        svgRenderer->invalidateCachedVisualOverflowRect();
-    }
-
-    for (auto& child : childrenOfType<RenderElement>(renderer)) {
-        if (child.mayHaveNonScalingStrokeInSubtree())
-            invalidateNonScalingStrokeCachesInSubtree(child);
-    }
-}
-
-void RenderLayerModelObject::invalidateNonScalingStrokeCachesInSubtreeForSVG(const std::optional<AffineTransform>& oldTransform, const AffineTransform& newTransform)
-{
-    if (!mayHaveNonScalingStrokeInSubtree())
-        return;
-
-    // Translations leave non scaling stroke boxes unchanged.
-    if (oldTransform && oldTransform->a() == newTransform.a() && oldTransform->b() == newTransform.b()
-        && oldTransform->c() == newTransform.c() && oldTransform->d() == newTransform.d())
-        return;
-
-    invalidateNonScalingStrokeCachesInSubtree(*this);
-    invalidateCachedSVGBoundingBoxesOfAncestors();
 }
 
 void RenderLayerModelObject::paintSVGClippingMask(PaintInfo& paintInfo, const FloatRect& objectBoundingBox) const
@@ -1014,14 +976,14 @@ FloatRect snapRectToDevicePixelsIfNeeded(const LayoutRect& rect, const RenderLay
 {
     if (!rendererNeedsPixelSnapping(renderer))
         return rect;
-    return snapRectToDevicePixels(rect, renderer.document().pixelSnappingScaleFactor());
+    return snapRectToDevicePixels(rect, renderer.document().deviceScaleFactor());
 }
 
 FloatRect snapRectToDevicePixelsIfNeeded(const FloatRect& rect, const RenderLayerModelObject& renderer)
 {
     if (!rendererNeedsPixelSnapping(renderer))
         return rect;
-    return snapRectToDevicePixels(LayoutRect { rect }, renderer.document().pixelSnappingScaleFactor());
+    return snapRectToDevicePixels(LayoutRect { rect }, renderer.document().deviceScaleFactor());
 }
 
 } // namespace WebCore

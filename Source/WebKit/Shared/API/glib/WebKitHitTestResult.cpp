@@ -23,7 +23,6 @@
 #include "WebHitTestResultData.h"
 #include "WebKitHitTestResultPrivate.h"
 #include <glib/gi18n-lib.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/WTFGType.h>
 #include <wtf/text/CString.h>
 
@@ -114,19 +113,19 @@ static void webkitHitTestResultSetProperty(GObject* object, guint propId, const 
         hitTestResult->priv->context = g_value_get_uint(value);
         break;
     case PROP_LINK_URI:
-        hitTestResult->priv->linkURI = UTF8CString::unsafeFromUTF8(g_value_get_string(value));
+        hitTestResult->priv->linkURI = UTF8CString { byteCast<char8_t>(g_value_get_string(value)) };
         break;
     case PROP_LINK_TITLE:
-        hitTestResult->priv->linkTitle = UTF8CString::unsafeFromUTF8(g_value_get_string(value));
+        hitTestResult->priv->linkTitle = UTF8CString { byteCast<char8_t>(g_value_get_string(value)) };
         break;
     case PROP_LINK_LABEL:
-        hitTestResult->priv->linkLabel = UTF8CString::unsafeFromUTF8(g_value_get_string(value));
+        hitTestResult->priv->linkLabel = UTF8CString { byteCast<char8_t>(g_value_get_string(value)) };
         break;
     case PROP_IMAGE_URI:
-        hitTestResult->priv->imageURI = UTF8CString::unsafeFromUTF8(g_value_get_string(value));
+        hitTestResult->priv->imageURI = UTF8CString { byteCast<char8_t>(g_value_get_string(value)) };
         break;
     case PROP_MEDIA_URI:
-        hitTestResult->priv->mediaURI = UTF8CString::unsafeFromUTF8(g_value_get_string(value));
+        hitTestResult->priv->mediaURI = UTF8CString { byteCast<char8_t>(g_value_get_string(value)) };
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, propId, paramSpec);
@@ -238,13 +237,14 @@ WebKitHitTestResult* webkitHitTestResultCreate(const WebHitTestResultData& hitTe
     if (hitTestResult.isSelected)
         context |= WEBKIT_HIT_TEST_RESULT_CONTEXT_SELECTION;
 
-    return WEBKIT_HIT_TEST_RESULT(gObjectNew(WEBKIT_TYPE_HIT_TEST_RESULT,
+    return WEBKIT_HIT_TEST_RESULT(g_object_new(WEBKIT_TYPE_HIT_TEST_RESULT,
         "context", context,
-        "link-uri", context & WEBKIT_HIT_TEST_RESULT_CONTEXT_LINK ? hitTestResult.absoluteLinkURL.utf8() : UTF8CString { },
-        "image-uri", context & WEBKIT_HIT_TEST_RESULT_CONTEXT_IMAGE ? hitTestResult.absoluteImageURL.utf8() : UTF8CString { },
-        "media-uri", context & WEBKIT_HIT_TEST_RESULT_CONTEXT_MEDIA ? hitTestResult.absoluteMediaURL.utf8() : UTF8CString { },
-        "link-title", !hitTestResult.linkTitle.isEmpty() ? hitTestResult.linkTitle.utf8() : UTF8CString { },
-        "link-label", !hitTestResult.linkLabel.isEmpty() ? hitTestResult.linkLabel.utf8() : UTF8CString { }));
+        "link-uri", context & WEBKIT_HIT_TEST_RESULT_CONTEXT_LINK ? hitTestResult.absoluteLinkURL.utf8().legacyCStringPointer() : nullptr,
+        "image-uri", context & WEBKIT_HIT_TEST_RESULT_CONTEXT_IMAGE ? hitTestResult.absoluteImageURL.utf8().legacyCStringPointer() : nullptr,
+        "media-uri", context & WEBKIT_HIT_TEST_RESULT_CONTEXT_MEDIA ? hitTestResult.absoluteMediaURL.utf8().legacyCStringPointer() : nullptr,
+        "link-title", !hitTestResult.linkTitle.isEmpty() ? hitTestResult.linkTitle.utf8().legacyCStringPointer() : nullptr,
+        "link-label", !hitTestResult.linkLabel.isEmpty() ? hitTestResult.linkLabel.utf8().legacyCStringPointer() : nullptr,
+        nullptr));
 }
 
 static bool stringIsEqualToCString(const String& string, const UTF8CString& cString)

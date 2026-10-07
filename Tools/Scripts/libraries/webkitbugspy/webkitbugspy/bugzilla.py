@@ -835,7 +835,7 @@ class Tracker(GenericTracker):
                         raise ValueError("Radar Importer is already CC'd")
                     user_to_cc = True
 
-        expecting_import = False
+        did_modify_cc = False
         if user_to_cc or keyword_to_add:
             log.info('CCing {}'.format(self.radar_importer.name))
             response = None
@@ -868,19 +868,16 @@ class Tracker(GenericTracker):
                     ))
                 return radar
             else:
-                expecting_import = True
+                did_modify_cc = True
                 issue._comments = None
                 issue._references = None
-        else:
-            # Some components CC the importer by default
-            expecting_import = 'InRadar' not in (issue.keywords or [])
 
         start = time.time()
         while start + (timeout or 60) > time.time():
             for reference in (issue.references or []):
                 if isinstance(reference.tracker, RadarTracker):
                     return reference
-            if not block or not expecting_import:
+            if not block or not did_modify_cc:
                 break
             print('Waiting until {} imports bug...'.format(self.radar_importer.name))
             time.sleep(10)

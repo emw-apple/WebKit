@@ -387,7 +387,7 @@ class FactorySignature {
       sb << "\"" << str << "\",\n";
     }
     sb << "}\n";
-    RTC_LOG(LS_ERROR) << "New factory signature: " << sb.Release();
+    RTC_LOG(LS_ERROR) << "New factory signature: " << sb.str();
     return Id::kNotRecognized;
   }
 

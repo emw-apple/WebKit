@@ -31,13 +31,9 @@
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/WebKit.h>
 
-#if PLATFORM(MAC) || (PLATFORM(IOS_FAMILY) && ENABLE(VIDEO_USES_ELEMENT_FULLSCREEN))
-
 static NSString * const canEnterFullscreenKeyPath = @"_canEnterFullscreen";
 static NSString * const fullscreenStateKeyPath = @"fullscreenState";
-#if PLATFORM(MAC)
 static bool canEnterFullscreenChanged;
-#endif
 static bool fullscreenStateChanged;
 
 @interface FullscreenLifecycleObserver : NSObject
@@ -48,11 +44,9 @@ static bool fullscreenStateChanged;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *, id> *)change context:(void *)context
 {
     ASSERT([object isKindOfClass:WKWebView.class]);
-    if ([keyPath isEqualToString:canEnterFullscreenKeyPath]) {
-#if PLATFORM(MAC)
+    if ([keyPath isEqualToString:canEnterFullscreenKeyPath])
         canEnterFullscreenChanged = true;
-#endif
-    } else if ([keyPath isEqualToString:fullscreenStateKeyPath])
+    else if ([keyPath isEqualToString:fullscreenStateKeyPath])
         fullscreenStateChanged = true;
     else
         ASSERT_NOT_REACHED();
@@ -195,5 +189,3 @@ TEST(Fullscreen, VideoPausesAfterExitingFullscreen)
 }
 
 #endif // PLATFORM(IOS_FAMILY) && ENABLE(VIDEO_USES_ELEMENT_FULLSCREEN)
-
-#endif // PLATFORM(MAC) || (PLATFORM(IOS_FAMILY) && ENABLE(VIDEO_USES_ELEMENT_FULLSCREEN))

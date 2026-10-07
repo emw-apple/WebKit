@@ -60,7 +60,7 @@ NaturalDimensions PDFDocumentImage::unorientedNaturalDimensions() const
     if (size.isEmpty())
         return NaturalDimensions::none();
 
-    // FIXME: Why does it make sense for this to return a non-existing aspect ratio? We should document why that is appropriate.
+    // FIXME: Why does it make sense for this to return a non-existing aspect ratio. It currently is doing it to match PDFDocumentImage::computeIntrinsicDimensions, but we should document why that is appropriate.
     return { .width = size.width(), .height = size.height(), .aspectRatio = std::nullopt };
 }
 
@@ -71,6 +71,13 @@ FloatSize PDFDocumentImage::size(ImageOrientation) const
     if (m_rotationDegrees == 90 || m_rotationDegrees == 270)
         return expandedCropBoxSize.transposedSize();
     return expandedCropBoxSize;
+}
+
+void PDFDocumentImage::computeIntrinsicDimensions(float& intrinsicWidth, float& intrinsicHeight, FloatSize& intrinsicRatio)
+{
+    // FIXME: If we want size negotiation with PDF documents as-image, this is the place to implement it (https://bugs.webkit.org/show_bug.cgi?id=12095).
+    Image::computeIntrinsicDimensions(intrinsicWidth, intrinsicHeight, intrinsicRatio);
+    intrinsicRatio = FloatSize();
 }
 
 EncodedDataStatus PDFDocumentImage::dataChanged(bool allDataReceived)
@@ -228,7 +235,7 @@ void PDFDocumentImage::createPDFDocument()
 void PDFDocumentImage::computeBoundsForCurrentPage()
 {
     ASSERT(pageCount() > 0);
-    RetainPtr cgPage = CGPDFDocumentGetPage(m_document.get(), 1);
+    CGPDFPageRef cgPage = CGPDFDocumentGetPage(m_document.get(), 1);
     CGRect mediaBox = CGPDFPageGetBoxRect(cgPage, kCGPDFMediaBox);
 
     // Get crop box (not always there). If not, use media box.
@@ -265,8 +272,7 @@ void PDFDocumentImage::drawPDFPage(GraphicsContext& context)
     context.translate(-m_cropBox.location());
 
     // CGPDF pages are indexed from 1.
-    RetainPtr page = CGPDFDocumentGetPage(m_document.get(), 1);
-    CGContextDrawPDFPageWithAnnotations(protect(context.platformContext()), page, nullptr);
+    CGContextDrawPDFPageWithAnnotations(context.platformContext(), CGPDFDocumentGetPage(m_document.get(), 1), nullptr);
 }
 
 #endif // !USE(PDFKIT_FOR_PDFDOCUMENTIMAGE)

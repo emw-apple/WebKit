@@ -585,24 +585,6 @@ FloatRect FrameView::convertToRootViewAcrossIsolatedFrames(FloatRect rect) const
     return parentView->convertToRootViewAcrossIsolatedFrames(parentRect);
 }
 
-IntPoint FrameView::convertToRootViewAcrossIsolatedFrames(IntPoint point) const
-{
-    RefPtr parentView = siteIsolationAwareParentView(*this);
-    if (!parentView)
-        return point;
-
-    IntPoint parentPoint;
-    if (is<LocalFrameView>(*parentView))
-        parentPoint = convertToContainingView(point);
-    else {
-        Ref frame = this->frame();
-        point.moveBy(roundedIntPoint(parentView->childFrameOwnerContentBoxLocation(frame)));
-        parentPoint = roundedIntPoint(parentView->contentsToView(parentView->childFrameOwnerToRootContentTransform(frame).projectPoint(point)));
-    }
-
-    return parentView->convertToRootViewAcrossIsolatedFrames(parentPoint);
-}
-
 IntRect FrameView::convertToRootViewAcrossIsolatedFrames(IntRect rect) const
 {
     RefPtr parentView = siteIsolationAwareParentView(*this);
@@ -648,22 +630,12 @@ FloatQuad FrameView::contentsToMainFrameView(const FloatQuad& quad) const
     };
 }
 
-FloatPoint FrameView::rootViewToContentsAcrossIsolatedFrames(FloatPoint point) const
-{
-    return viewToContents(convertFromRootViewAcrossIsolatedFrames(point));
-}
-
 FloatRect FrameView::rootViewToContentsAcrossIsolatedFrames(FloatRect rect) const
 {
     return viewToContents(convertFromRootViewAcrossIsolatedFrames(rect));
 }
 
 IntRect FrameView::contentsToMainFrameView(const IntRect& rect) const
-{
-    return convertToRootViewAcrossIsolatedFrames(contentsToView(rect));
-}
-
-FloatRect FrameView::contentsToMainFrameView(FloatRect rect) const
 {
     return convertToRootViewAcrossIsolatedFrames(contentsToView(rect));
 }

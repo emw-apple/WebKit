@@ -41,6 +41,7 @@
             "methodWithAndWithoutNullableSequence": "arrayArg, nullableArrayArg",
             "methodWithArgTreatingNullAsEmptyString": "arg",
             "methodWithByteStringArg": "str",
+            "methodWithByteStringArgTreatingNullAsEmptyString": "str",
             "methodWithCallbackFunctionArg": "callback",
             "methodWithCallbackInterfaceArg": "callback",
             "methodWithEnumArg": "enumArg",

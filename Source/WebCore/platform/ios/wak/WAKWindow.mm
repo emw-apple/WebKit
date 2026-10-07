@@ -39,8 +39,6 @@
 #import <wtf/Lock.h>
 #import <wtf/NeverDestroyed.h>
 #import <wtf/RetainPtr.h>
-#import <wtf/WeakObjCPtr.h>
-#import <wtf/cocoa/TypeCastsCocoa.h>
 
 WEBCORE_EXPORT NSString * const WAKWindowScreenScaleDidChangeNotification = @"WAKWindowScreenScaleDidChangeNotification";
 WEBCORE_EXPORT NSString * const WAKWindowVisibilityDidChangeNotification = @"WAKWindowVisibilityDidChangeNotification";
@@ -62,12 +60,6 @@ static RetainPtr<WebEvent>& currentEvent()
 }
 
 @implementation WAKWindow {
-    RetainPtr<CALayer> _hostLayer;
-    std::unique_ptr<LegacyTileCache> _tileCache;
-    WeakObjCPtr<CALayer> _rootLayer;
-    RetainPtr<WAKView> _contentView;
-    RetainPtr<WAKView> _responderView;
-    WeakObjCPtr<WAKView> _nextResponder;
     Lock _exposedScrollViewRectLock;
     CGRect _exposedScrollViewRect;
 }
@@ -80,12 +72,12 @@ static RetainPtr<WebEvent>& currentEvent()
     if (!self)
         return nil;
 
-    _hostLayer = layer;
+    _hostLayer = [layer retain];
 
     _frame = [_hostLayer frame];
     _screenScale = WebCore::screenScaleFactor();
 
-    _tileCache = std::unique_ptr<LegacyTileCache>(new LegacyTileCache(self));
+    _tileCache = new LegacyTileCache(self);
 
     _frozenVisibleRect = CGRectNull;
 
@@ -111,17 +103,20 @@ static RetainPtr<WebEvent>& currentEvent()
 
 - (void)dealloc
 {
-    _tileCache = nullptr;
-    _hostLayer = nullptr;
-
+    delete _tileCache;
+    [_hostLayer release];
+    
     [super dealloc];
 }
 
 - (void)setContentView:(WAKView *)view
 {
-    _contentView = view;
+    [view retain];
+    [_contentView release];
+
     if (view)
         _WKViewSetWindow([view _viewRef], self);
+    _contentView = view;
 }
 
 - (WAKView *)contentView
@@ -133,9 +128,11 @@ static RetainPtr<WebEvent>& currentEvent()
 {
     if (_contentView) {
         _WKViewSetWindow([_contentView _viewRef], nil);
+        [_contentView release];
         _contentView = nil;
     }
 
+    [_responderView release];
     _responderView = nil;
 }
 
@@ -146,41 +143,41 @@ static RetainPtr<WebEvent>& currentEvent()
 
 - (WAKView *)_newFirstResponderAfterResigning
 {
-    return _nextResponder.getAutoreleased();
+    return _nextResponder;
 }
 
 - (NSPoint)convertBaseToScreen:(NSPoint)aPoint
 {
-    RetainPtr rootLayer = _hostLayer;
-    while ([rootLayer superlayer])
-        rootLayer = [rootLayer superlayer];
+    CALayer* rootLayer = _hostLayer;
+    while (rootLayer.superlayer)
+        rootLayer = rootLayer.superlayer;
     
     return [_hostLayer convertPoint:aPoint toLayer:rootLayer];
 }
 
 - (NSPoint)convertScreenToBase:(NSPoint)aPoint
 {
-    RetainPtr rootLayer = _hostLayer;
-    while ([rootLayer superlayer])
-        rootLayer = [rootLayer superlayer];
+    CALayer* rootLayer = _hostLayer;
+    while (rootLayer.superlayer)
+        rootLayer = rootLayer.superlayer;
     
     return [_hostLayer convertPoint:aPoint fromLayer:rootLayer];
 }
 
 - (NSRect)convertRectToScreen:(NSRect)windowRect
 {
-    RetainPtr rootLayer = _hostLayer;
-    while ([rootLayer superlayer])
-        rootLayer = [rootLayer superlayer];
+    CALayer* rootLayer = _hostLayer;
+    while (rootLayer.superlayer)
+        rootLayer = rootLayer.superlayer;
 
     return [_hostLayer convertRect:windowRect toLayer:rootLayer];
 }
 
 - (NSRect)convertRectFromScreen:(NSRect)screenRect
 {
-    RetainPtr rootLayer = _hostLayer;
-    while ([rootLayer superlayer])
-        rootLayer = [rootLayer superlayer];
+    CALayer* rootLayer = _hostLayer;
+    while (rootLayer.superlayer)
+        rootLayer = rootLayer.superlayer;
 
     return [_hostLayer convertRect:screenRect fromLayer:rootLayer];
 }
@@ -221,6 +218,7 @@ static RetainPtr<WebEvent>& currentEvent()
     BOOL shouldResign = [super resignFirstResponder];
     if (shouldResign && _responderView && WKViewResignFirstResponder([_responderView _viewRef])) {
         _nextResponder = nil;
+        [_responderView release];
         _responderView = nil;
         return YES;
     }
@@ -229,10 +227,10 @@ static RetainPtr<WebEvent>& currentEvent()
 
 - (BOOL)makeFirstResponder:(NSResponder *)responder
 {
-    RetainPtr view = dynamic_objc_cast<WAKView>(responder);
-    if (!view)
+    if (![responder isKindOfClass:[WAKView class]])
         return NO;
 
+    WAKView *view = static_cast<WAKView*>(responder);
     BOOL result = YES;
     if (view != _responderView) {
         // We need to handle the case of the view not accepting to be a first responder,
@@ -242,6 +240,7 @@ static RetainPtr<WebEvent>& currentEvent()
             _nextResponder = view;
             if (WKViewResignFirstResponder([_responderView _viewRef])) {
                 _nextResponder = nil;
+                [_responderView release];
                 _responderView = nil;
             }  else {
                 _nextResponder = nil;
@@ -251,7 +250,7 @@ static RetainPtr<WebEvent>& currentEvent()
 
         if (result && view) {
             if (acceptsFirstResponder && WKViewBecomeFirstResponder([view _viewRef]))
-                _responderView = view;
+                _responderView = [view retain];
             else
                 result = NO;
         }
@@ -326,7 +325,7 @@ static RetainPtr<WebEvent>& currentEvent()
 
 - (CALayer *)rootLayer
 {
-    return _rootLayer.getAutoreleased();
+    return _rootLayer;
 }
 
 - (void)sendEvent:(WebEvent *)event
@@ -470,7 +469,7 @@ static RetainPtr<WebEvent>& currentEvent()
     if (!CGRectIsNull(_frozenVisibleRect))
         return _frozenVisibleRect;
 
-    RetainPtr layer = _hostLayer;
+    CALayer* layer = _hostLayer;
     CGRect bounds = [layer bounds];
     if (_entireWindowVisibleForTesting)
         return bounds;
@@ -479,8 +478,7 @@ static RetainPtr<WebEvent>& currentEvent()
 
     static Class windowClass = NSClassFromString(@"UIWindow");
 
-    RetainPtr rootLayer = _rootLayer.get();
-    while (superlayer && layer != rootLayer && (![layer delegate] || ![[layer delegate] isKindOfClass:windowClass])) {
+    while (superlayer && layer != _rootLayer && (!layer.delegate || ![layer.delegate isKindOfClass:windowClass])) {
         CGRect rectInSuper = [superlayer convertRect:rect fromLayer:layer];
         if ([superlayer masksToBounds] || !respectsMasksToBounds)
             rect = CGRectIntersection([superlayer bounds], rectInSuper);
@@ -601,7 +599,7 @@ static RetainPtr<WebEvent>& currentEvent()
 
 - (LegacyTileCache*)tileCache
 {
-    return _tileCache.get();
+    return _tileCache;
 }
 
 - (void)setContentReplacementImage:(CGImageRef)contentReplacementImage
@@ -671,8 +669,8 @@ static RetainPtr<WebEvent>& currentEvent()
     CGRect frame = [self frame];
     [description appendFormat:@"frame = (%g %g; %g %g); ", frame.origin.x, frame.origin.y, frame.size.width, frame.size.height];
 
-    [description appendFormat:@"first responder = WK %p; ", _responderView.get()];
-    [description appendFormat:@"next responder = WK %p; ", protect(_nextResponder).get()];
+    [description appendFormat:@"first responder = WK %p; ", _responderView];
+    [description appendFormat:@"next responder = WK %p; ", _nextResponder];
 
     [description appendFormat:@"layer = %@>", [_hostLayer description]];
 

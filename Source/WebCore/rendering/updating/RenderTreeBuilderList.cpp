@@ -125,7 +125,6 @@ void RenderTreeBuilder::List::updateItemMarker(RenderListItem& listItemRenderer)
         if (shouldBuildInlineMarker && !contentChanged) {
             adjustStyleForInlineMarker(newStyle);
             inlineMarker->setStyle(WTF::move(newStyle));
-            RenderTreeUpdater::GeneratedContent::updateStyleForContentRenderers(*inlineMarker, inlineMarker->style());
             m_builder.addListItemNeedingMarkerUpdate(listItemRenderer);
             return;
         }

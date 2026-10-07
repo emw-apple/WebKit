@@ -68,7 +68,6 @@
 #import <WebCore/WebCoreFrameView.h>
 #import <WebCore/WebCoreView.h>
 #import <wtf/Assertions.h>
-#import <wtf/cocoa/TypeCastsCocoa.h>
 
 #if PLATFORM(IOS_FAMILY)
 #import "WebFrameInternal.h"
@@ -114,7 +113,7 @@ enum {
 
 @interface WebFrameViewPrivate : NSObject {
 @public
-    __weak WebFrame *webFrame;
+    WebFrame *webFrame;
     RetainPtr<WebDynamicScrollBarsView> frameScrollView;
     BOOL includedInWebKitStatistics;
 }
@@ -122,11 +121,6 @@ enum {
 
 @implementation WebFrameViewPrivate
 
-@end
-
-@interface WebFrameView () {
-    RetainPtr<WebFrameViewPrivate> _private;
-}
 @end
 
 @implementation WebFrameView (WebFrameViewFileInternal)
@@ -167,7 +161,7 @@ enum {
     // a convenience and so that we don't leave the window pointing to a view that's no longer in it.
     NSWindow *window = [sv window];
     NSResponder *firstResponder = [window firstResponder];
-    bool makeNewViewFirstResponder = [dynamic_objc_cast<NSView>(firstResponder) isDescendantOf:[sv documentView]];
+    bool makeNewViewFirstResponder = [firstResponder isKindOfClass:[NSView class]] && [(NSView *)firstResponder isDescendantOf:[sv documentView]];
 
     // Suppress the resetting of drag margins since we know we can't affect them.
     BOOL resetDragMargins = [window _needsToResetDragMargins];
@@ -183,7 +177,7 @@ enum {
 #else
     ASSERT(_private->webFrame);
 
-    RefPtr frame = core(_private->webFrame);
+    auto* frame = core(_private->webFrame);
 
     ASSERT(frame);
     ASSERT(frame->page());
@@ -365,7 +359,7 @@ enum {
 #endif
     }
 
-    _private = adoptNS([[WebFrameViewPrivate alloc] init]);
+    _private = [[WebFrameViewPrivate alloc] init];
 
     auto scrollView = adoptNS([[WebDynamicScrollBarsView alloc] initWithFrame:NSMakeRect(0.0f, 0.0f, frame.size.width, frame.size.height)]);
     _private->frameScrollView = scrollView;
@@ -393,7 +387,9 @@ enum {
 {
     if (_private && _private->includedInWebKitStatistics)
         --WebFrameViewCount;
-
+    
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_private release];
     _private = nil;
     
     [super dealloc];
@@ -403,7 +399,7 @@ enum {
 - (BOOL)scrollView:(WAKScrollView *)scrollView shouldScrollToPoint:(CGPoint)point
 {
     WebView *webView = [self _webView];
-    return [[webView _UIKitDelegateForwarder] webView:webView shouldScrollToPoint:point forFrame:protect(_private->webFrame)];
+    return [[webView _UIKitDelegateForwarder] webView:webView shouldScrollToPoint:point forFrame:_private->webFrame];
 }
 #endif
 
@@ -497,7 +493,7 @@ enum {
             [[[self _webView] backgroundColor] set];
             NSRectFill(rect);
 #else
-            RetainPtr cgContext = WKGetCurrentGraphicsContext();
+            CGContextRef cgContext = WKGetCurrentGraphicsContext();
             CGContextSetFillColorWithColor(cgContext, WebCore::cachedCGColor(WebCore::Color::white).get());
             WKRectFill(cgContext, rect);
 #endif
@@ -509,7 +505,7 @@ enum {
             [[NSColor cyanColor] set];
             NSRectFill(rect);
 #else
-            RetainPtr cgContext = WKGetCurrentGraphicsContext();
+            CGContextRef cgContext = WKGetCurrentGraphicsContext();
             CGContextSetFillColorWithColor(cgContext, WebCore::cachedCGColor(WebCore::Color::cyan).get());
             WKRectFill(cgContext, rect);
 #endif
@@ -614,7 +610,7 @@ enum {
     RefPtr document = coreFrame->document();
     if (!document)
         return YES;
-    CheckedPtr renderView = document->renderView();
+    auto* renderView = document->renderView();
     if (!renderView)
         return YES;
     return renderView->writingMode().isHorizontal();
@@ -628,7 +624,7 @@ enum {
     RefPtr document = coreFrame->document();
     if (!document)
         return NO;
-    CheckedPtr renderView = document->renderView();
+    auto* renderView = document->renderView();
     if (!renderView)
         return NO;
     return renderView->writingMode().isBlockFlipped();
@@ -891,7 +887,7 @@ enum {
     int index, count;
     BOOL callSuper = YES;
     auto coreFrame = [self _web_frame];
-    BOOL maintainsBackForwardList = coreFrame && downcast<BackForwardList>(coreFrame->page()->backForward().client()).enabled() ? YES : NO;
+    BOOL maintainsBackForwardList = coreFrame && static_cast<BackForwardList&>(coreFrame->page()->backForward().client()).enabled() ? YES : NO;
 
     count = [characters length];
     for (index = 0; index < count; ++index) {

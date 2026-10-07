@@ -57,7 +57,6 @@ public:
 
     virtual void close() = 0;
     virtual bool isWebBackForwardListProxy() const { return false; }
-    virtual bool isBackForwardList() const { return false; }
 };
 
 } // namespace WebCore

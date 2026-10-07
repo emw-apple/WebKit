@@ -200,7 +200,6 @@ set(WTF_PUBLIC_HEADERS
     MetaAllocator.h
     MetaAllocatorHandle.h
     MmapSpan.h
-    MonotonicObjectIdentifier.h
     MonotonicTime.h
     module.modulemap
     NakedPtr.h
@@ -359,6 +358,7 @@ set(WTF_PUBLIC_HEADERS
     StructDump.h
     SuspendableWorkQueue.h
     SwiftBridging.h
+    SwiftCXXThunk.h
     SynchronizedFixedQueue.h
     SystemFree.h
     SystemMalloc.h
@@ -466,8 +466,6 @@ set(WTF_PUBLIC_HEADERS
     persistence/PersistentCoders.h
     persistence/PersistentDecoder.h
     persistence/PersistentEncoder.h
-
-    posix/POSIXExtras.h
 
     simde/simde.h
     simde/arm/neon.h

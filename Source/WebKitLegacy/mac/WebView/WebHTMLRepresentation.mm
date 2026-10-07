@@ -79,22 +79,20 @@ using JSC::Yarr::RegularExpression;
 
 @interface WebHTMLRepresentationPrivate : NSObject {
 @public
-    __weak WebDataSource *dataSource;
+    WebDataSource *dataSource;
     
     BOOL hasSentResponseToPlugin;
     BOOL includedInWebKitStatistics;
 
     id <WebPluginManualLoader> manualLoader;
-    __weak NSView *pluginView;
+    NSView *pluginView;
 }
 @end
 
 @implementation WebHTMLRepresentationPrivate
 @end
 
-@implementation WebHTMLRepresentation {
-    RetainPtr<WebHTMLRepresentationPrivate> _private;
-}
+@implementation WebHTMLRepresentation
 
 + (NSArray *)supportedMIMETypes
 {
@@ -133,7 +131,7 @@ using JSC::Yarr::RegularExpression;
     if (!self)
         return nil;
     
-    _private = adoptNS([[WebHTMLRepresentationPrivate alloc] init]);
+    _private = [[WebHTMLRepresentationPrivate alloc] init];
 
     return self;
 }
@@ -142,6 +140,9 @@ using JSC::Yarr::RegularExpression;
 {
     if (_private && _private->includedInWebKitStatistics)
         --WebHTMLRepresentationCount;
+
+    // Retaining the member just to release it would be pointless.
+    SUPPRESS_UNRETAINED_ARG [_private release];
 
     [super dealloc];
 }
@@ -279,7 +280,8 @@ using JSC::Yarr::RegularExpression;
 
 static RefPtr<WebCore::HTMLFormElement> formElementFromDOMElement(DOMElement *element)
 {
-    return dynamicDowncast<WebCore::HTMLFormElement>(core(element));
+    RefPtr node = core(element);
+    return node && node->hasTagName(formTag) ? static_cast<WebCore::HTMLFormElement*>(node.get()) : nullptr;
 }
 
 - (DOMElement *)elementWithName:(NSString *)name inForm:(DOMElement *)form
@@ -327,7 +329,7 @@ static RefPtr<WebCore::HTMLInputElement> inputElementFromDOMElement(DOMElement* 
 
 - (DOMElement *)currentForm
 {
-    return kit(protect(core([protect(_private->dataSource) webFrame])->selection())->currentForm().get());
+    return kit(core([protect(_private->dataSource) webFrame])->selection().currentForm().get());
 }
 
 - (NSArray *)controlsInForm:(DOMElement *)form
@@ -446,7 +448,7 @@ static RetainPtr<NSString> searchForLabelsBeforeElement(WebCore::LocalFrame* fra
                 return result;
             }
             searchedCellAbove = true;
-        } else if (CheckedPtr renderText = dynamicDowncast<WebCore::RenderText>(n->renderer()); renderText && renderText->style().usedVisibility() == WebCore::Visibility::Visible) {
+        } else if (auto* renderText = dynamicDowncast<WebCore::RenderText>(n->renderer()); renderText && renderText->style().usedVisibility() == WebCore::Visibility::Visible) {
             // For each text chunk, run the regexp
             String nodeString = n->nodeValue();
             // add 100 for slop, to make it more likely that we'll search whole nodes

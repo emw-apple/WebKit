@@ -422,9 +422,10 @@ list(APPEND WebCore_SOURCES
 
     platform/graphics/ca/FrameProcessIndicators.cpp
     platform/graphics/ca/GraphicsLayerCA.cpp
+    platform/graphics/ca/LayerPool.cpp
     platform/graphics/ca/PlatformCAAnimation.cpp
     platform/graphics/ca/PlatformCALayer.mm
-    platform/graphics/ca/TileController.mm
+    platform/graphics/ca/TileController.cpp
     platform/graphics/ca/TileCoverageMap.cpp
     platform/graphics/ca/TileGrid.cpp
     platform/graphics/ca/TransformationMatrixCA.cpp
@@ -519,7 +520,7 @@ list(APPEND WebCore_SOURCES
 
     platform/network/cf/CertificateInfoCFNet.cpp
     platform/network/cf/CookieStorageSessionCFNet.cpp
-    platform/network/cf/DNSResolveQueueCFNet.mm
+    platform/network/cf/DNSResolveQueueCFNet.cpp
     platform/network/cf/FormDataStreamCFNet.mm
     platform/network/cf/ResourceRequestCFNet.cpp
 
@@ -1321,6 +1322,7 @@ list(APPEND WebCore_PRIVATE_FRAMEWORK_HEADERS
 
     platform/graphics/ca/FrameProcessIndicators.h
     platform/graphics/ca/GraphicsLayerCA.h
+    platform/graphics/ca/LayerPool.h
     platform/graphics/ca/PlatformCAAnimation.h
     platform/graphics/ca/PlatformCAFilters.h
     platform/graphics/ca/PlatformCALayer.h
@@ -1630,17 +1632,8 @@ list(APPEND WebCore_PRIVATE_FRAMEWORK_HEADERS
     platform/mac/WebCoreView.h
 )
 
-# Used to substitute placeholders in Info.plist.
-set(BUNDLE_VERSION "${MACOSX_FRAMEWORK_BUNDLE_VERSION}")
-set(SHORT_VERSION_STRING "${MACOSX_FRAMEWORK_SHORT_VERSION_STRING}")
-set(PRODUCT_NAME "WebCore")
-set(PRODUCT_BUNDLE_IDENTIFIER "com.apple.WebCore")
-set(PLATFORM_NAME "${WEBKIT_SDK_NAME}")
 
 if (WEBKIT_SDK_IS_MACOS)
-
-set_target_properties(WebCore PROPERTIES
-    MACOSX_FRAMEWORK_INFO_PLIST ${WEBCORE_DIR}/Info.plist)
 
 # Localizable.strings for copyLocalizedString(). Xcode copies via CopyFiles build phase.
 # Configure-time -- files rarely change, no build edge needed.
@@ -1814,6 +1807,10 @@ set(CSS_VALUE_PLATFORM_DEFINES "WTF_PLATFORM_MAC WTF_PLATFORM_COCOA ENABLE_APPLE
 
 else ()
 
+set(BUNDLE_VERSION "${MACOSX_FRAMEWORK_BUNDLE_VERSION}")
+set(SHORT_VERSION_STRING "${WEBKIT_MAC_VERSION}")
+set(PRODUCT_NAME "WebCore")
+set(PRODUCT_BUNDLE_IDENTIFIER "com.apple.WebCore")
 configure_file(${WEBCORE_DIR}/Info.plist ${CMAKE_CURRENT_BINARY_DIR}/WebCore-Info.plist)
 
 set(_wc_fw "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/WebCore.framework")

@@ -184,10 +184,6 @@ class MockMediaSessionCoordinator;
 class HTMLModelElement;
 #endif
 
-#if ENABLE(MODEL_PROCESS)
-struct ModelSceneGraphAsTextOptions;
-#endif
-
 #if ENABLE(SPEECH_SYNTHESIS)
 class PlatformSpeechSynthesizerMock;
 #endif
@@ -290,7 +286,6 @@ public:
     unsigned remoteImagesCountForTesting() const;
     void setAsyncDecodingEnabledForTesting(HTMLImageElement&, bool enabled);
     void NODELETE setForceUpdateImageDataEnabledForTesting(HTMLImageElement&, bool enabled);
-    void simulateImageDataReplacedForTesting(HTMLImageElement&);
     void setHasHDRContentForTesting(HTMLImageElement&);
 
 #if ENABLE(WEB_CODECS)
@@ -394,7 +389,6 @@ public:
 
     Ref<DOMRect> boundingBox(Element&);
     Ref<DOMRect> boundingBoxInRootViewCoordinates(Element&);
-    Ref<DOMRect> boundingBoxInMainFrameViewCoordinates(Element&);
 
     ExceptionOr<Ref<DOMRectList>> inspectorHighlightRects();
     ExceptionOr<unsigned> inspectorGridOverlayCount();
@@ -813,7 +807,6 @@ public:
     void forceAXObjectCacheUpdate() const;
     void setAccessibilityAnnouncementTranslationTimeout(double seconds);
     void setAccessibilityFormErrorSettleDelay(double seconds);
-    bool isWatchingForAccessibilityFormErrors() const;
     unsigned liveRegionSnapshotBuildCount() const;
     void resetLiveRegionSnapshotBuildCount() const;
     void setShouldMockParentSearchResultsForTesting(bool);
@@ -976,7 +969,6 @@ public:
     void suspendAllMediaBuffering();
     void suspendAllMediaPlayback();
     void resumeAllMediaPlayback();
-    void setMediaElementGracePeriodForResumingPlaybackInBackground(const HTMLMediaElement&, double gracePeriodInSeconds);
 #endif
 
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
@@ -1016,8 +1008,6 @@ public:
     String createTemporaryFile(const String& name, const String& contents);
 
     String documentIPAddressSpace() const;
-    void setDocumentIPAddressSpace(const String&);
-    void setLoadSourceOriginOverride(const String&);
 
     void queueMicroTask(int);
     bool testPreloaderSettingViewport();
@@ -1099,9 +1089,7 @@ public:
 #if ENABLE(WEBGL)
     enum class SimulatedWebGLContextEvent {
         GPUStatusFailure,
-        Timeout,
-        DisplayBufferAllocationFailure,
-        RenderbufferAllocationFailure
+        Timeout
     };
     void simulateEventForWebGLContext(SimulatedWebGLContextEvent, WebGLRenderingContextBase&);
 
@@ -1111,8 +1099,6 @@ public:
         HighPerformance
     };
     RequestedGPU NODELETE requestedGPU(WebGLRenderingContextBase&);
-    // The largest drawing buffer width and height, including the limits of the compositor buffers.
-    Vector<int> webglMaxDrawingBufferSize(WebGLRenderingContextBase&);
 #endif
 
     void setPageVisibility(bool isVisible);
@@ -1590,8 +1576,6 @@ public:
     bool destroySleepDisabler(unsigned identifier);
 
     void setTopDocumentURLForQuirks(const String&);
-    void setSubframeURLForQuirks(const String&);
-    void setTopDocumentHostForQuirks(const String&);
     Vector<String> activeQuirks() const;
 
 #if ENABLE(APP_HIGHLIGHTS)
@@ -1612,10 +1596,6 @@ public:
 
     enum class ContentSizeCategory { L, XXXL };
     void setContentSizeCategory(ContentSizeCategory);
-
-#if ENABLE(TELEPHONE_NUMBER_DETECTION)
-    unsigned telephoneNumberRangesChangedCount() const;
-#endif
 
 #if ENABLE(ATTACHMENT_ELEMENT)
 #if ENABLE(SERVICE_CONTROLS)
@@ -1738,20 +1718,12 @@ public:
     bool NODELETE isModelElementIntersectingViewport(HTMLModelElement&);
 #endif
 
-#if ENABLE(MODEL_PROCESS)
-    void modelSceneGraphAsText(Element&, const ModelSceneGraphAsTextOptions&, DOMPromiseDeferred<IDLDOMString>&&);
-#endif
-
 #if ENABLE(SPATIAL_PORTAL)
     unsigned NODELETE numberOfHostedModelsInSpatialPortal(Element&);
     bool NODELETE establishesSpatialPortal(Element&);
     RefPtr<Element> NODELETE spatialPortalAnchorForModel(HTMLModelElement&);
     std::optional<Vector<double>> NODELETE spatialPortalResolvedTransform(Element&);
     String NODELETE effectiveEnvironmentMap(Element&);
-#endif
-
-#if ENABLE(CONNECTED_VOLUMETRIC_SCENE)
-    String volumetricScenePresentationMode(Element&);
 #endif
 
     ExceptionOr<void> copyImageAtLocation(int x, int y);

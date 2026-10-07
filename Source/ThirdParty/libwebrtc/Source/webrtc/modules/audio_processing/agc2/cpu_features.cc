@@ -36,7 +36,7 @@ std::string AvailableCpuFeatures::ToString() const {
   if (first) {
     return "none";
   }
-  return builder.Release();
+  return builder.str();
 }
 
 // Detects available CPU features.

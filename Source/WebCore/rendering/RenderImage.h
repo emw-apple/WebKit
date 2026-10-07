@@ -34,20 +34,10 @@ class HTMLAreaElement;
 class HTMLMapElement;
 class GraphicsContext;
 class ImageBuffer;
-class ShareableBitmap;
 
 enum ImageSizeChangeType {
     ImageSizeChangeNone,
     ImageSizeChangeForAltText
-};
-
-struct CreateShareableBitmapFromImageOptions {
-    enum class AllowAnimatedImages : bool { No, Yes };
-    enum class UseSnapshotForTransparentImages : bool { No, Yes };
-
-    std::optional<FloatSize> screenSizeInPixels;
-    AllowAnimatedImages allowAnimatedImages { AllowAnimatedImages::Yes };
-    UseSnapshotForTransparentImages useSnapshotForTransparentImages { UseSnapshotForTransparentImages::No };
 };
 
 class RenderImage : public RenderReplaced {
@@ -91,15 +81,11 @@ public:
     bool shouldRespectZeroIntrinsicWidth() const final;
     bool shouldRespectZeroIntrinsicHeight() const final;
 
-    String accessibilityDescription() const;
+    String accessibilityDescription() const { return imageResource().image()->accessibilityDescription(); }
 
 #if ENABLE(MULTI_REPRESENTATION_HEIC)
     bool isMultiRepresentationHEIC() const;
 #endif
-
-    WEBCORE_EXPORT std::optional<FloatSize> usedImageSize() const final;
-
-    WEBCORE_EXPORT virtual RefPtr<ShareableBitmap> createShareableBitmap(const CreateShareableBitmapFromImageOptions& = { }) const;
 
     FloatSize preferredAspectRatioAsSize() const final;
 
@@ -151,11 +137,11 @@ private:
     void repaintOrMarkForLayout(ImageSizeChangeType, const IntRect* = nullptr);
     void updateIntrinsicSizeIfNeeded(const LayoutSize&);
     // Update the size of the image to be rendered. Object-fit may cause this to be different from the CSS box's content rect.
-    IntSize imageContainerSize() const;
+    void updateInnerContentRect();
 
     void paintAreaElementFocusRing(PaintInfo&, const LayoutPoint& paintOffset);
 
-    bool hasNaturalAspectRatio() const;
+    bool isDimensionlessSVG() const;
 
     bool hasShadowContent() const { return m_hasShadowControls || m_hasImageOverlay; }
 

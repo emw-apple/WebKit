@@ -69,7 +69,6 @@ class AccessibilityObject;
 class AccessibilityRenderObject;
 class AccessibilitySpinButton;
 class Document;
-class Event;
 class HTMLAreaElement;
 class HTMLCanvasElement;
 class HTMLDetailsElement;
@@ -207,14 +206,11 @@ struct PossibleFormValidationErrorData {
     Vector<String> unannouncedText;
     // How many of the form's fields are wrong.
     unsigned errorFieldCount { 0 };
-    // Whether the notification is posted on the button the user pressed to submit, rather than on the form or a field,
-    // so an assistive technology can offer that button alongside the fields.
-    bool targetIsSubmitter { false };
 
     String debugDescription() const
     {
         return makeString("PossibleFormValidationErrorData { unannouncedText: ["_s, makeStringByJoining(unannouncedText, ", "_s),
-            "], errorFieldCount: "_s, errorFieldCount, ", targetIsSubmitter: "_s, targetIsSubmitter, " }"_s);
+            "], errorFieldCount: "_s, errorFieldCount, " }"_s);
     }
 };
 #endif // PLATFORM(COCOA)
@@ -486,16 +482,16 @@ public:
     void onTitleChange(Document&);
     void onValidityChange(Element&);
 
-    // The fields a form-error detection pass may pair with a message the author never associated (i.e. via
-    // aria-errormessage). That is a form's listed elements, or the fields inside an element standing in for a form.
-    Vector<Ref<Element>> fieldsForErrorPairing(Element& container);
+    // Fields a form-error detection pass paired with a message the author never associated (i.e. via
+    // aria-errormessage).
+    Vector<Ref<Element>> formFieldsForErrorPairing(HTMLFormElement&);
     struct DetectedFormErrorPairing {
         Ref<Element> field;
         Ref<Element> message;
     };
     void addDetectedFormErrors(Vector<DetectedFormErrorPairing>&&);
     void clearDetectedErrorsForField(Element&);
-    void clearDetectedErrorsForContainer(Element&);
+    void clearDetectedErrorsForForm(HTMLFormElement&);
     void updateDetectedFormErrors();
     bool fieldHasDetectedError(const Element&) const;
 
@@ -507,12 +503,7 @@ public:
 #if PLATFORM(COCOA)
     void onFormSubmissionAttemptWithoutNavigation(HTMLFormElement&, HTMLFormControlElement* submitter);
     void onFormSubmissionWillNavigate(HTMLFormElement&);
-    WEBCORE_EXPORT bool isWatchingForFormErrors() const;
 #endif
-    // Called synchronously for each trusted (user-generated) click or keydown, just before the event is dispatched to the
-    // page's listeners. It must run first, because pages that validate without a real form submission typically write
-    // their error messages from inside those same listeners.
-    void onTrustedUserInputWillDispatch(Node&, Event&);
 
     void onTextCompositionChange(Node&, CompositionState, bool, const String&, size_t, bool);
     void onWidgetVisibilityChanged(RenderWidget&);
@@ -630,7 +621,7 @@ public:
     using SyncModeToOtherProcessesCallback = Function<void(AccessibilityMode)>;
     WEBCORE_EXPORT static void setSyncModeToOtherProcessesCallback(SyncModeToOtherProcessesCallback&&);
 
-#if PLATFORM(COCOA)
+#if PLATFORM(MAC)
     WEBCORE_EXPORT static bool isAppleInternalInstall();
 #endif
     static bool forceDeferredSpellChecking();
@@ -749,7 +740,7 @@ public:
     void postARIANotifyNotification(Node&, const String&, const AriaNotifyOptions&);
 #if PLATFORM(COCOA)
     void postLiveRegionNotification(AccessibilityObject&, LiveRegionStatus, const AttributedString&);
-    void postPossibleFormValidationErrorNotification(AccessibilityObject&, Vector<String>&& unannouncedText, unsigned errorFieldCount, bool targetIsSubmitter);
+    void postPossibleFormValidationErrorNotification(AccessibilityObject&, Vector<String>&& unannouncedText, unsigned errorFieldCount);
     // Records text an announcement carried, so the form-activity monitor does not report it as unannounced.
     void onAnnouncedText(const String&);
 #else
@@ -829,23 +820,19 @@ public:
             return false;
         }
     }
-    bool isCounted(const AccessibilityObject&) const;
-    // Evaluates membership assuming the given role rather than the object's current one.
-    bool isCounted(const AccessibilityObject&, AccessibilityRole) const;
-    void count(const AccessibilityObject& object)
+    void incrementUnignoredContentObjectCount(AccessibilityRole role)
     {
-        AX_ASSERT(isCounted(object));
-        UNUSED_PARAM(object);
-        ++m_unignoredContentObjectCount;
+        if (!isMockObjectOrWebAreaRole(role))
+            ++m_unignoredContentObjectCount;
     }
-    void uncount(const AccessibilityObject&)
+    void decrementUnignoredContentObjectCount(AccessibilityRole role)
     {
+        if (isMockObjectOrWebAreaRole(role))
+            return;
         AX_ASSERT(m_unignoredContentObjectCount);
         if (m_unignoredContentObjectCount)
             --m_unignoredContentObjectCount;
     }
-    // Pass what isCounted() returned *before* the mutation being reconciled.
-    void reconcileCount(const AccessibilityObject&, bool wasCounted);
 
 #if PLATFORM(COCOA)
     static void NODELETE setShouldRepostNotificationsForTests(bool);
@@ -1144,7 +1131,7 @@ private:
     std::unique_ptr<AXComputedObjectAttributeCache> m_computedObjectAttributeCache;
 #if PLATFORM(COCOA)
     const std::unique_ptr<AXLiveRegionManager> m_liveRegionManager;
-    const std::unique_ptr<AXFormActivityMonitor> m_formActivityMonitor;
+    std::unique_ptr<AXFormActivityMonitor> m_formActivityMonitor;
 #endif
 
     static bool gAccessibilityEnhancedUserInterfaceEnabled;
@@ -1300,10 +1287,9 @@ private:
     // is not written anywhere in the markup to rebuild it from.
     struct DetectedFormError {
         WeakPtr<Element, WeakPtrImplWithEventTargetData> message;
-        // Lets us detect whether an error's message was empty or not last time we checked.
+        // Let's us detect whether an error's message was empty or not last time we checked.
         // This matters because some pages implement the addition and removal of error messages
-        // by emptying / re-adding text to some container, or by hiding / showing it (vs. outright
-        // adding / deleting element(s)).
+        // by emptying / re-adding text to some container (vs. outright adding / deleting element(s)).
         bool messageWasEmpty { false };
     };
     WeakHashMap<Element, DetectedFormError, WeakPtrImplWithEventTargetData> m_detectedFormErrors;

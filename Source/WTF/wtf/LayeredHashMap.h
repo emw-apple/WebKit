@@ -31,6 +31,7 @@
 #include <wtf/MathExtras.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/Vector.h>
+#include <wtf/VectorTraits.h>
 
 namespace WTF {
 
@@ -39,8 +40,8 @@ namespace WTF {
 // startLayer()/dropLastLayer() with descent and ascent of the dominator tree therefore holds
 // exactly the entries defined in dominating blocks, so a lookup needs no dominance test.
 //
-// add() and findOrAdd() never replace a present entry.
-// overlay() shadows any existing entry until the current layer is dropped.
+// A key can be present at most once, and entries cannot be updated in place: fold whatever would
+// have been an update into the key instead.
 template<typename KeyArg, typename MappedArg, typename HashArg = DefaultHash<KeyArg>, typename KeyTraitsArg = HashTraits<KeyArg>, typename MappedTraitsArg = HashTraits<MappedArg>>
 class LayeredHashMap {
     WTF_MAKE_NONCOPYABLE(LayeredHashMap);
@@ -54,76 +55,63 @@ public:
     LayeredHashMap()
     {
         static_assert(KeyTraits::minimumTableSize > 0);
-        m_table.fill(emptyIndex, KeyTraits::minimumTableSize);
-        m_mask = KeyTraits::minimumTableSize - 1;
+        allocateTable(KeyTraits::minimumTableSize);
     }
 
     void startLayer()
     {
-        appendLayerMarker();
-        ++m_layerCount;
+        m_layerHeads.append(nullptr);
     }
 
     void dropLastLayer()
     {
-        ASSERT(m_layerCount);
-        for (unsigned index = m_entries.size() - 1; m_layerStart < index; --index) {
-            const Entry& entry = m_entries[index];
-            unsigned& slot = slotHolding(entry.hash, index);
-            slot = entry.previous;
-            if (slot == emptyIndex)
-                --m_keyCount;
+        ASSERT(!m_layerHeads.isEmpty());
+        for (Entry* entry = m_layerHeads.last(); entry;) {
+            Entry* next = entry->layerNeighbor;
+            *entry = Entry();
+            --m_entryCount;
+            entry = next;
         }
-        unsigned markerIndex = m_layerStart;
-        m_layerStart = m_entries[markerIndex].previous;
-        m_entries.shrink(markerIndex);
-        --m_layerCount;
+        m_layerHeads.removeLast();
     }
 
-    unsigned layerCount() const { return m_layerCount; }
+    unsigned layerCount() const { return m_layerHeads.size(); }
 
     void clearEntries()
     {
-        if (!m_keyCount)
+        if (!m_entryCount)
             return;
-        m_table.fill(emptyIndex);
-        m_entries.shrink(0);
-        m_layerStart = emptyIndex;
-        for (unsigned layer = 0; layer < m_layerCount; ++layer)
-            appendLayerMarker();
-        m_keyCount = 0;
+        m_table.fill(Entry());
+        m_layerHeads.fill(nullptr);
+        m_entryCount = 0;
     }
 
     void clear()
     {
-        if (m_keyCount)
-            m_table.fill(emptyIndex);
-        m_entries.shrink(0);
-        m_layerStart = emptyIndex;
-        m_layerCount = 0;
-        m_keyCount = 0;
+        clearEntries();
+        m_layerHeads.shrink(0);
     }
 
     std::optional<MappedType> find(const KeyType& key)
     {
         ASSERT(!isEmptyKey(key));
-        unsigned index = findSlot(key, HashFunctions::hash(key));
-        if (index == emptyIndex)
+        const Entry& entry = *findSlot(key, HashFunctions::hash(key));
+        if (entry.isEmpty())
             return std::nullopt;
-        return m_entries[index].value;
+        return entry.value;
     }
 
     std::optional<MappedType> findOrAdd(const KeyType& key, const MappedType& value)
     {
-        ASSERT(m_layerCount);
+        ASSERT(!m_layerHeads.isEmpty());
         ASSERT(!isEmptyKey(key));
         unsigned hash = HashFunctions::hash(key);
-        unsigned& slot = findSlot(key, hash);
-        if (slot != emptyIndex)
-            return m_entries[slot].value;
-        slot = m_entries.size();
-        m_entries.append(Entry { key, value, hash, emptyIndex });
-        ++m_keyCount;
+        Entry* slot = findSlot(key, hash);
+        if (!slot->isEmpty())
+            return slot->value;
+        *slot = Entry { key, value, m_layerHeads.last(), hash };
+        m_layerHeads.last() = slot;
+        ++m_entryCount;
         rehashIfNeeded();
         return std::nullopt;
     }
@@ -133,105 +121,70 @@ public:
         return !findOrAdd(key, value);
     }
 
-    void overlay(const KeyType& key, const MappedType& value)
-    {
-        ASSERT(m_layerCount);
-        ASSERT(!isEmptyKey(key));
-        unsigned hash = HashFunctions::hash(key);
-        unsigned& slot = findSlot(key, hash);
-        unsigned previous = slot;
-        if (previous != emptyIndex && previous > m_layerStart) {
-            m_entries[previous].value = value;
-            return;
-        }
-        slot = m_entries.size();
-        m_entries.append(Entry { key, value, hash, previous });
-        if (previous != emptyIndex)
-            return;
-        ++m_keyCount;
-        rehashIfNeeded();
-    }
-
 private:
-    static constexpr unsigned emptyIndex = UINT_MAX;
-
     static bool isEmptyKey(const KeyType& key) { return isHashTraitsEmptyValue<KeyTraits>(key); }
 
-    // An entry with the empty key marks where a layer starts, and its previous is the index of the
-    // enclosing layer's marker. Any other entry's previous is the index of the entry for the same
-    // key that it shadows. Either is emptyIndex when there is none.
     struct Entry {
         KeyType key { KeyTraits::emptyValue() };
         MappedType value { MappedTraits::emptyValue() };
+        Entry* layerNeighbor { nullptr };
         unsigned hash { 0 };
-        unsigned previous { emptyIndex };
 
-        bool isLayerMarker() const { return isEmptyKey(key); }
+        bool isEmpty() const { return isEmptyKey(key); }
     };
+    static_assert(VectorTraits<Entry>::needsInitialization);
     static_assert(hasOneBitSet(KeyTraits::minimumTableSize), "findSlot() masks instead of dividing.");
 
-    void appendLayerMarker()
+    void allocateTable(unsigned capacity)
     {
-        unsigned markerIndex = m_entries.size();
-        m_entries.append(Entry { KeyTraits::emptyValue(), MappedTraits::emptyValue(), 0, m_layerStart });
-        m_layerStart = markerIndex;
+        m_table.clear();
+        m_table.grow(capacity);
+        m_mask = capacity - 1;
+        m_entryCount = 0;
     }
 
-    unsigned& findSlot(const KeyType& key, unsigned hash)
+    Entry* findSlot(const KeyType& key, unsigned hash)
     {
-        unsigned tableIndex = hash & m_mask;
+        unsigned index = hash & m_mask;
         for (unsigned probeCount = 1;; ++probeCount) {
-            unsigned& slot = m_table[tableIndex];
-            if (slot == emptyIndex)
-                return slot;
-            const Entry& entry = m_entries[slot];
+            Entry& entry = m_table[index];
+            if (entry.isEmpty())
+                return &entry;
             if (entry.hash == hash && HashFunctions::equal(entry.key, key))
-                return slot;
-            tableIndex = (tableIndex + probeCount) & m_mask;
-        }
-    }
-
-    unsigned& slotHolding(unsigned hash, unsigned index)
-    {
-        unsigned tableIndex = hash & m_mask;
-        for (unsigned probeCount = 1;; ++probeCount) {
-            unsigned& slot = m_table[tableIndex];
-            ASSERT(slot != emptyIndex);
-            if (slot == index)
-                return slot;
-            tableIndex = (tableIndex + probeCount) & m_mask;
+                return &entry;
+            index = (index + probeCount) & m_mask;
         }
     }
 
     void rehashIfNeeded()
     {
-        if (m_keyCount * 2 < m_table.size())
+        if (m_entryCount * 4 < m_table.size() * 3)
             return;
 
-        unsigned capacity = m_table.size() * 2;
-        m_table.fill(emptyIndex, capacity);
-        m_mask = capacity - 1;
+        Vector<Entry> oldTable = WTF::move(m_table);
+        Vector<Entry*> oldHeads = WTF::move(m_layerHeads);
+        allocateTable(oldTable.size() * 2);
+        m_layerHeads.grow(oldHeads.size());
 
-        // dropLastLayer() can only empty a slot (rather than use a tombstone) if every key that probes
-        // past it was added later in the old table, so slots have to be refilled in the order their
-        // keys were first added.
-        for (unsigned index = 0; index < m_entries.size(); ++index) {
-            const Entry& entry = m_entries[index];
-            if (entry.isLayerMarker())
-                continue;
-            if (entry.previous == emptyIndex)
-                findSlot(entry.key, entry.hash) = index;
-            else
-                slotHolding(entry.hash, entry.previous) = index;
+        for (unsigned layer = 0; layer < oldHeads.size(); ++layer) {
+            m_layerHeads[layer] = nullptr;
+            for (Entry* entry = oldHeads[layer]; entry;) {
+                Entry* next = entry->layerNeighbor;
+                Entry* slot = findSlot(entry->key, entry->hash);
+                ASSERT(slot->isEmpty());
+                *slot = *entry;
+                slot->layerNeighbor = m_layerHeads[layer];
+                m_layerHeads[layer] = slot;
+                ++m_entryCount;
+                entry = next;
+            }
         }
     }
 
     unsigned m_mask { 0 };
-    unsigned m_keyCount { 0 };
-    unsigned m_layerCount { 0 };
-    unsigned m_layerStart { emptyIndex };
-    Vector<unsigned> m_table;
-    Vector<Entry> m_entries;
+    unsigned m_entryCount { 0 };
+    Vector<Entry> m_table;
+    Vector<Entry*> m_layerHeads;
 };
 
 } // namespace WTF

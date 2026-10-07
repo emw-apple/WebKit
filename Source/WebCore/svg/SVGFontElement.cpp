@@ -26,8 +26,9 @@
 #include "Document.h"
 #include "ElementIterator.h"
 #include "FontCascade.h"
-#include "SVGElementTypeHelpers.h"
+#include "SVGGlyphElement.h"
 #include "SVGHKernElement.h"
+#include "SVGMissingGlyphElement.h"
 #include "SVGNames.h"
 #include "SVGPropertyOwnerRegistry.h"
 #include "SVGVKernElement.h"
@@ -39,7 +40,7 @@ namespace WebCore {
 WTF_MAKE_TZONE_ALLOCATED_IMPL(SVGFontElement);
 
 inline SVGFontElement::SVGFontElement(const QualifiedName& tagName, Document& document)
-    : SVGElement(tagName, document, PropertyRegistry::singleton())
+    : SVGElement(tagName, document, makeUniqueRef<PropertyRegistry>(*this))
 {
     ASSERT(hasTagName(SVGNames::fontTag));
 }

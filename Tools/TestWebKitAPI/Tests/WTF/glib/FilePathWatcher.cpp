@@ -32,9 +32,7 @@
 #include <glib/gstdio.h>
 #include <unistd.h>
 #include <wtf/FileSystem.h>
-#include <wtf/glib/GLibExtras.h>
 #include <wtf/glib/GUniquePtr.h>
-#include <wtf/posix/POSIXExtras.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/WTFString.h>
 
@@ -117,19 +115,19 @@ TEST(WTF_FilePathWatcher, FiresOnSymlinkSwap)
 
     String targetA = writeAndReturnPath(dir.path(), "tz-a", std::span<const uint8_t> { });
     String targetB = writeAndReturnPath(dir.path(), "tz-b", std::span<const uint8_t> { });
-    auto linkPath = gBuildFilename(dir.path(), "localtime"_s);
+    GUniquePtr<char> linkPath(g_build_filename(dir.path(), "localtime", nullptr));
 
-    if (posixSymlink(targetA.utf8(), linkPath) < 0)
+    if (symlink(targetA.utf8().legacyCStringPointer(), linkPath.get()) < 0)
         GTEST_SKIP() << "symlink() unavailable on this filesystem";
 
     bool fired = false;
-    FilePathWatcher watcher(String::fromUTF8(linkPath.span()), [&] {
+    FilePathWatcher watcher(String::fromUTF8(linkPath.get()), [&] {
         fired = true;
     });
     EXPECT_TRUE(watcher.isActive());
 
-    g_unlink(linkPath.utf8());
-    ASSERT_EQ(posixSymlink(targetB.utf8(), linkPath), 0);
+    g_unlink(linkPath.get());
+    ASSERT_EQ(symlink(targetB.utf8().legacyCStringPointer(), linkPath.get()), 0);
 
     EXPECT_TRUE(runMainLoopUntil([&] {
         return fired;

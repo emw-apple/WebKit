@@ -36,6 +36,7 @@
 @class NSURLRequest;
 @class WebArchive;
 @class WebDataSource;
+@class WebFramePrivate;
 @class WebFrameView;
 @class WebScriptObject;
 @class WebView;
@@ -47,6 +48,10 @@
 */
 WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14)
 @interface WebFrame : NSObject
+{
+@package
+    WebFramePrivate *_private;
+}
 
 /*!
     @method initWithName:webFrameView:webView:

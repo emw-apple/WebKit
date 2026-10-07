@@ -18,6 +18,7 @@
  */
 
 #include "config.h"
+#include <wtf/glib/ActivityObserver.h>
 
 #include "Helpers/Test.h"
 #include <wtf/RunLoop.h>

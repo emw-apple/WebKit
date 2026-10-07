@@ -57,8 +57,7 @@ void WebMediaPlaybackTargetPicker::removePlaybackTargetPickerClient(WebCore::Pla
 
 void WebMediaPlaybackTargetPicker::showPlaybackTargetPicker(WebCore::PlaybackTargetClientContextIdentifier contextId, const WebCore::FloatRect& rect, bool hasVideo)
 {
-    RefPtr page = m_page;
-    WebCore::WebMediaSessionManager::singleton().showPlaybackTargetPicker(*this, contextId, WebCore::IntRect(rect), hasVideo, page ? page->useDarkAppearance() : false);
+    WebCore::WebMediaSessionManager::singleton().showPlaybackTargetPicker(*this, contextId, WebCore::IntRect(rect), hasVideo, m_page ? m_page->useDarkAppearance() : false);
 }
 
 void WebMediaPlaybackTargetPicker::playbackTargetPickerClientStateDidChange(WebCore::PlaybackTargetClientContextIdentifier contextId, WebCore::MediaProducerMediaStateFlags state)
@@ -83,35 +82,32 @@ void WebMediaPlaybackTargetPicker::mockMediaPlaybackTargetPickerDismissPopup()
 
 void WebMediaPlaybackTargetPicker::setPlaybackTarget(WebCore::PlaybackTargetClientContextIdentifier contextId, Ref<WebCore::MediaPlaybackTarget>&& target)
 {
-    RefPtr page = m_page;
-    if (!page)
+    if (!m_page)
         return;
 
-    page->setPlaybackTarget(contextId, WTF::move(target));
+    m_page->setPlaybackTarget(contextId, WTF::move(target));
 }
 
 void WebMediaPlaybackTargetPicker::externalOutputDeviceAvailableDidChange(WebCore::PlaybackTargetClientContextIdentifier contextId, bool available)
 {
-    RefPtr page = m_page;
-    if (!page)
+    if (!m_page)
         return;
 
-    page->playbackTargetAvailabilityDidChange(contextId, available);
+    m_page->playbackTargetAvailabilityDidChange(contextId, available);
 }
 
 void WebMediaPlaybackTargetPicker::setShouldPlayToPlaybackTarget(WebCore::PlaybackTargetClientContextIdentifier contextId, bool shouldPlay)
 {
-    RefPtr page = m_page;
-    if (!page)
+    if (!m_page)
         return;
 
-    page->setShouldPlayToPlaybackTarget(contextId, shouldPlay);
+    m_page->setShouldPlayToPlaybackTarget(contextId, shouldPlay);
 }
 
 void WebMediaPlaybackTargetPicker::playbackTargetPickerWasDismissed(WebCore::PlaybackTargetClientContextIdentifier contextId)
 {
-    if (RefPtr page = m_page)
-        page->playbackTargetPickerWasDismissed(contextId);
+    if (m_page)
+        m_page->playbackTargetPickerWasDismissed(contextId);
 }
 
 void WebMediaPlaybackTargetPicker::invalidate()

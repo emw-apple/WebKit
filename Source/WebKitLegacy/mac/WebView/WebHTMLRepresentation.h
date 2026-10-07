@@ -30,6 +30,7 @@
 
 #import <WebKitLegacy/WebDocumentPrivate.h>
 
+@class WebHTMLRepresentationPrivate;
 #if !TARGET_OS_IPHONE
 @class NSView;
 #endif
@@ -45,6 +46,10 @@
     @class WebHTMLRepresentation
 */
 @interface WebHTMLRepresentation : NSObject <WebDocumentRepresentation, WebDocumentDOM>
+{
+@private
+    WebHTMLRepresentationPrivate *_private;
+}
 
 + (NSArray *)supportedMIMETypes;
 + (NSArray *)supportedMediaMIMETypes;

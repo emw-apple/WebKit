@@ -9,9 +9,8 @@
         findMediaElement();
         run('internals.settings.setShouldManageAudioSessionCategory(true)');
         run('video.src = findMediaFile("video", "../../../media/content/test")');
-        let playPromise = run('video.play()');
+        run('video.play()');
         await waitFor(video, 'playing');
-        await playPromise;
         await testExpectedEventually('internals.audioSessionCategory()', 'MediaPlayback');
 
         run('video.pause()');
@@ -21,9 +20,8 @@
         run('internals.beginMediaSessionInterruption("system")');
         await testExpectedEventually('internals.audioSessionCategory()', 'None');
 
-        playPromise = run('video.play()');
+        run('video.play()');
         await waitFor(video, 'playing');
-        await playPromise;
         await testExpectedEventually('internals.audioSessionCategory()', 'MediaPlayback');
 
         run('video.src = ""');

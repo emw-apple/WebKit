@@ -907,7 +907,6 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
         const options = {
             dontFloat: true,
             ignoreSearchTab: true,
-            stackTrace: entry.resource.initiatorStackTrace,
         };
         cell.appendChild(WI.createSourceCodeLocationLink(initiatorLocation, options));
     }
@@ -1509,9 +1508,6 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
         this._processPendingEntries();
         this._positionDetailView();
         this._updateExportButton();
-
-        if (this._statisticsDirty)
-            this._updateStatistics();
     }
 
     didLayoutSubtree()
@@ -1745,6 +1741,8 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
             return;
 
         updateExistingEntry(collection.filteredEntries[rowIndex], entry);
+
+        this._updateStatistics();
     }
 
     _populateRedirectEntriesForResourceEntry(entry)
@@ -2075,7 +2073,7 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
 
             this._table.reloadCell(rowIndex, "resourceSize");
 
-            this._updateStatisticsSoon();
+            this._updateStatistics();
         });
     }
 
@@ -2110,7 +2108,7 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
 
             this._table.reloadCell(rowIndex, "transferSize");
 
-            this._updateStatisticsSoon();
+            this._updateStatistics();
         });
     }
 
@@ -2120,7 +2118,7 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
             this._insertResourceAndReloadTable(event.data.resource);
 
             if (wasMain)
-                this._updateStatisticsSoon();
+                this._updateStatistics();
         });
     }
 
@@ -2136,7 +2134,7 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
             this._insertResourceAndReloadTable(mainResource);
 
             if (wasMain)
-                this._updateStatisticsSoon();
+                this._updateStatistics();
 
             console.assert(!frame.resourceCollection.size, "New frame should be empty.");
             console.assert(!frame.childFrameCollection.size, "New frame should be empty.");
@@ -2533,29 +2531,18 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
         this._updateEmptyFilterResultsMessage();
     }
 
-    _updateStatisticsSoon()
-    {
-        this._statisticsDirty = true;
-        this.needsLayout();
-    }
-
     _updateStatistics()
     {
         if (!this.didInitialLayout)
             return;
 
-        this._statisticsDirty = false;
+        let entries = this._activeCollection.filteredEntries.filter((entry) => entry.currentSession);
 
         let domains = new Set;
         let resourceSize = 0;
         let transferSize = 0;
         let redirectCount = 0;
-        let resourceCount = 0;
-        for (let entry of this._activeCollection.filteredEntries) {
-            if (!entry.currentSession)
-                continue;
-
-            ++resourceCount;
+        for (let entry of entries) {
             domains.add(entry.domain);
             if (!isNaN(entry.resourceSize))
                 resourceSize += entry.resourceSize;
@@ -2567,6 +2554,7 @@ WI.NetworkTableContentView = class NetworkTableContentView extends WI.ContentVie
 
         this._updateStatistic("domain-count", domains.size === 1 ? WI.UIString("%d domain") : WI.UIString("%d domains"), domains.size);
 
+        let resourceCount = entries.length;
         this._updateStatistic("resource-count", resourceCount === 1 ? WI.UIString("%d resource") : WI.UIString("%d resources"), resourceCount);
 
         const higherResolution = false;
