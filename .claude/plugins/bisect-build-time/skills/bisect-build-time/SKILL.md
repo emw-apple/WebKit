@@ -1,0 +1,358 @@
+---
+name: bisect-build-time
+description: Use when the user wants to find which commit in a range changed a WebKit build time — usually a regression (clean or incremental build getting slower), but a progression (speedup) works identically, with the direction inferred from the endpoints. Drives `git bisect run` on top of `Tools/Scripts/measure-build-time` via `Tools/Scripts/bisect-build-time`, timing each commit several times and using a two-sample t-test to find the first commit that differs significantly from the baseline. Endpoints are given in history order (`-a` earlier, `-b` later). Timings are cached per commit, so re-running over an overlapping range is cheap. When `../Internal/Tools/Scripts/bisect-build-time` exists, run that instead — same tool and command line, plus it keeps the sibling checkout aligned with each commit under test.
+user-invocable: true
+allowed-tools: Bash, Read
+---
+
+## When to use
+
+The user has observed that a `measure-build-time` benchmark (a clean build, or
+an incremental rebuild after touching a hot header) changed somewhere in a known
+commit range — usually got slower, but a speedup works the same way — and wants the
+commit responsible. `Tools/Scripts/bisect-build-time`
+automates `git bisect run`: it checks out commits, times the benchmark, and
+classifies each as matching the baseline or having changed.
+
+**First check for a sibling wrapper.** If
+`../Internal/Tools/Scripts/bisect-build-time` exists, invoke that instead of this
+script — see "Sibling checkouts" below. It is the same tool with the same command
+line; running this script directly on such a checkout measures mismatched pairs.
+
+It times each commit several times and classifies it with a **two-sample t-test**
+against a baseline (see below). Build times vary from run to run by more than
+many real regressions are worth, so a verdict from a single measurement per
+commit would send the bisect down the wrong branch; comparing distributions is
+what makes the answer trustworthy.
+
+## Prerequisites
+
+- A **clean working tree** for tracked files (`git bisect` requires it).
+  Untracked files are fine. Commit or stash local changes first.
+- A build backend to forward to `measure-build-time`, usually `--make` (Xcode)
+  or `--cmake` (Ninja). See `Tools/Scripts/measure-build-time --help` for the
+  full set (`--build-command`, `--configuration`, etc.).
+- Two commits bounding the change, given in history order: `-a` earlier, `-b` its
+  descendant. Both must build (`-a` is the t-test baseline), and the range is checked
+  before anything is built, so reversed or divergent endpoints fail immediately
+  rather than after the baseline.
+- On a sibling checkout, `GIT_LFS_SKIP_SMUDGE=1` unless the build needs the LFS
+  payloads — see "Git LFS in the sibling checkout" below.
+
+## Basic usage
+
+```sh
+Tools/Scripts/bisect-build-time -a <old-sha> -b <new-sha> -- --make
+```
+
+`-a`/`-b` are aliases for `--good`/`--bad`, and generally the clearer way to write
+them: what the tool requires is that the commits come in **history order** — `-a`
+earlier, `-b` its descendant — and the short names say that without implying a
+verdict. Reversed or divergent endpoints are rejected before anything is built.
+Which way the build time moved is inferred from the endpoints, so the same command
+finds a regression or a speedup — see "Direction" below.
+
+Everything after `--` is forwarded verbatim to `measure-build-time`. Do **not**
+pass `--tests`, `--output`, or `--keep-going` there — the script sets them.
+
+- `-a/--good <commit>`, `-b/--bad <commit>`: the endpoints, in history order (`-a`
+  earlier, `-b` a descendant of it). Required.
+- `--test <name>` picks the benchmark (default `clean`). For incremental
+  benchmarks (`webcore-header`, `jsc-cpp-source`, `serialization-file`, … — see
+  `measure-build-time --help`), the script automatically runs `clean` first
+  since they depend on it, and measures only the incremental rebuild.
+- `-r/--runs <N>` (**default 3**, minimum 2): timings per commit *and* per
+  baseline endpoint. More runs cost more builds but give the t-test the power to
+  resolve a smaller regression.
+- `-w/--warmup <N>` (default `0`): runs to throw away before the timed ones, per
+  commit and per baseline endpoint. The first build after a checkout is often
+  slower for reasons belonging to the checkout rather than the commit (cold page
+  cache, cold compiler caches); discarding it keeps that out of the samples. Costs
+  N extra builds per commit that isn't already cached — see "Reusing measurements".
+- `--alpha <p>` (default `0.05`): t-test significance level.
+- `--force`: bisect even if calibration finds no detectable regression.
+- `--progress` / `--no-progress`: a tqdm bar over the expected number of timing
+  runs. Auto-enabled when attached to a terminal and `tqdm` is installed;
+  harmless no-op (with a one-line warning if explicitly requested) otherwise.
+
+## Sibling checkouts
+
+`measure-build-time --make` builds `make -C ../Internal/WebKit` whenever that
+directory exists, so on such a checkout every timing compiles WebKit *through* the
+sibling repo's configuration files and workspace. Bisecting WebKit alone leaves
+that checkout pinned wherever it started while `git bisect` walks WebKit back days
+or weeks: builds fail (every commit skips) or, worse, the times reflect a
+mismatched pair rather than the commit under test.
+
+So when `../Internal/Tools/Scripts/bisect-build-time` exists, run it instead:
+
+```sh
+../Internal/Tools/Scripts/bisect-build-time -a <old-sha> -b <new-sha> -- --make
+```
+
+It is a front end onto the same implementation (`Tools/Scripts/buildtime.py`) and
+accepts every flag above, so `--help` there lists the whole command line. Before
+each WebKit commit is timed it checks out the sibling commit whose committer date is
+newest at or before it (nothing records a real correspondence between the two
+repos, so they are paired by landing time). Extra flags it adds:
+
+- `--dry-run`: print the commit each endpoint pairs with and stop. A few git calls
+  — always worth running before a multi-hour bisect.
+- `--internal-ref <ref>`: ref whose history is searched (default `origin/main`,
+  falling back to the current branch). Remote-tracking by default so a stale local
+  branch can't quietly pin the whole range.
+- `--align-internal [<commit>]`: check out the sibling commit paired with one
+  WebKit commit (default: HEAD) and exit — useful on its own to reproduce a build
+  at an older commit. Add `--dry-run` to print the pairing without checking
+  anything out.
+- `--internal-dir` / `--opensource-dir`: the two checkouts, defaulting to the
+  wrapper's own repo and its `OpenSource` sibling.
+
+Extra prerequisites: **both** checkouts need clean tracked files (the sibling is
+checked out repeatedly), and a recent `git -C ../Internal fetch` so the search ref
+covers the range. It aborts before any build if either is a problem, and refuses to
+run when both endpoints pair with the same sibling commit, since aligning would
+then do nothing across the range (`--force` overrides). A WebKit commit predating
+all of the sibling's history becomes a `skip` mid-range, or a pre-flight abort as an
+endpoint. Both checkouts are restored when the run ends, including after Ctrl-C.
+
+Two things that pass the pre-flight check and still break every alignment checkout:
+
+- **Untracked files in the sibling that are tracked in the range.** "Untracked files
+  are fine" above applies to the WebKit checkout; a file merely untracked *now* in
+  `Internal` but committed in the paired commits stops `git checkout` cold (`error:
+  The following untracked working tree files would be overwritten by checkout`).
+  Move or delete it first.
+- **Git LFS** — see below.
+
+### Git LFS in the sibling checkout
+
+`Internal` tracks some files with Git LFS (`*.profdata.compressed`,
+`*.partial.sdkdb`, …); `OpenSource` tracks none. So every
+alignment checkout runs the LFS smudge filter, which fetches whatever the local LFS
+cache is missing over SSH. When that host is unreachable — offline, no SSH
+agent, or a sandbox blocking port 22 — the checkout fails and takes the bisect
+with it:
+
+```
+Error downloading object: WebKit/WebKitAdditions/Profiling/.../JavaScriptCore.profdata.compressed
+  ssh: connect to host <redacted> port 22: Operation not permitted
+fatal: smudge filter lfs failed
+ERROR Could not check out 772723fb0e89 in /Users/emw/src/Internal.
+Checkout hook failed for ca48ed48ca69; cannot measure this endpoint.
+```
+
+An endpoint failing this way aborts calibration outright; a mid-range commit becomes a
+`skip`. Export `GIT_LFS_SKIP_SMUDGE=1` for the whole run so checkouts write LFS pointer
+files instead of fetching payloads — the hook shells out to `git checkout`, so it
+inherits the environment:
+
+```sh
+GIT_LFS_SKIP_SMUDGE=1 ../Internal/Tools/Scripts/bisect-build-time -a <old> -b <new> -- --make
+```
+
+Only do this when the build does not read those payloads. For a build-time
+measurement the PGO profiles are the ones that matter. PGO is only used from
+Release and Production builds, and by default, `measure-build-time` performs
+Debug builds. So they are usually fine to omit. But when explicitly testing a
+release configuration, skipping the smudge measures a different build than the
+one you care about: pre-fetch instead, with `git -C ../Internal lfs pull` (or
+`lfs fetch --recent`) while the network is available.
+
+## Reusing measurements
+
+Timings are cached, so re-running a bisect — after widening the range, or with a
+different `--alpha` — only builds commits it hasn't measured. Cache hits are logged
+as they happen, the summary's `CACHED` column shows how many of each commit's
+samples were reused, and a `Cache: reused N of M samples` line names the file, so a
+suspiciously fast run is always visible.
+
+A cached timing is reused only for the same commit, benchmark (`--test`), forwarded
+`measure-build-time` arguments, **and host** — reusing a fast machine's number on a
+slow one would misclassify and send the bisect down the wrong branch. On an internal
+checkout the paired sibling commit is part of the key too, so a time is never reused
+across pairs. Cached samples *accumulate*: with `--runs 3`, a commit with 2 cached
+samples gets one fresh one, and a commit with 5 keeps all 5 (Welch's t-test handles
+unequal sample sizes).
+
+`--warmup` is **not** part of the cache key, and warmup timings are never written to
+the cache — they are measured, logged, and dropped. So samples taken with and without
+warmup pool together, on the assumption that warming up converges on the same number
+a repeated run would reach anyway. Two consequences: a commit whose samples are
+already cached does no warmup at all (nothing is built, so there is nothing to warm),
+and if you don't want warmed and unwarmed samples mixed, separate them with
+`--cache-tag`.
+
+The hazard is comparing cached numbers against fresh ones after conditions changed
+— a toolchain upgrade, a different ccache state, a machine under load. Guards:
+
+- Entries older than `--cache-max-age` days (default 7) are ignored; `0` never
+  expires.
+- When a commit's cached and fresh samples disagree by more than 10%, it warns.
+- `--refresh` ignores what's cached and re-measures (use after upgrading Xcode);
+  `--no-cache` bypasses the cache entirely; `--cache-tag <str>` keeps measurements
+  from different conditions apart.
+- `--show-cache` prints what's stored for the current signature; `--cache <path>`
+  moves the file, which by default is `webkit-build-time-cache.jsonl` in the
+  checkout's git directory (per worktree, and safe from the `clean` test).
+
+## What it does per commit
+
+Up front, both endpoints are each timed `--runs` times; **`-a` is the baseline**, and
+the comparison against `-b` both confirms the range holds a real change and fixes the
+direction to search (the run aborts if they are indistinguishable, unless `--force`).
+Then for each commit `git bisect` selects, it is timed `--runs` times and compared to
+the baseline with a one-sided two-sample Welch's t-test:
+
+- significantly changed from baseline **in that direction** (`p ≤ alpha`) → **bad**
+  (exit 1), reported as `slower`/`faster`
+- not significantly changed → **good** (exit 0), reported as `unchanged`
+- **build failed to compile** → **skip** (exit 125)
+
+The answer is the earliest commit that differs significantly from the
+baseline — the commit that made the build slower, or faster. (`git bisect`'s own
+exit-code contract is good/bad; the report phrases it as what the commit did.)
+
+With `--warmup N`, each commit and endpoint runs N discarded builds first; a build
+that fails during warmup skips the commit exactly as a failed timed run would.
+
+## Comparing two adjacent commits
+
+Passing adjacent endpoints (`-a <commit>^ -b <commit>`) is a useful way to
+measure one commit's build-time impact rather than to search for it. No bisecting
+happens: the two endpoint measurements *are* the comparison, so the run is exactly
+`(runs + warmup) × 2` builds and reports `-b` as the commit responsible when it
+differs significantly from `-a` — in either direction, so this works for confirming
+a speedup as well as a regression. `git bisect` is never invoked — it can't be, since
+it treats such a range as already resolved and then rejects the harness run with
+"was both good and bad".
+
+Getting the endpoints backwards is the easy mistake here, and it now fails up front
+with a message naming both resolved commits instead of a traceback after the
+baseline builds.
+
+## Direction: regressions and progressions
+
+The direction is **inferred from the endpoints**, so the same command finds either
+kind of change:
+
+- `-b` significantly **slower** than `-a` → searches for the commit that made the
+  build slower (a regression). The usual case.
+- `-b` significantly **faster** than `-a` → searches for the commit that made it
+  faster (a progression).
+
+Either way a commit counts as changed when it differs significantly *in that
+direction* from the `-a` baseline, so the commit `git bisect` converges on is the one
+responsible. The report calls it the first `slower` or first `faster` commit; git's
+own output, which is passed through, still says "first bad commit".
+
+The log states the choice before any bisecting starts:
+
+```
+INFO -b is significantly faster than -a, so searching for the commit that made the build faster.
+INFO Starting bisect: a=<sha> b=<sha> runs=3 alpha=0.05 direction=faster
+```
+
+If the endpoints are *not* significantly different there is nothing to attribute, and
+the run aborts after calibration:
+
+```
+The endpoints are not significantly different (p=0.905 at alpha=0.05); there is no
+build-time change across this range to attribute to a commit. Increase --runs, widen
+the range, or pass --force to search anyway.
+```
+
+`--force` proceeds anyway, assuming a regression; with no real change to find, every
+commit measures the same as the baseline and `git bisect` ends up attributing it to
+the `-b` endpoint, so treat that result with suspicion.
+
+## Cost
+
+Each timing is a full benchmark run (a clean build is many minutes), and each
+step runs the benchmark `--runs` times. A range of N commits costs roughly
+**(runs + warmup) × (log2(N) + 2)** builds (the `+2` is endpoint calibration). Warn
+the user before kicking off a long range, and prefer running it in the background.
+Commits already in the profiling cache are free (see "Reusing measurements"), so a
+re-run over an overlapping range costs much less than the formula suggests.
+
+## Extending it: per-commit setup
+
+When the build depends on a second checkout that must track the commit under test,
+drive the bisect from Python instead of the command line: `import buildtime`, build
+the command line with `build_parser()`, and pass a `hook` callable to
+`run_driver`/`run_harness`:
+
+```python
+def hook(commit_sha, writer=None) -> bool:
+    ...  # prepare the other checkout for this commit
+```
+
+The hook runs after each commit is checked out — the two calibration endpoints and
+every commit `git bisect` selects — and the timing runs wait for it.
+
+- Returns True: proceed with the timing runs.
+- Returns False: the commit is skipped (exit 125) while bisecting, and calibration
+  aborts with an error.
+
+The hook is *not* run when the original ref is restored at the end, so a wrapper
+that moves another checkout is responsible for restoring it too. Pass
+`harness_args=[...]` to `run_driver` for any flags the wrapper needs to rebuild its
+hook in the per-commit harness process. The sibling wrapper above is built this way.
+
+## Output and cleanup
+
+The script prints git's `… is the first bad commit` result, then always runs
+`git bisect reset` (even on error or Ctrl-C) to restore the original branch and
+working tree. Confirm afterward with `git status` / current branch if unsure.
+
+Finally it prints a summary table of every commit it measured, ordered by
+ancestry (oldest first) so the transition is visible, with the commit responsible
+highlighted (`>>>` gutter, `<- first slower commit` tag, bold-red on a
+TTY). Columns show the WebKit commit identifier, the run count, mean time, and the
+p-value vs baseline; the baseline commit itself shows `base`. The VERDICT column
+names what the commit did — `slower`, or `faster` for a progression — rather than
+git's good/bad, which reads backwards for a speedup:
+
+```
+Build-time bisect summary (test: clean, runs: 3, alpha: 0.05)
+
+    COMMIT   IDENTIFIER   RUNS    MEAN  P-VALUE  CACHED  VERDICT    SUBJECT
+    5667a51  318105@main     3   99.0s     base       —  base       ...
+    1c9b298  318106@main     3  100.0s    0.288       —  unchanged  ...
+>>> 82c477d  318107@main     3  131.0s  2.5e-06     3/3  slower     ...  <- first slower commit
+    90ea4b1  318108@main     3  129.7s  2.4e-04       —  slower     ...
+
+Baseline: 5667a51 (-a endpoint), 99.0s mean over 3 runs
+First slower commit: 82c477d (318107@main) ...
+```
+
+The IDENTIFIER column is the `commits.webkit.org` identifier from the commit's
+`Canonical link:` trailer — what bug reports and revert requests quote. A commit
+that never landed upstream (local work, a branch built from a patch) has no
+identifier, so its committer date is shown instead.
+
+The table includes both endpoints, since both are measured to
+establish the baseline. Commits whose build failed to compile render as `skip`.
+
+## Notes
+
+- Runs `measure-build-time` with stdin closed, so the `clean` test deletes the
+  build directory without an interactive prompt.
+- `Tools/Scripts/bisect-build-time` is a thin entry point; the implementation is
+  `Tools/Scripts/buildtime.py` (stdlib only). Python callers can `import
+  buildtime`, build the shared command line with `build_parser()`, and call
+  `run_driver`/`run_harness` with a `hook(commit_sha, writer) -> bool` callable
+  (see "Extending it" above).
+- The per-commit harness runs from a copy of the entry script *and* `buildtime.py`
+  in a temporary directory, so every commit is measured by the version you
+  launched — bisecting across commits that change or predate either file is safe.
+- `tqdm` is an optional dependency; without it the `--progress` bar is silently
+  skipped (`pip3 install tqdm` to enable). `measure-build-time`'s output is
+  captured and streamed through the bar (via `tqdm.write`) in both the
+  calibration and bisect phases, so build logs appear beneath the bar without
+  corrupting it.
+- `--measure-build-time <path>` (or `MEASURE_BUILD_TIME=<path>`) overrides the
+  benchmark script — used to test the bisect harness against a stub without doing
+  real builds. The driver resolves it once and passes it to the harness, which
+  runs from a temp directory and so cannot find it on its own.
+- Run `Tools/Scripts/bisect-build-time --help` for the full argument list.

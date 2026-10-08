@@ -410,7 +410,7 @@ DEFAULT_CMAKE_BUILD_COMMAND = (
 )
 DEFAULT_CMAKE_CONFIGURE_COMMAND = (
     'xcrun cmake -S {source_dir} -B {build_dir} --preset {preset} '
-    '-DCMAKE_OSX_DEPLOYMENT_TARGET={sdk_version}'
+    '-DCMAKE_OSX_DEPLOYMENT_TARGET={sdk_version} -DENABLE_CCACHE=OFF'
 )
 
 class Arguments(argparse.Namespace):
@@ -486,6 +486,10 @@ def get_args() -> Arguments:
             (SCRIPTS / 'webkit-build-directory', '--top-level'),
             text=True
         ).rstrip())
+    else:
+        # Pass the build directory through to webkitdirs for Xcode.
+        args.build_dir = args.build_dir.resolve()
+        os.environ['WEBKIT_OUTPUTDIR'] = str(args.build_dir)
     if not args.source_dir:
         args.source_dir = SCRIPTS.parent.parent
 
@@ -517,6 +521,8 @@ def get_args() -> Arguments:
             workspace_dir=str(internal_dir if internal_dir.exists() else args.source_dir),
             sdk_version=sdk_version,
         )
+        if not args.stdout_filter:
+            args.stdout_filter = args.source_dir / 'Tools/Scripts/filter-build-webkit'
     elif args.cmake:
         args.build_command = DEFAULT_CMAKE_BUILD_COMMAND.format(
             build_dir=str(args.build_dir),
